@@ -1,0 +1,3 @@
+BH.Globals = {
+	haveVisitorId: false
+};

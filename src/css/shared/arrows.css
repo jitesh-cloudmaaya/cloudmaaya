@@ -1,0 +1,18 @@
+.arrow {
+	height: 0;
+	width: 0;
+}
+
+.arrow-down {
+	border-top: 15px solid #f2987e;
+	border-right: 15px solid transparent;
+	border-left: 15px solid transparent;
+}
+
+@media (max-width: 767px) {
+	.arrow-down {
+		border-top: 10px solid #f2987e;
+		border-right: 10px solid transparent;
+		border-left: 10px solid transparent;
+	}
+}

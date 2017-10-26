@@ -1,0 +1,31 @@
+/* https://bitsofco.de/linting-html-using-css/ */
+
+html:not([lang]),
+html[lang=''] {
+	border: 5px solid red;
+}
+
+meta[charset]:not([charset='UTF-8']) {
+	border: 5px solid red;
+}
+
+meta[charset='UTF-8']:not(:first-child) {
+	border: 5px solid red;
+}
+
+/*
+input:not([id]),  
+select:not([id]),  
+textarea:not([id]) {
+	border: 5px solid red;
+}
+
+label:not([for]) {
+	border: 5px solid red;
+} 
+*/
+
+button:empty,
+a:empty {
+	border: 5px solid red;
+}

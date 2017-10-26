@@ -1,0 +1,54 @@
+.cart .top,
+.hearts .top {
+	padding: 10px 0 30px 0;
+}
+
+.cart .top h1,
+.hearts .top h1 {
+	font-family: 'museo sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 36px;
+	font-weight: 300;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.cart .top .heart,
+.hearts .top .heart {
+	height: 40px;
+}
+
+.cart .top p,
+.hearts .top p {
+	font-size: 20px;
+	font-weight: 300;
+	text-align: center;
+}
+
+.hearts .top p .heart {
+	height: 25px;
+}
+
+@media (max-width: 767px) {
+	.cart .top,
+	.hearts .top {
+		padding: 0;
+	}
+
+	.cart .top .heart,
+	.hearts .top .heart {
+		height: 22px;
+	}
+
+	.cart .top h1,
+	.hearts .top h1 {
+		font-size: 22px;
+		margin-top: 10px;
+		margin-bottom: 5px;
+	}
+
+	.cart .top p,
+	.hearts .top p {
+		font-size: 12px;
+		line-height: 22px;
+	}
+}

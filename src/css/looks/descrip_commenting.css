@@ -1,0 +1,99 @@
+.descrip-commenting {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.descrip-commenting .descrip {
+	display: table-cell;
+	font-size: 20px;
+	font-weight: 300;
+	margin-bottom: 40px;
+}
+
+.descrip-commenting .logo {
+	float: left;
+	margin-right: 15px;
+	width: 30px;
+}
+
+.look .descrip-commenting .less {
+	font-weight: 300;
+	margin: 10px 0;
+	text-align: center;
+}
+
+.descrip-commenting .less,
+.descrip-commenting .more {
+	color: #f2987e;
+	cursor: pointer;
+	font-size: 20px;
+	font-weight: 500;
+}
+
+.descrip-commenting .commenting {
+	padding-top: 10px;
+	position: relative;
+}
+
+.descrip-commenting .commenting .submit {
+	position: absolute;
+	right: 10px;
+	top: 18px;
+	width: 20px;
+}
+
+.descrip-commenting .commentss {
+	font-size: 12px;
+	line-height: 22px;
+	text-align: left;
+}
+
+.descrip-commenting .commentss .single-comment {
+	padding-top: 10px;
+}
+
+.descrip-commenting .commentss p {
+	display: table-cell;
+	font-size: 20px;
+	margin: 0;
+	padding-right: 15px;
+	padding-top: 3px;
+}
+
+.descrip-commenting .commentss .client-avatar {
+	background-color: #f2987e;
+	border-radius: 15px;
+	color: white;
+	display: inline-block;
+	float: left;
+	font-size: 20px;
+	height: 30px;
+	line-height: 32px;
+	margin: 0 15px;
+	text-align: center;
+	text-transform: uppercase;
+	width: 30px;
+}
+
+@media (max-width: 767px) {
+	.descrip-commenting {
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+
+	.descrip-commenting .commentss p {
+		font-size: 14px;
+	}
+
+	.descrip-commenting .descrip {
+		font-size: 14px;
+		line-height: 22px;
+		margin-bottom: 15px;
+		margin-top: 15px;
+	}
+
+	.descrip-commenting .less,
+	.descrip-commenting .more {
+		font-size: 12px;
+	}
+}

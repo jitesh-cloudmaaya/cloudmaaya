@@ -1,0 +1,111 @@
+footer {
+	background-color: #f0f0f0;
+}
+
+footer .top {
+	background-color: #f0f0f0;
+	font-size: 15px;
+	font-weight: 500;
+	margin: 0 auto;
+	max-width: 1500px;
+}
+
+footer .pages {
+	padding: 25px 0 15px 45px;
+	text-align: left;
+}
+
+footer .top .pages a {
+	display: inline-block;
+	font-size: 16px;
+	font-weight: 500;
+	margin-top: 10px;
+	margin-bottom: 20px;
+	text-decoration: none;
+}
+
+footer .top .social {
+	display: inline-block;
+	float: right;
+	list-style: none;
+	margin: 49px 18px 0 0;
+	padding: 0;
+}
+
+footer .top .social li {
+	float: left;
+	margin: 10px;
+}
+
+footer .top .social li img {
+	height: 25px;
+}
+
+footer .legal {
+	background-color: #294366;
+	color: white;
+	font-size: 12px;
+	padding: 10px 30px 0 30px;
+	text-align: left;
+}
+
+footer .legal .inner {
+	margin: 0 auto;
+	max-width: 1500px;
+}
+
+footer .legal a {
+	color: white;
+}
+
+footer .legal .terms {
+	text-align: right;
+}
+
+@media (max-width: 767px) {
+	footer .legal div {
+		padding-left: 0;
+	}
+
+	footer .legal p {
+		margin-bottom: 0;
+	}
+
+	footer .legal .terms {
+		padding-bottom: 10px;
+		text-align: left;
+	}
+
+	footer .top .social {
+		float: none;
+		margin: 0;
+	}
+
+	footer .pages {
+		padding: 0 30px 10px 30px;
+	}
+
+	footer .top .pages .right a {
+		margin-left: 10px;
+	}
+
+	footer .top .pages a {
+		font-size: 13px;
+		margin: 20px 0 0 28px;
+	}
+
+	.social-wrapper {
+		text-align: center;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+	footer .top .social {
+		float: none;
+		margin: 0;
+	}
+
+	.social-wrapper {
+		text-align: center;
+	}
+}

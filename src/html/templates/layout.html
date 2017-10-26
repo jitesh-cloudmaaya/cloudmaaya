@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" class="bh-id-viewport">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+	<meta name="google-site-verification" content="zrtahHs1zwwwON8iLXgqCK3gOIkMZ3Hgt77KLhq-DLE" />
+
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ meta_desc }}">
+    
+	<script src="https://use.typekit.net/kka1pnq.js" async></script>
+	<script>try{Typekit.load({ async: true });}catch(e){}</script>
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+
+	{% if css %}
+	    <link href="/css/{{ css }}.min.css?0" rel="stylesheet">
+	{% else %}
+	    <link href="/css/index.min.css?0" rel="stylesheet">
+	{% endif %}
+    
+    <link rel="icon" href="/img/favicon.png">
+    
+    {% include "partials/facebook_open_graph.html" %}
+    
+    {% include "partials/facebook_pixel.html" %}
+    
+	{% include "partials/google_analytics.html" %}
+	
+	<script src="/js/bugsnag-3.min.js" data-apikey="22aa1a1bf3b405e54c0f91dc72f77c0c" data-releasestage="{{ bugSnagEnvironment }}"></script>
+</head>
+
+{% if body_class %}
+<body class="{{ body_class }}">
+{% else %}
+<body>
+{% endif %}
+	
+	<div class="content-container">
+		
+		{% if page == 'cart' or page == 'checkout' or page == 'looks' or page == 'product' or page == 'hearts' %}
+			{% include "partials/header_looks.html" %}
+        {% elif page == 'repeat' or page == 'goals' %}
+            {% include "partials/header_repeat.html" %}
+		{% else %}
+			{% include "partials/header.html" %}
+		{% endif %}
+		
+		<div class="content">
+			{% block content %}{% endblock %}
+		</div>
+		
+		{% if page != 'payment' and page != 'payment-done' and page != 'quiz' and page != 'schedule' and page != 'thanks' and page != 'thanks-complete' %}
+			{% include "partials/footer.html" %}
+		{% endif %}
+
+	</div>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+	{% if page == 'product' %}
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>    
+	{% endif %}
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	{% if page == 'payment' %}
+		<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+	{% endif %}
+
+	<script type="text/javascript" src="/js/{{ page }}.min.js?0"></script>
+
+</body>
+</html>

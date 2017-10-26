@@ -1,0 +1,474 @@
+.image-list {
+	list-style: none;
+	margin: 0 auto;
+	padding-left: 0;
+	position: relative;
+	max-width: 1400px;
+}
+
+.image-list li {
+	cursor: pointer;
+	padding: 0;
+	position: relative;
+}
+
+.image-list li figcaption {
+	font-size: 25px;
+	font-weight: 300;
+	margin-top: 5px;
+}
+
+.image-list li img {
+	border: 1px solid #959595;
+	margin: 2px auto 0 auto;
+	z-index: 100;
+}
+
+.image-list li img.mark {
+	background-color: transparent;
+	border: none;
+	display: none;
+	position: absolute;
+	right: -15px;
+	top: -15px;
+	width: 45px;
+}
+
+.image-list li.selected img {
+	border: 5px solid #f2987e;
+	margin-top: 0;
+}
+
+.image-list li.selected img.mark {
+	border: none;
+	display: block;
+	height: 40px;
+	width: 50px;
+}
+
+.image-list li.selected span {
+	display: block;
+	left: 30%;
+	position: absolute;
+	top: 35%;
+	z-index: 200;
+}
+
+.image-list li:hover img {
+	border: 5px solid #f2987e;
+}
+
+
+/* Celebrities */
+.celebrities .image-list.tall li {
+	height: 550px;
+}
+
+
+/* Logos */
+.image-list.logos {
+	margin-top: 25px;
+}
+
+.image-list.logos li img {
+	height: 130px;
+	width: 310px;
+}
+
+.image-list.logos li {
+	height: 190px;
+}
+
+.image-list.logos li.selected img.mark {
+	right: 0;
+}
+
+
+/* Tall */
+.image-list.tall li {
+	height: 438px;
+	margin: 25px 25px 65px 25px;
+	width: 300px;
+}
+
+.image-list.tall.no-label li {
+	height: 408px;
+}
+
+.image-list.tall li:nth-child(even) img.mark {
+	right: -25px;
+	top: -15px;
+}
+
+
+/* Dresses */
+.dresses .image-list.tall li:nth-child(even) img.mark,
+.dresses .image-list.tall li:nth-child(odd) img.mark {
+	right: -25px;
+	top: -20px;
+}
+
+
+/* Outfits */
+.outfits .image-list.tall.no-label li {
+	height: 520px;
+}
+
+
+/* Shoes */
+.shoes .image-list {
+	margin-left: 17px;
+}
+
+.shoes .image-list li img {
+	/*
+	height: 350px;
+	width: 300px;
+*/
+	height: 322px;
+	width: 282px;
+}
+
+.shoes .image-list li .left-col,
+.shoes .image-list li .right-col {
+	margin: 0 auto;
+	width: 300px;
+}
+
+.shoes .image-list li {
+	height: 400px;
+}
+
+.shoes .image-list li:nth-child(even) img.mark,
+.shoes .image-list li:nth-child(odd) img.mark {
+	right: 6px;
+}
+
+.shoes .image-list li figcaption {
+	margin-left: 10px;
+}
+
+
+/* Tops */
+.tops .image-list li {
+	height: 550px;
+	margin: 25px;
+	width: 300px;
+}
+
+.tops .image-list li img {
+	height: 550px;
+	width: 300px;
+}
+
+
+/* Page Specific Groupings */
+.dresses .image-list.tall li,
+.jeans .image-list.tall li {
+	height: 550px;
+}
+
+.shoes.image-list li img {
+	height: 438px;
+	width: 300px;
+}
+
+.celebrities .image-list.tall li img,
+.dresses .image-list.tall li img,
+.jeans .image-list.tall li img,
+.outfits .image-list.tall li img {
+	height: 550px;
+}
+
+/* .shoes .image-list li img.mark, */
+/* .tops .image-list li img.mark, */
+.image-list li img.mark,
+.image-list li.selected img.mark {
+	/*
+.image-list.tall li img.mark,
+.image-list.tall li.selected img.mark {
+*/
+	height: auto;
+	width: 64px;
+}
+
+.shoes .image-list li:hover img.mark,
+.tops .image-list li:hover img.mark,
+.image-list.tall li:hover img.mark {
+	border: none;
+}
+
+.shoes .image-list li.selected,
+.tops .image-list li.selected,
+.image-list.tall li.selected {
+	top: 2px;
+}
+
+.tops .image-list li:nth-child(odd) .left-col,
+.image-list.tall li:nth-child(odd) .left-col {
+	left: 0;
+	position: absolute;
+}
+
+.tops .image-list li:nth-child(odd) img.mark,
+.image-list.tall li:nth-child(odd) img.mark {
+	right: -25px;
+	top: -15px;
+}
+
+.tops .image-list li:nth-child(even) .right-col,
+.image-list.tall li:nth-child(even) .right-col {
+	position: absolute;
+	right: 0;
+}
+
+.jeans .image-list li:nth-child(odd) img.mark,
+.jeans .image-list li:nth-child(even) img.mark,
+.tops .image-list li:nth-child(odd) img.mark,
+.tops .image-list li:nth-child(even) img.mark {
+	right: -25px;
+}
+
+
+@media (max-width: 767px) {
+	.image-list {
+		width: auto;
+	}
+
+	.image-list li:hover img,
+	.image-list li img {
+		border-width: 2px;
+		border: 2px solid #959595;
+	}
+
+	.image-list li.selected:hover img {
+		border: 2px solid #f2987e;
+	}
+
+	/*
+	.brands .image-list li.selected:hover img,
+	.shops .image-list li.selected:hover img {
+		margin-top: 2px;
+	}
+*/
+
+	.image-list li.selected:hover img.mark {
+		border: none;
+	}
+
+	.image-list li.selected img {
+		border-width: 2px;
+	}
+
+	.image-list li img.mark,
+	.image-list li.selected img.mark {
+		width: 50px;
+	}
+
+	.image-list li:hover img {
+		/* 		border: 2px solid #f2987e; */
+		/* 		border: 2px solid #959595; */
+	}
+
+	.image-list li figcaption {
+		font-size: 16px;
+		margin-top: 0;
+	}
+
+
+	/* Logos */
+	.image-list.logos {
+		margin-top: 0;
+	}
+
+	.image-list.logos li:nth-child(odd) img {
+		left: 0;
+		position: absolute;
+	}
+
+	.image-list.logos li:nth-child(even) img {
+		position: absolute;
+		right: 0;
+	}
+
+	.image-list.logos li:nth-child(odd) img.mark {
+		right: -122px;
+		top: -15px;
+	}
+
+	.image-list.logos li:nth-child(even) img.mark {
+		right: -15px;
+		top: -15px;
+	}
+
+	.image-list.logos li {
+		height: 80px;
+	}
+
+	.image-list.logos li img {
+		height: 45px;
+		width: 150px;
+	}
+
+	.brands .image-list.logos li img,
+	.shop .image-list.logos li img {
+		margin-top: 2px;
+	}
+
+	.image-list.logos li img.mark {
+		height: auto;
+		width: 45px;
+	}
+
+
+	/* Tall */
+	.image-list.tall li {
+		height: 325px;
+		margin: 0;
+		width: 50%;
+	}
+
+	.image-list.tall li img {
+		/* 		border: 1px solid #959595; */
+		height: 270px;
+		width: 150px;
+	}
+
+
+	/* Celebrities */
+	.celebrities .image-list.tall li {
+		height: 325px;
+	}
+
+	.celebrities .image-list.tall li img {
+		height: 270px;
+	}
+
+	.celebrities .image-list.tall li img.mark {
+		height: auto;
+	}
+
+
+	/* Dresses */
+	.dresses .image-list.tall li {
+		height: 325px;
+	}
+
+	.dresses .image-list.tall li img {
+		height: 275px;
+	}
+
+	.dresses .image-list.tall li:nth-child(odd) img.mark,
+	.dresses .image-list.tall li:nth-child(even) img.mark {
+		right: -18px;
+		top: -15px;
+	}
+
+
+	/* Jeans */
+	.jeans .image-list.tall li {
+		height: 315px;
+	}
+
+	.jeans .image-list.tall li img {
+		height: 275px;
+	}
+
+	.jeans .image-list li:nth-child(odd) img.mark,
+	.jeans .image-list li:nth-child(even) img.mark {
+		right: -18px;
+	}
+
+
+	/* Outfits */
+	.outfits .image-list.tall li img {
+		height: 270px;
+	}
+
+	.outfits .image-list.tall li img {
+		height: 275px;
+	}
+
+	.outfits .image-list.tall.no-label li {
+		height: 300px;
+	}
+
+
+	/* Shoes */
+	.shoes .image-list li {
+		height: 220px;
+		margin: 0;
+		width: 50%;
+	}
+
+	.shoes .image-list li img {
+		height: 180px;
+		width: 150px;
+	}
+
+	.shoes .image-list li .left-col {
+		left: 0;
+		position: absolute;
+		width: auto;
+	}
+
+	.shoes .image-list li .right-col {
+		right: 0;
+		position: absolute;
+		width: auto;
+	}
+
+	.shoes .image-list li:nth-child(even) img.mark,
+	.shoes .image-list li:nth-child(odd) img.mark {
+		right: -20px;
+	}
+
+	.shoes .image-list li figcaption {
+		margin-left: 0;
+	}
+
+	.shoes .image-list {
+		margin-left: 5px;
+	}
+
+
+	/* Tops */
+	.tops .image-list li {
+		height: 220px;
+		margin: 0;
+		width: 50%;
+	}
+
+	.tops .image-list li img {
+		height: 195px;
+		width: 150px;
+	}
+
+	.tops .image-list li:nth-child(odd) img.mark,
+	.tops .image-list li:nth-child(even) img.mark {
+		right: -20px;
+	}
+
+
+	/* Page Specific Groupings */
+	/* 	.shoes .image-list li img.mark, */
+	/* 	.tops .image-list li img.mark, */
+	.image-list.tall li img.mark,
+	.image-list.tall li.selected img.mark {
+		right: -19px;
+		width: 45px;
+	}
+
+	.shoes .image-list.no-label li,
+	.tops .image-list.no-label li,
+	.image-list.tall.no-label li {
+		height: 285px;
+	}
+
+	.dresses .image-list.tall li img.mark,
+	.jeans .image-list.tall li img.mark,
+	.outfits .image-list.tall li img.mark {
+		height: auto;
+		width: 45px;
+	}
+}

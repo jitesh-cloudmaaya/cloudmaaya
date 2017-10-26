@@ -1,0 +1,54 @@
+<header class="container-fluid navbar-fixed-top">
+
+	{% if page == 'index' or page == 'looks' or page == 'payment' %}
+		{% include "partials/banner.html" %}
+	{% endif %}
+
+	<div class="row inner">
+		<div class="col-md-4 col-xs-5 left">
+			<a href="/"><img src="/img/home/logo-black.png" class="img-responsive" /></a>
+		</div>
+		<div class="col-md-8 col-xs-7 right">
+			
+			<span class="hidden-xs">
+				
+				<button class="btn btn-primary bh-id-get-started" data-value="header">
+					<span>Get Started</span>
+				</button>
+
+				<ul class="menu">
+					<li><a href="/how-it-works">How It Works</a></li>
+					<li><a href="/faq">FAQ</a></li>
+				</ul>
+				
+			</span>
+			
+			<span class="visible-xs-block">
+				
+				<button class="bh-id-hamburger-button hamburger-button">
+					<span></span>
+					<span></span>
+					<span></span>
+				</button>	
+				
+				<button class="btn btn-primary bh-id-get-started" data-value="header">Get Started</button>
+				
+			</span>
+			
+		</div>
+	</div>
+
+	<div class="row visible-xs-block">
+		<div class="col-md-12">
+
+			<ul class="bh-id-hamburger-menu hamburger-menu">
+				<li><a href="/how-it-works">How It Works</a></li>
+				<li><a href="/faq">FAQ</a></li>
+				<li><a href="/about">About Us</a></li>
+				<li><a href="/brands">Our Brands</a></li>
+			</ul>							
+			
+		</div>
+	</div>	
+
+</header>

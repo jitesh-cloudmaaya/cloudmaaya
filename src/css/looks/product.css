@@ -1,0 +1,349 @@
+body.checkout,
+body.cart,
+body.hearts,
+body.product {
+	padding-top: 125px;
+}
+
+.product .alt-images {
+	display: inline-block;
+	margin-top: 20px;
+	padding-left: 0;
+}
+
+.product .alt-images li {
+	float: left;
+	margin: 5px;
+}
+
+.product .alt-images .dot {
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	height: 20px;
+	width: 20px;
+}
+
+.product .alt-images .image-view.alt-image {
+	margin-bottom: 0;
+}
+
+.product .alt-images li.active .dot {
+	background-color: #f2987e;
+	border: 1px solid #f2987e;
+}
+
+.product .external-url {
+	color: red;
+	display: inline-block;
+	font-weight: bold;
+	margin-bottom: 10px;
+	width: 100%;
+}
+
+.product .add-to-bag {
+	font-size: 22px;
+	height: 60px;
+	margin-bottom: 40px;
+}
+
+.product .added-to-bag {
+	background-color: white;
+	border: 1px solid #e9e9e9;
+	margin: 0 15px;
+	padding: 15px;
+	position: absolute;
+	right: 0;
+	width: 95%;
+	z-index: 100;
+}
+
+.product .added-to-bag p {
+	font-size: 22px;
+}
+
+.product .added-to-bag .btn {
+	font-size: 22px;
+	font-weight: 500;
+	text-transform: uppercase;
+}
+
+.product .added-to-bag .btn.checkout-button {
+	background-color: white;
+	border: 1px solid #e9e9e9;
+}
+
+.product .added-to-bag .btn.continue-shopping {
+	background-color: #f2987e;
+	color: white;
+	margin: 20px 0 45px 0;
+}
+
+.product .arrow {
+	display: none;
+	padding: 100px 0;
+	position: absolute;
+	top: 35%;
+}
+
+.product .arrow.left {
+	left: 15px;
+}
+
+.product .arrow.right {
+	right: 30px;
+}
+
+.product .arrow span {
+	color: #f2987e;
+	font-size: 30px;
+}
+
+.product .brand {
+	font-size: 22px;
+	font-weight: 500;
+	text-transform: uppercase;
+}
+
+.product .image-container:hover .arrow {
+	display: table;
+}
+
+.product .name {
+	font-size: 22px;
+	font-weight: 300;
+	line-height: 30px;
+}
+
+.product .content .price {
+	margin: 35px 0;
+}
+
+.product .content .regular-price {
+	font-size: 22px;
+	font-weight: 300;
+	margin-left: 0;
+}
+
+.product .sale-price {
+	color: #f2987e;
+	font-size: 22px;
+	font-weight: 300;
+}
+
+.product .sold-out {
+	color: red;
+	font-size: 22px;
+	font-weight: 700;
+	margin-left: 5px;
+}
+
+.product .dropdown {
+	width: 100%;
+}
+
+.product .dropdown .dropdown-toggle {
+	height: 60px;
+	margin-bottom: 35px;
+	width: 100%;
+}
+
+.product .dropdown .glyphicon-chevron-down {
+	color: #999;
+	float: right;
+	top: 10px;
+}
+
+.product .dropdown .value {
+	float: left;
+	font-size: 22px;
+	font-weight: 500;
+}
+
+.product .dropdown .value.selected {
+	color: #aaa;
+}
+
+.product .dropdown .dropdown-menu {
+	width: 100%;
+}
+
+.product .dropdown .dropdown-menu li {
+	font-size: 22px;
+	font-weight: 500;
+	height: 60px;
+	padding: 6px 12px 6px 25px;
+}
+
+.product .dropdown .dropdown-menu li a {
+	font-size: 22px;
+	font-weight: 500;
+	padding-left: 0;
+}
+
+.product .dropdown .dropdown-menu > li > a:focus,
+.product .dropdown .dropdown-menu > li > a:hover {
+	background-color: white;
+}
+
+.product .copy-accordion span {
+	color: black;
+	font-size: 22px;
+	font-weight: 500;
+	line-height: 26px;
+	padding-top: 0;
+}
+
+.product .copy-accordion .symbol {
+	bottom: 2px;
+	float: left;
+	opacity: 1;
+	position: relative;
+}
+
+.product .copy-accordion .symbol.open {
+	font-size: 20px;
+	margin-left: 1px;
+}
+
+.product .copy-accordion .content-toggle {
+	border-top: 1px solid #e9e9e9;
+	padding-bottom: 20px;
+	text-align: center;
+}
+
+.product .copy-accordion .content {
+	font-size: 22px;
+	font-weight: 100;
+}
+
+.product .copy-accordion .content .return-policy {
+	color: #f2987e;
+	cursor: pointer;
+	font-weight: 300;
+}
+
+.product .copy-accordion .content ul {
+	list-style-type: none;
+	padding-left: 0;
+}
+
+.product .copy-accordion .content ul li:before {
+	content: '-';
+	margin-right: 10px;
+}
+
+.product .right-col {
+	margin-bottom: 90px;
+}
+
+.product .ui-page:focus {
+	outline: none;
+}
+
+.product .btn-primary.disabled,
+.product .btn-primary.disabled.active,
+.product .btn-primary.disabled:active,
+.product .btn-primary[disabled],
+.product .btn-primary[disabled].active,
+.product .btn-primary[disabled]:active,
+.product .btn-primary.active,
+.product .btn-primary:active {
+	background-color: #ccc;
+}
+
+@media (max-width: 767px) {
+	body.checkout,
+	body.cart,
+	body.hearts,
+	body.product {
+		padding-top: 50px;
+	}
+
+	.product .add-to-bag {
+		font-size: 19px;
+		height: 40px;
+		margin-bottom: 25px;
+		padding-top: 8px;
+	}
+
+	.product .added-to-bag {
+		margin: 0;
+		top: -68px;
+		width: 100%;
+	}
+
+	.product .added-to-bag p {
+		font-size: 19px;
+	}
+
+	.product .added-to-bag .btn {
+		font-size: 19px;
+	}
+
+	.product .added-to-bag .btn.continue-shopping {
+		margin: 15px 0 30px 0;
+	}
+
+	.product .arrow {
+		display: none;
+	}
+
+	.product .brand {
+		font-size: 19px;
+		margin-top: 0;
+	}
+
+	.product .name {
+		font-size: 19px;
+		margin-top: 0;
+	}
+
+	.product .content .price {
+		margin: 0 0 25px 0;
+	}
+
+	.product .content .regular-price {
+		font-size: 19px;
+	}
+
+	.product .sale-price {
+		font-size: 19px;
+	}
+
+	.product .dropdown .dropdown-toggle {
+		height: 40px;
+		margin-bottom: 25px;
+	}
+
+	.product .dropdown .value {
+		font-size: 19px;
+	}
+
+	.product .dropdown .dropdown-menu li {
+		font-size: 19px;
+		height: 40px;
+	}
+
+	.product .dropdown .dropdown-menu li a {
+		font-size: 19px;
+	}
+
+	.product .copy-accordion span {
+		font-size: 16px;
+		line-height: 16px;
+	}
+
+	.product .copy-accordion .content {
+		font-size: 14px;
+	}
+
+	.product .right-col {
+		margin-bottom: 50px;
+	}
+
+	.product .alt-images .dot {
+		height: 15px;
+		width: 15px;
+	}
+}

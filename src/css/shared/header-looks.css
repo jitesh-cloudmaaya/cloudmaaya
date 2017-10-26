@@ -1,0 +1,66 @@
+/*header.looks {*/
+/*border-bottom: 5px solid #f2987e;*/
+/*}*/
+
+/*header.looks .back {*/
+/*padding-top: 22px;*/
+/*padding-left: 38px;*/
+/*}*/
+
+/*header.looks .back a {*/
+/*display: none;*/
+/*}*/
+
+/*header.looks .back img {*/
+/*margin-top: 0;*/
+/*}*/
+
+/*header.looks .cart {*/
+/*cursor: pointer;*/
+/*float: right;*/
+/*text-align: center;*/
+/*top: -5px;*/
+/*}*/
+
+/*header.looks .cart p {*/
+/*margin: 0;*/
+/*}*/
+
+/*header.looks .cart img {*/
+/*margin: 0;*/
+/*width: 30px;*/
+/*}*/
+
+/*header.looks .cart-count {*/
+/*left: 1px;*/
+/*position: relative;*/
+/*top: 5px;*/
+/*}*/
+
+/*header.looks .logo {*/
+/*margin-top: 5px;*/
+/*}*/
+
+/*.product header.looks .back a {*/
+/*display: block;*/
+/*}*/
+
+/*@media (max-width: 767px) {*/
+/*header.looks {*/
+/*padding-bottom: 0;*/
+/*}*/
+
+/*header.looks .cart {*/
+/*padding-top: 0;*/
+/*text-align: inherit;*/
+/*}*/
+
+/*header.looks .cart img {*/
+/*position: relative;*/
+/*right: 10px;*/
+/*}*/
+
+/*header.looks .logo {*/
+/*margin-top: 10px;*/
+/*}*/
+/*}*/

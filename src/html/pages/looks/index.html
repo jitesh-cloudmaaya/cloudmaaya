@@ -1,0 +1,63 @@
+{% set body_class = 'looks' %}
+{% set meta_desc = 'Your on-demand personal shopper' %}
+{% set page = 'looks' %}
+{% set title = 'Looks | Allume | Your on-demand personal shopper' %}
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+<section class="container-fluid intro bh-id-intro modal hide">
+    <header class="row modal-header">
+        <div class="col-md-12 button">
+            <button type="button" class="bh-id-close close">×</button>
+        </div>
+    </header>
+    <div class="row modal-content">
+
+        <div class="row">
+            <div class="col-md-12 greeting">
+
+                <h1>Hi <span class="bh-id-client-name"></span>,</h1>
+
+                <p>Your personal shopper curated this Lookbook just for you! Here's how it works:</p>
+
+            </div>
+        </div>
+        <div class="row meat">
+            <div class="col-md-12">
+
+                <h3>Review</h3>
+                <p>Browse what your personal shopper chose for you</p>
+
+                <h3>Heart</h3>
+                <p><img src="/img/looks/heart_blush.png" class="heart" /> the items you love to let your shopper know</p>
+
+                <h3>Purchase</h3>
+                <p>Buy what you want right from here, super easy!</p>
+
+                <p>Your Lookbook is valid for 7 days from the time it was sent.</p>
+
+            </div>
+        </div>
+        <div class="row closing">
+            <div class="col-md-12">
+
+                <p>We can't guarantee inventory or price. Popular items sell out fast. If you love it, don't wait to grab it.</p>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="container-fluid looks bh-id-looks hide">
+	<div class="bh-id-look-list looks-list">
+		{% include "partials/looks/look.html" %}
+	</div>
+	{% include "partials/comment_modal.html" %}
+	{% include "partials/error_modal.html" %}
+	{% include "partials/looks/heart_modal.html" %}
+</section>
+
+{% endblock %}

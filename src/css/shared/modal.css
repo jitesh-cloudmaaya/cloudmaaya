@@ -1,0 +1,307 @@
+body.modal-showing {
+	overflow: hidden;
+}
+
+.modal {
+	background: #fff;
+	background-clip: padding-box;
+	border: 1px solid #acacac;
+	border-radius: 6px;
+	box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+	color: #555;
+	display: block;
+	margin: -250px 0 0 -280px;
+	overflow: auto;
+	position: fixed;
+	text-align: center;
+	z-index: 1050;
+	left: 50%;
+	top: 50%;
+	max-height: 345px;
+	width: 560px;
+}
+
+.image-zoom-modal {
+	line-height: 500px;
+	margin: 0;
+	max-height: 650px;
+}
+
+.image-zoom-modal .centering {
+	align-items: center;
+	display: flex;
+	justify-content: center;
+}
+
+.modal .char-counter {
+	font-size: 12px;
+	text-align: left;
+}
+
+.modal-header {
+	border: none;
+	padding: 10px;
+}
+
+.modal-header .close {
+	line-height: 16px;
+	margin: 0 3px 0 0;
+	opacity: 1;
+}
+
+.modal-content {
+	border: none;
+	box-shadow: none;
+}
+
+.modal-footer {
+	background-color: white;
+	border: none;
+	margin-bottom: 0;
+	min-height: 80px;
+	padding: 10px 15px 15px 15px;
+	text-align: center;
+	*zoom: 1;
+}
+
+.modal-footer .btn-primary {
+	padding: 6px 40px;
+}
+
+.modal .btn .loader {
+	bottom: 15px;
+	right: 15px;
+	top: inherit;
+}
+
+.modal-shade {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1040;
+	background: #fff;
+	opacity: 0.8;
+	filter: alpha(opacity=80);
+}
+
+
+/* Invoice View Product Modal */
+
+.invoice-view-product-modal {
+	max-height: 540px;
+	top: 40%;
+}
+
+.invoice-view-product-modal h3 {
+	font-size: 16px;
+}
+
+.invoice-view-product-modal .product-image {
+	cursor: default;
+	height: 200px;
+	margin: 30px auto 40px auto;
+}
+
+.invoice-view-product-modal .product .prices {
+	margin-bottom: 0;
+}
+
+.invoice-view-product-modal .product .alt-images {
+	display: inline-block;
+	float: none;
+	max-height: 80px;
+}
+
+.invoice-view-product-modal .product .alt-images li {
+	clear: none;
+	display: table;
+}
+
+.invoice-view-product-modal .colors {
+	margin-left: 10px;
+}
+
+
+/* Policy Modal */
+
+.policy-modal {
+	max-height: 180px;
+}
+
+.policy-modal .policy {
+	margin: 0 20px 10px 20px;
+	text-align: left;
+}
+
+
+/* Referral Code Modal */
+
+.referral-code-modal {
+	max-height: 260px;
+	width: 450px;
+}
+
+.referral-code-modal h3 {
+	color: #f2987e;
+	font-size: 25px;
+	margin: 0;
+}
+
+.referral-code-modal input {
+	font-size: 25px;
+	margin: 0 auto;
+	width: 95%;
+}
+
+
+/* Error Modal */
+.modal.error-modal {
+	border-color: #959595;
+	left: 42%;
+	/* 	height: 260px; */
+	max-height: max-content;
+	width: 700px;
+}
+
+.modal.error-modal .close {
+	opacity: 1;
+	outline-color: white;
+	position: relative;
+	right: -16px;
+	top: auto;
+}
+
+.modal.error-modal .close img {
+	outline-color: white;
+	width: 65px;
+}
+
+.modal.error-modal .modal-header {
+	padding-bottom: 0;
+}
+
+.modal.error-modal p {
+	color: black;
+	font-size: 25px;
+	font-weight: 300;
+	margin-top: 20px;
+	text-align: center;
+}
+
+.modal.error-modal.auto-center {
+	margin: 0;
+}
+
+/* incomplete-quiz-in-other-device-modal */
+.incomplete-quiz-in-other-device-modal {
+	max-height: 250px;
+	padding: 20px;
+}
+
+.incomplete-quiz-in-other-device-modal p {
+	font-size: 25px;
+	text-align: center;
+}
+
+.quiz .incomplete-quiz-in-other-device-modal .btn {
+	display: block;
+	font-size: 25px;
+	margin: 0 auto;
+	width: auto;
+}
+
+.quiz .incomplete-quiz-in-other-device-modal .btn span {
+	font-weight: 300;
+}
+
+
+@media (max-width: 767px) {
+	.modal {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		left: 20px;
+		margin: 0;
+		width: auto;
+	}
+
+	.modal.fade.in {
+		top: auto;
+	}
+
+
+	/* Invoice View Product Modal */
+
+	.invoice-view-product-modal .product-image {
+		height: 150px;
+	}
+
+	.invoice-view-product-modal .product .images {
+		overflow: auto;
+	}
+
+	.invoice-view-product-modal .product .alt-images {
+		margin-bottom: 0;
+		max-height: 75px;
+		white-space: nowrap;
+	}
+
+	.invoice-view-product-modal .product .alt-images li {
+		display: table-cell;
+		float: none;
+		padding: 5px;
+		vertical-align: middle;
+	}
+
+	.invoice-view-product-modal	.product .images img {
+		max-height: 38px;
+	}
+
+
+	/* (Quiz) Error Modal */
+
+	.modal.error-modal {
+		height: 220px;
+		left: 40px;
+		top: 25%;
+		width: 305px;
+	}
+
+	.modal.error-modal .close {
+		opacity: 1;
+		position: relative;
+		right: -28px;
+		top: -28px;
+	}
+
+	.modal.error-modal .close img {
+		width: auto;
+	}
+
+	.modal.error-modal p {
+		font-size: 16.67px;
+		margin-top: 0;
+	}
+
+
+	/* Referral Code Modal */
+
+	.referral-code-modal {
+		max-height: 250px;
+		top: 100px;
+	}
+
+
+	/* incomplete-quiz-in-other-device-modal */
+	.incomplete-quiz-in-other-device-modal {
+		top: 20%;
+	}
+
+	.quiz .incomplete-quiz-in-other-device-modal .btn {
+		font-size: 16px;
+		height: auto;
+		width: 100%;
+	}
+}

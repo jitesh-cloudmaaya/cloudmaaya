@@ -1,0 +1,150 @@
+.looks .btn-primary.disabled,
+.looks .btn-primary.disabled.active,
+.looks .btn-primary.disabled.focus,
+.looks .btn-primary.disabled:active,
+.looks .btn-primary.disabled:focus,
+.looks .btn-primary.disabled:hover,
+.looks .btn-primary[disabled],
+.looks .btn-primary[disabled].active,
+.looks .btn-primary[disabled].focus,
+.looks .btn-primary[disabled]:active,
+.looks .btn-primary[disabled]:focus,
+.looks .btn-primary[disabled]:hover,
+.looks .btn-primary.active,
+.looks .btn-primary.focus,
+.looks .btn-primary:active,
+.looks .btn-primary:focus,
+.looks .btn-primary:hover {
+	background-color: #ccc;
+}
+
+.checkout footer .top,
+.cart footer .top,
+.hearts footer .top,
+.product footer .top,
+.repeat footer .top,
+.goals footer .top,
+.looks footer .top {
+	display: none;
+}
+
+.looks section.looks {
+	margin-top: 65px;
+}
+
+.looks section.looks .header {
+	background-color: #f2987e;
+	font-family: 'mrs-eaves-xl-serif', serif;
+	height: 45px;
+	text-align: center;
+}
+
+.looks section.looks .header p {
+	color: white;
+	font-size: 24px;
+	margin: 0;
+	padding: 5px 0;
+}
+
+.looks section.looks .arrow {
+	margin: 0 auto;
+}
+
+.looks section.looks .look-name {
+	display: inline-block;
+	float: left;
+	font-family: 'museo sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 32px;
+	font-weight: 300;
+	margin: 0 50px 0 0;
+	text-transform: uppercase;
+	max-width: 80%;
+}
+
+.looks section.looks .styled-for {
+	clear: both;
+	font-size: 16px;
+}
+
+.looks section.looks .meta {
+	padding-top: 50px;
+}
+
+.looks section.looks .meta .social {
+	display: none;
+	margin-top: 25px;
+}
+
+.looks section.looks .name {
+	border-bottom: 1px solid #e9e9e9;
+	padding-bottom: 20px;
+}
+
+.looks section.looks .name .heart {
+	cursor: pointer;
+	display: inline-block;
+	float: left;
+	height: 40px;
+}
+
+.looks section.looks .social ul {
+	list-style: none;
+	padding-left: 0;
+}
+
+.looks section.looks .social ul li {
+	float: left;
+	margin-right: 50px;
+}
+
+.looks section.looks .social ul li img {
+	height: 30px;
+}
+
+@media (max-width: 767px) {
+	body.looks {
+		padding-top: 0;
+	}
+
+	.looks section.looks .header {
+		height: auto;
+	}
+
+	.looks section.looks .header p {
+		font-size: 12px;
+	}
+
+	.looks section.looks .look-name {
+		font-size: 22px;
+		margin: 0 25px 0 0;
+	}
+
+	.looks section.looks .styled-for {
+		font-size: 12px;
+	}
+
+	.looks section.looks .meta {
+		padding-top: 15px;
+	}
+
+	.looks section.looks .name {
+		padding-top: 20px;
+	}
+
+	.looks section.looks .name .heart {
+		float: right;
+		height: 20px;
+	}
+
+	.looks section.looks .social ul {
+		margin-bottom: 20px;
+	}
+
+	.looks section.looks .social ul li {
+		margin-right: 30px;
+	}
+
+	.looks section.looks .social ul li img {
+		height: 25px;
+	}
+}

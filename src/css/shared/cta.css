@@ -1,0 +1,20 @@
+@media (max-width: 767px) {
+	.cta {
+		bottom: 0;
+		padding: 0;
+		position: fixed;
+		width: 100%;
+		z-index: 100;
+	}
+
+	.cta button {
+		border-radius: 0;
+		display: table-cell;
+		text-align: center;
+	}
+
+	.cta .inner-button {
+		display: inline-table;
+		vertical-align: middle;
+	}
+}

@@ -1,0 +1,21 @@
+.hearts .back-button,
+.product .back-button {
+	background-color: white;
+	border: none;
+	color: #aaa;
+	font-size: 14px;
+	font-weight: 500;
+	outline: none;
+	padding: 45px 0;
+}
+
+.hearts .back-button {
+	padding-bottom: 0;
+}
+
+@media (max-width: 767px) {
+	.hearts .back-button,
+	.product .back-button {
+		padding: 25px 0;
+	}
+}

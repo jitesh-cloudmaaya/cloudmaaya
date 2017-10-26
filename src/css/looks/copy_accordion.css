@@ -1,0 +1,32 @@
+.copy-accordion .content-toggle {
+	background-color: white;
+	border: none;
+	border-top: 1px solid #ccc;
+	border-radius: 0;
+	font-weight: bold;
+	padding: 20px 0 12px 0;
+	text-align: left;
+	text-transform: uppercase;
+}
+
+.copy-accordion .content-toggle:focus,
+.copy-accordion .content-toggle:active.focus,
+.copy-accordion .content-toggle:active:focus,
+.copy-accordion .content-toggle:focus {
+	outline: none;
+}
+
+.copy-accordion .content {
+	color: #333;
+	display: block;
+	margin: 0;
+	max-height: 0;
+	overflow: hidden;
+	padding: 0;
+	transition: max-height 0.5s ease-out;
+}
+
+.copy-accordion .content.open {
+	max-height: 500px;
+	transition: max-height 0.5s ease-in;
+}

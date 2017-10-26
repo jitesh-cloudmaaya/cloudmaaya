@@ -1,0 +1,305 @@
+a {
+	color: black;
+	cursor: pointer;
+}
+
+a:hover {
+	color: #f2987e;
+	text-decoration: none;
+}
+
+body,
+html {
+	overflow-x: hidden;
+}
+
+body {
+	background-color: white;
+	color: #3a3a3a;
+	font-family: 'museo sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 18px;
+	font-weight: 300;
+	padding-top: 93px;
+}
+
+.btn {
+	position: relative;
+}
+
+.btn.disabled {
+	background-color: #ccc;
+}
+
+.btn-primary {
+	background-color: #f2987e;
+	border: none;
+	color: white;
+	cursor: pointer;
+	font-family: 'museo sans', sans-serif;
+	font-size: 14px;
+	padding: 12px 30px;
+	text-transform: uppercase;
+}
+
+.btn-primary:active,
+.btn-primary:active:focus,
+.btn-primary:active:hover,
+.btn-primary:focus,
+.btn-primary:hover {
+	background-color: #f89377;
+	outline-color: #f89377;
+}
+
+.btn-secondary {
+	background-color: white;
+	border: 1px solid #f2987e;
+	color: #f2987e;
+	cursor: pointer;
+}
+
+.btn-secondary:active,
+.btn-secondary:active:focus,
+.btn-secondary:active:hover,
+.btn-secondary:focus,
+.btn-secondary:hover {
+	background-color: white;
+	color: #f2987e;
+	outline-color: #f2987e;
+}
+
+.btn.navy {
+	background-color: #1c3652;
+}
+
+.btn.navy.disabled {
+	background-color: #ccc;
+}
+
+.btn.peach,
+.btn.peach:focus {
+	background-color: #f2987e;
+}
+
+.btn.peach.disabled {
+	opacity: 1;
+}
+
+.btn-primary.black {
+	background-color: black;
+}
+
+.btn-primary.black:active,
+.btn-primary.black:active:focus,
+.btn-primary.black:active:hover,
+.btn-primary.black:focus,
+.btn-primary.black:hover {
+	background-color: #292929;
+	outline-color: #292929;
+}
+
+.btn.get-started {
+	background-color: #f2987e;
+	border-radius: 8px;
+	padding: 22px 56px;
+}
+
+.btn.get-started span {
+	font-size: 22px;
+}
+
+.char-counter.maxed-out {
+	color: #f00;
+}
+
+.content-container {
+	margin: 0 auto;
+	max-width: 1500px;
+}
+
+.desktop-break {
+	display: block;
+}
+
+h1 {
+	font-family: 'mrs-eaves-xl-serif', serif;
+	font-size: 42px;
+	font-weight: 500;
+}
+
+h2 {
+	font-size: 25px;
+	font-weight: 500;
+}
+
+h3 {
+	font-family: 'museo sans', sans-serif;
+	font-size: 18px;
+	font-weight: 500;
+	line-height: 24px;
+}
+
+.error {
+	color: red;
+	font-weight: bold;
+}
+
+.field-error {
+	box-shadow: inset 0 0 7px #de2a63;
+	border: 1px solid #f2739f;
+}
+
+.generic-error {
+	color: #f2739f;
+	display: inline-block;
+	font-weight: bold;
+	margin: 5px 20px 0 0;
+}
+
+.get-started {
+	background-color: white;
+	border: none;
+	outline-color: white;
+	padding: 0;
+}
+
+.intra {
+	display: block;
+	position: relative;
+	top: -180px;
+	visibility: hidden;
+}
+
+.line {
+	border-top: 1px solid #3a3a3a;
+	margin: 20px auto 20px auto;
+	width: 80px;
+}
+
+.message {
+	font-weight: bold;
+}
+
+.message.success {
+	color: green;
+}
+
+.message.error {
+	color: red;
+}
+
+.peach {
+	color: #f2987e;
+}
+
+.strong {
+	font-weight: bold;
+}
+
+.vertical-align {
+	align-items: center;
+	display: flex;
+}
+
+
+/*** Background Colors ***/
+
+.navy-bg {
+	background-color: #1c3652;
+}
+
+.white-bg {
+	background-color: white;
+	max-height: 365px;
+}
+
+
+/*** Button Loader ***/
+
+.upload-button .loader,
+.btn .loader {
+	display: none;
+	background-image: url(../img/shared/ajax-loader.gif);
+	position: absolute;
+	right: 20px;
+	top: 50%;
+	margin-top: -12px;
+	height: 24px;
+	width: 24px;
+}
+
+.upload-button.processing .loader,
+.btn.processing .loader {
+	display: block;
+}
+
+@media (max-width: 767px) {
+	body {
+		font-size: 14px;
+		padding-top: 60px;
+	}
+
+	body.payment {
+		padding-top: 55px;
+	}
+
+	.btn.get-started {
+		padding: 17px 55px;
+	}
+
+	.btn.get-started span {
+		font-size: 14px;
+	}
+
+	.content {
+		margin-top: 0;
+	}
+
+	.content.sticky {
+		margin-top: 65px;
+	}
+
+	.desktop-break {
+		display: inline;
+	}
+
+	input.form-control,
+	textarea.form-control {
+		font-size: 16px;
+	}
+
+	h1 {
+		font-size: 40px;
+	}
+
+	h2 {
+		font-size: 30px;
+	}
+
+	.intra {
+		top: -80px;
+	}
+
+	.line {
+		margin-top: 15px;
+		width: 112px;
+	}
+
+	.mobile-break {
+		display: block !important;
+	}
+
+	.mobile-spacer {
+		margin-bottom: 15px;
+	}
+
+	.vertical-align {
+		align-items: inherit;
+		display: inherit;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+	.mobile-spacer {
+		margin-bottom: 15px;
+	}
+}
