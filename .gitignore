@@ -1,3 +1,8 @@
 .DS_Store
 .idea/
 static.iml
+*.egg-info
+*.pot
+*.py[co]
+__pycache__
+catalogue_service/settings_local.py
