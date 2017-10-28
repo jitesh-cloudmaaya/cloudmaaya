@@ -6,8 +6,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': '127.0.0.1',
         'PORT': '3306',
-        'NAME': 'polls',
+        'NAME': 'catalogue_service',
         'USER': 'root',
-        'PASSWORD': 'qaz789',
+        'PASSWORD': '',
     }
  }
