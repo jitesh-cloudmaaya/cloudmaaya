@@ -5,7 +5,7 @@ from django.db import models
 
 # Create your models here.
 
-class Products(models.Model):
+class Product(models.Model):
     product_id = models.IntegerField(blank=True, null=True)
     merchant_id = models.IntegerField(blank=True, null=True)
     product_name = models.CharField(max_length=255, blank=True, null=True)
