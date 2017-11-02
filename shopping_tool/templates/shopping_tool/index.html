@@ -1,0 +1,41 @@
+
+{% load staticfiles %}<!DOCTYPE html>
+<html>
+<head>
+  <title>Allume - Shopping Tool</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+  <!--
+  <link href="{% static 'dashboard/css/selectize.css' %}" media="all" rel="stylesheet"/>
+  <link href="{% static 'dashboard/css/admin_style.css' %}" media="all" rel="stylesheet"/>
+-->
+</head>
+<body>
+
+   <h1>Welcome</h1>
+   <div id="products"></div>
+
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script> 
+
+
+ 
+<script>
+(function() {
+  var products_api = "/product_api/basic_search?text=jeans";
+  $.getJSON( products_api, {
+
+  })
+    .done(function( data ) {
+      $.each( data.items, function( i, item ) {
+        $( "<img>" ).attr( "src", item.product_name ).appendTo( "#products" );
+        if ( i === 3 ) {
+          return false;
+        }
+      });
+    });
+})();
+</script>
+
+</body>
+
+
+</html>

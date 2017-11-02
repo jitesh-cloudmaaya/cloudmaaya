@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'product_api'
+    'product_api',
+    'shopping_tool'
 ]
 
 MIDDLEWARE = [
@@ -74,7 +75,6 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
-        #'rest_framework_xml.renderers.XMLRenderer',
         'rest_framework.renderers.JSONRenderer',
     ),
 
