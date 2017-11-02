@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, FacetedSearch, TermsFacet, DateHistogramFacet
+import collections
 import json
 
 # Create your views here.
@@ -20,12 +21,11 @@ client = Elasticsearch()
 
 @api_view(['GET'])
 def basic_search(self):
-	text_query = self.query_params.get('text', None)
+	text_query = self.query_params.get('text', 'shirt')
 
-	s = Search(using=client, index="products") \
-	    .query("match", product_name=text_query)[0:50]   \
+	s = Search(using=client, index="logstash-*") \
+	    .query("match_phrase", product_name=text_query)[0:10]   \
 
-	s[0:50]
 	results = s.execute()
 	results_dict = results.to_dict()
 	print results_dict['hits']
@@ -34,14 +34,15 @@ def basic_search(self):
 	page = 1
 	total_count = s.count()
 
-	context = format_results(results, total_count, page, self, 'products')
+	context = format_results(results, total_count, page, self, 'products', text_query)
 
 	return Response(context) 
 
 
-def format_results(results, total_count, page, request, label):
-    response = {}
+def format_results(results, total_count, page, request, label, text_query):
+    response = collections.OrderedDict()
     response['request'] = request.get_full_path()
+    response['text_query'] = text_query
     response['page'] = page
     response['total_items'] = total_count
     response['total_pages'] = 1

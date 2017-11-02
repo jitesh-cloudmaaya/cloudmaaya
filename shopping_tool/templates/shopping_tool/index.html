@@ -12,27 +12,51 @@
 <body>
 
    <h1>Welcome</h1>
+   <form id="text_search_form">
+	   Product Search:
+	   <input type="text" name="text">
+	   <input type="submit" id="text_search_button" name="text_search_button" value="Go">
+   </form>
    <div id="products"></div>
 
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script> 
+    
 
 
- 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 <script>
 (function() {
-  var products_api = "/product_api/basic_search?text=jeans";
+  var products_api = "/product_api/basic_search?text=*";
   $.getJSON( products_api, {
 
   })
     .done(function( data ) {
-      $.each( data.items, function( i, item ) {
-        $( "<img>" ).attr( "src", item.product_name ).appendTo( "#products" );
-        if ( i === 3 ) {
-          return false;
-        }
+      $.each( data.data, function( i, item ) {
+        $( "<img width=200 height=200>" ).attr( "src", item._source.product_image_url ).appendTo( "#products" );
       });
     });
 })();
+
+
+$("#text_search_form").submit(function(e) {
+
+    var url = "/product_api/basic_search?"; 
+
+    $.ajax({
+           type: "GET",
+           url: url,
+           data: $("#text_search_form").serialize(), // serializes the form's elements.
+           success: function(data)
+           {
+           	   $( "#products" ).empty();
+               $.each( data.data, function( i, item ) {
+		              $( "<img>" ).attr( "src", item._source.product_image_url ).appendTo( "#products" );
+		           });
+           }
+         });
+
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+});
+
 </script>
 
 </body>
