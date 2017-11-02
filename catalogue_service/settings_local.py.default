@@ -12,10 +12,7 @@ DATABASES = {
     }
  }
 
- HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'products',
-    },
-}
+# Elastic Search Connection
+from elasticsearch_dsl.connections import connections
+connections.create_connection(hosts=['http://localhost:9200'], timeout=20, http_auth=('elastic:changeme'))
+
