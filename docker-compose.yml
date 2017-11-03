@@ -26,28 +26,29 @@ services:
       - elasticsearch
     networks:
       - elk
-  # mysql:
-  #   image: mysql
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: password
-  #     MYSQL_DATABASE: db
-  #   ports:
-  #     - 3336:3306
-  #   volumes:
-  #     - ./allume_product_feeds.sql:/docker-entrypoint-initdb.d/allume_product_feeds.sql
-  #     - ./create_allume_products_table.sql:/docker-entrypoint-initdb.d/create_allume_products_table.sql
-  #   networks:
-  #     - elk
-  # logstash:
-  #   image: docker.elastic.co/logstash/logstash:5.5.2
-  #   volumes:
-  #     - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-  #     - ./logstash/pipeline:/usr/share/logstash/pipeline
-  #     - ./logstash/mysql-connector-java-5.1.43-bin.jar:/usr/share/logstash/mysql-connector-java-5.1.43-bin.jar
-  #   links:
-  #     - elasticsearch
-  #   networks:
-  #     - elk
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: db
+    ports:
+      - 3336:3306
+    #volumes:
+      #- ./allume_product_feeds.sql:/docker-entrypoint-initdb.d/allume_product_feeds.sql
+      #- ./create_allume_products_table.sql:/docker-entrypoint-initdb.d/create_allume_products_table.sql
+    networks:
+      - elk
+  logstash:
+    image: docker.elastic.co/logstash/logstash:5.5.2
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - ./logstash/mysql-connector-java-5.1.43-bin.jar:/usr/share/logstash/mysql-connector-java-5.1.43-bin.jar
+    links:
+      - elasticsearch
+      - mysql
+    networks:
+      - elk
 
 volumes:
   esdata:
