@@ -10,6 +10,8 @@ import collections
 
 import inspect
 
+"""
+#Commenting out for now I expect to delete soon unless we decide to not use logstash for indexing
 
 class Logs(DocType):
     product_id = String(analyzer='snowball')
@@ -48,7 +50,7 @@ class Logs(DocType):
 
     def save(self, **kwargs):
         return super(Email, self).save(** kwargs)
-"""
+
     @classmethod
     def properties(cls):
         return [
