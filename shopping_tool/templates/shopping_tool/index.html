@@ -25,7 +25,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 <script>
 (function() {
-  var products_api = "/product_api/basic_search?text=shoes";
+  var products_api = "/product_api/facets?text=shoes";
   $.getJSON( products_api, {
 
   })
@@ -39,7 +39,7 @@
 
 $("#text_search_form").submit(function(e) {
 
-    var url = "/product_api/basic_search?"; 
+    var url = "/product_api/facets?"; 
 
     $.ajax({
            type: "GET",

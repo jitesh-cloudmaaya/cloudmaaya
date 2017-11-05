@@ -16,6 +16,8 @@ from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search
 import collections
 import json
+import urllib
+import datetime
 
 from elasticsearch_dsl.connections import connections
 from product_doc import EProductSearch#, EProduct
@@ -25,40 +27,23 @@ from product_doc import EProductSearch#, EProduct
 def facets(self):
 
     text_query = self.query_params.get('text', 'shirt')
+    num_per_page = int(self.query_params.get('num_per_page', 25))
+    page = int(self.query_params.get('page', 1))
 
+    start_record = (num_per_page * (page - 1))
+    print start_record
+    end_record = (num_per_page * page) 
+    print end_record
 
     es = EProductSearch(query=text_query, filters={})
-    es = es[:20]
-    response = es.execute()
+    es = es[start_record:end_record]
+    results = es.execute().to_dict()
 
-    facets = response.facets
-    # Hack to order them by the order defined in EmailSearch.facets
-    facets = [(key, value) for key, value in facets._d_.items()]
-    facets.sort(key=lambda p: EProductSearch.facets.keys().index(p[0]))
-    facet_dicts = []
-    for facet_name, values in facets:
-        facet_values = []
-        for value, count, selected in values:
-            value = convert_facet_value(facet_name, value)
-            if selected:
-                href = href_with_removed(facet_name, value)
-            else:
-                href = href_with_added(facet_name, value)
-            facet_values.append({
-                'value': value,
-                'count': count,
-                'selected': selected,
-                'href': href,
-            })
-        d = {
-            'name': facet_name,
-            'vals': facet_values,
-        }
-        facet_dicts.append(d)
 
-    print facet_dicts
+    total_count = results['hits']['total']
+    context = format_results(results, total_count, page, num_per_page, self, 'products', text_query, results['aggregations'])
 
-    return Response(response.to_dict()) 
+    return Response(context) 
 
 
 @api_view(['GET'])
@@ -100,17 +85,17 @@ def basic_search(self):
 
 
 
-def format_results(results, total_count, page, request, label, text_query, facets_dict):
+def format_results(results, total_count, page, num_per_page, request, label, text_query, facets_dict):
     response = collections.OrderedDict()
     response['request'] = request.get_full_path()
     response['text_query'] = text_query
     response['page'] = page
     response['total_items'] = total_count
     response['total_pages'] = 1
-    response['num_per_page'] = len(results['hits'])
+    response['num_per_page'] = num_per_page
     response['object'] = label
     response['facets'] = facets_dict
-    response['data'] = results['hits']
+    response['data'] = results['hits']['hits']
     return response
 
 def convert_facet_value(facet_name, value):
@@ -125,22 +110,21 @@ def facet_to_filter(facet_name, value):
         return datetime.datetime(yyyy, mm, 1, 0, 0, 0)
     return value
 
-def href_with_removed(key, value):
-    #existing = dict(request.args.iteritems())
-    #for key, value in existing.items():
-    #    existing[key] = value.encode('utf8')
-    #if key in existing:
-    #    del existing[key]
-    #return '/?' + urllib.urlencode(existing)
-    return key
+def href_with_removed(key, value, query_params):
+    existing = dict(query_params)
+    for key, value in existing.items():
+        existing[key] = value.encode('utf8')
+    if key in existing:
+        del existing[key]
+    return '/?' + urllib.urlencode(existing)
 
 
-def href_with_added(key, value):
-    #existing = dict(request.args.iteritems())
-    #existing[key] = value
-    #for key, value in existing.items():
-    #    existing[key] = value.encode('utf8')
-    #return '/?' + urllib.urlencode(existing)
-    return key
+def href_with_added(key, value, query_params):
+    existing = dict(query_params)
+    existing[key] = value
+    for key, value in existing.items():
+        existing[key] = value.encode('utf8')
+    return '/?' + urllib.urlencode(existing)
+
 
 
