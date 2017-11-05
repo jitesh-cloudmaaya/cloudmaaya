@@ -8,4 +8,4 @@ __pycache__
 catalogue_service/settings_local.py
 logstash/config/logstash.yml.default logstash/config/logstash.yml
 logstash/pipeline/logstash.conf.default logstash/pipeline/logstash.conf
-sql_data
+sql_data/catalogue_service.sql
