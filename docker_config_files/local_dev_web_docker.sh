@@ -1,0 +1,1 @@
+docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/settings_local.py -p 8000:8000 --name=catalogue_service_web --entrypoint="docker-entrypoint-web.sh" catalogue_service_docker >> ~/catalogue_service_web.log 2>&1

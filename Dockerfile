@@ -4,7 +4,7 @@
 ############################################################
 
 # Set the base image to use to Ubuntu
-FROM ubuntu:14.04
+FROM ubuntu:17.04
 
 # Set the file maintainer (your name - the file's author)
 MAINTAINER Wes Duenow
@@ -23,6 +23,12 @@ RUN apt-get install -y python python-pip
 RUN apt-get install -y libpq-dev python-dev
 RUN apt-get install -y libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk
 RUN apt-get install -y socat
+RUN apt-get install  -y libmysqlclient-dev
+RUN apt-get install -y python-cffi
+RUN apt-get install -y libffi6 libffi-dev
+RUN apt-get install -y python-setuptools
+RUN apt-get install -y python3-setuptools
+
 
 # Create application subdirectories
 WORKDIR $DOCKYARD_SRVHOME
