@@ -3,7 +3,7 @@
 
 
 # Allume Shopping Tool
-## Logstach
+## Logstash
 [Logstash Config](https://qbox.io/blog/migrating-mysql-data-into-elasticsearch-using-logstash)
 
 
