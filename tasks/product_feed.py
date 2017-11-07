@@ -33,7 +33,7 @@ class ProductFeed(object):
         self._remote_files = [m.group(0) for file in ftp.nlst() for m in [regex.search(file)] if m]
         for remote_file in self._remote_files:
             local_file = os.path.join(self._local_temp_dir, remote_file)
-            #ftp.retrbinary("RETR " + remote_file ,open(local_file, 'wb').write)
+            ftp.retrbinary("RETR " + remote_file ,open(local_file, 'wb').write)
  
         ftp.quit()
 
@@ -42,7 +42,9 @@ class ProductFeed(object):
         #Truncate the Target Table
         self.truncate_db_table()
 
-        for remote_file in self._remote_files:
+        file_list = os.listdir(self._local_temp_dir)
+
+        for remote_file in file_list:
 
             local_file = os.path.join(os.getcwd(), self._local_temp_dir, remote_file)
 
@@ -79,7 +81,7 @@ class ProductFeed(object):
         print "%s - %s" % (remote_file, merchant_id)
 
         cursor = connection.cursor()
-        statement = "UPDATE %s SET merchant_id = %s WHERE merchant_id IS NULL;"
+        statement = "UPDATE %s SET merchant_id = %s WHERE merchant_id IS NULL;" % (self._table, merchant_id)
         cursor.execute(statement)       
 
     def remove_temp_file(self, filename):

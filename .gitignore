@@ -11,3 +11,5 @@ logstash/pipeline/logstash.conf.default logstash/pipeline/logstash.conf
 sql_data/catalogue_service.sql
 /static/
 .coverage
+pd_temp
+
