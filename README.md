@@ -1,4 +1,4 @@
-[logo]: gimbels.webp
+[logo]: gimbels.jpg
 [logo]
 # Allume Shopping Tool
 ## Logstach
