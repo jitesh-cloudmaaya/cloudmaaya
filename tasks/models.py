@@ -7,10 +7,10 @@ from django.db import models
 
 
 class RanProducts(models.Model):
-    product_id = models.IntegerField(blank=True, null=True)
+    product_id = models.BigIntegerField(blank=True, null=True)
     product_name = models.CharField(max_length=255, blank=True, null=True)
     sku = models.CharField(db_column='SKU', max_length=64, blank=True, null=True)  # Field name made lowercase.
-    primary_category = models.CharField(max_length=50, blank=True, null=True)
+    primary_category = models.CharField(max_length=150, blank=True, null=True)
     secondary_category = models.CharField(max_length=500, blank=True, null=True)
     product_url = models.CharField(max_length=2000, blank=True, null=True)
     product_image_url = models.CharField(max_length=2000, blank=True, null=True)
@@ -25,7 +25,7 @@ class RanProducts(models.Model):
     end_date = models.DateTimeField(blank=True, null=True)
     brand = models.CharField(max_length=255, blank=True, null=True)
     shippping = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    keywords = models.CharField(max_length=500, blank=True, null=True)
+    keywords = models.CharField(max_length=1000, blank=True, null=True)
     manufacturer_part_number = models.CharField(max_length=50, blank=True, null=True)
     manufacturer_name = models.CharField(max_length=250, blank=True, null=True)
     shipping_information = models.CharField(max_length=50, blank=True, null=True)
