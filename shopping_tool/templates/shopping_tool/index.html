@@ -3,7 +3,7 @@
 <html>
 <head>
   <title>Allume - Shopping Tool</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
   <!--<link href="{% static 'shopping/css/styles.css' %}" media="all" rel="stylesheet"/>-->
 <style>
@@ -48,6 +48,7 @@ a#search-btn {
   text-decoration: none;
   text-transform: uppercase;
 }
+a#search-btn:hover {background:#ed8365;}
 a#search-btn:active {
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
@@ -93,11 +94,14 @@ input.search {
   width:282px;
   margin:auto;
 }
-#results div.item div.image {
-  overflow:hidden;
-  position:relative;
+#results div.item div.image {position:relative;}
+#results div.item div.image a.favorite {
+  color:#EC407A;
+  font-size:28px;
+  position:absolute;
+  right:15px;
+  top:10px;
 }
-
 #results div.item span.name {
   background:#fafafa;
   border-bottom:1px solid #eee;
@@ -173,7 +177,23 @@ input.search {
 
 #facets a.facet-link:hover span {border-bottom-color:#474747;}
 #facets div.facet-list {display:none;}
-
+#facets div.facet-list label.facet {
+  color:#474747;
+  display:block;
+  font-size:12px;
+  font-weight:200;
+  padding:10px;
+  text-decoration:none;  
+}
+#facets div.facet-list label.facet input {display:none;}
+#facets div.facet-list label.facet span { color: #42A5F5 }
+#facets div.facet-list label.facet input + span i.fa-heart {display:none;}
+#facets div.facet-list label.facet input:checked + span i.fa-heart-o {display:none;}
+#facets div.facet-list label.facet input:checked + span i.fa-heart {display:inline-block;}
+#facets div.facet-list label.facet em.key {display:inline-block; margin-left:5px;}
+#facets div.facet-list label.facet:hover em.key,
+#facets div.facet-list label.facet input:checked + span + em + em.key {color:#42A5F5;}
+#facets div.facet-list label.facet em.number { color:#777; float:right; font-weight:200;}
 
 
 
@@ -326,8 +346,108 @@ input.search {
   animation: heartbeat 900ms ease 0s infinite normal;
 }
 div.loader {padding:10px 20px;}
-
-
+#pager {overflow:auto; padding:15px 5px; text-align:center;}
+#pager a.page,
+#pager span.current {
+  border-radius:15px;
+  color:#474747;
+  display:inline-block;
+  font-size:13px;
+  font-weight:200px;
+  height:30px;
+  line-height:30px;
+  margin:0 2.5px;
+  text-align: center;
+  text-decoration: none;
+  width:30px;
+}
+#pager span.current {background:#ddd; font-weight:500;}
+#pager a.page:hover {background:#eee;}
+#pager a.page:active {background-color:#42A5F5; color:#fff;}
+#pager a.page.next,
+#pager a.page.prev {
+  color:#999;
+  font-weight: 100;
+  position:relative;
+  top:-3px;
+  width:inherit;
+}
+#pager a.page.next {float:right;}
+#pager a.page.prev {float:left;}
+#pager a.page.next:hover,
+#pager a.page.prev:hover {background:#fff; color:#777;}
+#pager a.page.next:active,
+#pager a.page.prev:active {background:#fff; color:#42A5F5; box-shadow: none}
+#pager a.page.prev i {position:relative; top:4px; font-size:26px;padding-right:8px;}
+#pager a.page.next:active i,
+#pager a.page.prev:active i {color:#777;}
+#pager a.page.next i {position:relative; top:4px; font-size:26px;padding-left:8px;}
+#pager-message {
+  color:#777;
+  font-size:16px;
+  font-weight:100;
+  margin:10px 0;
+  padding:0 5px;
+}
+a#rack-toggle {
+  background:#f2987e;
+  border-radius:5px;
+  bottom:15px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.3);
+  color:#fff;
+  font-size:18px;
+  font-variant: small-caps;
+  font-weight:500;
+  position:fixed;
+  padding:15px 0;
+  left:15px;
+  text-align: center;
+  text-decoration:none;
+  width:215px;
+  z-index:4;
+}
+a#rack-toggle span {font-weight:700; padding-right:5px;}
+a#rack-toggle:hover {background:#ed8365;}
+a#rack-toggle:active{  
+  background:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+  color:#474747;
+}
+div#rack {
+  background:#fff;
+  box-shadow:0 0 3px rgba(0,0,0,0.3);
+  height:100%;
+  left:-515px;
+  position:fixed;
+  top:0;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;    
+  width:500px;
+  z-index:5;
+}
+div#rack.show {left:0;}
+div#rack h2 {
+  border-bottom:1px solid #eee;
+  font-size:18px;
+  font-weight:300;
+  padding:0 15px;
+  height:49px;
+  line-height:49px;
+}
+#close-rack {
+  color:#bbb;
+  font-size:20px;
+  padding:8px 15px;
+  position:absolute;
+  right:0;
+  text-align:center;
+  text-decoration: none;
+  top:3px;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;  
+}
+#close-rack:hover {color:#474747;}
+#close-rack:active {color:#0090D9;}
 </style>
 </head>
 <body>
@@ -342,8 +462,16 @@ div.loader {padding:10px 20px;}
   </div>
   <div id="results-wrapper">
     <div id="facet-bar"></div>
+    <div id="pager-message"></div>
     <div id="results"></div>
+    <div id="pager"></div>
   </div>
+</div>
+<a id="rack-toggle"><span>0</span> items in your rack</a>
+<div id="rack">
+  <a href="#" id="close-rack"><i class="fa fa-times"></i></a>
+  <h2>My Rack</h2>
+  <div id="rack-list"></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
@@ -388,27 +516,12 @@ var search_page = {
   * @description init function applying the functionality to the page elements
   */
   init: function(){
+    /* search functionality */
     $('#search-btn').click(function(e){
       e.preventDefault();
-      $.ajax({
-        beforeSend: function(){
-          $('#results').html(
-            '<div class="loader">' +
-            '<span class="pulse_loader"></span>' +
-            '<span class="pulse_message">Finding things you\'ll love...</span>' +
-            '</div>'
-          );
-        },
-        type: "GET",
-        url: '/product_api/facets?',
-        data: 'text=' + $('#search-field').val(),
-        success: function(results){
-          search_page.resultTemplate(results.data);
-          search_page.facetTemplate(results.facets);
-        }
-      });
+      search_page.performSearch(1);
     });
-
+    /* facets functionality */
     $('#facets').on('click', 'a.facet-group', function(e){
       e.preventDefault();
       var link = $(this);
@@ -418,10 +531,37 @@ var search_page = {
         link.addClass('on').find('span').html('-');
       }
       link.next('div').slideToggle();
-    }).on('click','a.facet-link',function(e){
+    }).on('change','input.facet-box',function(e){
+      e.preventDefault();
+      var box = $(this);
+      console.log(box.prop('checked') + " " + box.val());
+      // facet selected box generation goes here also new seacxh initiation
+    });
+    /* results functionality */
+    $('#results').on('click','a.favorite',function(e){
       e.preventDefault();
       var link = $(this);
-      console.log(link.data())
+      if(link.hasClass('favorited')){
+        link.removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+      }else{
+        link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+      }
+      // ajax submission of favoriting will go here
+    });
+    /* pager functionality */
+    $('#pager').on('click','a.page',function(e){
+      e.preventDefault();
+      var link = $(this);
+      search_page.performSearch(parseInt(link.data('page')));
+    });
+    /* my rack functionality */
+    $('#rack-toggle').click(function(e){
+      e.preventDefault();
+      $('#rack').toggleClass('show');
+    });
+    $('#close-rack').click(function(e){
+      e.preventDefault();
+      $('#rack').removeClass('show');
     });
 
 
@@ -443,7 +583,7 @@ var search_page = {
         markup.push(
           '<a href="#" class="facet-group"><span>+</span>' + 
           search_page.capitalizeEveryWord(display_name.replace(/_/g, ' ')) + 
-          '</a><div class="facet-list">'
+          '</a><div class="facet-list" data-qparam="' + display_name + '">'
         );
         facet_list[display_name].buckets.sort(function(a,b){
           if(a.key.toLowerCase() > b.key.toLowerCase()){ return 1}
@@ -454,9 +594,14 @@ var search_page = {
           var facet = facet_list[display_name].buckets[j];
           if(facet.key != ''){
             markup.push(
-              '<a href="#" data-facet="facet.name" class="facet-link">' +
-              '<em>' + numeral(facet.doc_count).format('0,0') + 
-              '</em><span>' + facet.key + '</span></a>'
+              '<label class="facet">' +
+              '<input class="facet-box" type="checkbox" value="' + 
+              facet.key + '"/><span>' +
+              '<i class="fa fa-heart-o"></i>' +
+              '<i class="fa fa-heart"></i>' +
+              '</span><em class="number">' + 
+              numeral(facet.doc_count).format('0,0') +
+              '</em><em class="key">' + facet.key + '</em></label>'
             );
           }
         }
@@ -464,6 +609,180 @@ var search_page = {
       }
       $('#facets').html(markup.join(''));
     }    
+  },
+  /**
+  * @description processing and template for pagination of results
+  * @param {integer} page - page currently displayed
+  * @param {integer} total - total number of items in result set
+  * @param {integer} per_page - number of items per page payload
+  */  
+  pagerTemplate: function(page, total, per_page){
+    var markup = [];
+    var total_pages = Math.floor(total / per_page);
+    var excess = total % per_page;
+    if(excess > 0){ total_pages++};
+    /* create pager message string */
+    var showing_low = numeral(((page * per_page) - per_page + 1)).format('0,0');
+    var showing_high = numeral(page * per_page).format('0,0');
+    var result_total = numeral(total).format('0,0');
+    $('#pager-message').html(
+      'Showing <strong>' + showing_low + '</strong> - <strong>' + 
+      showing_high + '</strong> of <strong>' + result_total + '</strong>'
+    );
+    /**
+    * @description private function to gerenate links
+    * @params {integer} page - current page
+    * @params {integer} low - low number to use in loop
+    * @params {integer} high - high number to use in loop
+    * @returns {string} HTML
+    */        
+    function makePager(page, low, high){
+      var pager = [];
+      for(var i = (page - low); i < (page + high); i++){
+        if(i > 0){        
+          if(i == page){
+            pager.push('<span class="current">' + i + '</span>');
+          }else{
+            if(i <= total_pages){
+              pager.push('<a href="#" data-page="' + i + '" class="page">' + i + '</a>');
+            }
+          }
+        }
+      }
+      return pager.join('');
+    }
+    if(page > 1){
+      markup.push(
+        '<a href="#" data-page="' + (page - 1) + 
+        '" class="page prev"><i class="fa fa-angle-left"></i>Previous</a>'
+      );
+    }
+    if(total_pages > page){
+      markup.push(
+        '<a href="#" data-page="' + (page + 1) + 
+        '" class="page next">Next<i class="fa fa-angle-right"></i></a>'
+      );
+    }
+    if((page > 3)&&(page <= (total_pages - 3))){
+      markup.push(
+        '<a href="#" data-page="1" class="page">1</a>' +
+        '<span class="break">...</span>' +
+        makePager(page, 1, 2)
+      );
+      if((page + 2) < total_pages){
+        markup.push(
+          '<span class="break">...</span>' +
+          '<a href="#" data-page="' + total_pages + '" class="page">' + total_pages + '</a>'
+        )          
+      }
+    }else{
+      var show_max_ellipse = false;
+      if(page == 1){
+        var max = total_pages > 5 ? 4 : 5;
+        markup.push(
+          makePager(page, 2, max)
+        );
+        if((page + max) < total_pages){ show_max_ellipse = true }
+      }else if(page == 2){
+        var max = total_pages > 5 ? 3 : 4;
+        markup.push(
+          makePager(page, 1, max)
+        );  
+        if((page + max) < total_pages){ show_max_ellipse = true }              
+      }else if(page == 3){
+        var max = total_pages > 5 ? 2 : 3;
+        markup.push(
+          makePager(page, 2, max)
+        );
+        if((page + max) < total_pages){ show_max_ellipse = true } 
+      }else if(page == total_pages){
+        var min = 2; 
+        if(total_pages > 5){ min = 3 }else if(total_pages <= 5){ min = 4}; 
+        if((page - min) > 2 ){
+          markup.push(
+            '<a href="#" data-page="1" class="page">1</a>' +
+            '<span class="break">...</span>'
+          );
+        } 
+        markup.push(
+          makePager(page, min , 2)
+        );       
+      }else if(page == (total_pages - 1)){
+        var min = 3; 
+        if(total_pages > 5){ min = 2 }else if(total_pages <= 5){ min = 3}; 
+        if((page - min) > 2 ){
+          markup.push(
+            '<a href="#" data-page="1" class="page">1</a>' +
+            '<span class="break">...</span>'
+          );
+        } 
+        markup.push(
+          makePager(page, min , 2)
+        );       
+      }else if(page == (total_pages - 2)){
+        var min = 4; 
+        if(total_pages > 5){ min = 1 }else if(total_pages <= 5){ min = 2}; 
+        if((page - min) > 2 ){
+          markup.push(
+            '<a href="#" data-page="1" class="page">1</a>' +
+            '<span class="break">...</span>'
+          );
+        } 
+        markup.push(
+          makePager(page, min , 3)
+        );       
+      }
+      if(show_max_ellipse == true){
+        markup.push(
+          '<span class="break">...</span>' +
+          '<a href="#" data-page="' + total_pages + '" class="page">' + total_pages + '</a>'
+        );
+      }
+    }
+    $('#pager').html(markup.join(''));
+  },
+  /**
+  * @description ajax call to get search results
+  * @param {integer} page - the page to fetch
+  */
+  performSearch: function(page){
+    /* generate the query string */
+    var q = '';
+    var text = $('#search-field').val();
+    if(text != '') { q += 'text=' + text; }
+    var facets = [];
+    $.each($('#facets div.facet-list'), function(idx){
+      var list = $(this);
+      var selected = list.find('input:checked');
+      if(selected.length > 0){
+        var values = selected.map(function (i, facet){ return facet.value }).get();
+        facets.push(
+          '&' + list.data('qparam') + '=' + values.join(',')
+        );
+      }
+    });
+    q += '&page=' + page;
+    $.ajax({
+      beforeSend: function(){
+        $('#results').html(
+          '<div class="loader">' +
+          '<span class="pulse_loader"></span>' +
+          '<span class="pulse_message">Finding things you\'ll love...</span>' +
+          '</div>'
+        );
+        $('#pager-message').html('');
+        $('#pager').html('');
+      },
+      type: "GET",
+      url: '/product_api/facets?',
+      data: q,
+      success: function(results){
+        console.log(results)
+        search_page.pagerTemplate(results.page, results.total_items, results.num_per_page);
+        search_page.resultTemplate(results.data);
+        search_page.facetTemplate(results.facets);
+      }
+    });
   },
   /**
   * @description processing and template for product results
@@ -491,7 +810,8 @@ var search_page = {
           '<span class="price"><em>shipping</em>' + numeral(details.shipping_price).format('$0,0.00') + '</span>';
         }
         markup.push(
-          '<div class="item"><div class="image"><img src="' + 
+          '<div class="item"><div class="image"><a href="#" class="favorite">' +
+          '<i class="fa fa-heart-o"></i></a><img src="' + 
           details.product_image_url + '" ' + dynamic_dim + 
           '></div><span class="name">' + details.product_name + 
           '</span><span class="avail">' + details.availability + '</span>' + 
