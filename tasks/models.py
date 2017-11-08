@@ -7,11 +7,11 @@ from django.db import models
 
 
 class RanProducts(models.Model):
-    product_id = models.BigIntegerField(blank=True, null=True)
+    product_id = models.BigIntegerField(blank=True, null=True, db_index=True)
     product_name = models.CharField(max_length=255, blank=True, null=True)
     sku = models.CharField(db_column='SKU', max_length=64, blank=True, null=True)  # Field name made lowercase.
-    primary_category = models.CharField(max_length=150, blank=True, null=True)
-    secondary_category = models.CharField(max_length=500, blank=True, null=True)
+    primary_category = models.CharField(max_length=150, blank=True, null=True, db_index=True)
+    secondary_category = models.CharField(max_length=500, blank=True, null=True, db_index=True)
     product_url = models.CharField(max_length=2000, blank=True, null=True)
     product_image_url = models.CharField(max_length=2000, blank=True, null=True)
     buy_url = models.CharField(max_length=2000, blank=True, null=True)
@@ -58,7 +58,7 @@ class RanProducts(models.Model):
     attribute_21 = models.CharField(max_length=128, blank=True, null=True)
     attribute_22 = models.CharField(max_length=128, blank=True, null=True)
     modification = models.CharField(max_length=128, blank=True, null=True)
-    merchant_id = models.IntegerField(blank=True, null=True)
+    merchant_id = models.IntegerField(blank=True, null=True, db_index=True)
 
     #class Meta:
     #    managed = False

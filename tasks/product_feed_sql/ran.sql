@@ -30,7 +30,8 @@ INSERT INTO product_api_product         |
 	keywords,
 	primary_category,
 	secondary_category,
-	brand
+	brand,
+	update_at
 
 )
 SELECT 
@@ -64,7 +65,8 @@ SELECT
 	keywords,
 	primary_category,
 	secondary_category,
-	brand
+	brand,
+	NOW()
 FROM tasks_ranproducts
 
 /*
