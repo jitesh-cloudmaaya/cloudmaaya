@@ -6,8 +6,8 @@ from django.db import models
 # Create your models here.
 
 class Product(models.Model):
-    product_id = models.BigIntegerField(blank=True, null=True)
-    merchant_id = models.BigIntegerField(blank=True, null=True)
+    product_id = models.BigIntegerField(blank=True, null=True, db_index=True)
+    merchant_id = models.BigIntegerField(blank=True, null=True, db_index=True)
     product_name = models.CharField(max_length=255, blank=True, null=True)
     long_product_description = models.CharField(max_length=2000, blank=True, null=True)
     short_product_description = models.CharField(max_length=500, blank=True, null=True)
@@ -41,5 +41,19 @@ class Product(models.Model):
     is_trending = models.BooleanField(default=False)
     is_best_seller = models.BooleanField(default=False)
     brand = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class Network(models.Model):
+    network_name = models.CharField(max_length=128, blank=True, null=True)
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class Merchant(models.Model):
+    external_merchant_id = models.IntegerField(blank=True, null=True)
+    merchant_name = models.CharField(max_length=128, blank=True, null=True)
+    network = models.ForeignKey(Network)
+    status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
