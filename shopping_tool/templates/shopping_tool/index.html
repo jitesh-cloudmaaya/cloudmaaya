@@ -1,65 +1,280 @@
-
-{% load staticfiles %}<!DOCTYPE html>
+{% load staticfiles %}
+<!DOCTYPE html>
 <html>
 <head>
   <title>Allume - Shopping Tool</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
-  <!--
-  <link href="{% static 'dashboard/css/selectize.css' %}" media="all" rel="stylesheet"/>
-  <link href="{% static 'dashboard/css/admin_style.css' %}" media="all" rel="stylesheet"/>
--->
+  <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
+  <!--<link href="{% static 'shopping/css/styles.css' %}" media="all" rel="stylesheet"/>-->
+<style>
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td{margin:0;padding:0;}
+table{border-collapse:collapse;border-spacing:0;}
+fieldset,img{border:0;}
+address,caption,cite,code,dfn,em,th,var{font-style:normal;font-weight:normal;}
+ol,ul {list-style:none;}
+caption,th {text-align:left;}
+h1,h2,h3,h4,h5,h6{font-size:100%;margin:0;letter-spacing:0px;font-weight:normal;}
+q:before,q:after{content:'';}
+abbr,acronym {border:0;}
+select, input, textarea {font:99% arial,helvetica,clean,sans-serif;}
+pre, code {font:115% monospace;}
+a,a:focus,div:focus,ul:focus,input:focus {outline:0px;}
+body {background:#fff; font-size:62.5%;font-family:"Barlow", "Helvetica Neue",Helvetica,Arial,sans-serif;}
+html {overflow-y:scroll;overflow-x:auto;}
+/* page styles */
+#content {
+  margin:15px;
+  overflow:auto;
+}
+#search {
+  box-sizing: border-box;
+  float:left;
+  padding-right:15px;
+  width:20%
+}
+#results-wrapper {
+  box-sizing: border-box;
+  float:left;
+  width:80%;
+}
+a#search-btn {
+  background:#f2987e;
+  border-radius:3px;
+  color:#fff;
+  float:right;
+  font-size:14px;
+  padding:9px 20px;
+  margin:0;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+a#search-btn:active {
+  background:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+  color:#474747;
+}
+#search label {
+  color:#777;
+  display:block;
+  font-size:14px;
+  font-weight:200;
+  margin-bottom:10px;
+
+}
+input.search {
+  background:#fff;
+  border:1px solid #d0d0d0;
+  border-radius:3px;
+  display:block;
+  font-size:14px;
+  font-weight:200;
+  padding:8px;
+  width:calc(100% - 130px);
+}
+#facet-bar {}
+#results {overflow:auto; width:100%;}
+#results h4 {
+  color:#999;
+  font-size:40px;
+  font-weight:100;
+  text-align: center;
+  padding:5% 0 0;
+}
+#results div.item {
+  width:25%;
+  float:left;
+}
+#results div.item img {
+  display:block;
+  height:282px;
+  width:282px;
+  margin:auto;
+}
+#facets {
+  border-bottom:1px solid #eee;
+  margin-top:20px; 
+}
+#facets a.facet-group {
+  border-top:1px solid #eee;
+  color:#474747;
+  display:block;
+  font-size:14px;
+  font-weight:500;
+  padding:15px 10px;
+  position:relative;
+  text-decoration:none;
+}
+#facets a.facet-group:hover,
+#facets a.facet-group.on {background:#fafafa;}
+#facets a.facet-group span {
+  font-size:26px; 
+  font-weight:200;
+  line-height:16px;
+  overflow:hidden;
+  position:absolute;
+  right:10px;
+  top:12px;
+}
+#facets a.facet-link {
+  color:#474747;
+  display:block;
+  font-size:12px;
+  font-weight:200;
+  padding:10px 15px 8px;
+  text-decoration:none;
+}
+#facets a.facet-link em {
+  color:#777; 
+  float:right;
+  font-weight:200; 
+  padding-bottom:2px;
+}
+#facets a.facet-link span {
+  border-bottom:2px solid #fff;
+  display:inline-block;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;  
+  vertical-align: top; 
+}
+
+#facets a.facet-link:hover span {border-bottom-color:#474747;}
+#facets div.facet-list {display:none;}
+</style>
 </head>
 <body>
-
-   <h1>Welcome</h1>
-   <form id="text_search_form">
-	   Product Search:
-	   <input type="text" name="text">
-	   <input type="submit" id="text_search_button" name="text_search_button" value="Go">
-   </form>
-   <div id="products"></div>
-
-    
-
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<div id="header"></div>
+<div id="user-card"></div>
+<div id="content">
+  <div id="search">
+    <label>What are you looking for?</label>
+    <a href="#" id="search-btn">show me</a>
+    <input class="search" id="search-field" name="text" type="text" placeholder="I want..."/>
+    <div id="facets"></div>
+  </div>
+  <div id="results-wrapper">
+    <div id="facet-bar"></div>
+    <div id="results"><h4>Look up pieces your looks...</h4></div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 <script>
-(function() {
-  var products_api = "/product_api/facets?text=shoes";
-  $.getJSON( products_api, {
-
-  })
-    .done(function( data ) {
-      $.each( data.data, function( i, item ) {
-        $( "<img width=200 height=200>" ).attr( "src", item._source.product_image_url ).appendTo( "#products" );
+/**
+* @description search_page namespace object, conatining the functionality and templates for the search page
+*/
+var search_page = {
+  /**
+  * @description capitalize the first letter of a string
+  * @param {string} str - the string to process
+  * @returns {string} capitalized first letter of the same string
+  */
+  capitalizeFirstLetter: function(str){
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  },  
+  /**
+  * @description capitalize the first letter of every word in a string
+  * @param {string} str - the string to process
+  * @returns {string} fixed string
+  */
+  capitalizeEveryWord: function(str){
+    return str.replace(/\w\S*/g, function(txt){
+      return search_page.capitalizeFirstLetter(txt);
+    });
+  },
+  /**
+  * @description init function applying the functionality to the page elements
+  */
+  init: function(){
+    $('#search-btn').click(function(e){
+      e.preventDefault();
+      $.ajax({
+        type: "GET",
+        url: '/product_api/facets?',
+        data: 'text=' + $('#search-field').val(),
+        success: function(results){
+          search_page.resultTemplate(results.data);
+          search_page.facetTemplate(results.facets);
+        }
       });
     });
-})();
+
+    $('#facets').on('click', 'a.facet-group', function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('on')){
+        link.removeClass('on').find('span').html('+');
+      }else{
+        link.addClass('on').find('span').html('-');
+      }
+      link.next('div').slideToggle();
+    }).on('click','a.facet-link',function(e){
+      e.preventDefault();
+      var link = $(this);
+      console.log(link.data())
+    });
 
 
-$("#text_search_form").submit(function(e) {
 
-    var url = "/product_api/facets?"; 
-
-    $.ajax({
-           type: "GET",
-           url: url,
-           data: $("#text_search_form").serialize(), // serializes the form's elements.
-           success: function(data)
-           {
-           	   $( "#products" ).empty();
-               $.each( data.data, function( i, item ) {
-		              $( "<img>" ).attr( "src", item._source.product_image_url ).appendTo( "#products" );
-		           });
-           }
-         });
-
-    e.preventDefault(); // avoid to execute the actual submit of the form.
-});
-
+  },
+  /**
+  * @description processing and template for facets
+  * @param {object} facets - the facets object
+  */
+  facetTemplate: function(facets){
+    var markup = [];
+    if(facets != undefined){
+      /* build initial list of facet buckets */
+      var buckets = Object.keys(facets).sort();
+      for(var i = 0, l = buckets.length; i<l; i++){
+        var bucket = buckets[i];
+        var facet_list = facets[bucket];
+        var display_name = bucket.replace('_filter_', '');
+        markup.push(
+          '<a href="#" class="facet-group"><span>+</span>' + 
+          search_page.capitalizeEveryWord(display_name.replace(/_/g, ' ')) + 
+          '</a><div class="facet-list">'
+        );
+        facet_list[display_name].buckets.sort(function(a,b){
+          if(a.key.toLowerCase() > b.key.toLowerCase()){ return 1}
+          if(a.key.toLowerCase() < b.key.toLowerCase()){ return -1}
+          return 0;
+        })
+        for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
+          var facet = facet_list[display_name].buckets[j];
+          if(facet.key != ''){
+            markup.push(
+              '<a href="#" data-facet="facet.name" class="facet-link">' +
+              '<em>' + numeral(facet.doc_count).format('0,0') + 
+              '</em><span>' + facet.key + '</span></a>'
+            );
+          }
+        }
+        markup.push('</div>');
+      }
+      $('#facets').html(markup.join(''));
+    }    
+  },
+  /**
+  * @description processing and template for product results
+  * @param {array} results - the product result array
+  */  
+  resultTemplate: function(results){
+    console.log(results)
+    var markup = [];
+    if(results != undefined && results.length > 0){
+      for(var i = 0, l = results.length; i<l; i++){
+        var item = results[i];
+        markup.push(
+          '<div class="item"><img src="' + 
+          item._source.product_image_url + '"></div>'
+        );
+      }
+      $('#results').html(markup.join(''));
+    }
+  }
+}
+/* call the search page init function to set up the page */
+search_page.init();
 </script>
-
 </body>
-
-
 </html>
