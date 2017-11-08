@@ -27,7 +27,7 @@ from product_doc import EProductSearch#, EProduct
 def facets(self):
 
     text_query = self.query_params.get('text', 'shirt')
-    num_per_page = int(self.query_params.get('num_per_page', 20))
+    num_per_page = int(self.query_params.get('num_per_page', 48))
     page = int(self.query_params.get('page', 1))
 
     start_record = (num_per_page * (page - 1))
