@@ -102,18 +102,11 @@ class ProductFeed(object):
 
     def ungzip(self, gz_file):
         print gz_file
-        os.system("gunzip %s" % (gz_file))
+        os.system("gunzip -f %s" % (gz_file))
+        self.remove_temp_file(gz_file)
         return gz_file.replace(".gz", "")
 
 """
-for f in *.txt
-do
-        echo "Loading '"$f"'"
-        mid=`echo $f | cut -d'_' -f1`
-        mysql --local-infile -u root -e "USE allume_product_feeds; LOAD DATA LOCAL INFILE '"$f"' INTO TABLE ran_product_feed  FIELDS TERMINATED BY '|' IGNORE 1 LINES ;"
-        mysql --local-infile -u root -e "USE allume_product_feeds; UPDATE ran_product_feed SET merchant_id = "$mid" WHERE merchant_id IS NULL;"
-done
-
 
 from tasks.product_feed import ProductFeed
 table_fields = 'product_id, product_name, SKU, primary_category, secondary_category, product_url, product_image_url, buy_url, short_product_description, long_product_description, discount, discount_type, sale_price, retail_price, begin_date, end_date, brand, shippping, keywords, manufacturer_part_number, manufacturer_name, shipping_information, availablity, universal_product_code, class_id, currency, M1, pixel, attribute_1_misc, attribute_2_product_type, attribute_3_size, attribute_4_material, attribute_5_color, attribute_6_gender, attribute_7_style, attribute_8_age, attribute_9, attribute_10, attribute_11, attribute_12, attribute_13, attribute_14, attribute_15 ,attribute_16 ,attribute_17 ,attribute_18 ,attribute_19 ,attribute_20 ,attribute_21 ,attribute_22 ,modification ,merchant_id'
