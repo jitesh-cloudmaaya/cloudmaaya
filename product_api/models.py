@@ -6,8 +6,8 @@ from django.db import models
 # Create your models here.
 
 class Product(models.Model):
-    product_id = models.IntegerField(blank=True, null=True)
-    merchant_id = models.IntegerField(blank=True, null=True)
+    product_id = models.BigIntegerField(blank=True, null=True)
+    merchant_id = models.BigIntegerField(blank=True, null=True)
     product_name = models.CharField(max_length=255, blank=True, null=True)
     long_product_description = models.CharField(max_length=2000, blank=True, null=True)
     short_product_description = models.CharField(max_length=500, blank=True, null=True)
@@ -33,6 +33,13 @@ class Product(models.Model):
     availability = models.CharField(max_length=50, blank=True, null=True)
     begin_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
-    merchant_name = models.CharField(max_length=55, blank=True, null=True)
+    merchant_name = models.CharField(max_length=2000, blank=True, null=True)
+    keywords = models.CharField(max_length=55, blank=True, null=True)
+    primary_category = models.CharField(max_length=150, blank=True, null=True)
+    secondary_category = models.CharField(max_length=500, blank=True, null=True)
+    allume_score = models.IntegerField(blank=True, null=True)
+    is_trending = models.BooleanField(default=False)
+    is_best_seller = models.BooleanField(default=False)
+    brand = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
