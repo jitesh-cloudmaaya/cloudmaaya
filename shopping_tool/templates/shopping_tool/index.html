@@ -389,6 +389,7 @@ div.loader {padding:10px 20px;}
   margin:10px 0;
   padding:0 5px;
 }
+#pager-message strong {font-weight:400;}
 a#rack-toggle {
   background:#f2987e;
   border-radius:5px;
@@ -434,6 +435,47 @@ div#rack h2 {
   height:49px;
   line-height:49px;
 }
+div#rack-list {
+  height:calc(100% - 55px);
+  overflow:auto;
+}
+div#rack-list div.empty {
+  color:#777;
+  font-size:18px;
+  font-weight:300;
+  padding:15px;
+}
+div#rack-list div.item {
+  box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
+  margin:15px;
+  overflow:auto;
+  padding:10px;
+  position:relative;
+}
+
+div#rack-list div.item div.image { float:left; width:80px;}
+div#rack-list div.item div.image img {display:block;margin:auto;}
+div#rack-list div.item div.details { float:left; width:(100% - 80px);}
+div#rack-list div.item span.name {
+  color:#474747;
+  display:block;
+  font-size:14px;
+  font-weight:400;
+  padding:0 0 2px;
+}
+div#rack-list div.item span.price,
+div#rack-list div.item span.avail,
+div#rack-list div.item span.manu {
+  color:#474747;
+  display:block;
+  font-size:12px;
+  font-weight:500;
+  padding:2px 0;
+
+}
+div#rack-list div.item span.avail {font-weight:200;}
+div#rack-list div.item span.price em {padding-right:6px;}
+div#rack-list div.item span.price.strike {color:#D32F2F; text-decoration: line-through;}
 #close-rack {
   color:#bbb;
   font-size:20px;
@@ -448,6 +490,75 @@ div#rack h2 {
 }
 #close-rack:hover {color:#474747;}
 #close-rack:active {color:#0090D9;}
+a.add-to-rack {
+  border:1px solid #ddd;
+  border-radius:3px;
+  color:#777;
+  display:inline-block;
+  font-size:11px;
+  font-variant:small-caps;
+  margin:8px 15px 5px;
+  padding:3px 8px 4px;
+  text-decoration: none;
+  text-transform:lowercase;
+}
+a.add-to-rack i {font-size:10px; padding-right:4px; position:relative; top:0px;}
+a.add-to-rack:hover {
+  background:#f7f7f7;
+  border-color:#ccc;
+  color:#474747;
+}
+a.add-to-rack:active {
+  background:#fff;
+  border-color:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+  color:#474747;
+}
+a.add-to-rack.selected {
+  background:#666;
+  box-shadow:inset 0 0 4px rgba(0,0,0,0.5);
+  border-color:#666;
+  color:#fff;
+  text-shadow:0 1px #333;
+}
+a.remove-from-rack {
+  color:#bbb;
+  font-size:16px;
+  padding:5px 10px;
+  position:absolute;
+  right:0;
+  text-align:center;
+  text-decoration: none;
+  top:0;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;   
+}
+a.remove-from-rack:hover {color:#474747;}
+a.remove-from-rack:active {color:#0090D9;}
+div.already-in-rack {
+  position:absolute;
+  width:100px;
+  z-index:4;
+}
+div.already-in-rack span.msg {
+  background:rgba(0,0,0,0.75);
+  border-radius:3px;
+  color:#fff;
+  display:block;
+  font-size:11px;
+  font-weight:200;
+  padding:5px;
+  text-shadow:0 1px #000;
+}
+div.already-in-rack span.tail {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(0,0,0,0.75);  
+  display:block;
+  height:0;
+  margin-left:45px;
+  width:0;
+}
 </style>
 </head>
 <body>
@@ -471,7 +582,9 @@ div#rack h2 {
 <div id="rack">
   <a href="#" id="close-rack"><i class="fa fa-times"></i></a>
   <h2>My Rack</h2>
-  <div id="rack-list"></div>
+  <div id="rack-list">
+    <div class="empty">Add items to your rack...</div>
+  </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
@@ -480,6 +593,73 @@ div#rack h2 {
 * @description search_page namespace object, conatining the functionality and templates for the search page
 */
 var search_page = {
+  /**
+  * @description add to rack functionality
+  * @param {DOM object} item - link clicked
+  */
+  addToRack: function(item){
+    var rack = $('#rack-list');
+    var existing = rack.data('skus');
+    var details = item.data('details');
+    var idx = item.closest('div.item').index();
+    var items = rack.find('div.item').length;
+    var add_to_list = false;
+    if(existing == undefined){
+      item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
+      rack.data('skus', details.sku);
+      add_to_list = true;
+    }else{
+      existing = existing.split(',');
+      if(existing.indexOf(details.sku) == -1){
+        existing.push(details.sku);
+        rack.data('skus', existing.join(','));
+        item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
+        add_to_list = true;
+      }
+    }
+    if(add_to_list == true){
+      if(items == 0){rack.html('');}
+      var desc = details.long_product_description == '' ? details.short_product_description : details.long_product_description ;
+      var retail = details.retail_price;
+      var sale = details.sale_price;
+      var price_display = '';
+      if((sale >= retail)||(sale == 0)){
+        price_display = '<span class="price"><em>retail price</em>' + numeral(retail).format('$0,0.00') + 
+        '</span><span class="price"><em>shipping</em>' + numeral(details.shipping_price).format('$0,0.00') + '</span>';
+      }else{
+        price_display = '<span class="price strike"><em>retail price</em>' + numeral(retail).format('$0,0.00') + 
+        '</span><span class="price"><em>sale price</em>' + numeral(sale).format('$0,0.00') + '</span>' +
+        '<span class="price"><em>shipping</em>' + numeral(details.shipping_price).format('$0,0.00') + '</span>';
+      }
+      rack.append(
+        '<div class="item"><a href="#" class="remove-from-rack" data-sku="' + 
+        details.sku + '" data-idx="' + idx + '"><i class="fa fa-times"></i></a>' +
+        '<div class="image"><img src="' + details.product_image_url + 
+        '" style="width:50px"/></div><div class="details">' +
+        '<span class="name">' + details.product_name + '</span>' +
+        '<span class="manu">' + details.manufacturer_name + '</span>' +
+        price_display + '<span class="avail">' + details.availability + 
+        '</span></div></div>'
+      );
+      search_page.updateRackCount();
+    }else{
+      var pos = item.offset();
+      if($('#air-' + idx).length < 1){
+        $('body').append(
+          '<div class="already-in-rack" id="air-' + idx + 
+          '" style="top:' + (pos.top - 32) + 'px;left:' + (pos.left - 37) + 
+          'px"><span class="msg">SKU already in rack</span>' +
+          '<span class="tail"></span></div>'
+        )
+        var id = 'air-' + idx;
+        window.setTimeout(function(){
+          $('#' + id).fadeOut(function(){
+            $('#' + id).remove();
+          })
+        }, 3000)
+      }
+    }
+  },
   /**
   * @description capitalize the first letter of a string
   * @param {string} str - the string to process
@@ -521,6 +701,11 @@ var search_page = {
       e.preventDefault();
       search_page.performSearch(1);
     });
+    $("#search-field").keyup(function(event) {
+      if (event.keyCode === 13) {
+        search_page.performSearch(1);
+      }
+    });
     /* facets functionality */
     $('#facets').on('click', 'a.facet-group', function(e){
       e.preventDefault();
@@ -547,7 +732,11 @@ var search_page = {
         link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
       }
       // ajax submission of favoriting will go here
-    });
+    }).on('click','a.add-to-rack',function(e){
+      e.preventDefault();
+      var link = $(this);
+      search_page.addToRack(link);
+    })
     /* pager functionality */
     $('#pager').on('click','a.page',function(e){
       e.preventDefault();
@@ -563,9 +752,25 @@ var search_page = {
       e.preventDefault();
       $('#rack').removeClass('show');
     });
-
-
-
+    $('#rack-list').on('click','a.remove-from-rack',function(e){
+      e.preventDefault();
+      var link = $(this);
+      var sku = link.data('sku');
+      var rack = $('#rack-list');
+      var existing = rack.data('skus').split(',');
+      var idx = existing.indexOf(sku);
+      existing.splice(idx,1);
+      rack.data('skus',existing.join(','));
+      link.closest('div.item').remove();
+      /* undo selected btn */
+      var list_entry = $('#results div.item').eq(link.data('idx'));
+      var add_link = list_entry.find('a.add-to-rack');
+      var link_sku = add_link.data('details').sku;
+      if(link_sku == sku){
+        add_link.html('<i class="fa fa-plus-circle"></i>add to rack').removeClass('selected');
+      }
+      search_page.updateRackCount();
+    });
   },
   /**
   * @description processing and template for facets
@@ -631,9 +836,9 @@ var search_page = {
     );
     /**
     * @description private function to gerenate links
-    * @params {integer} page - current page
-    * @params {integer} low - low number to use in loop
-    * @params {integer} high - high number to use in loop
+    * @param {integer} page - current page
+    * @param {integer} low - low number to use in loop
+    * @param {integer} high - high number to use in loop
     * @returns {string} HTML
     */        
     function makePager(page, low, high){
@@ -789,7 +994,6 @@ var search_page = {
   * @param {array} results - the product result array
   */  
   resultTemplate: function(results){
-    console.log(results)
     var w = $('#results').width() / 3
     var dynamic_dim = 'style="height:' + w + 'px;"'
     var markup = [];
@@ -800,7 +1004,7 @@ var search_page = {
         var desc = details.long_product_description == '' ? details.short_product_description : details.long_product_description ;
         var retail = details.retail_price;
         var sale = details.sale_price;
-        var price_dsiplay = '';
+        var price_display = '';
         if((sale >= retail)||(sale == 0)){
           price_display = '<span class="price"><em>retail price</em>' + numeral(retail).format('$0,0.00') + 
           '</span><span class="price"><em>shipping</em>' + numeral(details.shipping_price).format('$0,0.00') + '</span>';
@@ -816,12 +1020,29 @@ var search_page = {
           '></div><span class="name">' + details.product_name + 
           '</span><span class="avail">' + details.availability + '</span>' + 
           '<span class="manu">' + details.manufacturer_name + '</span>' +
-          price_display + '</div>'
+          price_display + '<a href="#" class="add-to-rack">' +
+          '<i class="fa fa-plus-circle"></i>add to rack</a></div>'
         );
       }
       $('#results').html(markup.join(''));
+      if(markup.length > 0){
+        var items = $('#results div.item');
+        for(var i = 0, l = results.length; i<l; i++){
+          var item = results[i];
+          var details = item._source;   
+          items.eq(i).find('a.add-to-rack').data('details',details);       
+        }
+      }
       search_page.equalHeight($('#results div.item'));
     }
+  },
+  /**
+  * @description update the rack toggle button display
+  */
+  updateRackCount: function(){
+    var items = $('#rack-list div.item').length;
+    var s = items == 1 ? '' : 's';
+    $('#rack-toggle').html('<span>' + items + '</span> item' + s + ' in your rack');
   }
 }
 /* call the search page init function to set up the page */
