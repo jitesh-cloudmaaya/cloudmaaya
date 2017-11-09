@@ -13,6 +13,30 @@ a,a:focus,div:focus,ul:focus,input:focus {outline:0px;}
 body {background:#fff; font-size:62.5%;font-family:"Barlow", "Helvetica Neue",Helvetica,Arial,sans-serif;}
 html {overflow-y:scroll;overflow-x:auto;}
 /* page styles */
+#header {
+  box-shadow:0 0 3px rgba(0,0,0,0.2);
+  height:75px;
+}
+#header span.user {
+  float:right;
+  height:75px;
+  line-height:75px;
+  font-size:20px;
+  font-weight:200;
+  padding:0 20px;
+}
+#header a.logo {
+  color:#000;
+  display:block;
+  border-right:1px solid #ddd;
+  float:left;
+  font-size:40px;
+  height:75px;
+  line-height:75px;
+  padding:0 20px 0 18px;
+  text-decoration:none;
+}
+
 #content {
   margin:15px;
   overflow:auto;
@@ -557,15 +581,15 @@ div.already-in-rack span.tail {
 }
 
 #user-card {
-  position:fixed;
+  position:absolute;
   right:20px;
-  top:15px;
-  -webkit-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;   
+  top:90px;
+  -webkit-transition: width 0.3s ease-in-out;
+  transition: width 0.3s ease-in-out;   
   width:inherit;
-  z-index:6;
-  
+  z-index:6;  
 }
+#user-card.sticky {position:fixed;top:15px;}
 #user-card.show {border-radius:5px; width:500px; }
 #user-card #user-clip {
   background:#f2987e;
@@ -576,16 +600,19 @@ div.already-in-rack span.tail {
   font-weight:300;
   height:50px;
   line-height:50px;
-  padding:0 65px 0 20px;
+  overflow:hidden;
+  padding:0;
   position:absolute;
   top:0;
   right:0;
   text-decoration: none;
   -webkit-transition: all 1s ease-in-out;
   transition: all 1s ease-in-out;
+  width:50px;
   z-index:3;  
 }
-#user-card #user-clip span {
+#user-card #user-clip.ready {box-shadow:0 0 3px rgba(0,0,0,0.3);padding:0 65px 0 20px;}
+#user-card #user-clip span.name {
   display:inline-block; 
   left:20px;
   line-height:48px; 
@@ -596,6 +623,22 @@ div.already-in-rack span.tail {
   vertical-align:top; 
   white-space:nowrap;
 }
+
+#user-card #user-clip span.expanded {
+  display:block;
+  font-size:14px;
+  font-weight:200;
+  line-height:18px;
+  padding-left:0;
+  overflow:hidden;
+  opacity:0;  
+  -webkit-transition: all 1s ease-in-out;
+  transition: all 1s ease-in-out; 
+  white-space: nowrap;
+  width:0;
+}
+#user-card #user-clip span.expanded em {font-weight:200; font-variant:small-caps; padding-right:5px; }
+
 #user-card #user-clip img.client {
   border-radius:50%;
   display:inline-block;
@@ -617,16 +660,15 @@ div.already-in-rack span.tail {
   position:absolute;
   right:0;
   top:50px;
-  -webkit-transition: border-radius 1s ease-in-out,width 1s ease-in-out,top 1s ease-in-out,box-shadow 1s ease-in-out,height 0.2s ease-in-out;
+  -webkit-transition: border-radius 1s ease-in-out, width 1s ease-in-out,top 1s ease-in-out,box-shadow 1s ease-in-out,height 0.2s ease-in-out;
   transition: border-radius 1s ease-in-out,width 1s ease-in-out,top 1s ease-in-out,box-shadow 1s ease-in-out,height 0.2s ease-in-out; 
-
   width:0;
   z-index:2; 
 }
 
 
-#user-card.show #user-clip {
-  box-shadow:0 0 3px rgba(0,0,0,0.3);
+#user-card.show #user-clip.ready {
+  background:#000;
   border-radius:0;
   border-top-right-radius: 5px;
   border-top-left-radius:5px;
@@ -634,24 +676,134 @@ div.already-in-rack span.tail {
   height:130px;
   width:500px !important;
 }
-#user-card.show #user-clip span{
-  left:130px;
-}
+#user-card.show #user-clip span.name{ left:130px;}
 #user-card.show #user-clip img.client {
   height:100px;
   right:385px;
   top:15px;
   width:100px;
 }
+#user-card.show #user-clip span.expanded {
+  opacity:1;
+  padding-left:135px;
+  width:365px;
+}
+#user-card.show #user-clip span.expanded.goal {padding-top:40px;}
 #user-card.show div.details {
   box-shadow:0 0 3px rgba(0,0,0,0.3);
   border-bottom-right-radius:5px;
   border-bottom-left-radius:5px;
-  height:500px; 
+  height:500px;
+  overflow:auto;
   top:130px;
-  -webkit-transition: border-radius 1s ease-in-out,width 1s ease-in-out,top 1s ease-in-out,box-shadow 1s ease-in-out,height 0.5s ease-in-out 1s;
-  transition: border-radius 1s ease-in-out,width 1s ease-in-out,top 1s ease-in-out,box-shadow 1s ease-in-out,height 0.5s ease-in-out 1s; 
-
+  -webkit-transition: border-radius 1s ease-in-out,width 1s ease-in-out,top 1s ease-in-out,box-shadow 1s ease-in-out,height 0.5s ease-in-out 0.75s;
+  transition: border-radius 1s ease-in-out,width 1s ease-in-out,top 1s ease-in-out,box-shadow 1s ease-in-out,height 0.5s ease-in-out 0.75s; 
   width:500px;
 }
-#user-card div.details span {display:block; font-size:20px; width:480px;padding:10px; white-space: pre-wrap;}
+#user-card div.weather,
+#user-card div.demo {
+  border-bottom:1px solid #ddd;
+  overflow:auto;
+  width:500px;
+}
+#user-card div.notes {
+  height:190px;
+  width:500px;
+}
+#user-card div.notes div.notes-wrapper {
+  overflow:auto;
+  height:175px;
+}
+#user-card div.demo {
+  padding:10px 0 ;
+}
+#user-card div.weather span {
+  border-right:1px solid #eee; 
+  float:left; 
+  margin:15px 0;
+  width:calc(25% - 1px);
+}
+#user-card div.demo div.left {
+  border-right:1px solid #eee;
+  float:left; 
+  width:calc(50% - 1px);  
+}
+#user-card div.demo div.right{
+  float:left; 
+  width:50%;  
+}
+#user-card div.demo span{
+  display:block;
+  font-size:14px;
+  font-weight:200;
+  height:18px;
+  line-height:18px;
+  overflow:hidden;
+  padding:0 10px;
+  text-align: right;
+}
+#user-card div.demo span em {float:left; font-weight:200; padding-right:5px;}
+#user-card div.weather span:nth-of-type(4) {border:0;}
+#user-card div.weather span em {
+  color:#999;
+  display:block;
+  font-size:18px;
+  font-size:200;
+  line-height:24px;
+  text-align:center;
+  text-transform: uppercase;
+}
+#user-card div.weather span em.desc{
+  color:#777;
+  font-size:12px;
+}
+#user-card div.weather span i {
+  color:#666;
+  display:block;
+  font-size:40px;
+  height:65px;
+  line-height:65px;
+  text-align:center;
+}
+#user-card div.notes h6 {
+  color:#474747;
+  font-size:14px;
+  font-size:200;
+  padding:10px 10px 5px;
+}
+#user-card div.notes div.note {
+  background:#f3f3f3;
+  border-radius:5px;
+  font-size:14px;
+  font-size:200;
+  line-height:20px;  
+  margin:5px 15px 10px 15px;
+  padding:0
+  text-shadow:0 1px #fff;
+}
+#user-card div.notes div.note table td {
+  font-size:16px;
+  font-size:200; 
+  line-height:20px;
+  padding:5px 10px; 
+  vertical-align: middle;
+  
+}
+#user-card div.notes div.note table td.date {
+  background:#000;
+  border-bottom-left-radius:5px;
+  border-top-left-radius:5px;  
+  color:#fff;
+  font-size:14px;
+  font-size:200;
+  line-height:16px;  
+  padding:10px 0;
+  text-align:center;
+  width:65px;
+}
+
+
+
+
+
+
