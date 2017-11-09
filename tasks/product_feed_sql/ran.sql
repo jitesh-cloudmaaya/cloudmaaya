@@ -1,73 +1,145 @@
-INSERT INTO product_api_product         |
-(	
-	product_id, 
-	merchant_id,
-	product_name,
-	long_product_description,
-	short_product_description,
-	product_url,
-	product_image_url,
-	buy_url,
-	manufacturer_name,
-	manufacturer_part_number,
-	SKU,
-	product_type,
-	discount,
-	discount_type,
-	sale_price,
-	retail_price,
-	shipping_price,
-	color,
-	gender,
-	style,
-	size,
-	material,
-	age,
-	currency,
-	availablity,
-	begin_date,
-	end_date,
-	keywords,
-	primary_category,
-	secondary_category,
-	brand,
-	update_at
+
+-- Delete Non Applicable Categories
+DELETE p FROM tasks_ranproducts p 
+LEFT JOIN product_api_merchantcategory c ON c.name = p.primary_category 
+WHERE c.active = false;
+
+-- Update Merchant Name
+UPDATE tasks_ranproducts p 
+INNER JOIN product_api_merchant m ON m.external_merchant_id = p.merchant_id
+SET p.merchant_name = m.name;
+
+-- Insert New Products
+INSERT INTO product_api_product         
+( 
+  product_id, 
+  merchant_id,
+  product_name,
+  long_product_description,
+  short_product_description,
+  product_url,
+  product_image_url,
+  buy_url,
+  manufacturer_name,
+  manufacturer_part_number,
+  SKU,
+  product_type,
+  discount,
+  discount_type,
+  sale_price,
+  retail_price,
+  shipping_price,
+  color,
+  gender,
+  style,
+  size,
+  material,
+  age,
+  currency,
+  availablity,
+  begin_date,
+  end_date,
+  keywords,
+  primary_category,
+  secondary_category,
+  brand,
+  updated_at,
+  merchant_name
 
 )
+SELECT * FROM (
 SELECT 
-	product_id,
-	merchant_id,
-	product_name,
-	long_product_description,
-	short_product_description,
-	product_url,
-	product_image_url,
-	buy_url,
-	manufacturer_name,
-	manufacturer_part_number,
-	SKU,
-	attribute_2_product_type,
-	CASE WHEN discount_type <> "amount" OR discount_type <> "percentage" THEN 0 ELSE discount END AS discount,
-	CASE WHEN discount_type <> "amount" OR discount_type <> "percentage" THEN "amount" ELSE discount_type END AS discount_type,
-	sale_price,
-	retail_price,
-	shipping,
-	UPPER(SUBSTRING_INDEX(attribute_5_color, ',', 1)),
-	REPLACE(REPLACE(REPLACE(UPPER(attribute_6_gender), "FEMALE", "WOMEN"), "MALE", "MEN"), "MAN", "MEN");
-	attribute_7_style,
-	REPLACE(UPPER(attribute_3_size), '~', ','),
-	attribute_4_material,
-	attribute_8_age,
-	currency,
-	CASE WHEN availablity = '' OR NULL THEN 'out-of-stock' ELSE availablity END AS availablity,
-	begin_date,
-	end_date,
-	keywords,
-	primary_category,
-	secondary_category,
-	brand,
-	NOW()
-FROM tasks_ranproducts
+  rp.product_id,
+  rp.merchant_id,
+  rp.product_name,
+  rp.long_product_description,
+  rp.short_product_description,
+  rp.product_url,
+  rp.product_image_url,
+  rp.buy_url,
+  rp.manufacturer_name,
+  rp.manufacturer_part_number,
+  rp.SKU,
+  rp.attribute_2_product_type,
+  CASE WHEN rp.discount_type <> "amount" OR rp.discount_type <> "percentage" THEN 0 ELSE rp.discount END AS discount,
+  CASE WHEN rp.discount_type <> "amount" OR rp.discount_type <> "percentage" THEN "amount" ELSE rp.discount_type END AS discount_type,
+  rp.sale_price,
+  rp.retail_price,
+  rp.shippping,
+  UPPER(SUBSTRING_INDEX(rp.attribute_5_color, ',', 1)),
+  REPLACE(REPLACE(REPLACE(UPPER(rp.attribute_6_gender), "FEMALE", "WOMEN"), "MALE", "MEN"), "MAN", "MEN"),
+  rp.attribute_7_style,
+  REPLACE(UPPER(rp.attribute_3_size), '~', ','),
+  rp.attribute_4_material,
+  UPPER(rp.attribute_8_age),
+  rp.currency,
+  CASE WHEN rp.availablity = '' OR NULL THEN 'out-of-stock' ELSE rp.availablity END AS availablity,
+  rp.begin_date,
+  rp.end_date,
+  rp.keywords,
+  rp.primary_category,
+  rp.secondary_category,
+  rp.brand,
+  NOW(),
+  rp.merchant_name
+FROM tasks_ranproducts rp LEFT JOIN product_api_product ap ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
+WHERE ap.product_id IS NULL) x;
+
+
+-- Update Existing Products
+UPDATE product_api_product ap
+INNER JOIN tasks_ranproducts_FULL rp ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
+SET
+  ap.product_id =  rp.product_id,
+  ap.merchant_id =  rp.merchant_id,
+  ap.product_name =  rp.product_name,
+  ap.long_product_description =  rp.long_product_description,
+  ap.short_product_description =  rp.short_product_description,
+  ap.product_url =  rp.product_url,
+  ap.product_image_url =  rp.product_image_url,
+  ap.buy_url =  rp.buy_url,
+  ap.manufacturer_name =  rp.manufacturer_name,
+  ap.manufacturer_part_number =  rp.manufacturer_part_number,
+  ap.SKU =  rp.SKU,
+  ap.product_type =  rp.attribute_2_product_type,
+  ap.discount = CASE WHEN rp.discount_type <> "amount" OR rp.discount_type <> "percentage" THEN 0 ELSE rp.discount END,
+  ap.discount_type = CASE WHEN rp.discount_type <> "amount" OR rp.discount_type <> "percentage" THEN "amount" ELSE rp.discount_type END,
+  ap.sale_price =  rp.sale_price,
+  ap.retail_price =  rp.retail_price,
+  ap.shipping_price =  rp.shippping,
+  ap.color =  UPPER(SUBSTRING_INDEX(rp.attribute_5_color, ',', 1)),
+  ap.gender =  REPLACE(REPLACE(REPLACE(UPPER(rp.attribute_6_gender), "FEMALE", "WOMEN"), "MALE", "MEN"), "MAN", "MEN"),
+  ap.style =  rp.attribute_7_style,
+  ap.size =  REPLACE(UPPER(rp.attribute_3_size), '~', ','),
+  ap.material =  rp.attribute_4_material,
+  ap.age =  UPPER(rp.attribute_8_age),
+  ap.currency =  rp.currency,
+  ap.availablity =  CASE WHEN rp.availablity = '' OR NULL THEN 'out-of-stock' ELSE rp.availablity END,
+  ap.begin_date =  rp.begin_date,
+  ap.end_date =  rp.end_date,
+  ap.keywords =  rp.keywords,
+  ap.primary_category =  rp.primary_category,
+  ap.secondary_category =  rp.secondary_category,
+  ap.brand =  rp.brand,
+  ap.updated_at =  NOW(),
+  ap.merchant_name =  rp.merchant_name;
+
+
+
+/*
+
+
+  if row["merchant_id"] == 41558:
+    new_row["color"] = ""
+    new_row["size"] = ""
+  if new_row["age"] != "ADULT" and new_row["age"] != "KIDS":
+    new_row["age"] = ""
+
+  return new_row
+
+*/
+
+
 
 /*
 def format_data(row):
@@ -151,14 +223,3 @@ def format_data(row):
 
 
   */
-  if new_row["age"] is None:
-    new_row["age"] = ""
-  new_row["age"] = new_row["age"].upper()
-
-  if row["merchant_id"] == 41558:
-    new_row["color"] = ""
-    new_row["size"] = ""
-  if new_row["age"] != "ADULT" and new_row["age"] != "KIDS":
-    new_row["age"] = ""
-
-  return new_row
