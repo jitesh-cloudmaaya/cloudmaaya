@@ -45,15 +45,23 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
 class Network(models.Model):
-    network_name = models.CharField(max_length=128, blank=True, null=True)
-    status = models.BooleanField(default=False)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
 class Merchant(models.Model):
     external_merchant_id = models.IntegerField(blank=True, null=True)
-    merchant_name = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
     network = models.ForeignKey(Network)
-    status = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class MerchantCategory(models.Model):
+    external_merchant_id = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    network = models.ForeignKey(Network)
+    active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
