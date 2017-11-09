@@ -59,6 +59,7 @@ class RanProducts(models.Model):
     attribute_22 = models.CharField(max_length=128, blank=True, null=True)
     modification = models.CharField(max_length=128, blank=True, null=True)
     merchant_id = models.IntegerField(blank=True, null=True, db_index=True)
+    merchant_name = models.CharField(max_length=75, blank=True, null=True)
 
     #class Meta:
     #    managed = False
