@@ -685,10 +685,14 @@ div.already-in-rack span.tail {
 }
 #user-card.show #user-clip span.expanded {
   opacity:1;
-  padding-left:135px;
+  padding-left:130px;
   width:365px;
 }
-#user-card.show #user-clip span.expanded.goal {padding-top:40px;}
+#user-card.show #user-clip span.expanded.locale {
+  padding-top:38px;
+  padding-bottom:3px;
+  font-size:16px;
+}
 #user-card.show div.details {
   box-shadow:0 0 3px rgba(0,0,0,0.3);
   border-bottom-right-radius:5px;
