@@ -1,31 +1,31 @@
 version: '3.3'
 services:
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.2
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
-    networks:
-      - elk
-  kibana:
-    image: docker.elastic.co/kibana/kibana:5.5.2
-    environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9200
-    ports:
-      - 5601:5601
-    links:
-      - elasticsearch
-    networks:
-      - elk
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:5.5.2
+  #   environment:
+  #     - cluster.name=docker-cluster
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   volumes:
+  #     - esdata:/usr/share/elasticsearch/data
+  #   ports:
+  #     - 9200:9200
+  #   networks:
+  #     - elk
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:5.5.2
+  #   environment:
+  #     ELASTICSEARCH_URL: http://elasticsearch:9200
+  #   ports:
+  #     - 5601:5601
+  #   links:
+  #     - elasticsearch
+  #   networks:
+  #     - elk
   mysql:
     image: mysql
     environment:
@@ -45,7 +45,7 @@ services:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
       - ./logstash/mysql-connector-java-5.1.43-bin.jar:/usr/share/logstash/mysql-connector-java-5.1.43-bin.jar
     links:
-      - elasticsearch
+#      - elasticsearch
       - mysql
     networks:
       - elk

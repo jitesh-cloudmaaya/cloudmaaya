@@ -7,7 +7,8 @@ WHERE c.active = false;
 -- Update Merchant Name
 UPDATE tasks_ranproducts p 
 INNER JOIN product_api_merchant m ON m.external_merchant_id = p.merchant_id
-SET p.merchant_name = m.name;
+SET p.merchant_name = m.name
+WHERE p.merchant_name IS NULL;
 
 -- Insert New Products
 INSERT INTO product_api_product         
