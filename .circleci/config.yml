@@ -18,16 +18,14 @@ jobs:
        - checkout
        - run: echo "hello world"
 
-      - run:
+       - run:
           name: install dependencies
           command: |
-#            python3 -m venv venv
-#            . venv/bin/activate
             pip install -r requirements.txt
             cp catalogue_service/settings_local.py.default catalogue_service/settings_local.py
 
-      - run:
-          name: migrate DB
+       - run:
+          name: Migrate DB
           command: |
              python manage.py migrate
 
