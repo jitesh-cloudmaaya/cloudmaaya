@@ -793,7 +793,7 @@ def add_merchants_categories(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('product_api', '0008_auto_20171109_0527'),
+        ('product_api', '0006_initial_network_and_merchants_20171106_2355'),
     ]
 
     operations = [

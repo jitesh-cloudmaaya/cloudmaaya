@@ -4,12 +4,6 @@ DELETE p FROM tasks_ranproducts p
 LEFT JOIN product_api_merchantcategory c ON c.name = p.primary_category 
 WHERE c.active = false;
 
--- Update Merchant Name
-UPDATE tasks_ranproducts p 
-INNER JOIN product_api_merchant m ON m.external_merchant_id = p.merchant_id
-SET p.merchant_name = m.name
-WHERE p.merchant_name IS NULL;
-
 -- Insert New Products
 INSERT INTO product_api_product         
 ( 
@@ -38,14 +32,17 @@ INSERT INTO product_api_product
   age,
   currency,
   availablity,
-  begin_date,
-  end_date,
+  -- begin_date,
+  -- end_date,
   keywords,
   primary_category,
   secondary_category,
   brand,
   updated_at,
-  merchant_name
+  merchant_name,
+  is_best_seller,
+  is_trending,
+  allume_score
 
 )
 SELECT * FROM (
@@ -75,21 +72,25 @@ SELECT
   UPPER(rp.attribute_8_age),
   rp.currency,
   CASE WHEN rp.availablity = '' OR NULL THEN 'out-of-stock' ELSE rp.availablity END AS availablity,
-  rp.begin_date,
-  rp.end_date,
+  -- rp.begin_date,
+  -- rp.end_date,
   rp.keywords,
   rp.primary_category,
   rp.secondary_category,
   rp.brand,
-  NOW(),
-  rp.merchant_name
+  NOW() as updated_at,
+  m.name,
+  0 as is_best_seller,
+  0 as is_trending,
+  0 as allume_score
 FROM tasks_ranproducts rp LEFT JOIN product_api_product ap ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
+INNER JOIN product_api_merchant m ON m.external_merchant_id = rp.merchant_id
 WHERE ap.product_id IS NULL) x;
 
 
 -- Update Existing Products
 UPDATE product_api_product ap
-INNER JOIN tasks_ranproducts_FULL rp ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
+INNER JOIN tasks_ranproducts rp ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
 SET
   ap.product_id =  rp.product_id,
   ap.merchant_id =  rp.merchant_id,
@@ -116,14 +117,13 @@ SET
   ap.age =  UPPER(rp.attribute_8_age),
   ap.currency =  rp.currency,
   ap.availablity =  CASE WHEN rp.availablity = '' OR NULL THEN 'out-of-stock' ELSE rp.availablity END,
-  ap.begin_date =  rp.begin_date,
-  ap.end_date =  rp.end_date,
+  -- ap.begin_date =  rp.begin_date,
+  -- ap.end_date =  rp.end_date,
   ap.keywords =  rp.keywords,
   ap.primary_category =  rp.primary_category,
   ap.secondary_category =  rp.secondary_category,
   ap.brand =  rp.brand,
-  ap.updated_at =  NOW(),
-  ap.merchant_name =  rp.merchant_name;
+  ap.updated_at =  NOW();
 
 
 
