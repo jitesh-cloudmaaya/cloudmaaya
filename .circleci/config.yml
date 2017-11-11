@@ -6,7 +6,7 @@ version: 2
 jobs:
    build:
      docker:
-       - image: circleci/<language>:<version TAG>
+       - image: circleci/python:2.7.13
        - image: circleci/mysql:5.7
          environment:
            MYSQL_ROOT_PASSWORD: password
