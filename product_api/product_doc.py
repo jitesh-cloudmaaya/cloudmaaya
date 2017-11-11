@@ -3,7 +3,7 @@ from elasticsearch_dsl.field import (
     String, Date as ESDate, Float, Boolean
 )
 from elasticsearch_dsl import FacetedSearch
-from elasticsearch_dsl import TermsFacet, DateHistogramFacet
+from elasticsearch_dsl import TermsFacet, DateHistogramFacet, HistogramFacet
 from elasticsearch_dsl.query import Q
 from six import itervalues
 import collections
@@ -63,14 +63,11 @@ class Logs(DocType):
 
 
 class EProductSearch(FacetedSearch):
-    doc_types = ['logs']
+    doc_types = ['product']
     # fields that should be searched
-    #index = 'log*'
+    index = 'products'
 
-    fields = ['product_name', 'long_product_description', 'short_product_description']
-
-
-
+    fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category']
 
     facets = collections.OrderedDict((
         # use bucket aggregations to define facets
@@ -81,7 +78,12 @@ class EProductSearch(FacetedSearch):
         ('size', TermsFacet(field='size.keyword')),
         ('gender', TermsFacet(field='gender.keyword')),
         ('age', TermsFacet(field='age.keyword')),
+        ('brand', TermsFacet(field='brand.keyword')),
         ('material', TermsFacet(field='material.keyword')),
+        ('primary_category', TermsFacet(field='primary_category.keyword')),
+        ('allume_score', TermsFacet(field='allume_score')), #HistogramFacet
+        ('is_trending', TermsFacet(field='is_trending')),
+        ('is_best_seller', TermsFacet(field='is_best_seller')),
     ))
 
     def filter(self, search):
