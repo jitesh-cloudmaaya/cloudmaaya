@@ -51,7 +51,7 @@ def basic_search(self):
 
     text_query = self.query_params.get('text', 'shirt')
 
-    s = Search(index="logstash-*") \
+    s = Search(index="products") \
         .query("match_phrase", product_name=text_query)[0:10]
 
 
