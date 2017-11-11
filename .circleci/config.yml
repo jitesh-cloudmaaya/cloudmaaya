@@ -21,6 +21,8 @@ jobs:
        - run:
           name: install dependencies
           command: |
+            virtualenv catalogue_service
+            . catalogue_service/bin/activate
             pip install -r requirements.txt
             cp catalogue_service/settings_local.py.default catalogue_service/settings_local.py
 
