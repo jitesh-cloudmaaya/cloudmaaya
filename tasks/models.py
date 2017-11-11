@@ -59,7 +59,17 @@ class RanProducts(models.Model):
     attribute_22 = models.CharField(max_length=128, blank=True, null=True)
     modification = models.CharField(max_length=128, blank=True, null=True)
     merchant_id = models.IntegerField(blank=True, null=True, db_index=True)
-    merchant_name = models.CharField(max_length=75, blank=True, null=True)
+    merchant_name = models.CharField(max_length=75, blank=True, null=True, db_index=True)
 
     #class Meta:
     #    managed = False
+
+
+class ProductFeedLog(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    step = models.CharField(max_length=255, blank=True, null=True)
+    status = models.CharField(max_length=255, blank=True, null=True)
+    result = models.CharField(max_length=2000, blank=True, null=True)
+    start_time = models.DateTimeField(auto_now_add=True, null=True)
+    end_time = models.DateTimeField(auto_now=True, null=True)
+
