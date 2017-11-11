@@ -35,6 +35,7 @@ jobs:
             pip install -r requirements.txt
             cp catalogue_service/settings_local.py.default catalogue_service/settings_local.py
 
+
  #     - save_cache:
  #         paths:
  #           - ./venv
