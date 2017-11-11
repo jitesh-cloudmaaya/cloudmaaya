@@ -10,13 +10,27 @@ jobs:
        - image: circleci/mysql:5.7
          environment:
            MYSQL_ROOT_PASSWORD: password
-           MYSQL_DATABASE: db
+           MYSQL_DATABASE: catalogue_service
 
      working_directory: ~/repo
 
      steps:
        - checkout
        - run: echo "hello world"
+
+      - run:
+          name: install dependencies
+          command: |
+#            python3 -m venv venv
+#            . venv/bin/activate
+            pip install -r requirements.txt
+            cp catalogue_service/settings_local.py.default catalogue_service/settings_local.py
+
+      - run:
+          name: migrate DB
+          command: |
+             python manage.py migrate
+
 
 
 # jobs:

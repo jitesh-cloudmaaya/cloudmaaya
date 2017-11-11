@@ -8,7 +8,7 @@ DATABASES = {
         'PORT': '3306',
         'NAME': 'catalogue_service',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'password',
     }
  }
 
