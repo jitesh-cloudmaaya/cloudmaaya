@@ -21,17 +21,22 @@ jobs:
        - run:
           name: install dependencies
           command: |
-            virtualenv catalogue_service
-            . catalogue_service/bin/activate
+            virtualenv venv
+            . venv/bin/activate
             pip install -r requirements.txt
             cp catalogue_service/settings_local.py.default catalogue_service/settings_local.py
 
        - run:
           name: Migrate DB
           command: |
+             . venv/bin/activate
              python manage.py migrate
 
-
+       - run:
+          name: Run Tests
+          command: |
+             . venv/bin/activate
+             python manage.py test
 
 # jobs:
 #   build:
