@@ -527,6 +527,9 @@ var search_page = {
         );
         $('#pager-message').html('');
         $('#pager').html('');
+        if(new_search == true){
+          $('#facets').html('');
+        }        
       },
       type: "GET",
       url: '/product_api/facets?',
@@ -539,8 +542,6 @@ var search_page = {
         search_page.resultTemplate(results.data);
         if(new_search == true){
           search_page.facetTemplate(results.facets);
-        }else{
-          search_page.updateFacets(results.facets);
         }
       }
     });
@@ -568,36 +569,6 @@ var search_page = {
     }else{
       $('#results').html('<div class="no-results">There were no products matching your supplied criteria...</div>');
     }
-  },
-  updateFacets: function(facets){
-    var facet_div = $('#facets');
-    if(facets != undefined){
-      /* build initial list of facet buckets */
-      var buckets = Object.keys(facets).sort();
-      for(var i = 0, l = buckets.length; i<l; i++){
-        var bucket = buckets[i];
-        var facet_list = facets[bucket];
-        var display_name = bucket.replace('_filter_', '');
-        var group_div = facet_div.find('div[data-qparam="' + display_name + '"]');
-        /* create values hash */
-        var values = {};
-        for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
-          var facet = facet_list[display_name].buckets[j];
-          values[facet.key] = facet.doc_count;
-        }
-        $.each(group_div.find('input'), function(idx){
-          var facet_input = $(this);
-          var facet_value = facet_input.val();
-          var new_value = values[facet_value];
-          var num = facet_input.siblings('em.number');
-          if(new_value != undefined){
-            num.html(numeral(new_value).format('0,0'));
-          }else{
-            num.html(0);
-          }
-        });
-      }
-    }     
   },
   /**
   * @description update the rack toggle button display
