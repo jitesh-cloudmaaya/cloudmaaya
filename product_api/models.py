@@ -45,6 +45,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     availablity = models.CharField(max_length=50, blank=True, null=True)
+    is_deleted = models.BooleanField(default=0)
 
 
 class ProductSerializer(serializers.ModelSerializer):

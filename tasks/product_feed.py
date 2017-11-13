@@ -29,7 +29,7 @@ class ProductFeed(object):
         ftp.login(self._ftp_user, self._ftp_password)
         ftp.cwd(self._remote_dir) 
 
-        regex=re.compile(".*_mp\.txt\.gz")
+        regex=re.compile(".*_mp_delta\.txt\.gz")
         self._remote_files = [m.group(0) for file in ftp.nlst() for m in [regex.search(file)] if m]
         for remote_file in self._remote_files:
             local_file = os.path.join(self._local_temp_dir, remote_file)
