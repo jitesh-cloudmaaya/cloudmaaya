@@ -20,5 +20,6 @@ from rest_framework import routers, serializers, viewsets
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^product_api/', include('product_api.urls', namespace='v1')),
+    url(r'', include('shopping_tool.urls', namespace='v1')),
     url(r'^shopping_tool/', include('shopping_tool.urls', namespace='shopping_tool')),
 ]
