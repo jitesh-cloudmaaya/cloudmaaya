@@ -85,7 +85,8 @@ SELECT
   0 as allume_score
 FROM tasks_ranproducts rp LEFT JOIN product_api_product ap ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
 INNER JOIN product_api_merchant m ON m.external_merchant_id = rp.merchant_id
-WHERE ap.product_id IS NULL) x;
+WHERE ap.product_id IS NULL
+AND rp.modification <> 'D' ) x;
 
 
 -- Update Existing Products
@@ -123,7 +124,9 @@ SET
   ap.primary_category =  rp.primary_category,
   ap.secondary_category =  rp.secondary_category,
   ap.brand =  rp.brand,
-  ap.updated_at =  NOW();
+  ap.updated_at =  NOW(),
+  ap.is_deleted = CASE WHEN rp.modification = 'D' THEN 1 ELSE 0 END;
+
 
 
 
