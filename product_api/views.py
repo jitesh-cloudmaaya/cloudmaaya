@@ -18,6 +18,8 @@ import collections
 import json
 import urllib
 import datetime
+import urllib
+
 
 from elasticsearch_dsl.connections import connections
 from product_doc import EProductSearch#, EProduct
@@ -38,7 +40,7 @@ def facets(self):
     whitelisted_facet_args = {}
     for key, value in self.query_params.items():
         if key in EProductSearch.facets:
-            whitelisted_facet_args[key] = value.split("|")
+            whitelisted_facet_args[key] = urllib.parse.unquote(value).split("|")
 
     es = EProductSearch(query=text_query, filters=whitelisted_facet_args)
     es = es[start_record:end_record]
