@@ -35,7 +35,12 @@ def facets(self):
     end_record = (num_per_page * page) 
     print end_record
 
-    es = EProductSearch(query=text_query, filters={})
+    whitelisted_facet_args = {}
+    for key, value in self.query_params.items():
+        if key in EProductSearch.facets:
+            whitelisted_facet_args[key] = facet_to_filter(key, value)
+
+    es = EProductSearch(query=text_query, filters=whitelisted_facet_args)
     es = es[start_record:end_record]
     results = es.execute().to_dict()
 
