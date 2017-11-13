@@ -533,7 +533,7 @@ var search_page = {
       },
       type: "GET",
       url: '/product_api/facets?',
-      data: q,
+      data: encodeURIComponent(q),
       success: function(results){
         console.log(results)
         if(results.data != undefined && results.data.length > 0){
