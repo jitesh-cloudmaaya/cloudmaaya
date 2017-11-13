@@ -38,7 +38,7 @@ def facets(self):
     whitelisted_facet_args = {}
     for key, value in self.query_params.items():
         if key in EProductSearch.facets:
-            whitelisted_facet_args[key] = facet_to_filter(key, value)
+            whitelisted_facet_args[key] = value.split("|")
 
     es = EProductSearch(query=text_query, filters=whitelisted_facet_args)
     es = es[start_record:end_record]
