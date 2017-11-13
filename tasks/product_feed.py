@@ -8,9 +8,10 @@ from django.db import connection, transaction
 class ProductFeed(object):
 
 
-    def __init__(self, table, fields, ftp_config, local_temp_dir, remote_dir, leave_temp_files):
+    def __init__(self, table, fields, ftp_config, local_temp_dir, remote_dir, leave_temp_files, file_pattern):
         self._table = table
         self._fields = fields
+        self._file_pattern = file_pattern
         self._ftp_host = ftp_config['host']
         self._ftp_user = ftp_config['user']
         self._ftp_password = ftp_config['password'] 
@@ -29,7 +30,7 @@ class ProductFeed(object):
         ftp.login(self._ftp_user, self._ftp_password)
         ftp.cwd(self._remote_dir) 
 
-        regex=re.compile(".*_mp_delta\.txt\.gz")
+        regex=re.compile(self._file_pattern)
         self._remote_files = [m.group(0) for file in ftp.nlst() for m in [regex.search(file)] if m]
         for remote_file in self._remote_files:
             local_file = os.path.join(self._local_temp_dir, remote_file)
@@ -110,7 +111,7 @@ class ProductFeed(object):
 
 from tasks.product_feed import ProductFeed
 table_fields = 'product_id, product_name, SKU, primary_category, secondary_category, product_url, product_image_url, buy_url, short_product_description, long_product_description, discount, discount_type, sale_price, retail_price, begin_date, end_date, brand, shippping, keywords, manufacturer_part_number, manufacturer_name, shipping_information, availablity, universal_product_code, class_id, currency, M1, pixel, attribute_1_misc, attribute_2_product_type, attribute_3_size, attribute_4_material, attribute_5_color, attribute_6_gender, attribute_7_style, attribute_8_age, attribute_9, attribute_10, attribute_11, attribute_12, attribute_13, attribute_14, attribute_15 ,attribute_16 ,attribute_17 ,attribute_18 ,attribute_19 ,attribute_20 ,attribute_21 ,attribute_22 ,modification ,merchant_id'
-pf = ProductFeed('tasks_ranproducts', table_fields, {'host': 'aftp.linksynergy.com', 'user': 'allumestye', 'password': 'yT%6-Pl@h'}, 'pd_temp/ran', '/', True)
+pf = ProductFeed('tasks_ranproducts', table_fields, {'host': 'aftp.linksynergy.com', 'user': 'allumestye', 'password': 'yT%6-Pl@h'}, 'pd_temp/ran', '/', False, ".*_mp_delta\.txt\.gz")
 pf.get_files_ftp()
 pf.process_data()
 
