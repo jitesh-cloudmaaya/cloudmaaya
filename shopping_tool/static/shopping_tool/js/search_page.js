@@ -117,7 +117,7 @@ var search_page = {
       e.preventDefault();
       var box = $(this);
       var facet_links = $('#search-form-selections');
-      /* hook this up when we move to facet update search_page.performSearch(1); */
+       search_page.performSearch(1);
     });
     $('#search-form-selections').on('click', 'a', function(e){
       e.preventDefault();
@@ -126,7 +126,13 @@ var search_page = {
         $('#search-field').val('');
         search_page.performSearch(1);
       }else{
-
+        var facets = $('#facets');
+        var facet = link.data('facet');
+        var group = link.data('qparam');
+        var group_div = facets.find('div[data-qparam="' + group + '"]');
+        var facet_link = group_div.find('input[value="' + facet + '"]');
+        facet_link.prop('checked', false);
+        search_page.performSearch(1);
       }
     });
     /* results functionality */
@@ -149,6 +155,7 @@ var search_page = {
       e.preventDefault();
       var link = $(this);
       search_page.performSearch(parseInt(link.data('page')));
+      $('html,body').animate({ scrollTop: 0 }, 300);
     });
     /* my rack functionality */
     $('#rack-toggle').click(function(e){
@@ -204,38 +211,79 @@ var search_page = {
   facetTemplate: function(facets){
     var markup = [];
     if(facets != undefined){
+      var social_facets = [];
+      var group_markup = {names: [], markup: {}}
       /* build initial list of facet buckets */
-      var buckets = Object.keys(facets).sort();
+      var buckets = Object.keys(facets);
       for(var i = 0, l = buckets.length; i<l; i++){
         var bucket = buckets[i];
         var facet_list = facets[bucket];
-        var display_name = bucket.replace('_filter_', '');
-        markup.push(
-          '<a href="#" class="facet-group"><span>+</span>' + 
-          search_page.capitalizeEveryWord(display_name.replace(/_/g, ' ')) + 
-          '</a><div class="facet-list" data-qparam="' + display_name + '">'
+        if(['_filter_is_best_seller', '_filter_is_trending'].indexOf(bucket) == -1){
+          var display_name = bucket.replace('_filter_', '');
+          group_markup.names.push(display_name);
+          group_markup.markup[display_name] = [];
+          group_markup.markup[display_name].push(
+            '<a href="#" class="facet-group"><span>+</span>' + 
+            search_page.capitalizeEveryWord(display_name.replace(/_/g, ' ')) + 
+            '</a><div class="facet-list" data-qparam="' + display_name + '">'
+          );
+          facet_list[display_name].buckets.sort(function(a,b){
+            if(a.key.toLowerCase() > b.key.toLowerCase()){ return 1}
+            if(a.key.toLowerCase() < b.key.toLowerCase()){ return -1}
+            return 0;
+          })
+          for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
+            var facet = facet_list[display_name].buckets[j];
+            if(facet.key != ''){
+              group_markup.markup[display_name].push(
+                '<label class="facet">' +
+                '<input class="facet-box" type="checkbox" value="' + 
+                facet.key + '" data-facetgroup="' + display_name + '"/><span>' +
+                '<i class="fa fa-circle-thin"></i>' +
+                '<i class="fa fa-check-circle"></i>' +
+                '</span><em class="number">' + 
+                numeral(facet.doc_count).format('0,0') +
+                '</em><em class="key">' + facet.key + '</em></label>'
+              );
+            }
+          }
+          group_markup.markup[display_name].push('</div>');
+        }else{
+          social_facets.push(facet_list);
+        }
+      }
+      if(social_facets.length > 0){
+        group_markup.names.push('social');
+        group_markup.markup['social'] = [];
+        group_markup.markup['social'].push(
+          '<a href="#" class="facet-group"><span>+</span>Social' +
+          '</a><div class="facet-list" data-qparam="social">'
         );
-        facet_list[display_name].buckets.sort(function(a,b){
-          if(a.key.toLowerCase() > b.key.toLowerCase()){ return 1}
-          if(a.key.toLowerCase() < b.key.toLowerCase()){ return -1}
-          return 0;
-        })
-        for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
-          var facet = facet_list[display_name].buckets[j];
-          if(facet.key != ''){
-            markup.push(
-              '<label class="facet">' +
-              '<input class="facet-box" type="checkbox" value="' + 
-              facet.key + '" data-facetgroup="' + display_name + '"/><span>' +
-              '<i class="fa fa-circle-thin"></i>' +
-              '<i class="fa fa-check-circle"></i>' +
-              '</span><em class="number">' + 
-              numeral(facet.doc_count).format('0,0') +
-              '</em><em class="key">' + facet.key + '</em></label>'
-            );
+        for(var i = 0, l = social_facets.length; i<l; i++){
+          var facet = social_facets[i];
+          var keys = Object.keys(facet);
+          for(j = 0, k = keys.length; j<k; j++){
+            var key = keys[j];
+            if(key != 'doc_count'){
+              group_markup.markup['social'].push(
+                '<label class="facet">' +
+                '<input class="facet-box special" type="checkbox" value="' + 
+                key + '" data-facetgroup="' + key + '"/><span>' +
+                '<i class="fa fa-circle-thin"></i>' +
+                '<i class="fa fa-check-circle"></i>' +
+                '</span><em class="number">' + 
+                numeral(facet['doc_count']).format('0,0') +
+                '</em><em class="key">' + key.replace(/_/g, ' ').replace('is ', '') + '</em></label>'
+              );
+            }
           }
         }
-        markup.push('</div>');
+        group_markup.markup['social'].push('</div>');
+      }
+      group_markup.names.sort();
+      for(var i = 0, l = group_markup.names.length; i<l; i++){
+        var group_name = group_markup.names[i];
+        markup.push(group_markup.markup[group_name].join(''));
       }
       $('#facets').html(markup.join(''));
     }    
@@ -299,6 +347,9 @@ var search_page = {
     /* create pager message string */
     var showing_low = numeral(((page * per_page) - per_page + 1)).format('0,0');
     var showing_high = numeral(page * per_page).format('0,0');
+    if(total < per_page){
+      showing_high = numeral(total).format('0,0');
+    }
     var result_total = numeral(total).format('0,0');
     $('#pager-message').html(
       'Showing <strong>' + showing_low + '</strong> - <strong>' + 
@@ -425,29 +476,43 @@ var search_page = {
     /* generate the query string */
     var selection_markup = []
     var q = '';
-    var text = $('#search-field').val();
+    var search_box = $('#search-field');
+    var new_search = false;
+    var text = search_box.val();
     if(text != '') { 
       q += 'text=' + text; 
       selection_markup.push(
         '<a href="#" class="remove-search">' + text + '<i class="fa fa-times-circle"></i></a>'
       );
     }
+    if(text != search_box.data('lookup')){
+      search_box.data('lookup', text);
+      new_search = true;
+    }
     var facets = [];
-    $.each($('#facets div.facet-list'), function(idx){
-      var list = $(this);
-      var qparam = list.data('qparam');
-      var selected = list.find('input:checked');
-      if(selected.length > 0){
-        var values = selected.map(function (i, facet){ 
-          /* add facet remove links here...need to move to facet update to have this actually work */
-          return facet.value 
-        }).get();
-        facets.push(
-          '&' + qparam + '=' + values.join(',')
-        );
-      }
-    });
-    q += '&page=' + page;
+    if(new_search == false){
+      $.each($('#facets div.facet-list'), function(idx){
+        var list = $(this);
+        var qparam = list.data('qparam');
+        var selected = list.find('input:checked');
+        if(selected.length > 0){
+          var values = selected.map(function (i, facet){ 
+            selection_markup.push(
+              '<a href="#" class="remove-facet" data-qparam="' + qparam + 
+              '" data-facet="' + facet.value + '">' + facet.value + 
+              '<i class="fa fa-times-circle"></i></a>'
+            );
+            return facet.value 
+          }).get();
+          console.log(values)
+          facets.push(
+            '&' + qparam + '=' + values.join('|')
+          );
+        }
+      });
+    }
+    q += '&page=' + page + '' + facets.join('');
+    console.log('query string: ' + q)
     $('#search-form-selections').html(selection_markup.join(''));
     if(selection_markup.length > 0){
       $('#facet-bar').addClass('show');
@@ -472,7 +537,11 @@ var search_page = {
           search_page.pagerTemplate(results.page, results.total_items, results.num_per_page);
         }
         search_page.resultTemplate(results.data);
-        search_page.facetTemplate(results.facets);
+        if(new_search == true){
+          search_page.facetTemplate(results.facets);
+        }else{
+          search_page.updateFacets(results.facets);
+        }
       }
     });
   },
@@ -499,6 +568,36 @@ var search_page = {
     }else{
       $('#results').html('<div class="no-results">There were no products matching your supplied criteria...</div>');
     }
+  },
+  updateFacets: function(facets){
+    var facet_div = $('#facets');
+    if(facets != undefined){
+      /* build initial list of facet buckets */
+      var buckets = Object.keys(facets).sort();
+      for(var i = 0, l = buckets.length; i<l; i++){
+        var bucket = buckets[i];
+        var facet_list = facets[bucket];
+        var display_name = bucket.replace('_filter_', '');
+        var group_div = facet_div.find('div[data-qparam="' + display_name + '"]');
+        /* create values hash */
+        var values = {};
+        for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
+          var facet = facet_list[display_name].buckets[j];
+          values[facet.key] = facet.doc_count;
+        }
+        $.each(group_div.find('input'), function(idx){
+          var facet_input = $(this);
+          var facet_value = facet_input.val();
+          var new_value = values[facet_value];
+          var num = facet_input.siblings('em.number');
+          if(new_value != undefined){
+            num.html(numeral(new_value).format('0,0'));
+          }else{
+            num.html(0);
+          }
+        });
+      }
+    }     
   },
   /**
   * @description update the rack toggle button display

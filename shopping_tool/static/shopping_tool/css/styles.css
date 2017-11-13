@@ -237,14 +237,27 @@ input.search {
 }
 #facets div.facet-list label.facet input {display:none;}
 #facets div.facet-list label.facet span { color: #42A5F5 }
-#facets div.facet-list label.facet i {display:inline-block;}
+#facets div.facet-list label.facet i {display:inline-block; padding-top:2px; vertical-align: top;}
 #facets div.facet-list label.facet input + span i.fa-check-circle {display:none;}
 #facets div.facet-list label.facet input:checked + span i.fa-circle-thin {display:none;}
 #facets div.facet-list label.facet input:checked + span i.fa-check-circle {display:inline-block;}
-#facets div.facet-list label.facet em.key {display:inline-block; margin-left:5px;}
+#facets div.facet-list label.facet em.key {
+  display:inline-block; 
+  margin-left:5px;
+  overflow:hidden;
+  vertical-align: top;
+  width:calc(100% - 75px);
+}
 #facets div.facet-list label.facet:hover em.key,
 #facets div.facet-list label.facet input:checked + span + em + em.key {color:#42A5F5;}
-#facets div.facet-list label.facet em.number { color:#777; float:right; font-weight:200;}
+#facets div.facet-list label.facet em.number { 
+  color:#777; 
+  float:right; 
+  font-weight:200; 
+  text-align: right;
+  vertical-align:top; 
+  width:50px;
+}
 
 @-webkit-keyframes heartbeat {
   0% {
@@ -897,7 +910,7 @@ div.already-in-rack span.tail {
   float:left;
   font-size:12px;
   font-weight:700;
-  padding:2px 0 10px;
+  padding:4px 0 10px;
   text-transform: uppercase;
 }
 #facet-bar span#search-form-selections {
@@ -906,11 +919,14 @@ div.already-in-rack span.tail {
   width:calc(100% - 108px);
 }
 #facet-bar a {
+  border:1px solid #ccc;
+  border-radius:3px;
   color:#474747;
   display:inline-block;
   font-size:14px;
   font-weight:300;
   margin:0 5px 5px 0;
+  padding:1px 5px;
   text-decoration: none;
 }
 #facet-bar a i {
