@@ -41,7 +41,7 @@ def facets(self):
     whitelisted_facet_args = {}
     for key, value in self.query_params.items():
         if key in EProductSearch.facets:
-            whitelisted_facet_args[key] = value #urllib.unquote(value).split("|")
+            whitelisted_facet_args[key] = urllib.unquote(value).split("|")
 
     print whitelisted_facet_args
     es = EProductSearch(query=text_query, filters=whitelisted_facet_args)

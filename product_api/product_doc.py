@@ -93,6 +93,7 @@ class EProductSearch(FacetedSearch):
         """
         filters = Q('match_all')
         for f in itervalues(self._filters):
+            print f
             filters &= f
         return search.filter(filters)
 
