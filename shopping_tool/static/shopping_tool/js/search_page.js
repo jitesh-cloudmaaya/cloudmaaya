@@ -480,7 +480,7 @@ var search_page = {
     var new_search = false;
     var text = search_box.val();
     if(text != '') { 
-      q += 'text=' + text; 
+      q += 'text=' + encodeURIComponent(text); 
       selection_markup.push(
         '<a href="#" class="remove-search">' + text + '<i class="fa fa-times-circle"></i></a>'
       );
@@ -506,7 +506,7 @@ var search_page = {
           }).get();
           console.log(values)
           facets.push(
-            '&' + qparam + '=' + values.join('|')
+            '&' + qparam + '=' + encodeURIComponent(values.join('|'))
           );
         }
       });
@@ -533,7 +533,7 @@ var search_page = {
       },
       type: "GET",
       url: '/product_api/facets?',
-      data: encodeURIComponent(q),
+      data: q,
       success: function(results){
         console.log(results)
         if(results.data != undefined && results.data.length > 0){
