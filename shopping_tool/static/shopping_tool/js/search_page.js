@@ -305,32 +305,26 @@ var search_page = {
     var merch = '<span class="merch">' + details.merchant_name + '</span>';
     var manu = '<span class="manu">by ' + details.manufacturer_name + '</span>';    
     if((sale >= retail)||(sale == 0)){
-      price_display = '<span class="price"><em>retail price</em>' + numeral(retail).format('$0,0.00') + 
-      '</span><span class="price"><em>shipping</em>' + numeral(details.shipping_price).format('$0,0.00') + '</span>';
+      price_display = '<span class="price">' + numeral(sale).format('$0,0.00') + '</span>';
     }else{
-      price_display = '<span class="price strike"><em>retail price</em>' + numeral(retail).format('$0,0.00') + 
-      '</span><span class="price"><em>sale price</em>' + numeral(sale).format('$0,0.00') + '</span>' +
-      '<span class="price"><em>shipping</em>' + numeral(details.shipping_price).format('$0,0.00') + '</span>';
+      price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
+        ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
     }
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
     if(view == 'list'){
       return '<div class="item"><div class="image"><a href="#" class="favorite">' +
         '<i class="fa fa-heart-o"></i></a><img src="' + 
-        details.product_image_url + '" ' + dynamic_dim + '></div><span class="name">' + 
-        details.product_name + '</span><span class="avail">' + details.availability + 
-        '</span>' + merch + '' + manu + '' + price_display + '' + 
-        '<span class="size"><em>size</em>' + details.size + '</span>' +
-        '<a href="#" class="add-to-rack"><i class="icon-hanger"></i>add to rack</a></div>';
+        details.product_image_url + '" ' + dynamic_dim + '></div><a href="' + details.product_url + 
+        '" target="_blank" class="name">' + details.product_name + '</a>' + 
+        '<a href="#" class="add-to-rack"><i class="icon-hanger"></i>add to rack</a>' + merch + 
+        '' + manu + '' + price_display + '</div>';
     }else{
-      return '<div class="item"><a href="#" class="remove-from-rack" data-sku="' + 
+      return '<div class="item" title="' + details.merchant_name + ' by ' + 
+        details.manufacturer_name + '"><a href="#" class="remove-from-rack" data-sku="' + 
         details.sku + '" data-idx="' + idx + '"><i class="fa fa-times"></i></a>' +
         '<div class="image"><img src="' + details.product_image_url + 
-        '" style="width:50px"/></div><div class="details">' +
-        '<span class="name">' + details.product_name + '</span>' +
-        '<span class="avail">' + details.availability + '</span>' +
-        merch + '' + manu + '' + price_display + 
-        '<span class="size"><em>size</em>' + details.size + '</span></div></div>'
+        '" style="height:150px;width:150px"/></div><div class="details">' + price_display + '</div></div>';
     }
   },
   /**
@@ -504,7 +498,6 @@ var search_page = {
             );
             return facet.value 
           }).get();
-          console.log(values)
           facets.push(
             '&' + qparam + '=' + encodeURIComponent(values.join('|'))
           );
