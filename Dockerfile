@@ -28,7 +28,8 @@ RUN apt-get install -y python-cffi
 RUN apt-get install -y libffi6 libffi-dev
 RUN apt-get install -y python-setuptools
 RUN apt-get install -y python3-setuptools
-
+RUN apt-get install nano
+#RUN apt-get install lynx
 
 # Create application subdirectories
 WORKDIR $DOCKYARD_SRVHOME

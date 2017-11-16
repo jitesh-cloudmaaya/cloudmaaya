@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+from django.contrib.auth.models import User
 from django.shortcuts import render
-from rest_framework.decorators import (api_view, renderer_classes)
+from rest_framework.decorators import (api_view, renderer_classes, permission_classes)
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.renderers import JSONRenderer
 from rest_framework_xml.renderers import XMLRenderer
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import serializers
@@ -27,6 +28,7 @@ from product_doc import EProductSearch#, EProduct
 
 
 @api_view(['GET'])
+@permission_classes((AllowAny, ))
 def facets(self):
 
     text_query = self.query_params.get('text', 'shirt')
@@ -56,6 +58,7 @@ def facets(self):
 
 
 @api_view(['GET'])
+@permission_classes((AllowAny, ))
 def basic_search(self):
 
     text_query = self.query_params.get('text', 'shirt')
