@@ -71,16 +71,16 @@ class EProductSearch(FacetedSearch):
 
     facets = collections.OrderedDict((
         # use bucket aggregations to define facets
-        ('manufacturer_name', TermsFacet(field='manufacturer_name.keyword')),
-        ('color', TermsFacet(field='color.keyword')),
-        ('merchant_name', TermsFacet(field='merchant_name.keyword')),
-        ('style', TermsFacet(field='style.keyword')),
-        ('size', TermsFacet(field='size.keyword')),
-        ('gender', TermsFacet(field='gender.keyword')),
-        ('age', TermsFacet(field='age.keyword')),
-        ('brand', TermsFacet(field='brand.keyword')),
+        ('manufacturer_name', TermsFacet(field='manufacturer_name.keyword', size=100)),
+        ('color', TermsFacet(field='color.keyword', size=100)),
+        ('merchant_name', TermsFacet(field='merchant_name.keyword', size=100)),
+        ('style', TermsFacet(field='style.keyword', size=100)),
+        ('size', TermsFacet(field='size.keyword', size=100)),
+        ('gender', TermsFacet(field='gender.keyword', size=100)),
+        ('age', TermsFacet(field='age.keyword', size=100)),
+        ('brand', TermsFacet(field='brand.keyword', size=100)),
         ('material', TermsFacet(field='material.keyword')),
-        ('primary_category', TermsFacet(field='primary_category.keyword')),
+        ('primary_category', TermsFacet(field='primary_category.keyword', size=100)),
         ('allume_score', TermsFacet(field='allume_score')), #HistogramFacet
         ('is_trending', TermsFacet(field='is_trending')),
         ('is_best_seller', TermsFacet(field='is_best_seller')),
