@@ -46,7 +46,7 @@ def qa(docker_tag=''):
   env.hosts = ['ec2-52-8-79-129.us-west-1.compute.amazonaws.com']
 
   if docker_tag == '':
-    env.docker_tag = 'feature/search_ui'
+    env.docker_tag = 'latest'
   else:
     env.docker_tag = docker_tag
 
@@ -98,7 +98,9 @@ def deploy_web_container():
     run('docker rm $(docker stop $(docker ps -a -q --filter name=web))')
     env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/clio_docker/settings_local.py:/srv/clio/settings_local.py -p 8000:8000 --name=shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service:%s >> ~/clio_web.log 2>&1" % (env.environment, env.docker_tag))
+    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v ~/static:/srv/catalogue_service/static -p 8000:8000 --name shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service")
+
+
 
 def deploy():
     deploy_web_container()
