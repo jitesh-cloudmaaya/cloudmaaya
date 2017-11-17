@@ -36,18 +36,18 @@ jobs:
              python manage.py migrate
 
 
-       - run: docker build -t allumestyle/catalogue-service:$CIRCLE_BRANCH .
+       - run: docker build -t allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g') .
 
 
        - run:
           name: Run Tests
-          command: docker run  -v $(pwd)/catalogue_service/settings_local.py.default:/srv/catalogue_service/catalogue_service/settings_local.py --entrypoint="/docker-entrypoint-test.sh" allumestyle/catalogue-service:$CIRCLE_BRANCH
+          command: docker run  -v $(pwd)/catalogue_service/settings_local.py.default:/srv/catalogue_service/catalogue_service/settings_local.py --entrypoint="/docker-entrypoint-test.sh" allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
 
 #             . venv/bin/activate
 #             python manage.py test
 
        # deploy the image
-       - run: docker push allumestyle/catalogue-service:$CIRCLE_BRANCH
+       - run: docker push allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
 
 # jobs:
 #   build:
