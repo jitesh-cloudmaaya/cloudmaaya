@@ -17,7 +17,9 @@ jobs:
 
      steps:
        - checkout
-       - run: echo "hello world"
+       - setup_remote_docker:
+           docker_layer_caching: true
+
 
        - run:
           name: install dependencies
@@ -33,11 +35,19 @@ jobs:
              . venv/bin/activate
              python manage.py migrate
 
+
+       - run: docker build -t allumestyle/catalogue-service:$CIRCLE_BRANCH .
+
+
        - run:
           name: Run Tests
-          command: |
-             . venv/bin/activate
-             python manage.py test
+          command: docker run  -v $(pwd)/catalogue_service/settings_local.py.default:/srv/catalogue_service/catalogue_service/settings_local.py --entrypoint="/docker-entrypoint-test.sh" allumestyle/catalogue-service:$CIRCLE_BRANCH
+
+#             . venv/bin/activate
+#             python manage.py test
+
+       # deploy the image
+       - run: docker push allumestyle/catalogue-service:$CIRCLE_BRANCH
 
 # jobs:
 #   build:

@@ -40,7 +40,7 @@ VOLUME ["$DOCKYARD_SRVHOME/media/", "$DOCKYARD_SRVHOME/logs/", "$DOCKYARD_SRVPRO
 COPY $DOCKYARD_SRC $DOCKYARD_SRVPROJ
 
 # Remove settings_local.py if present
-RUN rm -rf /srv/catalogue_service/settings_local.py
+RUN rm -rf /srv/catalogue_service/catalogue_service/settings_local.py
 
 # Install Python dependencies
 RUN pip install -r $DOCKYARD_SRVPROJ/requirements.txt  
