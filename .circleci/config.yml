@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-   build:
+  build:
      docker:
        - image: circleci/python:2.7.13
        - image: circleci/mysql:5.7
@@ -37,18 +37,17 @@ jobs:
 
 
   deploy:
-    docker:
+     docker:
       - image: allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
-    working_directory: ~/repo  
-    steps:
-      - checkout
-      - run:
-          name: Install Fabrik
-          command: pip install Fabrik
-      - run:
-          name: Deploy if tests pass and branch is Develop
-          command: fab qa deploy
-
+     working_directory: ~/repo  
+     steps:
+       - checkout
+       - run:
+           name: Install Fabrik
+           command: pip install Fabrik
+       - run:
+           name: Deploy if tests pass and branch is Develop
+           command: fab qa deploy
 
 workflows:
   version: 2
