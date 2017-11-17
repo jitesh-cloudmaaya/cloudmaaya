@@ -47,6 +47,7 @@ jobs:
 #             python manage.py test
 
        # deploy the image
+       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
        - run: docker push allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
 
 # jobs:
