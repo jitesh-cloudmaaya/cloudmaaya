@@ -1,0 +1,117 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  build:
+     docker:
+       - image: circleci/python:2.7.13
+       - image: circleci/mysql:5.7
+         environment:
+           MYSQL_ROOT_PASSWORD: password
+           MYSQL_DATABASE: catalogue_service
+       - image: docker.elastic.co/elasticsearch/elasticsearch:5.5.2
+
+     working_directory: ~/repo
+
+     steps:
+       - checkout
+       - setup_remote_docker:
+           docker_layer_caching: true
+
+       - run: 
+          name: Build Shopping Service Docker Image
+          command: docker build -t allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g') .
+
+       - run:
+          name: Run Tests
+          command: docker run  -v $(pwd)/catalogue_service/settings_local.py.default:/srv/catalogue_service/catalogue_service/settings_local.py --entrypoint="/docker-entrypoint-test.sh" allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
+
+       - run:  
+          name: Set Docker Hub Creds
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+       - run:  
+          name: Push the tagged image to Docker Hub
+          command: docker push allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
+
+
+  deploy:
+     docker:
+      - image: circleci/python:2.7.13
+     working_directory: ~/repo  
+     steps:
+       - checkout
+       - run:
+           name: Install Fabrik
+           command: |
+              virtualenv venv
+              . venv/bin/activate
+              pip install Fabrik
+       - run:
+           name: Deploy if tests pass and branch is Develop
+           command: |
+               . venv/bin/activate
+               fab qa deploy
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
+
+
+# jobs:
+#   build:
+#     docker:
+#       # specify the version you desire here
+#       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+#       - image: circleci/python:2.7.13
+      
+#       # Specify service dependencies here if necessary
+#       # CircleCI maintains a library of pre-built images
+#       # documented at https://circleci.com/docs/2.0/circleci-images/
+#       - image: circleci/mysql:5.7
+
+#     working_directory: ~/repo
+
+#     steps:
+#       - checkout
+
+#       # Download and cache dependencies
+#    #   - restore_cache:
+#    #       keys:
+#    #       - v1-dependencies-{{ checksum "requirements.txt" }}
+#    #       # fallback to using the latest cache if no exact match is found
+#    #       - v1-dependencies-
+
+#       - run:
+#           name: install dependencies
+#           command: |
+#   #          python3 -m venv venv
+#   #          . venv/bin/activate
+#             pip install -r requirements.txt
+#             cp catalogue_service/catalogue_service/settings_local.py.default catalogue_service/catalogue_service/settings_local.py
+
+
+#  #     - save_cache:
+#  #         paths:
+#  #           - ./venv
+#  #         key: v1-dependencies-{{ checksum "requirements.txt" }}
+        
+#       # run tests!
+#       - run:
+#           name: run tests
+# #          command: |
+# #            . venv/bin/activate
+#             python manage.py test
+
+# #      - store_artifacts:
+# #          path: test-reports
+# #          destination: test-reports

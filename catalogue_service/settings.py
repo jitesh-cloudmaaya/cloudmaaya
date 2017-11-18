@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '=pygr69-)_vctwqfo-(09@n15h3z&byq9-m-(#+7a5k9jb5ew+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# In Setting Local
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['shopping-tool-stage.allume.co', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -78,9 +78,12 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
-
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'rest_framework.authentication.SessionAuthentication'
+    ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
     'DEFAULT_VERSION': 'v1',
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
     'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
 }
 

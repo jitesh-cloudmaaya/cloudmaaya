@@ -1,0 +1,1 @@
+docker run -d -p 80:80 -p 443:443 --name=nginx --link clio_web:clio_web -v ~/.ssl:/etc/ssl/certs/ --volumes-from clio_web intermix/nginx

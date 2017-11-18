@@ -1,18 +1,20 @@
 ## Local Settings File
+import os
 
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'NAME': 'catalogue_service',
-        'USER': 'root',
-        'PASSWORD': '',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
- }
+}
 
 # Elastic Search Connection
 from elasticsearch_dsl.connections import connections
 connections.create_connection(hosts=['http://localhost:9200'], timeout=20, http_auth=('elastic:changeme'))
 
+DEBUG = True
+
+print ("XXXXX####################################")
