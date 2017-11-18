@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+from django.contrib.auth.models import User
 from django.shortcuts import render
-from rest_framework.decorators import (api_view, renderer_classes)
+from rest_framework.decorators import (api_view, renderer_classes, permission_classes)
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.renderers import JSONRenderer
 from rest_framework_xml.renderers import XMLRenderer
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import serializers
@@ -18,16 +19,20 @@ import collections
 import json
 import urllib
 import datetime
+import urllib
+
+
 
 from elasticsearch_dsl.connections import connections
 from product_doc import EProductSearch#, EProduct
 
 
 @api_view(['GET'])
+@permission_classes((AllowAny, ))
 def facets(self):
 
     text_query = self.query_params.get('text', 'shirt')
-    num_per_page = int(self.query_params.get('num_per_page', 25))
+    num_per_page = int(self.query_params.get('num_per_page', 48))
     page = int(self.query_params.get('page', 1))
 
     start_record = (num_per_page * (page - 1))
@@ -35,7 +40,13 @@ def facets(self):
     end_record = (num_per_page * page) 
     print end_record
 
-    es = EProductSearch(query=text_query, filters={})
+    whitelisted_facet_args = {}
+    for key, value in self.query_params.items():
+        if key in EProductSearch.facets:
+            whitelisted_facet_args[key] = urllib.unquote(value).split("|")
+
+    print whitelisted_facet_args
+    es = EProductSearch(query=text_query, filters=whitelisted_facet_args)
     es = es[start_record:end_record]
     results = es.execute().to_dict()
 
@@ -47,11 +58,12 @@ def facets(self):
 
 
 @api_view(['GET'])
+@permission_classes((AllowAny, ))
 def basic_search(self):
 
     text_query = self.query_params.get('text', 'shirt')
 
-    s = Search(index="logstash-*") \
+    s = Search(index="products") \
         .query("match_phrase", product_name=text_query)[0:10]
 
 

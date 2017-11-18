@@ -28,18 +28,19 @@ RUN apt-get install -y python-cffi
 RUN apt-get install -y libffi6 libffi-dev
 RUN apt-get install -y python-setuptools
 RUN apt-get install -y python3-setuptools
-
+RUN apt-get install nano
+#RUN apt-get install lynx
 
 # Create application subdirectories
 WORKDIR $DOCKYARD_SRVHOME
 RUN mkdir media static logs log
-VOLUME ["$DOCKYARD_SRVHOME/media/", "$DOCKYARD_SRVHOME/logs/", "$DOCKYARD_SRVHOME/static/"]
+VOLUME ["$DOCKYARD_SRVHOME/media/", "$DOCKYARD_SRVHOME/logs/", "$DOCKYARD_SRVPROJ/static/"]
 
 # Copy application source code to SRCDIR
 COPY $DOCKYARD_SRC $DOCKYARD_SRVPROJ
 
 # Remove settings_local.py if present
-RUN rm -rf /srv/catalogue_service/settings_local.py
+RUN rm -rf /srv/catalogue_service/catalogue_service/settings_local.py
 
 # Install Python dependencies
 RUN pip install -r $DOCKYARD_SRVPROJ/requirements.txt  

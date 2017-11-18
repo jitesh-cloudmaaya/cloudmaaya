@@ -1,1 +1,1 @@
-docker run -v /home/catalogue_service/catalogue_servicedocker/settings_local.py:/srv/catalogue_service/catalogue_service_local.py --name=catalogue_service --detach=true --restart=always --publish=8000:8001 catalogue_service/catalogue_service_docker:latest
+docker run -v catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service_local.py --name=catalogue_service --detach=true --restart=always --publish=8000:8001 catalogue_service_docker:latest
