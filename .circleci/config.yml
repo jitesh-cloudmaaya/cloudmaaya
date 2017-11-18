@@ -50,7 +50,9 @@ jobs:
               pip install Fabrik
        - run:
            name: Deploy if tests pass and branch is Develop
-           command: fab qa deploy
+           command: |
+               . venv/bin/activate
+               fab qa deploy
 
 workflows:
   version: 2
