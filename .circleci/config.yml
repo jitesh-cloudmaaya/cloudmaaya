@@ -44,7 +44,10 @@ jobs:
        - checkout
        - run:
            name: Install Fabrik
-           command: pip install Fabrik
+           command: |
+              virtualenv venv
+              . venv/bin/activate
+              pip install Fabrik
        - run:
            name: Deploy if tests pass and branch is Develop
            command: fab qa deploy
