@@ -46,7 +46,7 @@ def qa(docker_tag=''):
   env.hosts = ['ec2-52-8-79-129.us-west-1.compute.amazonaws.com']
 
   if docker_tag == '':
-    env.docker_tag = 'latest'
+    env.docker_tag = 'develop'
   else:
     env.docker_tag = docker_tag
 
