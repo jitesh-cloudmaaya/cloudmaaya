@@ -37,7 +37,7 @@ jobs:
 
 
   deploy:
-     docker:
+     machine:
       #- image: allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
      working_directory: ~/repo  
      steps:
