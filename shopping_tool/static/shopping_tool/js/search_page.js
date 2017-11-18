@@ -12,6 +12,7 @@ var search_page = {
     var details = item.data('details');
     var idx = item.closest('div.item').index();
     var items = rack.find('div.item').length;
+    var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
     var add_to_list = false;
     if(existing == undefined){
       item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
@@ -19,8 +20,8 @@ var search_page = {
       add_to_list = true;
     }else{
       existing = existing.split(',');
-      if(existing.indexOf(details.sku) == -1){
-        existing.push(details.sku);
+      if(existing.indexOf(sku) == -1){
+        existing.push(sku);
         rack.data('skus', existing.join(','));
         item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
         add_to_list = true;
@@ -149,7 +150,19 @@ var search_page = {
       e.preventDefault();
       var link = $(this);
       search_page.addToRack(link);
-    })
+    }).on('mouseenter', 'a.info-toggle', function(e){
+      var link = $(this);
+      var tt = link.siblings('div.tt');
+      tt.addClass('check')
+      var h = tt.height()
+      tt.removeClass('check');
+      var pos = link.position();
+      tt.css({top: (pos.top - (h + 20)) +'px', left: (pos.left - 174) + 'px'}).fadeIn()
+    }).on('mouseleave', 'a.info-toggle', function(e){
+      var link = $(this);
+      var tt = link.siblings('div.tt'); 
+      tt.fadeOut();  
+    });
     /* pager functionality */
     $('#pager').on('click','a.page',function(e){
       e.preventDefault();
@@ -179,7 +192,8 @@ var search_page = {
       /* undo selected btn */
       var list_entry = $('#results div.item').eq(link.data('idx'));
       var add_link = list_entry.find('a.add-to-rack');
-      var link_sku = add_link.data('details').sku;
+      var details = add_link.data('details')
+      var link_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
       if(link_sku == sku){
         add_link.html('<i class="icon-hanger"></i>add to rack').removeClass('selected');
       }
@@ -318,11 +332,15 @@ var search_page = {
         details.product_image_url + '" ' + dynamic_dim + '></div><a href="' + details.product_url + 
         '" target="_blank" class="name">' + details.product_name + '</a>' + 
         '<a href="#" class="add-to-rack"><i class="icon-hanger"></i>add to rack</a>' + merch + 
-        '' + manu + '' + price_display + '</div>';
+        '' + manu + '<a href="#" class="info-toggle"><i class="fa fa-info-circle"></i></a>' + 
+        price_display + '<div class="tt"><span><em>size:</em>' + 
+        details.size + '</span><span><em>description:</em>' + details.short_product_description + 
+        '</span></div></div>';
     }else{
       return '<div class="item" title="' + details.merchant_name + ' by ' + 
         details.manufacturer_name + '"><a href="#" class="remove-from-rack" data-sku="' + 
-        details.sku + '" data-idx="' + idx + '"><i class="fa fa-times"></i></a>' +
+        details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku + 
+        '" data-idx="' + idx + '"><i class="fa fa-times"></i></a>' +
         '<div class="image"><img src="' + details.product_image_url + 
         '" style="height:150px;width:150px"/></div><div class="details">' + price_display + '</div></div>';
     }
