@@ -24,5 +24,6 @@ class Command(BaseCommand):
 
             self.stdout.write(self.style.WARNING("Loading Data to DB and Updating Products"))
             pf.process_data()
-        except:
+        except Exception as e:
             self.stdout.write(self.style.ERROR("Failed"))
+            self.stdout.write(self.style.ERROR(e))

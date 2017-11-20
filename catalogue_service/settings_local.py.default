@@ -20,3 +20,5 @@ DEBUG = True
 PRODUCT_FEED_TEMP = 'pd_temp'
 
 PRODUCT_INDEX = 'products'
+
+

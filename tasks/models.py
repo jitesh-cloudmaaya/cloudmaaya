@@ -67,6 +67,7 @@ class RanProducts(models.Model):
 
 class ProductFeedLog(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
+    parentId = models.ForeignKey("ProductFeedLog", blank=True, null=True)
     step = models.CharField(max_length=255, blank=True, null=True)
     status = models.CharField(max_length=255, blank=True, null=True)
     result = models.CharField(max_length=2000, blank=True, null=True)
