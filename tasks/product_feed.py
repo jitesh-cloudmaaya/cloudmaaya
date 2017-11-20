@@ -15,7 +15,7 @@ class ProductFeed(object):
         self._ftp_host = ftp_config['host']
         self._ftp_user = ftp_config['user']
         self._ftp_password = ftp_config['password'] 
-        self._local_temp_dir = local_temp_dir
+        self._local_temp_dir = local_temp_dir if local_temp_dir else settings_local.PRODUCT_FEED_TEMP
         self._remote_dir = remote_dir
         self._remote_files = []
         self._leave_temp_files = leave_temp_files
@@ -26,6 +26,7 @@ class ProductFeed(object):
 
     def get_files_ftp(self):
 
+        self.make_temp_dir()
         ftp = ftplib.FTP(self._ftp_host)
         ftp.login(self._ftp_user, self._ftp_password)
         ftp.cwd(self._remote_dir) 
