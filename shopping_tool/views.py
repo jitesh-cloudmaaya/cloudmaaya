@@ -3,18 +3,51 @@ from __future__ import unicode_literals
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.template.context_processors import csrf
+from rest_framework.decorators import (api_view, renderer_classes, permission_classes)
+from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.renderers import JSONRenderer
+from rest_framework_xml.renderers import XMLRenderer
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import serializers
 from decorators import check_login
 from django.core.exceptions import PermissionDenied
-from .models import AllumeClients
+from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments
+from product_api.models import Product
 
 # Create your views here.
 
 @check_login
 def index(request):
+
     user = request.user
-    client = AllumeClients.objects.get(id=227)
-    context = {'user': user, 'client': client}
+    styling_session = AllumeStylingSessions.objects.get(id = 3)
+    rack_items = Rack.objects.filter(allume_styling_session = styling_session)
+    client = styling_session.stylist_assignment.client
+
+    context = {'user': user, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client}
     return render(request, 'shopping_tool/index.html', context)
+
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def add_product_to_rack(request):
+
+    product_id = request.query_params.get('product_id')
+    product = Product.objects.get(id = product_id)
+
+    allume_styling_session_id = int(request.query_params.get('allume_styling_session_id'))
+    allume_styling_session = AllumeStylingSessions.objects.get(id = allume_styling_session_id)
+
+    user = request.user
+
+    add_product = Rack.objects.create(product = product, allume_styling_session = allume_styling_session)
+
+    context = "Success"
+
+    return Response(context) 
 
 
 

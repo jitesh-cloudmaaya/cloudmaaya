@@ -244,8 +244,8 @@ class AllumeStylistAssignmentTypes(models.Model):
 class AllumeStylistAssignments(models.Model):
     id = models.BigAutoField(primary_key=True)
     assignment_author_id = models.BigIntegerField()
-    assigned_stylist_id = models.BigIntegerField()
-    user_id = models.BigIntegerField(blank=True, null=True)
+    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
+    client = models.ForeignKey(AllumeClients, db_constraint=False, db_column='user_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField(blank=True, null=True)
     stylist_assignment_type = models.ForeignKey(AllumeStylistAssignmentTypes, models.DO_NOTHING)
     status = models.CharField(max_length=11)
     notes = models.TextField(blank=True, null=True)
@@ -259,8 +259,7 @@ class AllumeStylistAssignments(models.Model):
         db_table = 'allume_stylist_assignments'
 
 class Rack(models.Model):
-    user = models.ForeignKey(WpUsers, on_delete=models.DO_NOTHING)
-    client = models.ForeignKey(AllumeClients, db_constraint=False, on_delete=models.DO_NOTHING)
+    allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
