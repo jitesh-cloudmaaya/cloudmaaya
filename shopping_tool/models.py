@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from product_api.models import Product
+
 
 # Create your models here.
 class WpUsers(models.Model):
@@ -256,4 +258,9 @@ class AllumeStylistAssignments(models.Model):
         managed = False
         db_table = 'allume_stylist_assignments'
 
-
+class Rack(models.Model):
+    user = models.ForeignKey(WpUsers, on_delete=models.DO_NOTHING)
+    client = models.ForeignKey(AllumeClients, db_constraint=False, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
