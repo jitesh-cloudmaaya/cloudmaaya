@@ -67,3 +67,193 @@ class AllumeClients(models.Model):
     class Meta:
         managed = False
         db_table = 'allume_clients'
+
+
+class AllumeQuizAnswerItems(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    edit_version = models.BigIntegerField()
+    quiz_id = models.BigIntegerField()
+    quiz_question_answer = models.ForeignKey('AllumeQuizQuestionAnswers', models.DO_NOTHING)
+    type = models.CharField(max_length=9)
+    label = models.TextField(blank=True, null=True)
+    value = models.CharField(max_length=255)
+    s_order = models.IntegerField()
+    s_order_old = models.IntegerField(blank=True, null=True)
+    visible = models.TextField()  # This field type is a guess.
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_quiz_answer_items'
+
+
+class AllumeQuizAuthor(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    author_email = models.CharField(max_length=255)
+    quiz = models.ForeignKey('AllumeQuizzes', models.DO_NOTHING)
+    edit_version = models.BigIntegerField()
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_quiz_author'
+        unique_together = (('quiz', 'edit_version'),)
+
+
+class AllumeQuizImages(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    author_email = models.CharField(max_length=255)
+    url = models.CharField(unique=True, max_length=255)
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_quiz_images'
+
+
+class AllumeQuizQuestionAnswers(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    edit_version = models.BigIntegerField()
+    quiz = models.ForeignKey('AllumeQuizzes', models.DO_NOTHING)
+    question = models.TextField()
+    name = models.CharField(max_length=255)
+    js_widget_name = models.CharField(max_length=255, blank=True, null=True)
+    quiz_step = models.ForeignKey('AllumeQuizSteps', models.DO_NOTHING)
+    user_answer_max_choice = models.IntegerField(blank=True, null=True)
+    choice_type = models.CharField(max_length=12)
+    required = models.TextField()  # This field type is a guess.
+    s_order = models.IntegerField()
+    visible = models.TextField()  # This field type is a guess.
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_quiz_question_answers'
+        unique_together = (('quiz', 'name'),)
+
+
+class AllumeQuizStepGroups(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    edit_version = models.BigIntegerField()
+    name = models.CharField(max_length=255)
+    quiz = models.ForeignKey('AllumeQuizzes', models.DO_NOTHING)
+    step_group_trigger = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
+    visible = models.TextField()  # This field type is a guess.
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_quiz_step_groups'
+        unique_together = (('quiz', 'name'),)
+
+
+class AllumeQuizSteps(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    edit_version = models.BigIntegerField()
+    name = models.CharField(max_length=255)
+    quiz = models.ForeignKey('AllumeQuizzes', models.DO_NOTHING)
+    step_trigger = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
+    step_trigger_value = models.IntegerField(blank=True, null=True)
+    step_value_formula = models.TextField(blank=True, null=True)
+    step_group_id = models.BigIntegerField()
+    visible = models.TextField()  # This field type is a guess.
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_quiz_steps'
+        unique_together = (('quiz', 'name'),)
+
+
+class AllumeQuizUserAnswers(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    visitor_id = models.BigIntegerField()
+    user = models.ForeignKey('AllumeClients', to_field='id') #, models.DO_NOTHING) #models.BigIntegerField(blank=True, null=True)
+    user_email = models.CharField(max_length=255)
+    quiz = models.ForeignKey('AllumeQuizzes', models.DO_NOTHING)
+    quiz_version = models.BigIntegerField()
+    quiz_question_answer = models.ForeignKey('AllumeQuizQuestionAnswers', models.DO_NOTHING)
+    quiz_answer_item_ids = models.TextField()
+    quiz_free_form_answer = models.TextField(blank=True, null=True)
+    visible = models.TextField()  # This field type is a guess.
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_quiz_user_answers'
+        unique_together = (('user_email', 'visitor_id', 'quiz_question_answer'),)
+
+
+class AllumeQuizzes(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(unique=True, max_length=255)
+    edit_version = models.BigIntegerField()
+    visible = models.TextField()  # This field type is a guess.
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_quizzes'
+
+
+class AllumeStylingSessions(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    token = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
+    wp_initiator_id = models.BigIntegerField()
+    wp_target_id = models.BigIntegerField()
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+    revised_session_id = models.BigIntegerField(blank=True, null=True)
+    stylist_assignment = models.ForeignKey('AllumeStylistAssignments', models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'allume_styling_sessions'
+
+
+class AllumeStylistAssignmentTypes(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    stylist_assignment_type = models.CharField(unique=True, max_length=34)
+    visible = models.TextField()  # This field type is a guess.
+    s_order = models.IntegerField()
+    duration_in_min = models.IntegerField()
+    group_minute_diff_from_origin = models.IntegerField()
+    calendar_color = models.CharField(max_length=50)
+    stylist_entered_availability = models.TextField(blank=True, null=True)  # This field type is a guess.
+    meeting_scheduled_with_client = models.TextField(blank=True, null=True)  # This field type is a guess.
+    parent_id = models.BigIntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'allume_stylist_assignment_types'
+
+
+class AllumeStylistAssignments(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    assignment_author_id = models.BigIntegerField()
+    assigned_stylist_id = models.BigIntegerField()
+    user_id = models.BigIntegerField(blank=True, null=True)
+    stylist_assignment_type = models.ForeignKey(AllumeStylistAssignmentTypes, models.DO_NOTHING)
+    status = models.CharField(max_length=11)
+    notes = models.TextField(blank=True, null=True)
+    due_date = models.DateTimeField()
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+    flexible = models.TextField()  # This field type is a guess.
+
+    class Meta:
+        managed = False
+        db_table = 'allume_stylist_assignments'
+
+
