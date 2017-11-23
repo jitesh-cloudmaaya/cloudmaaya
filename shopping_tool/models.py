@@ -210,8 +210,8 @@ class AllumeStylingSessions(models.Model):
     id = models.BigAutoField(primary_key=True)
     token = models.CharField(max_length=50)
     name = models.CharField(max_length=100)
-    wp_initiator_id = models.BigIntegerField()
-    wp_target_id = models.BigIntegerField()
+    client = models.ForeignKey(WpUsers, related_name='client_user', db_constraint=False, db_column='wp_initiator_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Client
+    shopper = models.ForeignKey(WpUsers, related_name='shopper_user', db_constraint=False, db_column='wp_target_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Shopper
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     date_created = models.DateTimeField()

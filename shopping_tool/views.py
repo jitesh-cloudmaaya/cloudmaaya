@@ -24,7 +24,7 @@ def index(request):
     user = request.user
     styling_session = AllumeStylingSessions.objects.get(id = 3)
     rack_items = Rack.objects.filter(allume_styling_session = styling_session)
-    client = styling_session.stylist_assignment.client
+    client = styling_session.client
 
     context = {'user': user, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client}
     return render(request, 'shopping_tool/index.html', context)
