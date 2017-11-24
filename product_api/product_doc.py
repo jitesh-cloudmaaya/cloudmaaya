@@ -10,6 +10,8 @@ import collections
 
 import inspect
 
+from catalogue_service.settings_local import PRODUCT_INDEX
+
 """
 #Commenting out for now I expect to delete soon unless we decide to not use logstash for indexing
 
@@ -65,7 +67,7 @@ class Logs(DocType):
 class EProductSearch(FacetedSearch):
     doc_types = ['product']
     # fields that should be searched
-    index = 'products'
+    index = PRODUCT_INDEX
 
     fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category']
 
