@@ -46,7 +46,7 @@ def add_product_to_rack(request):
     try:
         add_product = Rack.objects.create(product = product, allume_styling_session = allume_styling_session)
         context = {'Success': True, 'Product_Rack_ID': add_product.id}
-    else:
+    except:
         context = "Error"
 
     return Response(context) 
@@ -67,7 +67,7 @@ def create_look(request):
     try:
         create_look = Look.objects.create(stylist = stylist, allume_styling_session = allume_styling_session, look_layout = look_layout)
         context = {'Success': True, 'Look_ID': create_look.id}
-    else:
+    except:
         context = "Error"
 
     return Response(context) 
