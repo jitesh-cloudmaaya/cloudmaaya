@@ -263,3 +263,29 @@ class Rack(models.Model):
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+
+
+class LookLayout(models.Model):
+    name = models.CharField(max_length=50, blank=True, null=True)
+    layout_meta = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+
+class Look(models.Model):
+    allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
+    name = models.CharField(max_length=50, blank=True, null=True)
+    look_layout = models.ForeignKey(LookLayout)
+    products = models.ManyToManyField(Product, through='LookProduct')
+    status = models.CharField(max_length=11)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class LookProduct(models.Model):
+    look = models.ForeignKey(Look)
+    product = models.ForeignKey(Product)
+    layout_position = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+
