@@ -277,6 +277,7 @@ class Look(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     look_layout = models.ForeignKey(LookLayout)
     products = models.ManyToManyField(Product, through='LookProduct')
+    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     status = models.CharField(max_length=11)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
