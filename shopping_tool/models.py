@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from product_api.models import Product
-
+import json
 
 # Create your models here.
 class WpUsers(models.Model):
@@ -267,14 +267,20 @@ class Rack(models.Model):
 
 class LookLayout(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
-    layout_meta = models.TextField()
+    display_name = models.CharField(max_length=50, blank=True, null=True)
+    rows = models.IntegerField(default=1)
+    columns = models.IntegerField(default=1)
+    row_heights = models.CharField(max_length=50, blank=True, null=True)
+    column_widths = models.CharField(max_length=50, blank=True, null=True)        
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
 
+
+
 class Look(models.Model):
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
-    name = models.CharField(max_length=50, blank=True, null=True)
+    name = models.CharField(max_length=50)
     look_layout = models.ForeignKey(LookLayout)
     products = models.ManyToManyField(Product, through='LookProduct')
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
