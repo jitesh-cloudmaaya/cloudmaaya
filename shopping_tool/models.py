@@ -2,9 +2,8 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from product_api.models import Product
 from rest_framework import serializers
-import json
+from product_api.models import Product, ProductSerializer
 
 # Create your models here.
 class WpUsers(models.Model):
@@ -265,14 +264,6 @@ class Rack(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
-class RackSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Rack
-        fields = ('id', 'allume_styling_session', 'product', 'created_at', 'updated_at')
-
-    def delete(self):#, instance):#, validated_data):
-        print self.instance
-        #instance.delete()
 
 class LookLayout(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
@@ -289,24 +280,58 @@ class Look(models.Model):
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=50)
     look_layout = models.ForeignKey(LookLayout)
-    products = models.ManyToManyField(Product, through='LookProduct')
+    look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     status = models.CharField(max_length=11, default='Active')
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
 
-class LookSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Look
-        fields = ('id', 'allume_styling_session', 'name', 'look_layout', 'products', 'stylist', 'status', 'created_at', 'updated_at')
-
-
 class LookProduct(models.Model):
-    look = models.ForeignKey(Look)
+    look = models.ForeignKey(Look, related_name='product_set')
     product = models.ForeignKey(Product)
     layout_position = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    #@property
+    #def product_details(self):
+    #    return Product.objects.get(id=self.product.id)
+
+####################################################################################
+##  REST SERIALIZERS
+####################################################################################
+
+class LookLayoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LookLayout
+        fields = '__all__'
+
+class AllumeStylingSessionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AllumeStylingSessions
+
+class RackSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Rack
+        fields = '__all__'
+
+class LookProductSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(many=False, read_only=True)
+    #layout_position = serializers.IntegerField(source='lookproduct.layout_position', read_only=True)
+
+    class Meta:
+        model = LookProduct
+        fields = '__all__'#('layout_position', 'product', 'id')#
+
+class LookSerializer(serializers.ModelSerializer):
+    look_layout = LookLayoutSerializer(many=False)
+    products = LookProductSerializer(source='product_set', many=True, read_only=True)
+
+    class Meta:
+        model = Look
+        fields = '__all__'#
 
 

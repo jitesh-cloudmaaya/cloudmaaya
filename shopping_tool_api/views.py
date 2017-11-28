@@ -16,12 +16,33 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
-from shopping_tool.models import AllumeClients, Rack, RackSerializer, AllumeStylingSessions, AllumeStylistAssignments, Look, LookSerializer, LookLayout
+from shopping_tool.models import AllumeClients, Rack, RackSerializer, LookProductSerializer, AllumeStylingSessions, AllumeStylistAssignments, Look, LookSerializer, LookLayout, LookProduct
 from product_api.models import Product
 from rest_framework import status
-
+from django.forms.models import model_to_dict
 
 # Create your views here. 
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def product_look(request, pk=None):
+    """
+    get:
+        View product from the rack for a styling session by rack id
+   
+    """
+
+    try:
+        product_look = LookProduct.objects.get(id=pk)
+        print product_look
+    except LookProduct.DoesNotExist:
+        return HttpResponse(status=404)
+
+    serializer = LookProductSerializer(product_look)
+    return JsonResponse(serializer.data, safe=False)
+
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -81,14 +102,14 @@ def look(request, pk):
         look = Look.objects.get(id=pk)
     except Look.DoesNotExist:
         return HttpResponse(status=404)
+        
 
     if request.method == 'GET':
         serializer = LookSerializer(look)
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'PUT':
-        #data = JSONParser().parse(request.data)
-        #print data
+
         serializer = LookSerializer(look, data=request.data)
         if serializer.is_valid():
             serializer.save()

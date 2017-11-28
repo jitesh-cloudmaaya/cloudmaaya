@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from rest_framework import serializers
 
 # Create your models here.
 
@@ -36,3 +37,9 @@ class Product(models.Model):
     merchant_name = models.CharField(max_length=55, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
