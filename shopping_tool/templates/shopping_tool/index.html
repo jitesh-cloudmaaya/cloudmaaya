@@ -11,11 +11,11 @@
 </head>
 <body>
 <div id="header">
-  <a href="/shopping_tool/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
+  <a href="/shopping_tool/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>({{ user.first_name }} {{ user.last_name }})
 </div>
 <div id="user-card">
   <a id="user-clip" href="#">
-  <span class="name"><em>now styling:</em>Wes Duenow</span>
+  <span class="name"><em>now styling:</em>{{ client.first_name }} {{ client.last_name }}</span>
   <span class="expanded locale">Mountain View, CA</span>
   <span class="expanded style"><em>goal:</em>I want people to think I am beautiful again...</span>
   <span class="expanded style"><em>style:</em>sporty, sophisticated, soho</span>

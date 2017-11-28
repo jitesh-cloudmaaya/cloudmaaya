@@ -54,4 +54,6 @@ COPY ./docker_config_files/docker-entrypoint-web.sh /
 COPY ./docker_config_files/docker-entrypoint-celery.sh /
 COPY ./docker_config_files/docker-entrypoint-celery-beat.sh /
 COPY ./docker_config_files/docker-entrypoint-test.sh /
+COPY ./docker_config_files/docker-entrypoint-test-circleci.sh /
+COPY ./docker_config_files/docker-entrypoint-web-circleci.sh /
 ENTRYPOINT ["/docker-entrypoint-web.sh"]

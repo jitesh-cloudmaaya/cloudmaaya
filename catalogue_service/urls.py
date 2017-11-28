@@ -16,10 +16,14 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers, serializers, viewsets
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title='Shopping Tool API')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^product_api/', include('product_api.urls', namespace='v1')),
     url(r'', include('shopping_tool.urls', namespace='v1')),
-    url(r'^shopping_tool/', include('shopping_tool.urls', namespace='shopping_tool')),
+    url(r'^shopping_tool_api/', include('shopping_tool_api.urls', namespace='shopping_tool_api')),
+    url(r'^docs/', schema_view)
 ]

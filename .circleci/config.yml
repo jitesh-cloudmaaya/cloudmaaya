@@ -26,7 +26,7 @@ jobs:
 
        - run:
           name: Run Tests
-          command: docker run  -v $(pwd)/catalogue_service/settings_local.py.default:/srv/catalogue_service/catalogue_service/settings_local.py --entrypoint="/docker-entrypoint-test.sh" allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
+          command: docker run  --entrypoint="/docker-entrypoint-test-circleci.sh" allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
 
        - run:  
           name: Set Docker Hub Creds
