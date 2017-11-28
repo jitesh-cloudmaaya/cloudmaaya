@@ -37,15 +37,15 @@ def index(request):
 # without Having Access to The WP Login Application
 ########################################################
 def set_cookie(request):
-    if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
+    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-stage.allume.co']:
         response_redirect = HttpResponseRedirect('/')
-        response_redirect.set_cookie('user_email', 'aaron+test1@allume.co')
+        response_redirect.set_cookie('user_email', '1a80b36b569b69579b25ad4583b5c841allume.co')
         return response_redirect
     else:
         raise PermissionDenied
 
 def delete_cookie(request):
-    if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
+    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-stage.allume.co']:
         response_redirect = HttpResponseRedirect('/')
         response_redirect.delete_cookie('user_email')
         return response_redirect
