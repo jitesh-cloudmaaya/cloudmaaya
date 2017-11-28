@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'product_api',
-    'shopping_tool'
+    'shopping_tool',
+    'shopping_tool_api',
+    'rest_framework_swagger'
 ]
 
 MIDDLEWARE = [
@@ -87,6 +89,14 @@ REST_FRAMEWORK = {
 }
 
 WSGI_APPLICATION = 'catalogue_service.wsgi.application'
+
+
+
+SWAGGER_SETTINGS = {
+    'JSON_EDITOR': True,
+    'SHOW_REQUEST_HEADERS': True,
+    'OPERATIONS_SORTER': 'alpha'
+}
 
 
 

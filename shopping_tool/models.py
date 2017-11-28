@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from product_api.models import Product
+from rest_framework import serializers
 import json
 
 # Create your models here.
@@ -264,6 +265,14 @@ class Rack(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+class RackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rack
+        fields = ('id', 'allume_styling_session', 'product', 'created_at', 'updated_at')
+
+    def delete(self):#, instance):#, validated_data):
+        print self.instance
+        #instance.delete()
 
 class LookLayout(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
@@ -271,11 +280,9 @@ class LookLayout(models.Model):
     rows = models.IntegerField(default=1)
     columns = models.IntegerField(default=1)
     row_heights = models.CharField(max_length=50, blank=True, null=True)
-    column_widths = models.CharField(max_length=50, blank=True, null=True)        
+    column_widths = models.CharField(max_length=50, blank=True, null=True)          
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
-
-
 
 
 class Look(models.Model):
@@ -284,9 +291,16 @@ class Look(models.Model):
     look_layout = models.ForeignKey(LookLayout)
     products = models.ManyToManyField(Product, through='LookProduct')
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
-    status = models.CharField(max_length=11)
+    status = models.CharField(max_length=11, default='Active')
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+
+
+class LookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Look
+        fields = ('id', 'allume_styling_session', 'name', 'look_layout', 'products', 'stylist', 'status', 'created_at', 'updated_at')
+
 
 class LookProduct(models.Model):
     look = models.ForeignKey(Look)
