@@ -98,7 +98,7 @@ def deploy_web_container():
     run('docker rm $(docker stop $(docker ps -a -q --filter name=web))')
     env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v ~/static:/srv/catalogue_service/static -p 8000:8000 --name shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service")
+    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v ~/static:/srv/catalogue_service/static -p 8000:8000 --name shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service:%s" % (env.docker_tag))
 
 
 
