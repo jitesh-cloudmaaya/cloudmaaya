@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
-from shopping_tool.models import AllumeClients, Rack, RackSerializer, LookProductSerializer, LookProductCreateSerializer, AllumeStylingSessions, AllumeStylistAssignments, Look, LookSerializer, LookLayout, LookProduct
+from shopping_tool.models import AllumeClients, Rack, RackSerializer, RackCreateSerializer, LookProductSerializer, LookProductCreateSerializer, AllumeStylingSessions, AllumeStylistAssignments, Look, LookSerializer, LookLayout, LookProduct
 from product_api.models import Product
 from rest_framework import status
 from django.forms.models import model_to_dict
@@ -31,6 +31,16 @@ def rack_item(request, pk=None):
         View product from the rack for a styling session by rack id
     put:
         Add product to the rack for a styling session
+
+        /shopping_tool_api/rack_item/0/
+
+        Sample JSON Object
+
+        {
+          "product": 393223,
+          "allume_styling_session": 3
+        }
+
     delete:
         Remove a product from the rack for a styling session
     """
@@ -46,7 +56,7 @@ def rack_item(request, pk=None):
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'PUT':
-        serializer = RackSerializer(data=request.data)
+        serializer = RackCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
@@ -102,7 +112,7 @@ def look_item(request, pk=None):
     get:
         View product from a look for a styling session by look id
     put:
-        Add product to a look for a styling session
+        Add or Update product to a look for a styling session
 
         Sample JSON Create Object
         URL: /shopping_tool_api/look_item/0/

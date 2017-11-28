@@ -315,6 +315,12 @@ class RackSerializer(serializers.ModelSerializer):
         model = Rack
         fields = '__all__'
 
+class RackCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Rack
+        fields = '__all__'
+
 class LookProductSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False, read_only=True)
 
