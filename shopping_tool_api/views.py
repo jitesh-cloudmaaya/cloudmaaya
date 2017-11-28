@@ -16,32 +16,10 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
-from shopping_tool.models import AllumeClients, Rack, RackSerializer, LookProductSerializer, AllumeStylingSessions, AllumeStylistAssignments, Look, LookSerializer, LookLayout, LookProduct
+from shopping_tool.models import AllumeClients, Rack, RackSerializer, LookProductSerializer, LookProductCreateSerializer, AllumeStylingSessions, AllumeStylistAssignments, Look, LookSerializer, LookLayout, LookProduct
 from product_api.models import Product
 from rest_framework import status
 from django.forms.models import model_to_dict
-
-# Create your views here. 
-
-@api_view(['GET'])
-@check_login
-@permission_classes((AllowAny, ))
-def product_look(request, pk=None):
-    """
-    get:
-        View product from the rack for a styling session by rack id
-   
-    """
-
-    try:
-        product_look = LookProduct.objects.get(id=pk)
-        print product_look
-    except LookProduct.DoesNotExist:
-        return HttpResponse(status=404)
-
-    serializer = LookProductSerializer(product_look)
-    return JsonResponse(serializer.data, safe=False)
-
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -102,7 +80,7 @@ def look(request, pk):
         look = Look.objects.get(id=pk)
     except Look.DoesNotExist:
         return HttpResponse(status=404)
-        
+
 
     if request.method == 'GET':
         serializer = LookSerializer(look)
@@ -115,6 +93,77 @@ def look(request, pk):
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=400)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@check_login
+@permission_classes((AllowAny, ))
+def look_item(request, pk=None):
+    """
+    get:
+        View product from a look for a styling session by look id
+    put:
+        Add product to a look for a styling session
+
+        Sample JSON Create Object
+        URL: /shopping_tool_api/look_item/0/
+
+        {
+          "layout_position": 4,
+          "look": 5,
+          "product": 393223
+        }
+
+
+        Sample JSON Update Object
+        URL: /shopping_tool_api/look_item/2/
+
+        {
+          "id": 2,
+          "layout_position": 4,
+          "look": 5,
+          "product": 393223
+        }
+
+    delete:
+        Remove a product from a look for a styling session
+    """
+
+    if request.method == 'GET':
+        try:
+            look_item = LookProduct.objects.get(id=pk)
+            print look_item
+        except LookProduct.DoesNotExist:
+            return HttpResponse(status=404)
+
+        serializer = LookProductSerializer(look_item)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+
+        try:
+            look_item = LookProduct.objects.get(id=pk)
+            serializer = LookProductCreateSerializer(look_item, data=request.data)
+        except LookProduct.DoesNotExist:
+            serializer = LookProductCreateSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        print serializer.data
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        try:
+            look_item = LookProduct.objects.get(id = pk)
+            look_item.delete()
+            context = {'Success': True}
+            return JsonResponse(context, status=status.HTTP_201_CREATED)
+        except ObjectDoesNotExist as er:
+            context = {'Success': False, 'Info': str(er)}
+            return JsonResponse(context, status=status.HTTP_400_BAD_REQUEST)
+
+
+        return Response(context) 
 
 
 

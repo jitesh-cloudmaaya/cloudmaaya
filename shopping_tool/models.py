@@ -294,9 +294,6 @@ class LookProduct(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
-    #@property
-    #def product_details(self):
-    #    return Product.objects.get(id=self.product.id)
 
 ####################################################################################
 ##  REST SERIALIZERS
@@ -320,15 +317,21 @@ class RackSerializer(serializers.ModelSerializer):
 
 class LookProductSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False, read_only=True)
-    #layout_position = serializers.IntegerField(source='lookproduct.layout_position', read_only=True)
 
     class Meta:
         model = LookProduct
-        fields = '__all__'#('layout_position', 'product', 'id')#
+        fields = '__all__'
+
+class LookProductCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LookProduct
+        fields = '__all__'
+
 
 class LookSerializer(serializers.ModelSerializer):
     look_layout = LookLayoutSerializer(many=False)
-    products = LookProductSerializer(source='product_set', many=True, read_only=True)
+    look_products = LookProductSerializer(source='product_set', many=True, read_only=True)
 
     class Meta:
         model = Look
