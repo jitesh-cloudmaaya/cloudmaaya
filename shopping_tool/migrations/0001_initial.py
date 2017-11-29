@@ -284,7 +284,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True, null=True)),
                 ('client', models.ForeignKey(db_constraint=False, on_delete=django.db.models.deletion.DO_NOTHING, to='shopping_tool.AllumeClients')),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='product_api.Product')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='shopping_tool.WpUsers')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, to='shopping_tool.WpUsers')),
             ],
         ),
     ]
