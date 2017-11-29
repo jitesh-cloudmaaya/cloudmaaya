@@ -347,6 +347,6 @@ class LookCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Look
-        fields = ('name', 'look_layout', 'allume_styling_session', 'stylist')
+        fields = '__all__'
 
 
