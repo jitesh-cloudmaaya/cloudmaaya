@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
-from shopping_tool.models import AllumeClients, Rack, RackSerializer, RackCreateSerializer, LookProductSerializer, LookProductCreateSerializer, AllumeStylingSessions, AllumeStylistAssignments, Look, LookSerializer, LookLayout, LookProduct
+from shopping_tool.models import AllumeClients, Rack, RackSerializer, RackCreateSerializer, LookCreateSerializer, LookProductSerializer, LookProductCreateSerializer, AllumeStylingSessions, AllumeStylistAssignments, Look, LookSerializer, LookLayout, LookProduct
 from product_api.models import Product
 from rest_framework import status
 from django.forms.models import model_to_dict
@@ -85,20 +85,38 @@ def look(request, pk):
         Get a look and its products, layouts, etc
     put:
         Create or update a look
+
+        Sample JSON Create Object
+        URL: /shopping_tool_api/look/0/
+
+        {
+         "name": "Test Look 5huck",
+         "look_layout": 1,
+         "allume_styling_session":3,
+         "stylist": 117
+        }
     """
-    try:
-        look = Look.objects.get(id=pk)
-    except Look.DoesNotExist:
-        return HttpResponse(status=404)
+
 
 
     if request.method == 'GET':
+
+        try:
+            look = Look.objects.get(id=pk)
+        except Look.DoesNotExist:
+            return HttpResponse(status=404)
+
         serializer = LookSerializer(look)
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'PUT':
 
-        serializer = LookSerializer(look, data=request.data)
+        try:
+            look = Look.objects.get(id=pk)
+            serializer = LookSerializer(look, data=request.data)
+        except Look.DoesNotExist:
+            serializer = LookCreateSerializer(data=request.data)
+        
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)
