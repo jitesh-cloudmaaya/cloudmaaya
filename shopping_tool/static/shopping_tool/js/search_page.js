@@ -34,7 +34,7 @@ var search_page = {
     if(add_to_list == true){
       if(items == 0){rack.html('');}
       var obj = {
-        product: parseInt(details.product_id),
+        product: parseInt(details.id),
         allume_styling_session: parseInt(search_page.session_id)
       }
       console.log(JSON.stringify(obj))
@@ -42,7 +42,7 @@ var search_page = {
         contentType : 'application/json',
         data: JSON.stringify(obj),
         success:function(response){
-          rack.append(search_page.itemTemplate(details, 'rack', idx));
+          rack.append(search_page.itemTemplate(details, 'rack', idx, response.id));
           search_page.updateRackCount();
         },
         type: 'PUT',
@@ -102,6 +102,14 @@ var search_page = {
   * @description init function applying the functionality to the page elements
   */
   init: function(){
+    /* set rack existing products */
+    var rack_list = $('#rack-list');
+    var existing_items = [];
+    $.each(rack_list.find('div.item'), function(idx){
+      var item = $(this);
+      existing_items.push(item.data('sku'));
+    });
+    rack_list.data('skus', existing_items.join(','));
     /* cache the session id */
     search_page.session_id = $('body').data('stylesession');
     /* add keyboard shortcuts for rack and client open/close */
@@ -217,20 +225,28 @@ var search_page = {
       var idx = existing.indexOf(sku);
       existing.splice(idx,1);
       rack.data('skus',existing.join(','));
-      link.closest('div.item').remove();
-      /* undo selected btn */
-      var list_entry = $('#results div.item').eq(link.data('idx'));
-      var add_link = list_entry.find('a.add-to-rack');
-      var details = add_link.data('details')
-      var link_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
-      if(link_sku == sku){
-        add_link.html('<i class="icon-hanger"></i>add to rack').removeClass('selected');
+      if(link.hasClass('at-load') == false){
+        /* undo selected btn */
+        var list_entry = $('#results div.item').eq(link.data('idx'));
+        var add_link = list_entry.find('a.add-to-rack');
+        var details = add_link.data('details')
+        var link_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
+        if(link_sku == sku){
+          add_link.html('<i class="icon-hanger"></i>add to rack').removeClass('selected');
+        }        
       }
-      /* add user friendly markup if rack is empty */
-      if(rack.find('div.item').length == 0){
-        rack.html('<div class="empty">Add items to your rack...</div>');
-      }
-      search_page.updateRackCount();
+      $.ajax({
+        success:function(response){
+          link.closest('div.item').remove();
+          /* add user friendly markup if rack is empty */
+          if(rack.find('div.item').length == 0){
+            rack.html('<div class="empty">Add items to your rack...</div>');
+          }
+          search_page.updateRackCount();
+        },
+        type: 'DELETE',
+        url: '/shopping_tool_api/rack_item/' + link.data('rackid') + '/'
+      });
     });
     $('#add-look-btn').click(function(e){
       e.preventDefault();
@@ -239,7 +255,10 @@ var search_page = {
       $('#new-look-layout')[0].selectize.setValue('',true);
       $('#create-look').fadeIn();
     });
-    /* client details funcgionality */
+    $('#look-links').on('click', 'a.look-links', function(e){
+      e.preventDefault();
+    });
+    /* client details functionality */
     $('#user-clip').delay(750)
       .queue(function (next) { 
         $(this).addClass('ready').width($('#user-clip span.name').width()); 
@@ -281,7 +300,6 @@ var search_page = {
        "allume_styling_session": search_page.session_id,
        "stylist": parseInt($('#stylist').data('stylistid'))        
       }
-      console.log(look_obj)
       if(look_obj.name == ''){ 
         pre++; 
         msg.push('provide a look name'); 
@@ -399,9 +417,10 @@ var search_page = {
   * @param {object} details - item details JSON
   * @param {string} view - which display
   * @param {integer} idx - list idx used in 'rack' view
+  * @param {integer} rack_item_id - list idx used in 'rack' view  
   * @returns {string} HTML
   */   
-  itemTemplate: function(details, view, idx){
+  itemTemplate: function(details, view, idx, rack_item_id){
     var w = $('#results').width() / 3
     var dynamic_dim = 'style="width:' + (w - 15) + 'px;"'    
     var desc = details.long_product_description == '' ? details.short_product_description : details.long_product_description ;
@@ -411,7 +430,7 @@ var search_page = {
     var merch = '<span class="merch">' + details.merchant_name + '</span>';
     var manu = '<span class="manu">by ' + details.manufacturer_name + '</span>';    
     if((sale >= retail)||(sale == 0)){
-      price_display = '<span class="price">' + numeral(sale).format('$0,0.00') + '</span>';
+      price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
     }else{
       price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
         ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
@@ -423,7 +442,7 @@ var search_page = {
         '<i class="fa fa-heart-o"></i></a><img src="' + 
         details.product_image_url + '" ' + dynamic_dim + '></div><a href="' + details.product_url + 
         '" target="_blank" class="name">' + details.product_name + '</a>' + 
-        '<a href="#" class="add-to-rack" data-productid="' + details.product_id + 
+        '<a href="#" class="add-to-rack" data-productid="' + details.id + 
         '"><i class="icon-hanger"></i>add to rack</a>' + merch + 
         '' + manu + '<a href="#" class="info-toggle"><i class="fa fa-info-circle"></i></a>' + 
         price_display + '<div class="tt"><span><em>size:</em>' + 
@@ -433,7 +452,8 @@ var search_page = {
       return '<div class="item" title="' + details.merchant_name + ' by ' + 
         details.manufacturer_name + '"><a href="#" class="remove-from-rack" data-sku="' + 
         details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku + 
-        '" data-idx="' + idx + '" data-productid="' + details.product_id + '"><i class="fa fa-times"></i></a>' +
+        '" data-idx="' + idx + '" data-productid="' + details.id + '" data-rackid="' + 
+        rack_item_id + '"><i class="fa fa-times"></i></a>' +
         '<div class="image"><img src="' + details.product_image_url + 
         '" style="height:150px;width:150px"/></div><div class="details">' + price_display + '</div></div>';
     }

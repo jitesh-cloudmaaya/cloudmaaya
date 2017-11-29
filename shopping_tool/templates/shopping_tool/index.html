@@ -90,16 +90,33 @@
     <div id="pager"></div>
   </div>
 </div>
-<a id="rack-toggle"><span>0</span> items in your rack</a>
+<a id="rack-toggle"><span>{{ rack_items|length }}</span> item{{ rack_items|length|pluralize }} in your rack</a>
 <div id="rack">
   <a href="#" id="close-rack"><i class="fa fa-times"></i></a>
   <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
   <div id="rack-list">
-    <div class="empty">Add items to your rack...</div>
-    {{ rack_items }}
+    {% for item in rack_items %}
+      <div class="item" title="{{ item.product.merchant_name }} by {{ item.product.manufacturer_name }}">
+        <a href="#" class="remove-from-rack at-load" 
+        data-sku="{{item.product.id}}_{{ item.product.merchant_id }}_{{ item.product.product_id }}_{{ item.product.sku}}" 
+        data-idx="" data-productid="{{item.product.id}}" data-rackid="{{item.id}}"><i class="fa fa-times"></i></a>
+        <div class="image"><img src="{{item.product.product_image_url}}" style="height:150px;width:150px"/></div>
+        <div class="details">      
+          {% if item.product.sale_price >= item.product.retail_price %}
+          <span class="price">{{item.product.retail_price}}</span>
+          {% elif item.product.sale_price <= 0 %}
+          <span class="price">{{item.product.retail_price}}</span>
+          {% else %}
+          <span class="price"><em>({{item.product.retail_price}})</em>{{item.product.sale_price}}</span>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <div class="empty">Add items to your rack...</div>
+    {% endfor %}
   </div>
   <div id="rack-btns">
-    <span id="rack-number">0 items</span>
+    <span id="rack-number">{{ rack_items|length }} item{{ rack_items|length|pluralize }}</span>
     <a href="#" id="add-look-btn">add look</a>
   </div>
 </div>
