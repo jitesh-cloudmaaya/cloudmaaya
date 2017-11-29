@@ -24,11 +24,12 @@ from product_api.models import Product
 def index(request):
 
     user = request.user
+    layouts = LookLayout.objects.values()
     styling_session = AllumeStylingSessions.objects.get(id = 3)
     rack_items = Rack.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
 
-    context = {'user': user, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client}
+    context = {'user': user, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts}
     return render(request, 'shopping_tool/index.html', context)
 
 
