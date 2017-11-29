@@ -16,8 +16,9 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
-from shopping_tool.models import AllumeClients, Rack, RackSerializer, RackCreateSerializer, LookCreateSerializer, LookProductSerializer, LookProductCreateSerializer, AllumeStylingSessions, AllumeStylistAssignments, Look, LookSerializer, LookLayout, LookProduct
 from product_api.models import Product
+from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, LookProduct
+from serializers import RackSerializer, RackCreateSerializer, LookCreateSerializer, LookProductSerializer, LookProductCreateSerializer, LookSerializer
 from rest_framework import status
 from django.forms.models import model_to_dict
 
@@ -77,7 +78,7 @@ def rack_item(request, pk=None):
 
 
 @api_view(['GET', 'PUT'])
-@check_login
+#@check_login
 @permission_classes((AllowAny, ))
 def look(request, pk):
     """

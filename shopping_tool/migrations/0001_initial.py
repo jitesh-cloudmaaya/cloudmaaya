@@ -4,10 +4,17 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
-
+import sys
 
 
 class Migration(migrations.Migration):
+
+
+    if 'test' in sys.argv:
+        create_table = True
+    else:
+        create_table = False
+
 
     initial = True
 
@@ -203,10 +210,11 @@ class Migration(migrations.Migration):
                 ('date_created', models.DateTimeField()),
                 ('last_modified', models.DateTimeField()),
                 ('revised_session_id', models.BigIntegerField(blank=True, null=True)),
+                ('stylist_assignment_id', models.BigIntegerField(blank=True, null=True)),
             ],
             options={
                 'db_table': 'allume_styling_sessions',
-                'managed': False,
+                'managed': create_table,
             },
         ),
         migrations.CreateModel(
@@ -274,7 +282,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'wp_users',
-                'managed': False,
+                'managed': create_table,
             },
         ),
         migrations.CreateModel(
