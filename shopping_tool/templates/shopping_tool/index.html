@@ -6,12 +6,14 @@
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css" rel="stylesheet"/>
   {% load static %}
   <link href="{% static 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
 </head>
-<body>
+<body data-stylesession="{{ styling_session.id }}">
 <div id="header">
-  <a href="/shopping_tool/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>({{ user.first_name }} {{ user.last_name }})
+  <a href="/shopping_tool/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
+  <span id="stylist" data-stylistid="{{ user.id }}">stylist: {{ user.first_name }} {{ user.last_name }}</span>
 </div>
 <div id="user-card">
   <a id="user-clip" href="#">
@@ -91,20 +93,53 @@
 <a id="rack-toggle"><span>0</span> items in your rack</a>
 <div id="rack">
   <a href="#" id="close-rack"><i class="fa fa-times"></i></a>
-  <h2><i class="icon-hanger"></i>Wes Duenow's Rack</h2>
+  <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
   <div id="rack-list">
     <div class="empty">Add items to your rack...</div>
+    {{ rack_items }}
   </div>
   <div id="rack-btns">
     <span id="rack-number">0 items</span>
-    <a href="#" id="create-look">create look</a>
+    <a href="#" id="add-look-btn">add look</a>
+  </div>
+</div>
+<div id="look-list">
+  <h2>Looks</h2>
+  <div id="look-links"></div>
+</div>
+<div id="create-look">
+  <div class="stage">
+    <a href="#" id="cancel-new-look"><i class="fa fa-times"></i></a>
+    <h2>New Look</h2>
+    <div id="new-look-error"></div>
+    <label>Name</label>
+    <input id="new-look-name" type="text" name="name" placeholder="Please provide a name for the look..."/>
+    <label>Layout</label>
+    <select id="new-look-layout" name="layout" placeholder="Please select a layout for the look..."></select>
+    <a href="#" id="create-new-look">create look</a>
   </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
 <script src="{% static 'shopping_tool/js/search_page.js' %}"></script>
+<script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
+/**
+* @description layouts array for use in new look creation and look display
+*/ 
+var look_layouts = [
+{% for layout in layouts %}
+  { "id": {{ layout.id }},
+    "name": "{{layout.display_name}}",
+    "column_widths": "{{layout.column_widths}}",
+    "columns": {{layout.columns}},
+    "rows": {{layout.rows}},
+    "row_heights": "{{layout.row_heights}}"
+  },
+{% endfor %} 
+];
 /* call the search page init function to set up the page */
 search_page.init();
 </script>

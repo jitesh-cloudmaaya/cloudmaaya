@@ -2,6 +2,10 @@
 * @description search_page namespace object, conatining the functionality and templates for the search page
 */
 var search_page = {
+  /** 
+  * @description cache of styling session
+  */
+  session_id: '',
   /**
   * @description add to rack functionality
   * @param {DOM object} item - link clicked
@@ -29,8 +33,21 @@ var search_page = {
     }
     if(add_to_list == true){
       if(items == 0){rack.html('');}
-      rack.append(search_page.itemTemplate(details, 'rack', idx));
-      search_page.updateRackCount();
+      var obj = {
+        product: parseInt(details.product_id),
+        allume_styling_session: parseInt(search_page.session_id)
+      }
+      console.log(JSON.stringify(obj))
+      $.ajax({
+        contentType : 'application/json',
+        data: JSON.stringify(obj),
+        success:function(response){
+          rack.append(search_page.itemTemplate(details, 'rack', idx));
+          search_page.updateRackCount();
+        },
+        type: 'PUT',
+        url: '/shopping_tool_api/rack_item/0/'
+      })
     }else{
       var pos = item.offset();
       if($('#air-' + idx).length < 1){
@@ -85,15 +102,25 @@ var search_page = {
   * @description init function applying the functionality to the page elements
   */
   init: function(){
+    /* cache the session id */
+    search_page.session_id = $('body').data('stylesession');
     /* add keyboard shortcuts for rack and client open/close */
     Mousetrap.bind('shift+z+x', function(e) {
       $('#rack').toggleClass('show');
+      $('#look-list').toggleClass('show');
       return false;
     });
     Mousetrap.bind('shift+a+s', function(e) {
       $('#user-card').toggleClass('show')
       return false;
     });
+    Mousetrap.bind('shift+q+w', function(e) {
+      $('#new-look-error').html('');
+      $('#new-look-name').val('');
+      $('#new-look-layout')[0].selectize.setValue('',true);      
+      $('#create-look').fadeToggle();
+      return false;
+    });    
     /* search functionality */
     $('#search-btn').click(function(e){
       e.preventDefault();
@@ -174,10 +201,12 @@ var search_page = {
     $('#rack-toggle').click(function(e){
       e.preventDefault();
       $('#rack').toggleClass('show');
+      $('#look-list').toggleClass('show');
     });
     $('#close-rack').click(function(e){
       e.preventDefault();
       $('#rack').removeClass('show');
+      $('#look-list').removeClass('show');
     });
     $('#rack-list').on('click','a.remove-from-rack',function(e){
       e.preventDefault();
@@ -203,10 +232,13 @@ var search_page = {
       }
       search_page.updateRackCount();
     });
-    $('#create-look').click(function(e){
-      e.preventDefault()
-      alert('this will take you to create look')
-    })
+    $('#add-look-btn').click(function(e){
+      e.preventDefault();
+      $('#new-look-error').html('');
+      $('#new-look-name').val('');
+      $('#new-look-layout')[0].selectize.setValue('',true);
+      $('#create-look').fadeIn();
+    });
     /* client details funcgionality */
     $('#user-clip').delay(750)
       .queue(function (next) { 
@@ -217,6 +249,66 @@ var search_page = {
       e.preventDefault();
       $('#user-card').toggleClass('show')
     });
+    /* new look create form */
+    $('#new-look-layout').selectize({
+      valueField: 'id',
+      labelField: 'name',
+      searchField: 'name',
+      options: look_layouts,
+      create: false,
+      render: {
+        option: function(item, escape) {
+          return '<div class="layout-option">' +
+            '<span class="name">' + escape(item.name) + '</span>' +
+            '<span class="columns">columns: ' + escape(item.columns) + '</span>' +
+            '<span class="rows">rows: ' + escape(item.rows) + '</span>' +
+            '</div>';
+        }
+      }
+    });
+    $('#cancel-new-look').click(function(e){
+      e.preventDefault()
+      $('#create-look').fadeOut();
+    });
+    $('#create-new-look').click(function(e){
+      $('#new-look-error').html('');
+      e.preventDefault();
+      var pre = 0;
+      var msg = [];
+      var look_obj = {
+       "name": $('#new-look-name').val(),
+       "look_layout": parseInt($('#new-look-layout').val()),
+       "allume_styling_session": search_page.session_id,
+       "stylist": parseInt($('#stylist').data('stylistid'))        
+      }
+      console.log(look_obj)
+      if(look_obj.name == ''){ 
+        pre++; 
+        msg.push('provide a look name'); 
+      }
+      if(isNaN(look_obj.look_layout)){ 
+        pre++; 
+        msg.push('select a look layout'); 
+      }
+      if(pre == 0){
+        $.ajax({
+          contentType : 'application/json',
+          data: JSON.stringify(look_obj),
+          success:function(response){
+            look_builder.newLookLink(response);
+            $('#create-look').fadeOut();
+          },
+          type: 'PUT',
+          url: '/shopping_tool_api/look/0/'
+        })
+      }else{
+        $('#new-look-error').html(
+          '<span><i class="fa fa-exclamation-circle"></i>' +
+          'You must ' + msg.join('; ') + 
+          '.</span>'
+        );
+      }
+    });    
   },
   /**
   * @description processing and template for facets
@@ -331,7 +423,8 @@ var search_page = {
         '<i class="fa fa-heart-o"></i></a><img src="' + 
         details.product_image_url + '" ' + dynamic_dim + '></div><a href="' + details.product_url + 
         '" target="_blank" class="name">' + details.product_name + '</a>' + 
-        '<a href="#" class="add-to-rack"><i class="icon-hanger"></i>add to rack</a>' + merch + 
+        '<a href="#" class="add-to-rack" data-productid="' + details.product_id + 
+        '"><i class="icon-hanger"></i>add to rack</a>' + merch + 
         '' + manu + '<a href="#" class="info-toggle"><i class="fa fa-info-circle"></i></a>' + 
         price_display + '<div class="tt"><span><em>size:</em>' + 
         details.size + '</span><span><em>description:</em>' + details.short_product_description + 
@@ -340,7 +433,7 @@ var search_page = {
       return '<div class="item" title="' + details.merchant_name + ' by ' + 
         details.manufacturer_name + '"><a href="#" class="remove-from-rack" data-sku="' + 
         details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku + 
-        '" data-idx="' + idx + '"><i class="fa fa-times"></i></a>' +
+        '" data-idx="' + idx + '" data-productid="' + details.product_id + '"><i class="fa fa-times"></i></a>' +
         '<div class="image"><img src="' + details.product_image_url + 
         '" style="height:150px;width:150px"/></div><div class="details">' + price_display + '</div></div>';
     }
