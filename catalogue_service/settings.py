@@ -162,5 +162,5 @@ NOSE_ARGS = [
     '--with-coverage',
     '--cover-package=shopping_tool_api',
     '--nocapture',
-    '--nologcapture'
+    '--nologcapture',
 ]

@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from shopping_tool.models import Look, AllumeStylingSessions, WpUsers, Rack, LookLayout
+from shopping_tool.models import Look, AllumeStylingSessions, WpUsers, Rack, LookLayout, LookProduct
 from product_api.models import Product
 from django.http.cookie import SimpleCookie
 
@@ -106,4 +106,69 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(201, response.status_code)
         self.assertEqual(Rack.objects.count(), 0)
 
+    def test_add_look_item(self):
+        """
+        Test to verify adding a product to a look
+        """
+        url = reverse("shopping_tool_api:look_item", kwargs={'pk':0})
 
+        data = {"layout_position": 4,"look": 1,"product": 1}
+        response = self.client.put(url, data)
+
+        look_products_count = Look.objects.get(id=1).product_set.count()
+
+        self.assertEqual(201, response.status_code)
+        self.assertEqual(LookProduct.objects.count(), 1)
+        self.assertEqual(look_products_count, 1)
+
+
+    def test_get_look_item(self):
+        """
+        Test to verify getting a look product
+        """
+        product_instance = Product.objects.get(id=1)
+        look_instance = Look.objects.get(id=1)
+        look_product_instance = LookProduct.objects.create(look = look_instance, product = product_instance, layout_position = 1)
+
+        url = reverse("shopping_tool_api:look_item", kwargs={'pk':look_product_instance.id})
+
+        response = self.client.get(url)
+        response_look_product_id = json.loads(response.content)['product']['id']
+
+        look_product_id = LookProduct.objects.get(id=look_product_instance.id).product.id
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(look_product_id, response_look_product_id)
+
+    def test_delete_look_item(self):
+        """
+        Test to verify deleting a product from a look
+        """
+
+        # Have to create an object in order to delete it
+        product_instance = Product.objects.get(id=1)
+        look_instance = Look.objects.get(id=1)
+        look_product_instance = LookProduct.objects.create(look = look_instance, product = product_instance, layout_position = 1)
+
+        url = reverse("shopping_tool_api:look_item", kwargs={'pk':look_product_instance.id})
+        response = self.client.delete(url)
+
+        self.assertEqual(201, response.status_code)
+
+
+    def test_get_layouts(self):
+        """
+        Test to verify getting a look
+        """
+
+        url = reverse("shopping_tool_api:layouts")
+
+        response = self.client.get(url)
+        response_data = json.loads(response.content)[0]
+
+        self.assertEqual(LookLayout.objects.get(id = 1).name, response_data['name'])
+        self.assertEqual(200, response.status_code)
+
+
+
+        
