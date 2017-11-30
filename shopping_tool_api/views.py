@@ -123,6 +123,33 @@ def look(request, pk):
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def look_list(request):
+    """
+    get:
+        Get a list of looks filtered by shopper, client or styling_session and its products, layouts, etc
+
+        {
+         "client": 1,
+         "allume_styling_session":3,
+         "stylist": 117
+        }
+    """
+    print request.data
+    if 'client' in request.data:
+        styling_sessions = AllumeStylingSessions.objects.filter(client = 8).values_list('id', flat=True)
+        looks = Look.objects.filter(allume_styling_session__in = styling_sessions)
+    else:
+        looks = Look.objects.all()
+
+    serializer = LookSerializer(looks, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+   
+
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
 @permission_classes((AllowAny, ))
