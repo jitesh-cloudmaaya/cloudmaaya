@@ -106,6 +106,21 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(201, response.status_code)
         self.assertEqual(Rack.objects.count(), 0)
 
+    def test_get_rack_item(self):
+        """
+        Test to verify getting a product from a rack
+        """
+        session_instance = AllumeStylingSessions.objects.get(id =3)
+        product_instance = Product.objects.get(id=1)
+
+        # Have to create an object in order to delete it
+        rack_instance = Rack.objects.create(product=product_instance, allume_styling_session=session_instance)
+
+        url = reverse("shopping_tool_api:rack_item", kwargs={'pk':rack_instance.id})
+        response = self.client.get(url)
+
+        self.assertEqual(201, response.status_code)
+
     def test_add_look_item(self):
         """
         Test to verify adding a product to a look
@@ -121,6 +136,28 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(LookProduct.objects.count(), 1)
         self.assertEqual(look_products_count, 1)
 
+
+    def test_update_look_item(self):
+        """
+        Test to verify updating a product to a look
+        """
+
+
+         # Have to create an object in order to update it
+        product_instance = Product.objects.get(id=1)
+        look_instance = Look.objects.get(id=1)
+        look_product_instance = LookProduct.objects.create(look = look_instance, product = product_instance, layout_position = 1)
+
+
+        url = reverse("shopping_tool_api:look_item", kwargs={'pk':look_product_instance.id})
+
+        data = {"layout_position": 1,"look": 1,"product": 1, "id": look_product_instance.id}
+        response = self.client.put(url, data)
+
+        updated_look_product_instance = LookProduct.objects.get(id=look_product_instance.id)
+
+        self.assertEqual(201, response.status_code)
+        self.assertEqual(updated_look_product_instance.layout_position, 1)
 
     def test_get_look_item(self):
         """
