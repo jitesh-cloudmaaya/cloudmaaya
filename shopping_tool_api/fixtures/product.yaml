@@ -1,0 +1,197 @@
+-   model: product_api.product
+    pk: 1
+    fields: {product_id: 312, merchant_id: 36145, product_name: 7 For All
+            Mankind Cut Off Short in Clean White, long_product_description: 'White
+            is always in season and with these truly classic and modern styles, white
+            is exciting again! A more authentic white twill, with a 9 oz weight, is
+            perfect for our Cut Off Short. With tonal threads and silver hardware,
+            these are sexier in white.', short_product_description: 'White is always
+            in season and with these truly classic and modern styles, white is exciting
+            again! A more authentic white twill, with a 9 oz weight, is perfect for
+            our Cut Off Short. With tonal threads and silver hardware, these are sexier
+            in white.', product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136989188&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fcut-off-short-in-clean-white%2Fd%2F13231',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13231_clean_white_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AU5159495S,
+        sku: '13231:26827:120655', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '0.00', retail_price: '139.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00'}
+-   model: product_api.product
+    pk: 2
+    fields: {product_id: 3212, merchant_id: 36145, product_name: 7 For All
+            Mankind Denim Trucker Shirt in Destroyed Indigo, long_product_description: This
+            season our classic denim trucker shirt is adorned with new and modern
+            details. Beautiful highs and lows on the seams mixed with natural handsanding
+            gives an authentic vibe. The finishing touches include subtle paint splatter
+            and minimal rips and repairs., short_product_description: This season
+            our classic denim trucker shirt is adorned with new and modern details.
+            Beautiful highs and lows on the seams mixed with natural handsanding gives
+            an authentic vibe. The finishing touches include subtle paint splatter
+            and minimal rips and repairs., product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136989582&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fdenim-trucker-shirt-in-destroyed-indigo%2Fd%2F13105',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13105_destroyind_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AM0266A184,
+        sku: '13105:26338:117187', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '99.00', retail_price: '189.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00'}
+-   model: product_api.product
+    pk: 3
+    fields: {product_id: 14324, merchant_id: 36145, product_name: 7 For All
+            Mankind Luxe Sport Paxtyn Skinny in Retrograde, long_product_description: 'Luxe
+            Sport, stretch without limits! Stretching the standards of denim comfort
+            for the ultimate in unrestricted motion. A super stretch 9.8oz denim that
+            you can wear anywhere, and maintain your authentic denim look. A Unique
+            fiber mix provides the mobility of activewear with sweat-pant like comfort.
+            Finished with silver hardware, burgundy woven label, zip fly and button
+            closure.', short_product_description: 'Luxe Sport, stretch without limits!
+            Stretching the standards of denim comfort for the ultimate in unrestricted
+            motion. A super stretch 9.8oz denim that you can wear anywhere, and maintain
+            your authentic denim look. A Unique fiber mix provides the mobility of
+            activewear with sweat-pant like comfort. Finished with silver hardware,
+            burgundy woven label, zip fly and button closure.', product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136989604&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fluxe-sport-paxtyn-skinny-in-retrograde-%2Fd%2F13078',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13078_retrograde_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AT139942AP,
+        sku: '13078:26257:116425', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '129.00', retail_price: '199.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00'}
+-   model: product_api.product
+    pk: 4
+    fields: {product_id: 344, merchant_id: 36145, product_name: 7 For All
+            Mankind Vintage Flap Pocket in Camel, long_product_description: Our jaspe
+            double flap pocket shirt is constructed from a soft 100% cotton and available
+            in classic camel. The simplistic styling of this piece makes it extremely
+            versatile and easy to pair back to any denim., short_product_description: Our
+            jaspe double flap pocket shirt is constructed from a soft 100% cotton
+            and available in classic camel. The simplistic styling of this piece makes
+            it extremely versatile and easy to pair back to any denim., product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136990318&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fvintage-flap-pocket-in-camel%2Fd%2F13245',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13245_camel_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AM0280A159,
+        sku: '13245:26869:121069', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '79.00', retail_price: '149.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-12
+            09:28:21+00:00'}
+-   model: product_api.product
+    pk: 5
+    fields: {product_id: 65434, merchant_id: 36145, product_name: 7 For All
+            Mankind Cut Off Short in Clean White, long_product_description: 'White
+            is always in season and with these truly classic and modern styles, white
+            is exciting again! A more authentic white twill, with a 9 oz weight, is
+            perfect for our Cut Off Short. With tonal threads and silver hardware,
+            these are sexier in white.', short_product_description: 'White is always
+            in season and with these truly classic and modern styles, white is exciting
+            again! A more authentic white twill, with a 9 oz weight, is perfect for
+            our Cut Off Short. With tonal threads and silver hardware, these are sexier
+            in white.', product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136991492&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fcut-off-short-in-clean-white%2Fd%2F13231',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13231_clean_white_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AU5159495S,
+        sku: '13231:26827:120682', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '0.00', retail_price: '139.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00'}
+-   model: product_api.product
+    pk: 6
+    fields: {product_id: 7564, merchant_id: 36145, product_name: 7 For All
+            Mankind Vintage Flap Pocket in Camel, long_product_description: Our jaspe
+            double flap pocket shirt is constructed from a soft 100% cotton and available
+            in classic camel. The simplistic styling of this piece makes it extremely
+            versatile and easy to pair back to any denim., short_product_description: Our
+            jaspe double flap pocket shirt is constructed from a soft 100% cotton
+            and available in classic camel. The simplistic styling of this piece makes
+            it extremely versatile and easy to pair back to any denim., product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136991602&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fvintage-flap-pocket-in-camel%2Fd%2F13245',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13245_camel_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AM0280A159,
+        sku: '13245:26869:121072', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '89.00', retail_price: '149.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-12
+            09:28:21+00:00'}
+-   model: product_api.product
+    pk: 7
+    fields: {product_id: 42, merchant_id: 36145, product_name: 7 For All
+            Mankind Denim Trucker Shirt in Destroyed Indigo, long_product_description: This
+            season our classic denim trucker shirt is adorned with new and modern
+            details. Beautiful highs and lows on the seams mixed with natural handsanding
+            gives an authentic vibe. The finishing touches include subtle paint splatter
+            and minimal rips and repairs., short_product_description: This season
+            our classic denim trucker shirt is adorned with new and modern details.
+            Beautiful highs and lows on the seams mixed with natural handsanding gives
+            an authentic vibe. The finishing touches include subtle paint splatter
+            and minimal rips and repairs., product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136994340&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fdenim-trucker-shirt-in-destroyed-indigo%2Fd%2F13105',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13105_destroyind_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AM0266A184,
+        sku: '13105:26338:117184', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '99.00', retail_price: '189.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-12
+            09:28:21+00:00'}
+-   model: product_api.product
+    pk: 8
+    fields: {product_id: 123, merchant_id: 36145, product_name: 7 For All
+            Mankind Vintage Flap Pocket in Camel, long_product_description: Our jaspe
+            double flap pocket shirt is constructed from a soft 100% cotton and available
+            in classic camel. The simplistic styling of this piece makes it extremely
+            versatile and easy to pair back to any denim., short_product_description: Our
+            jaspe double flap pocket shirt is constructed from a soft 100% cotton
+            and available in classic camel. The simplistic styling of this piece makes
+            it extremely versatile and easy to pair back to any denim., product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136996872&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fvintage-flap-pocket-in-camel%2Fd%2F13245',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13245_camel_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AM0280A159,
+        sku: '13245:26869:121075', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '79.00', retail_price: '149.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-12
+            09:28:21+00:00'}
+-   model: product_api.product
+    pk: 9
+    fields: {product_id: 86, merchant_id: 36145, product_name: 7 For All
+            Mankind Cut Off Short in Clean White, long_product_description: 'White
+            is always in season and with these truly classic and modern styles, white
+            is exciting again! A more authentic white twill, with a 9 oz weight, is
+            perfect for our Cut Off Short. With tonal threads and silver hardware,
+            these are sexier in white.', short_product_description: 'White is always
+            in season and with these truly classic and modern styles, white is exciting
+            again! A more authentic white twill, with a 9 oz weight, is perfect for
+            our Cut Off Short. With tonal threads and silver hardware, these are sexier
+            in white.', product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136997780&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fcut-off-short-in-clean-white%2Fd%2F13231',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13231_clean_white_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AU5159495S,
+        sku: '13231:26827:120670', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '0.00', retail_price: '139.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00'}
+-   model: product_api.product
+    pk: 10
+    fields: {product_id: 975, merchant_id: 36145, product_name: 7 For All
+            Mankind Cut Off Short in Clean White, long_product_description: 'White
+            is always in season and with these truly classic and modern styles, white
+            is exciting again! A more authentic white twill, with a 9 oz weight, is
+            perfect for our Cut Off Short. With tonal threads and silver hardware,
+            these are sexier in white.', short_product_description: 'White is always
+            in season and with these truly classic and modern styles, white is exciting
+            again! A more authentic white twill, with a 9 oz weight, is perfect for
+            our Cut Off Short. With tonal threads and silver hardware, these are sexier
+            in white.', product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136997808&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fcut-off-short-in-clean-white%2Fd%2F13231',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13231_clean_white_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AU5159495S,
+        sku: '13231:26827:120673', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '0.00', retail_price: '139.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00'}

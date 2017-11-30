@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
 from settings_local import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -43,7 +44,8 @@ INSTALLED_APPS = [
     'product_api',
     'shopping_tool',
     'shopping_tool_api',
-    'rest_framework_swagger'
+    'rest_framework_swagger',
+    'django_nose'
 ]
 
 MIDDLEWARE = [
@@ -131,7 +133,13 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+
+# Added this to remove warning on date fields when loading test fixtures
+if 'test' in sys.argv:
+    USE_TZ = False
+else:
+    USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)
@@ -145,3 +153,14 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+# Use nose to run all tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Tell nose to measure coverage 
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=shopping_tool_api',
+    '--nocapture',
+    '--nologcapture',
+]
