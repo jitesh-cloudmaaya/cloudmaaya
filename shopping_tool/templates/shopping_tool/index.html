@@ -96,22 +96,7 @@
   <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
   <div id="rack-list">
     {% for item in rack_items %}
-      <div class="item" data-productid="{{item.product.id}}" 
-          title="{{ item.product.merchant_name }} by {{ item.product.manufacturer_name }}">
-        <a href="#" class="remove-from-rack at-load" 
-        data-sku="{{item.product.id}}_{{ item.product.merchant_id }}_{{ item.product.product_id }}_{{ item.product.sku}}" 
-        data-idx="" data-productid="{{item.product.id}}" data-rackid="{{item.id}}"><i class="fa fa-times"></i></a>
-        <div class="image"><img src="{{item.product.product_image_url}}"/></div>
-        <div class="details">      
-          {% if item.product.sale_price >= item.product.retail_price %}
-          <span class="price">{{item.product.retail_price}}</span>
-          {% elif item.product.sale_price <= 0 %}
-          <span class="price">{{item.product.retail_price}}</span>
-          {% else %}
-          <span class="price"><em>({{item.product.retail_price}})</em>{{item.product.sale_price}}</span>
-          {% endif %}
-        </div>
-      </div>
+
     {% empty %}
       <div class="empty">Add items to your rack...</div>
     {% endfor %}
@@ -177,6 +162,26 @@ var look_layouts = [
     "columns": {{layout.columns}},
     "rows": {{layout.rows}},
     "row_heights": "{{layout.row_heights}}"
+  },
+{% endfor %} 
+];
+/**
+* @description initial rack objects array
+*/ 
+var initial_rack = [
+{% for item in rack_items %}
+  { 
+    "rack_id": {{item.id}},
+    "id": {{item.product.id}},
+    "product_id": {{ item.product.product_id }},
+    "sku": "{{ item.product.sku}}",
+    "merchant_id": {{ item.product.merchant_id }},
+    "merchant_name": "{{ item.product.merchant_name }}",
+    "manufacturer_name": "{{ item.product.manufacturer_name }}",
+    "product_image_url": "{{item.product.product_image_url}}",
+    "primary_category": "{{item.product.primary_category}}",
+    "retail_price": {{item.product.retail_price}},
+    "sale_price" : {{item.product.sale_price}}
   },
 {% endfor %} 
 ];

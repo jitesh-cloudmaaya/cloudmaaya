@@ -12,7 +12,22 @@ var look_builder = {
       $('#rack-draggable').html('');
       $('#look-drop').html('');
       $('#compare-looks').html('');
-    })
+    });
+    $('#rack-draggable').on('click','a.rack-section-toggle', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var i = link.find('i')
+      var div = link.next('div.block')
+      if(link.hasClass('closed')){
+        link.removeClass('closed');
+        i.removeClass('fa-angle-right').addClass('fa-angle-down');
+        div.slideDown();
+      }else{
+        link.addClass('closed');
+        i.removeClass('fa-angle-down').addClass('fa-angle-right');
+        div.slideUp();       
+      }
+    });
   },
   /**
   * @description build new look link for drawer in rack
@@ -42,7 +57,6 @@ var look_builder = {
   setUpBuilder: function(id){
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
-      console.log(result)
       var look_drop = $('#look-drop');
       var markup = [];
       for(var i = 0; i<result.look_layout.columns; i++){
@@ -119,26 +133,39 @@ var look_builder = {
               data: JSON.stringify(obj),
               success:function(response){
                 /* assign the look item id to the element */
-                el.setAttribute('data-lookitemid', response.id)
+                el.setAttribute('data-lookitemid', response.id);
+                if(list.children.length > 1){
+                  var match_count = 0;
+                  for(var i = 0, l = list.children.length; i<l; i++){
+                    var child = list.children[i]
+                    if(child.dataset.productid != el_id){
+                      /* delete the item from the look/db and remove DOM from ui */
+                      $.ajax({
+                        success:function(response){
+                          list.removeChild(child);
+                        },
+                        type: 'DELETE',
+                        url: '/shopping_tool_api/look_item/' + child.dataset.lookitemid + '/'
+                      });
+                    }else if(child.dataset.productid == el_id){
+                      match_count++;
+                      if(match_count > 1){
+                        /* delete the item from the look/db and remove DOM from ui */
+                        $.ajax({
+                          success:function(response){
+                            list.removeChild(child);
+                          },
+                          type: 'DELETE',
+                          url: '/shopping_tool_api/look_item/' + child.dataset.lookitemid + '/'
+                        });                    
+                      }
+                    }
+                  }
+                }
               },
               type: 'PUT',
               url: '/shopping_tool_api/look_item/0/'
             });
-            if(list.children.length > 1){
-              for(var i = 0, l = list.children.length; i<l; i++){
-                var child = list.children[i]
-                if(child.dataset.productid != el_id){
-                  /* delete the item from the look/db and remove DOM from ui */
-                  $.ajax({
-                    success:function(response){
-                      list.removeChild(child);
-                    },
-                    type: 'DELETE',
-                    url: '/shopping_tool_api/look_item/' + child.dataset.lookitemid + '/'
-                  });
-                }
-              }
-            }
           },
           onRemove: function(evt){
             var el = evt.item;
@@ -154,21 +181,38 @@ var look_builder = {
     });
     /* clone the contents of the rack for drag/drop */
     var rack_items = [];
-    $.each($('#rack-list div.item'), function(idx){
-      var item = $(this);
+    $.each($('#rack-list div.block'), function(idx){
+      var block = $(this);
+      var category = block.data('category');
       rack_items.push(
-        '<div class="item" data-productid="' + item.data('productid') + '">' +
-        '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
+        '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
+        category + '</a><div class="block" data-category="' + category + 
+        '">'
       );
+      $.each(block.find('div.item'), function(index){
+        var item = $(this);
+        rack_items.push(
+          '<div class="item" data-productid="' + item.data('productid') + '">' +
+          '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
+        );
+      })
+      rack_items.push('</div>');
     });
     /* add the clones and assign drag/drop functionality */
     var drag_rack = $('#rack-draggable');
-    drag_rack.html(rack_items.join(''));
-    new Sortable(drag_rack[0], {
-      handle: ".handle",
-      group: { name: "look", pull: 'clone', put: false },
-      sort: false,
-      draggable: ".item"
+    drag_rack.html(
+      '<h2>' + $('#rack').find('h2').html() + 
+      '</h2><div class="look-builder-rack">' + 
+      rack_items.join('') + '</div>'
+    );
+    $.each(drag_rack.find('div.block'), function(idx){
+      var box = $(this)[0];
+      new Sortable(box, {
+        handle: ".handle",
+        group: { name: "look", pull: 'clone', put: false },
+        sort: false,
+        draggable: ".item"
+      });
     });
     /* get look list to create compare */
     $.ajax({
@@ -199,9 +243,10 @@ var look_builder = {
             );
           }
         }
-        if(markup.length == 0){ comp_looks.html('<span class="no-looks">no looks ready to compare</span>'); }
-        /* add draggability from other looks */
-        if(markup.length > 0){
+        /* display no looks message or add looks and drag/drop functionality */
+        if(markup.length == 0){ 
+          comp_looks.html('<span class="no-looks">no looks ready to compare</span>'); 
+        }else if(markup.length > 0){
           comp_looks.html('<h2>Compare other looks</h2><div class="other-looks">' + markup.join('') + '</div>');
           $.each(comp_looks.find('div.comp-look'), function(idx){
             var box = $(this)[0];
