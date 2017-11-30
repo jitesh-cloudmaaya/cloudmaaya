@@ -1,5 +1,5 @@
 /**
-* @description look builder name space containing functionality for building looks
+* @description look builder name space containing functionality for create look UI/ux for building looks
 */
 var look_builder = {
   /**
@@ -8,7 +8,10 @@ var look_builder = {
   functionality: function(){
     $('#close-design-look').click(function(e){
       e.preventDefault();
-      $('#design-look').addClass('hide')
+      $('#design-look').addClass('hide');
+      $('#rack-draggable').html('');
+      $('#look-drop').html('');
+      $('#compare-looks').html('');
     })
   },
   /**
@@ -69,6 +72,7 @@ var look_builder = {
         col.push('</div>');
         markup.push(col.join(''));
       }
+      /* add the created look markup to the ui, including instructions and trash bin */
       look_drop.html(
         '<div class="instructions"><div id="look-trash"></div>' +
         'Drag rack items from the left into open spots within the look layout.' +
@@ -77,13 +81,11 @@ var look_builder = {
         'Compare to other looks for the client to the right.' +
         '</div><div class="drop-zone">' + markup.join('') + '</div>'
       );
+      /* set nicer margins for drop box columns inside the look drop div */
       var col_widths = 0;
-      $.each(look_drop.find('div.column'), function(idx){
-        col_widths += $(this).outerWidth();
-      });
-
+      $.each(look_drop.find('div.column'), function(idx){ col_widths += $(this).outerWidth(); });
       look_drop.find('div.column:first-child').css('marginLeft', ((look_drop.width() * 0.75) - col_widths)/2);
-      /* add the trash functionality */
+      /* add the trash functionality - simply accept objects and immediately remove from ui */
       new Sortable(document.getElementById('look-trash'), {
         group: "look",
         onAdd: function (evt) {
@@ -126,7 +128,7 @@ var look_builder = {
               for(var i = 0, l = list.children.length; i<l; i++){
                 var child = list.children[i]
                 if(child.dataset.productid != el_id){
-                  /* delete the item from the look and remove it from ui */
+                  /* delete the item from the look/db and remove DOM from ui */
                   $.ajax({
                     success:function(response){
                       list.removeChild(child);
@@ -140,7 +142,7 @@ var look_builder = {
           },
           onRemove: function(evt){
             var el = evt.item;
-            /* delete the item from the look when removed from a drop box */
+            /* delete the item from the look/db when removed from a drop box */
             $.ajax({
               success:function(response){},
               type: 'DELETE',
@@ -157,7 +159,7 @@ var look_builder = {
       rack_items.push(
         '<div class="item" data-productid="' + item.data('productid') + '">' +
         '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
-      )
+      );
     });
     /* add the clones and assign drag/drop functionality */
     var drag_rack = $('#rack-draggable');
@@ -168,6 +170,52 @@ var look_builder = {
       sort: false,
       draggable: ".item"
     });
-    /* create other looks ui */
+    /* get look list to create compare */
+    $.ajax({
+      contentType : 'application/json',
+      data: JSON.stringify({
+        "client": parseInt($('#user-clip').data('userid')),
+        "allume_styling_session": search_page.session_id,
+        "stylist": parseInt($('#stylist').data('stylistid'))
+      }),
+      success:function(response){
+        var markup = [];
+        var comp_looks = $('#compare-looks');
+        for(var i = 0, l = response.length; i<l; i++){
+          var comp = response[i];
+          if(comp.id != id){
+            var look_products_markup = [];
+            for(var j = 0, prods = comp.look_products.length; j<prods; j++){
+              var prod = comp.look_products[j];
+              look_products_markup.push(
+                '<div class="item" data-productid="' + prod.product.id + '">' +
+                '<img class="handle" src="' + prod.product.product_image_url + '"/></div>'
+              );
+            }
+            markup.push(
+              '<div class="comp-look"><h3>' + comp.name + '</h3>' +
+              '<span class="layout"><em>layout: </em>' + comp.look_layout.display_name + '</span>' +
+              look_products_markup.join('') + '</div>'
+            );
+          }
+        }
+        if(markup.length == 0){ comp_looks.html('<span class="no-looks">no looks ready to compare</span>'); }
+        /* add draggability from other looks */
+        if(markup.length > 0){
+          comp_looks.html('<h2>Compare other looks</h2><div class="other-looks">' + markup.join('') + '</div>');
+          $.each(comp_looks.find('div.comp-look'), function(idx){
+            var box = $(this)[0];
+            new Sortable(box, {
+              handle: ".handle",
+              group: { name: "look", pull: 'clone', put: false },
+              sort: false,
+              draggable: ".item"
+            });
+          });
+        }
+      },
+      type: 'POST',
+      url: '/shopping_tool_api/look_list/'
+    });
   }
 }

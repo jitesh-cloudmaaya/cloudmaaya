@@ -502,19 +502,18 @@ div#look-list {
   left:-205px;
   position:fixed;
   top:50px;   
+  -webkit-transition: all 0.6s ease-in-out;
+  transition: all 0.6s ease-in-out;     
   width:200px;
   z-index:4;  
   position: fixed;
 }
 div#rack.show {left:0;}
-div#look-list.show {
-  -webkit-transition: all 0.6s ease-in-out;
-  transition: all 0.6s ease-in-out;   
-  left:570px;
-}
+div#look-list.show {left:570px;}
 div#rack h2,
 div#look-list h2,
-div#design-look h2 {
+div#design-look h2,
+#compare-looks h2 {
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;
@@ -523,6 +522,7 @@ div#design-look h2 {
   line-height:49px;
 }
 div#look-list h2 {font-size:14px; font-weight:500;}
+#compare-looks h2 {background:#fff;border-color:#ddd;}
 div#design-look h2 span {font-weight:500;}
 div#look-links {
   height:calc(100% - 60px);
@@ -571,8 +571,8 @@ div#rack-list div.item {
   padding:5px 10px 5px;
   position:relative;
 }
-div#rack-list div.item div.image { }
-div#rack-list div.item div.image img {display:block;margin:auto; height:150px; width:150px;}
+div#rack-list div.item div.image { height:150px; width:150px; }
+div#rack-list div.item div.image img {display:block;margin:0 auto; height:150px; max-width:100%;}
 div#rack-list div.item div.details { }
 div#rack-list div.item span.price{
   color:#474747;
@@ -1106,8 +1106,11 @@ div.layout-option span.columns {font-size:10px; display:block;}
   padding:5px;
   width:335px;
 }
-#compare-looks { background:#fafafa; height:calc(100% - 50px); right:0; width:320px; }
-#compare-looks:before {content: 'looks to compare will go here';}
+#compare-looks { background:#fafafa; border-left:1px solid #ddd; height:calc(100% - 50px); right:0; width:319px; }
+#compare-looks div.other-looks {
+  height:calc(100% - 50px);
+  overflow:auto;
+}
 #look-drop{ height:calc(100% - 50px); left:345px; width:calc(100% - 665px); }
 #rack-draggable div.item {
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
@@ -1122,8 +1125,9 @@ div.layout-option span.columns {font-size:10px; display:block;}
 #rack-draggable div.item img { 
   display:block; 
   margin:auto; 
-  height:100px; 
-  width:100px; 
+  height:100px;
+  margin:0 auto; 
+  max-width:100%; 
   cursor: move;
   cursor: grab;
   cursor: -moz-grab;
@@ -1176,7 +1180,7 @@ div.layout-option span.columns {font-size:10px; display:block;}
   font-size:60px;
   height:100px;
   left:10px;
-  line-height:90px;
+  line-height:95px;
   position:absolute;
   text-align:center;
   width:calc(100% - 22px);
@@ -1202,9 +1206,68 @@ div.layout-option span.columns {font-size:10px; display:block;}
   content: "\f014";
   font-family: 'FontAwesome'; 
   font-size:60px;
-  line-height:90px;   
+  line-height:95px;   
 }
-
-
+#compare-looks span.no-looks {
+  color:#777;
+  display:block;
+  font-size:20px;
+  font-variant: small-caps;
+  font-weight:100;
+  height:calc(100% - 20px);
+  line-height:24px;
+  padding:10px;
+  text-align:center;
+  text-shadow:0 1px #fff;  
+}
+#compare-looks div.comp-look {
+  background:#fff;
+  box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
+  border-radius:3px;
+  overflow:auto;
+  margin:10px 15px;
+  padding:10px 5px;
+}
+#compare-looks div.comp-look h3 {
+  border-bottom:1px solid #eee;
+  font-size:18px;
+  font-weight:300;
+  margin:-10px -5px 0;
+  padding:10px;
+}
+#compare-looks div.comp-look span.layout {
+  color:#777;
+  display:block;
+  font-size:12px;
+  font-weight:100;
+  padding:10px 5px;
+}
+#compare-looks div.comp-look span.layout em {font-weight:400;}
+#compare-looks div.comp-look div.item {
+  box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
+  margin:5px;
+  float:left;
+  height:75px;
+  overflow:hidden;
+  padding:0;
+  position:relative;
+  width:75px;
+}
+#compare-looks div.comp-look div.item img {
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;   
+  display:block;
+  height:75px;
+  margin: 0 auto; 
+  overflow:hidden; 
+  max-width:100%;
+}
+#compare-looks div.comp-look div.item img:active { 
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
 
 

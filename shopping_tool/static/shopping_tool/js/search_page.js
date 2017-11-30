@@ -113,8 +113,18 @@ var search_page = {
     search_page.session_id = $('body').data('stylesession');
     /* add keyboard shortcuts for rack and client open/close */
     Mousetrap.bind('shift+z+x', function(e) {
-      $('#rack').toggleClass('show');
-      $('#look-list').toggleClass('show');
+      var rack = $('#rack');
+      if(rack.hasClass('show')){
+        $('#look-list').removeClass('show');
+        rack.delay(400)
+        .queue(function (next) { 
+          $(this).removeClass('show');
+          next(); 
+        });
+      }else{
+        rack.addClass('show');
+        $('#look-list').addClass('show');
+      }
       return false;
     });
     Mousetrap.bind('shift+a+s', function(e) {
@@ -212,8 +222,12 @@ var search_page = {
     });
     $('#close-rack').click(function(e){
       e.preventDefault();
-      $('#rack').removeClass('show');
       $('#look-list').removeClass('show');
+      $('#rack').delay(400)
+      .queue(function (next) { 
+        $(this).removeClass('show');
+        next(); 
+      });
     });
     $('#rack-list').on('click','a.remove-from-rack',function(e){
       e.preventDefault();
