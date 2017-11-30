@@ -119,7 +119,7 @@ class ShoppingToolAPITestCase(APITestCase):
         url = reverse("shopping_tool_api:rack_item", kwargs={'pk':rack_instance.id})
         response = self.client.get(url)
 
-        self.assertEqual(201, response.status_code)
+        self.assertEqual(200, response.status_code)
 
     def test_add_look_item(self):
         """
