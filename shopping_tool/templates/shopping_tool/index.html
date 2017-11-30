@@ -12,8 +12,8 @@
 </head>
 <body data-stylesession="{{ styling_session.id }}">
 <div id="header">
-  <a href="/shopping_tool/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
-  <span id="stylist" data-stylistid="{{ user.id }}">stylist: {{ user.first_name }} {{ user.last_name }}</span>
+  <a href="/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
+  <span id="stylist" data-stylistid="{{ user.id }}"></span>
 </div>
 <div id="user-card">
   <a id="user-clip" href="#">
@@ -78,7 +78,7 @@
 </div>
 <div id="content">
   <div id="search">
-    <label>What are you looking for?</label>
+    <label>Hi <strong>{{ user.first_name }} {{ user.last_name }}</strong>, what are you looking for?</label>
     <a href="#" id="search-btn">show me</a>
     <input class="search" id="search-field" name="text" type="text" placeholder="I want..." data-lookup=""/>
     <div id="facets"></div>
@@ -96,11 +96,12 @@
   <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
   <div id="rack-list">
     {% for item in rack_items %}
-      <div class="item" title="{{ item.product.merchant_name }} by {{ item.product.manufacturer_name }}">
+      <div class="item" data-productid="{{item.product.id}}" 
+          title="{{ item.product.merchant_name }} by {{ item.product.manufacturer_name }}">
         <a href="#" class="remove-from-rack at-load" 
         data-sku="{{item.product.id}}_{{ item.product.merchant_id }}_{{ item.product.product_id }}_{{ item.product.sku}}" 
         data-idx="" data-productid="{{item.product.id}}" data-rackid="{{item.id}}"><i class="fa fa-times"></i></a>
-        <div class="image"><img src="{{item.product.product_image_url}}" style="height:150px;width:150px"/></div>
+        <div class="image"><img src="{{item.product.product_image_url}}"/></div>
         <div class="details">      
           {% if item.product.sale_price >= item.product.retail_price %}
           <span class="price">{{item.product.retail_price}}</span>
@@ -121,8 +122,22 @@
   </div>
 </div>
 <div id="look-list">
-  <h2>Looks</h2>
-  <div id="look-links"></div>
+  <h2>{{ looks|length }} Look{{ looks|length|pluralize }}</h2>
+  <div id="look-links">
+    {% for look in looks %}
+      <a href="#" class="look-link" data-lookid="{{ look.id }}" data-lookname="{{ look.name }}">
+        <table>
+          <tr>
+            <td class="icon"><i class="fa fa-shopping-bag"></i></td>
+            <td>
+              <span class="name">{{ look.name }}</span>
+              <span class="layout"><em>layout:</em> {{ look.look_layout.name }}</span>
+            </td>
+          </tr>
+        </table>
+      </a> 
+    {% endfor %}
+  </div>
 </div>
 <div id="create-look">
   <div class="stage">
@@ -136,10 +151,18 @@
     <a href="#" id="create-new-look">create look</a>
   </div>
 </div>
+<div id="design-look">
+  <a href="#" id="close-design-look"><i class="fa fa-times"></i></a>
+  <h2>Design Look: <span id="designing"></span></h2>
+  <div id="rack-draggable"></div>
+  <div id="look-drop"></div>
+  <div id="compare-looks"></div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+<script src="{% static 'shopping_tool/js/Sortable.min.js' %}"></script>
 <script src="{% static 'shopping_tool/js/search_page.js' %}"></script>
 <script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
