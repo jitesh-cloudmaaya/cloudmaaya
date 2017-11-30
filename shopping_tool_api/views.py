@@ -24,7 +24,7 @@ from django.forms.models import model_to_dict
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-#@check_login
+@check_login
 @permission_classes((AllowAny, ))
 def rack_item(request, pk=None):
     """
@@ -78,7 +78,7 @@ def rack_item(request, pk=None):
 
 
 @api_view(['GET', 'PUT'])
-#@check_login
+@check_login
 @permission_classes((AllowAny, ))
 def look(request, pk):
     """

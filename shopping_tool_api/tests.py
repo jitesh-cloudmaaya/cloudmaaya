@@ -8,7 +8,9 @@ from rest_framework.test import APITestCase
 
 from shopping_tool.models import Look, AllumeStylingSessions, WpUsers, Rack, LookLayout
 from product_api.models import Product
+from django.http.cookie import SimpleCookie
 
+#http://www.django-rest-framework.org/api-guide/testing/
 
 class ShoppingToolAPITestCase(APITestCase):
     
@@ -16,9 +18,10 @@ class ShoppingToolAPITestCase(APITestCase):
     shopper = ''
     client = ''
 
-    def setUp(self):
-        
+    def setUp(self):        
         client = WpUsers.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+        self.client.cookies = SimpleCookie({'user_email': 'client@allume.co'})
+
 
     def test_create_look(self):
         """
