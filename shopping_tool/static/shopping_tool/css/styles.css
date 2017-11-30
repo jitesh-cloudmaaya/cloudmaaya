@@ -1160,14 +1160,50 @@ div.layout-option span.columns {font-size:10px; display:block;}
 }
 #look-drop div.instructions {
   color:#777;
+  float:left;
   font-size:18px;
   font-weight:100;
+  height:calc(100% - 20px);
   line-height:24px;
   padding:10px;
+  position:relative;
   width:25%;
 }
-#look-drop div.instructions.left {float:left;}
-#look-drop div.instructions.right {float:right;}
+#look-drop #look-trash {
+  border:1px dashed #ddd;
+  border-radius: 3px;
+  bottom:10px;
+  font-size:60px;
+  height:100px;
+  left:10px;
+  line-height:90px;
+  position:absolute;
+  text-align:center;
+  width:calc(100% - 22px);
+}
+#look-drop #look-trash:before {
+  content: "\f014";
+  font-family: 'FontAwesome';  
+  opacity:0.25;
+}
+#look-drop #look-trash div.item {
+  border:1px dashed #333;
+  border-radius: 3px;
+  height:100px;
+  left:-1px;
+  position:absolute;
+  text-align:center; 
+  top:-1px;
+  width:100%; 
+}
+#look-drop #look-trash div.item img {display:none;}
+#look-drop #look-trash div.item:before {
+  color:#000;
+  content: "\f014";
+  font-family: 'FontAwesome'; 
+  font-size:60px;
+  line-height:90px;   
+}
 
 
 

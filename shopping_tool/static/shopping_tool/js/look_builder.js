@@ -39,34 +39,108 @@ var look_builder = {
   setUpBuilder: function(id){
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
+      console.log(result)
       var markup = [];
       for(var i = 0; i<result.look_layout.columns; i++){
         var col = ['<div class="column" id="lookdropcol' + i + '">'];
         var heights = result.look_layout.row_heights.split(',');
         for(var j = 0; j<result.look_layout.rows; j++){
           var h = heights[j];
-          col.push('<div class="row" style="height:calc(' + h + '% - 6px)"></div>');
+          var position = i > 0 ? (j + 1) + result.look_layout.rows : j + 1 ;
+          var product_markup = [];
+          /* check if a look product has the same position as the newlay added row */
+          for(var p = 0, prods = result.look_products.length; p<prods; p++){
+            var prod = result.look_products[p];
+            if(prod.layout_position == position){
+              product_markup.push(
+                '<div class="item" data-productid="' + prod.product.id + 
+                '" data-lookitemid="' + prod.id + '">' +
+                '<img class="handle" src="' + prod.product.product_image_url + 
+                '"/></div>'
+              );
+            }
+          }
+          col.push(
+            '<div class="row" style="height:calc(' + h + '% - 6px)">' + 
+            product_markup.join('') + '</div>'
+          );
         }
         col.push('</div>');
         markup.push(col.join(''));
       }
       $('#look-drop').html(
-        '<div class="instructions left">Drag rack items from the left into open spots ' +
-        'within the look layout.<br/><br/>Compare to other looks for the client to the right.' +
+        '<div class="instructions"><div id="look-trash"></div>' +
+        'Drag rack items from the left into open spots within the look layout.' +
+        '<br/><br/>Compare to other looks for the client to the right.' +
         '</div><div class="drop-zone">' + markup.join('') + '</div>'
       );
+      /* add the trash functionality */
+      new Sortable(document.getElementById('look-trash'), {
+        group: "look",
+        onAdd: function (evt) {
+          var el = evt.item;
+          el.parentNode.removeChild(el);
+        }
+      });
+      /* add the drag/drop functionality to the newly created drop zones */
       $.each($('#look-drop div.column div.row'), function(idx){
         var box = $(this)[0];
         new Sortable(box, {
           handle: ".handle",
           group: { name: "look", pull: true, put: true },
-          sort: true,
-          draggable: ".item"})        
-      })
-
-
-    })
-
+          sort: false,
+          draggable: ".item",
+          onAdd: function (evt) {
+            var el = evt.item;
+            var el_id = el.dataset.productid;
+            var list = el.parentNode; 
+            var parent_element = list.parentNode;
+            var position = Array.prototype.indexOf.call(parent_element.children, list) + 1;
+            /* create REST object */
+            var obj = {
+              layout_position: position,
+              look: id,
+              product: parseInt(el_id)              
+            }
+            /* create new look item in db */
+            $.ajax({
+              contentType : 'application/json',
+              data: JSON.stringify(obj),
+              success:function(response){
+                /* assign the look item id to the element */
+                el.setAttribute('data-lookitemid', response.id)
+              },
+              type: 'PUT',
+              url: '/shopping_tool_api/look_item/0/'
+            });
+            if(list.children.length > 1){
+              for(var i = 0, l = list.children.length; i<l; i++){
+                var child = list.children[i]
+                if(child.dataset.productid != el_id){
+                  /* delete the item from the look and remove it from ui */
+                  $.ajax({
+                    success:function(response){
+                      list.removeChild(child);
+                    },
+                    type: 'DELETE',
+                    url: '/shopping_tool_api/look_item/' + child.dataset.lookitemid + '/'
+                  });
+                }
+              }
+            }
+          },
+          onRemove: function(evt){
+            var el = evt.item;
+            /* delete the item from the look when removed from a drop box */
+            $.ajax({
+              success:function(response){},
+              type: 'DELETE',
+              url: '/shopping_tool_api/look_item/' + el.dataset.lookitemid + '/'
+            });            
+          }
+        });        
+      });
+    });
     /* clone the contents of the rack for drag/drop */
     var rack_items = [];
     $.each($('#rack-list div.item'), function(idx){
@@ -76,15 +150,15 @@ var look_builder = {
         '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
       )
     });
+    /* add the clones and assign drag/drop functionality */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(rack_items.join(''));
-    var sortable = new Sortable(drag_rack[0], {
-        handle: ".handle",
-        group: { name: "look", pull: 'clone', put: false },
-        sort: true,
-        draggable: ".item"})
-
-
-    
+    new Sortable(drag_rack[0], {
+      handle: ".handle",
+      group: { name: "look", pull: 'clone', put: false },
+      sort: false,
+      draggable: ".item"
+    });
+    /* create other looks ui */
   }
 }
