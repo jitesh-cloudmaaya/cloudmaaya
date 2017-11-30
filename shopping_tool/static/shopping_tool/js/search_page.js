@@ -255,8 +255,12 @@ var search_page = {
       $('#new-look-layout')[0].selectize.setValue('',true);
       $('#create-look').fadeIn();
     });
-    $('#look-links').on('click', 'a.look-links', function(e){
+    $('#look-links').on('click', 'a.look-link', function(e){
       e.preventDefault();
+      var link = $(this);
+      look_builder.setUpBuilder(link.data('lookid'))
+      $('#designing').html(link.data('lookname'));
+      $('#design-look').attr('class','').addClass('show');
     });
     /* client details functionality */
     $('#user-clip').delay(750)
@@ -326,7 +330,8 @@ var search_page = {
           '.</span>'
         );
       }
-    });    
+    }); 
+    look_builder.functionality(); 
   },
   /**
   * @description processing and template for facets
@@ -449,13 +454,13 @@ var search_page = {
         details.size + '</span><span><em>description:</em>' + details.short_product_description + 
         '</span></div></div>';
     }else{
-      return '<div class="item" title="' + details.merchant_name + ' by ' + 
+      return '<div class="item" data-productid="' + details.id + '" title="' + details.merchant_name + ' by ' + 
         details.manufacturer_name + '"><a href="#" class="remove-from-rack" data-sku="' + 
         details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku + 
         '" data-idx="' + idx + '" data-productid="' + details.id + '" data-rackid="' + 
         rack_item_id + '"><i class="fa fa-times"></i></a>' +
         '<div class="image"><img src="' + details.product_image_url + 
-        '" style="height:150px;width:150px"/></div><div class="details">' + price_display + '</div></div>';
+        '"/></div><div class="details">' + price_display + '</div></div>';
     }
   },
   /**

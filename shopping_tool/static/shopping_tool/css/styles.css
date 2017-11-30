@@ -107,8 +107,8 @@ a#search-btn:active {
   font-size:14px;
   font-weight:200;
   margin-bottom:10px;
-
 }
+#search label strong {color:#000;}
 input.search {
   background:#fff;
   border:1px solid #d0d0d0;
@@ -492,17 +492,17 @@ div#rack {
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;    
   width:570px;
-  z-index:5;
+  z-index:6;
 }
 div#look-list {
   background:#fff;
   border-top-right-radius: 5px;
   box-shadow:0 0 3px rgba(0,0,0,0.3);
   height:calc(100% - 50px);
-  left:-155px;
+  left:-205px;
   position:fixed;
   top:50px;   
-  width:150px;
+  width:200px;
   z-index:4;  
   position: fixed;
 }
@@ -513,7 +513,8 @@ div#look-list.show {
   left:570px;
 }
 div#rack h2,
-div#look-list h2 {
+div#look-list h2,
+div#design-look h2 {
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;
@@ -522,10 +523,28 @@ div#look-list h2 {
   line-height:49px;
 }
 div#look-list h2 {font-size:14px; font-weight:500;}
+div#design-look h2 span {font-weight:500;}
 div#look-links {
-  height:calc(100% - 50px);
+  height:calc(100% - 60px);
   overflow:auto;
+  padding:5px 0;
 }
+
+div#look-links a.look-link {
+  box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
+  color:#474747;
+  display:block;
+  margin:5px 10px 10px;
+  text-decoration:none;
+}
+div#look-links a.look-link i {font-size:20px;}
+div#look-links a.look-link table td { padding:5px; vertical-align:top; }
+div#look-links a.look-link table td.icon {border-right:1px solid #eee; vertical-align: middle}
+div#look-links a.look-link table span {display:block;}
+div#look-links a.look-link table span.name {font-size:14px; font-weight:300; padding-bottom:2px;}
+div#look-links a.look-link table span.layout {color:#999; font-size:12px; font-weight:100;}
+div#look-links a.look-link:hover i {color:#f2987e;}
+div#look-links a.look-link:active  {box-shadow:inset 0 0 3px rgba(0,0,0,0.3);}
 div#rack h2 i {
   font-size:40px;
   line-height:10px;
@@ -553,7 +572,7 @@ div#rack-list div.item {
   position:relative;
 }
 div#rack-list div.item div.image { }
-div#rack-list div.item div.image img {display:block;margin:auto;}
+div#rack-list div.item div.image img {display:block;margin:auto; height:150px; width:150px;}
 div#rack-list div.item div.details { }
 div#rack-list div.item span.price{
   color:#474747;
@@ -600,7 +619,8 @@ div#rack-btns span {
   padding:7px 0 10px;  
 }
 #close-rack, 
-#cancel-new-look {
+#cancel-new-look,
+#close-design-look {
   color:#bbb;
   font-size:20px;
   padding:8px 15px;
@@ -613,9 +633,11 @@ div#rack-btns span {
   transition: all 0.3s ease-in-out;  
 }
 #close-rack:hover,
-#cancel-new-look:hover {color:#474747;}
+#cancel-new-look:hover,
+#close-design-look:hover {color:#474747;}
 #close-rack:active,
-#cancel-new-look:active {color:#0090D9;}
+#cancel-new-look:active,
+#close-design-look:active {color:#0090D9;}
 a.add-to-rack {
   border:1px solid #ddd;
   border-radius:3px;
@@ -1051,4 +1073,102 @@ div.layout-option span.columns {font-size:10px; display:block;}
   padding:10px 15px 0;
 }
 #new-look-error span i {margin-right:10px;}
+#design-look {
+  background:#fff;
+  box-shadow:0 0 3px rgba(0,0,0,0.3);  
+  height:100%;
+  left:-102%;
+  opacity:0;
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:20;
+}
+#design-look.show {
+  -webkit-transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.5s ease-in-out;  
+  left:0px; 
+  opacity:1;
+}
+#design-look.show.hide {
+  left:-102%; 
+  opacity:0;
+  -webkit-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;    
+}
+#look-drop,
+#rack-draggable,
+#compare-looks { position:absolute; top:50px; }
+#rack-draggable {
+  border-right:1px solid #ddd;
+  height:calc(100% - 60px);
+  left:0;
+  padding:5px;
+  width:335px;
+}
+#compare-looks { background:#fafafa; height:calc(100% - 50px); right:0; width:320px; }
+#compare-looks:before {content: 'looks to compare will go here';}
+#look-drop{ height:calc(100% - 50px); left:345px; width:calc(100% - 665px); }
+#rack-draggable div.item {
+  box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
+  margin:5px;
+  float:left;
+  height:100px;
+  overflow:hidden;
+  padding:0;
+  position:relative;
+  width:100px;
+}
+#rack-draggable div.item img { 
+  display:block; 
+  margin:auto; 
+  height:100px; 
+  width:100px; 
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;  
+}
+#rack-draggable div.item img:active { 
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+#look-drop div.drop-zone { float:left; height:100%; width:calc(75% - 20px); }
+#look-drop div.column { height:calc(100% - 26px); width:200px; padding:13px 0; }
+#look-drop div.column div.row { border:1px solid #ccc; margin:2px 0; overflow:hidden;}
+#look-drop div.column div.row div.item {
+  height:100%;
+  position:relative;
+  width:100%;
+}
+#look-drop div.column div.row div.item img {
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;    
+  display:block; 
+  height:100%; 
+  margin: 0 auto; 
+  overflow:hidden; 
+  max-width:100%;
+}
+#look-drop div.column div.row div.item img:active { 
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+#look-drop div.instructions {
+  color:#777;
+  font-size:18px;
+  font-weight:100;
+  line-height:24px;
+  padding:10px;
+  width:25%;
+}
+#look-drop div.instructions.left {float:left;}
+#look-drop div.instructions.right {float:right;}
+
+
+
 
