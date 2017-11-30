@@ -1135,8 +1135,8 @@ div.layout-option span.columns {font-size:10px; display:block;}
   cursor: -webkit-grabbing;
 }
 #look-drop div.drop-zone { float:left; height:100%; width:calc(75% - 20px); }
-#look-drop div.column { height:calc(100% - 26px); width:200px; padding:13px 0; }
-#look-drop div.column div.row { border:1px solid #ccc; margin:2px 0; overflow:hidden;}
+#look-drop div.column { height:calc(100% - 17px);  margin:0 2px; padding:13px 0; width:200px; }
+#look-drop div.column div.row { border:1px dashed #bbb; border-radius:3px; margin:2px 0; overflow:hidden;}
 #look-drop div.column div.row div.item {
   height:100%;
   position:relative;
