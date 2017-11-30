@@ -24,7 +24,7 @@ from django.forms.models import model_to_dict
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@check_login
+#@check_login
 @permission_classes((AllowAny, ))
 def rack_item(request, pk=None):
     """
@@ -120,7 +120,7 @@ def look(request, pk):
         
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
+            return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
 @api_view(['GET', 'PUT', 'DELETE'])

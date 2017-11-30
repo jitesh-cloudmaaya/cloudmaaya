@@ -43,7 +43,7 @@ class LookProductCreateSerializer(serializers.ModelSerializer):
 
 
 class LookSerializer(serializers.ModelSerializer):
-    look_layout = LookLayoutSerializer(many=False)
+    look_layout = LookLayoutSerializer(many=False, read_only=True)
     look_products = LookProductSerializer(source='product_set', many=True, read_only=True)
 
     class Meta:
