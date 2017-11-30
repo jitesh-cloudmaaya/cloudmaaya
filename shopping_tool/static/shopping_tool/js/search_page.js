@@ -37,7 +37,6 @@ var search_page = {
         product: parseInt(details.id),
         allume_styling_session: parseInt(search_page.session_id)
       }
-      console.log(JSON.stringify(obj))
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(obj),
@@ -47,7 +46,7 @@ var search_page = {
         },
         type: 'PUT',
         url: '/shopping_tool_api/rack_item/0/'
-      })
+      });
     }else{
       var pos = item.offset();
       if($('#air-' + idx).length < 1){
@@ -641,7 +640,7 @@ var search_page = {
       });
     }
     q += '&page=' + page + '' + facets.join('');
-    console.log('query string: ' + q)
+    //console.log('query string: ' + q)
     $('#search-form-selections').html(selection_markup.join(''));
     if(selection_markup.length > 0){
       $('#facet-bar').addClass('show');
@@ -664,7 +663,7 @@ var search_page = {
       url: '/product_api/facets?',
       data: q,
       success: function(results){
-        console.log(results)
+        //console.log(results)
         if(results.data != undefined && results.data.length > 0){
           search_page.pagerTemplate(results.page, results.total_items, results.num_per_page);
         }
