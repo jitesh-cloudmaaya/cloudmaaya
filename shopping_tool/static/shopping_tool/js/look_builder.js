@@ -40,6 +40,7 @@ var look_builder = {
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
       console.log(result)
+      var look_drop = $('#look-drop');
       var markup = [];
       for(var i = 0; i<result.look_layout.columns; i++){
         var col = ['<div class="column" id="lookdropcol' + i + '">'];
@@ -68,12 +69,20 @@ var look_builder = {
         col.push('</div>');
         markup.push(col.join(''));
       }
-      $('#look-drop').html(
+      look_drop.html(
         '<div class="instructions"><div id="look-trash"></div>' +
         'Drag rack items from the left into open spots within the look layout.' +
-        '<br/><br/>Compare to other looks for the client to the right.' +
+        '<br/><br/>Dragging an item into an occupied spot will remove the old item ' +
+        'from that position.<br/><br/>Drag items to trash to remove from the look.<br/><br/>' + 
+        'Compare to other looks for the client to the right.' +
         '</div><div class="drop-zone">' + markup.join('') + '</div>'
       );
+      var col_widths = 0;
+      $.each(look_drop.find('div.column'), function(idx){
+        col_widths += $(this).outerWidth();
+      });
+
+      look_drop.find('div.column:first-child').css('marginLeft', ((look_drop.width() * 0.75) - col_widths)/2);
       /* add the trash functionality */
       new Sortable(document.getElementById('look-trash'), {
         group: "look",
@@ -83,7 +92,7 @@ var look_builder = {
         }
       });
       /* add the drag/drop functionality to the newly created drop zones */
-      $.each($('#look-drop div.column div.row'), function(idx){
+      $.each(look_drop.find('div.column div.row'), function(idx){
         var box = $(this)[0];
         new Sortable(box, {
           handle: ".handle",
