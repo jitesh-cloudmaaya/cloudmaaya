@@ -20,8 +20,6 @@ from product_api.models import Product
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, LookProduct
 from serializers import RackSerializer, RackCreateSerializer, LookCreateSerializer, LookProductSerializer, LookProductCreateSerializer, LookSerializer
 from rest_framework import status
-from django.forms.models import model_to_dict
-
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -45,7 +43,6 @@ def rack_item(request, pk=None):
     delete:
         Remove a product from the rack for a styling session
     """
-
     if request.method == 'GET':
         try:
             rack_item = Rack.objects.get(id=pk)
@@ -124,30 +121,38 @@ def look(request, pk):
         return JsonResponse(serializer.errors, status=400)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @check_login
 @permission_classes((AllowAny, ))
 def look_list(request):
     """
-    get:
+    post:
         Get a list of looks filtered by shopper, client or styling_session and its products, layouts, etc
-
+       
+        Sample JSON Object, all filters below are optional.
         {
          "client": 1,
          "allume_styling_session":3,
          "stylist": 117
         }
     """
-    print request.data
+    looks = Look.objects.all()
+
     if 'client' in request.data:
-        styling_sessions = AllumeStylingSessions.objects.filter(client = 8).values_list('id', flat=True)
-        looks = Look.objects.filter(allume_styling_session__in = styling_sessions)
-    else:
-        looks = Look.objects.all()
+        client = request.data['client']
+        styling_sessions = AllumeStylingSessions.objects.filter(client = client).values_list('id', flat=True)
+        looks = looks.filter(allume_styling_session__in = styling_sessions)
+
+    if 'allume_styling_session' in request.data:
+        allume_styling_session = request.data['allume_styling_session']
+        looks = looks.filter(allume_styling_session = allume_styling_session)
+
+    if 'stylist' in request.data:
+        stylist = request.data['stylist']
+        looks = looks.filter(stylist = stylist)
 
     serializer = LookSerializer(looks, many=True)
     return JsonResponse(serializer.data, safe=False)
-
    
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -183,7 +188,6 @@ def look_item(request, pk=None):
     delete:
         Remove a product from a look for a styling session
     """
-
     if request.method == 'GET':
         try:
             look_item = LookProduct.objects.get(id=pk)
@@ -218,9 +222,7 @@ def look_item(request, pk=None):
             context = {'Success': False, 'Info': str(er)}
             return JsonResponse(context, status=status.HTTP_400_BAD_REQUEST)
 
-
         return Response(context) 
-
 
 
 @api_view(['GET'])
@@ -233,8 +235,3 @@ def layouts(request):
     """
     layouts = LookLayout.objects.values()
     return Response(layouts) 
-
-
-
-
-

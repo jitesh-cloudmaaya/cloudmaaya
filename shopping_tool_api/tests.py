@@ -193,6 +193,42 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(201, response.status_code)
 
 
+    def test_get_look_list(self):
+        """
+        Test to verify getting a look
+        """
+
+        url = reverse("shopping_tool_api:look_list")
+        
+
+        #Test Getting UnFiltered List
+        response_all = self.client.post(url)
+        response_data_all = json.loads(response_all.content)
+        self.assertEqual(len(response_data_all), 2)
+        self.assertEqual(200, response_all.status_code)
+
+        #Test Getting Client Filtered List
+        client_filter_data = {"client": 8}
+        response_client = self.client.post(url, client_filter_data)
+        response_data_client = json.loads(response_client.content)
+        self.assertEqual(len(response_data_client), 2)
+        self.assertEqual(200, response_client.status_code)
+
+        #Test Getting Stylist Filtered List
+        stylist_filter_data = {"stylist": 117}
+        response_stylist = self.client.post(url, stylist_filter_data)
+        response_data_stylist = json.loads(response_stylist.content)
+        self.assertEqual(len(response_data_stylist), 1)
+        self.assertEqual(200, response_client.status_code)
+
+        #Test Getting allume_styling_session Filtered List
+        styling_session_filter_data = {"allume_styling_session": 3}
+        response_styling_session = self.client.post(url, styling_session_filter_data)
+        response_data_styling_session = json.loads(response_styling_session.content)
+        self.assertEqual(len(response_data_styling_session), 2)
+        self.assertEqual(200, response_client.status_code)
+
+
     def test_get_layouts(self):
         """
         Test to verify getting a look
