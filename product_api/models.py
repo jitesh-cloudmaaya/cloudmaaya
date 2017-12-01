@@ -37,7 +37,6 @@ class Product(models.Model):
     merchant_name = models.CharField(max_length=55, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
-    primary_category = models.CharField(max_length=500, blank=True, null=True)
 
 
 class ProductSerializer(serializers.ModelSerializer):
