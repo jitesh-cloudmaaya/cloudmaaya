@@ -28,6 +28,52 @@ var look_builder = {
         div.slideUp();       
       }
     });
+    $('#look-drop').on('click','a.look-more-details', function(e){
+      e.preventDefault();
+      var link = $(this);
+      $('#look-indepth').html('').fadeIn();
+      $.get('/shopping_tool_api/look/' + link.data('look') + '/', function(result){
+        var markup = ['<table>'];
+        result.look_products.sort(function(a,b){
+          if(a.layout_position > b.layout_position){ return 1}
+          if(a.layout_position < b.layout_position){ return -1}
+          return 0;
+        });
+        for(var i = 0, l = result.look_products.length; i<l; i++){
+          var prod = result.look_products[i];
+          var retail = prod.product.retail_price;
+          var sale = prod.product.sale_price;
+          var price_display = '';
+          var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
+          var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>';    
+          if((sale >= retail)||(sale == 0)){
+            price_display = '<span class="price"><em class="label">price:</em>' + 
+              numeral(retail).format('$0,0.00') + '</span>';
+          }else{
+            price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
+              numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
+          }
+          markup.push(
+            '<tr><td class="img"><img src="' + prod.product.product_image_url + '"/></td>' +
+            '<td class="details"><a href="' + prod.product.product_url + '" target="_blank" class="name">' + 
+            prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
+            prod.product.short_product_description + '</p>' + price_display +
+            '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
+            '<span class="general"><em>category:</em>' + prod.product.primary_category + '</span></td></tr>'
+          );
+        }
+        markup.push('</table>');
+        $('#look-indepth').html(
+          '<div class="stage"><a href="#" class="close-indepth"><i class="fa fa-times"></i></a>' +
+          '<h2>' + result.name + '</h2><p class="layout"><em>layout: </em>' + result.look_layout.display_name + 
+          '</p><div class="products">' + markup.join('') + '</div></div>'
+        );
+      });
+    });
+    $('#look-indepth').on('click', 'a.close-indepth', function(e){
+      e.preventDefault();
+      $('#look-indepth').fadeOut();
+    })
   },
   /**
   * @description build new look link for drawer in rack
@@ -92,7 +138,9 @@ var look_builder = {
         'Drag rack items from the left into open spots within the look layout.' +
         '<br/><br/>Dragging an item into an occupied spot will remove the old item ' +
         'from that position.<br/><br/>Drag items to trash to remove from the look.<br/><br/>' + 
-        'Compare to other looks for the client to the right.' +
+        'Compare to other looks for the client to the right.<br/><br/>' +
+        '<a href="#" class="look-more-details" data-look="' + id + '">' +
+        '<i class="fa fa-search"></i>look details</a>' + 
         '</div><div class="drop-zone">' + markup.join('') + '</div>'
       );
       /* set nicer margins for drop box columns inside the look drop div */
@@ -229,6 +277,11 @@ var look_builder = {
           var comp = response[i];
           if(comp.id != id){
             var look_products_markup = [];
+            comp.look_products.sort(function(a,b){
+              if(a.layout_position > b.layout_position){ return 1}
+              if(a.layout_position < b.layout_position){ return -1}
+              return 0;
+            });
             for(var j = 0, prods = comp.look_products.length; j<prods; j++){
               var prod = comp.look_products[j];
               look_products_markup.push(
