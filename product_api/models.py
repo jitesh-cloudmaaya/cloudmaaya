@@ -7,8 +7,8 @@ from rest_framework import serializers
 # Create your models here.
 
 class Product(models.Model):
-    product_id = models.IntegerField(blank=True, null=True)
-    merchant_id = models.IntegerField(blank=True, null=True)
+    product_id = models.BigIntegerField(blank=True, null=True, db_index=True)
+    merchant_id = models.BigIntegerField(blank=True, null=True, db_index=True)
     product_name = models.CharField(max_length=255, blank=True, null=True)
     long_product_description = models.CharField(max_length=2000, blank=True, null=True)
     short_product_description = models.CharField(max_length=500, blank=True, null=True)
@@ -34,12 +34,69 @@ class Product(models.Model):
     availability = models.CharField(max_length=50, blank=True, null=True)
     begin_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
-    merchant_name = models.CharField(max_length=55, blank=True, null=True)
+    merchant_name = models.CharField(max_length=2000, blank=True, null=True)
+    keywords = models.CharField(max_length=1000, blank=True, null=True)
+    primary_category = models.CharField(max_length=150, blank=True, null=True)
+    secondary_category = models.CharField(max_length=500, blank=True, null=True)
+    allume_score = models.IntegerField(blank=True, null=True)
+    is_trending = models.BooleanField(default=0)
+    is_best_seller = models.BooleanField(default=0)
+    brand = models.CharField(max_length=255, blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+    availablity = models.CharField(max_length=50, blank=True, null=True)
+    is_deleted = models.BooleanField(default=0)
+
+class Network(models.Model):
+    name = models.CharField(max_length=128, blank=True, null=True)
+    active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class Merchant(models.Model):
+    external_merchant_id = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    network = models.ForeignKey(Network)
+    active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class MerchantCategory(models.Model):
+    external_merchant_id = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    network = models.ForeignKey(Network)
+    active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    availablity = models.CharField(max_length=50, blank=True, null=True)
+    is_deleted = models.BooleanField(default=0)
 
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+class Network(models.Model):
+    name = models.CharField(max_length=128, blank=True, null=True)
+    active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class Merchant(models.Model):
+    external_merchant_id = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    network = models.ForeignKey(Network)
+    active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class MerchantCategory(models.Model):
+    external_merchant_id = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    network = models.ForeignKey(Network)
+    active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
