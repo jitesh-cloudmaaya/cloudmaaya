@@ -274,6 +274,9 @@ class LookLayout(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Look(models.Model):
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
@@ -285,6 +288,8 @@ class Look(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+    def __str__(self):
+        return self.name
 
 class LookProduct(models.Model):
     look = models.ForeignKey(Look, related_name='product_set')
