@@ -3,6 +3,61 @@
 */
 var look_builder = {
   /**
+  * @description gather the compar elooks objects and create markup for display
+  * @param {object} lookup - json data for API call
+  * @param {integer} loopk_id - id of currently being edited look
+  */  
+  compareLooksMarkup: function(lookup, look_id){
+    var comp_looks = $('#compare-looks div.other-looks');
+    $.ajax({
+      contentType : 'application/json',
+      data: JSON.stringify(lookup),
+      success:function(response){
+        var markup = [];
+        for(var i = 0, l = response.length; i<l; i++){
+          var comp = response[i];
+          if(comp.id != look_id){
+            var look_products_markup = [];
+            comp.look_products.sort(function(a,b){
+              if(a.layout_position > b.layout_position){ return 1}
+              if(a.layout_position < b.layout_position){ return -1}
+              return 0;
+            });
+            for(var j = 0, prods = comp.look_products.length; j<prods; j++){
+              var prod = comp.look_products[j];
+              look_products_markup.push(
+                '<div class="item" data-productid="' + prod.product.id + '">' +
+                '<img class="handle" src="' + prod.product.product_image_url + '"/></div>'
+              );
+            }
+            markup.push(
+              '<div class="comp-look"><h3>' + comp.name + '</h3>' +
+              '<span class="layout"><em>layout: </em>' + comp.look_layout.display_name + '</span>' +
+              look_products_markup.join('') + '</div>'
+            );
+          }
+        }
+        /* display no looks message or add looks and drag/drop functionality */
+        if(markup.length == 0){ 
+          comp_looks.html('<span class="no-looks">no looks ready to compare</span>'); 
+        }else if(markup.length > 0){
+          comp_looks.html(markup.join(''));
+          $.each(comp_looks.find('div.comp-look'), function(idx){
+            var box = $(this)[0];
+            new Sortable(box, {
+              handle: ".handle",
+              group: { name: "look", pull: 'clone', put: false },
+              sort: false,
+              draggable: ".item"
+            });
+          });
+        }
+      },
+      type: 'POST',
+      url: '/shopping_tool_api/look_list/'
+    });
+  },
+  /**
   * @description look builder ui/ux functionality
   */
   functionality: function(){
@@ -70,10 +125,41 @@ var look_builder = {
         );
       });
     });
+    $('#compare-looks').on('click','a.look-filter', function(e){
+      e.preventDefault();
+      var link = $(this);
+      link.toggleClass('open')
+      $('#look-filter-options').toggleClass('show');
+    }).on('click','a.submit-filter-btn', function(e){
+      var comp_looks = $('#compare-looks');
+      e.preventDefault();
+      var link = $(this);
+      var look_id = link.data('look');
+      var checked = [];
+      $.each($('#look-filter-options input:checked'), function(idx){ checked.push($(this).attr('name')); })
+      var link_text = '';
+      var lookup = {};
+      if((checked.indexOf('session') > -1)||(checked.length == 0)){
+        link_text = 'session looks';
+        lookup.allume_styling_session = search_page.session_id
+      }else{
+        link_text = checked.join('/') + ' looks';
+        if(checked.indexOf('stylist') > -1){
+          lookup.stylist = parseInt($('#stylist').data('stylistid'));
+        }
+        if(checked.indexOf('client') > -1){
+          lookup.client = parseInt($('#user-clip').data('userid'));         
+        }
+      }
+      lookup.text = $('#look-filter-options input.filter').val();
+      comp_looks.find('a.look-filter').html(link_text + ' <i class="fa fa-caret-down"></i>').removeClass('open');
+      $('#look-filter-options').removeClass('show');
+      look_builder.compareLooksMarkup(lookup, look_id);
+    });
     $('#look-indepth').on('click', 'a.close-indepth', function(e){
       e.preventDefault();
       $('#look-indepth').fadeOut();
-    })
+    });
   },
   /**
   * @description build new look link for drawer in rack
@@ -88,7 +174,7 @@ var look_builder = {
         break;
       }
     }
-    $('#look-links').prepend(
+    $('#look-links').append(
       '<a href="#" class="look-link" data-lookid="' + data.id + '" data-lookname="' + data.name + '">' +
       '<table><tr><td class="icon"><i class="fa fa-shopping-bag"></i></td>' +
       '<td><span class="name">' + data.name + '</span>' +
@@ -103,14 +189,19 @@ var look_builder = {
   setUpBuilder: function(id){
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
+      console.log(result)
       var look_drop = $('#look-drop');
+      /* dynamically generate the width of look columns */
+      var available_space = (look_drop.width() * 0.75) - 20;
+      var col_width_margins = result.look_layout.columns * 5;
+      var col_width = (available_space - col_width_margins)/result.look_layout.columns;
       var markup = [];
       for(var i = 0; i<result.look_layout.columns; i++){
-        var col = ['<div class="column" id="lookdropcol' + i + '">'];
+        var col = ['<div class="column" id="lookdropcol' + i + '" style="width:' + col_width + 'px">'];
         var heights = result.look_layout.row_heights.split(',');
         for(var j = 0; j<result.look_layout.rows; j++){
           var h = heights[j];
-          var position = i > 0 ? (j + 1) + result.look_layout.rows : j + 1 ;
+          var position = i > 0 ? ((j + 1) + (i * result.look_layout.rows)) : j + 1 ;
           var product_markup = [];
           /* check if a look product has the same position as the newlay added row */
           for(var p = 0, prods = result.look_products.length; p<prods; p++){
@@ -143,10 +234,6 @@ var look_builder = {
         '<i class="fa fa-search"></i>look details</a>' + 
         '</div><div class="drop-zone">' + markup.join('') + '</div>'
       );
-      /* set nicer margins for drop box columns inside the look drop div */
-      var col_widths = 0;
-      $.each(look_drop.find('div.column'), function(idx){ col_widths += $(this).outerWidth(); });
-      look_drop.find('div.column:first-child').css('marginLeft', ((look_drop.width() * 0.75) - col_widths)/2);
       /* add the trash functionality - simply accept objects and immediately remove from ui */
       new Sortable(document.getElementById('look-trash'), {
         group: "look",
@@ -169,6 +256,12 @@ var look_builder = {
             var list = el.parentNode; 
             var parent_element = list.parentNode;
             var position = Array.prototype.indexOf.call(parent_element.children, list) + 1;
+            var box = $(list);
+            var col = box.closest('div.column')
+            var col_idx = col.index();
+            if(col_idx != 0){
+              position += (col_idx * col.find('div.row').length);
+            }
             /* create REST object */
             var obj = {
               layout_position: position,
@@ -262,58 +355,25 @@ var look_builder = {
         draggable: ".item"
       });
     });
-    /* get look list to create compare */
-    $.ajax({
-      contentType : 'application/json',
-      data: JSON.stringify({
-        "client": parseInt($('#user-clip').data('userid')),
-        "allume_styling_session": search_page.session_id,
-        "stylist": parseInt($('#stylist').data('stylistid'))
-      }),
-      success:function(response){
-        var markup = [];
-        var comp_looks = $('#compare-looks');
-        for(var i = 0, l = response.length; i<l; i++){
-          var comp = response[i];
-          if(comp.id != id){
-            var look_products_markup = [];
-            comp.look_products.sort(function(a,b){
-              if(a.layout_position > b.layout_position){ return 1}
-              if(a.layout_position < b.layout_position){ return -1}
-              return 0;
-            });
-            for(var j = 0, prods = comp.look_products.length; j<prods; j++){
-              var prod = comp.look_products[j];
-              look_products_markup.push(
-                '<div class="item" data-productid="' + prod.product.id + '">' +
-                '<img class="handle" src="' + prod.product.product_image_url + '"/></div>'
-              );
-            }
-            markup.push(
-              '<div class="comp-look"><h3>' + comp.name + '</h3>' +
-              '<span class="layout"><em>layout: </em>' + comp.look_layout.display_name + '</span>' +
-              look_products_markup.join('') + '</div>'
-            );
-          }
-        }
-        /* display no looks message or add looks and drag/drop functionality */
-        if(markup.length == 0){ 
-          comp_looks.html('<span class="no-looks">no looks ready to compare</span>'); 
-        }else if(markup.length > 0){
-          comp_looks.html('<h2>Compare other looks</h2><div class="other-looks">' + markup.join('') + '</div>');
-          $.each(comp_looks.find('div.comp-look'), function(idx){
-            var box = $(this)[0];
-            new Sortable(box, {
-              handle: ".handle",
-              group: { name: "look", pull: 'clone', put: false },
-              sort: false,
-              draggable: ".item"
-            });
-          });
-        }
-      },
-      type: 'POST',
-      url: '/shopping_tool_api/look_list/'
-    });
+    /* create compare looks scaffolding and get looks */
+    $('#compare-looks').html(
+      '<h2>Compare <a href="#" class="look-filter">session looks <i class="fa fa-caret-down"></i></a></h2>' +
+      '<div id="look-filter-options"><label class="toggle">' +
+      '<input name="session" type="checkbox" checked><span><small></small></span>' +
+      '<em>session looks</em></label><label class="toggle">' +
+      '<input name="stylist" type="checkbox"><span><small></small></span>' +
+      '<em>stylist looks</em></label><label class="toggle">' +
+      '<input name="client" type="checkbox"><span><small></small></span>' +
+      '<em>client looks</em></label><input type="text" placeholder="' +
+      'Enter filter keywords..." class="filter"/><div class="look-filter-submit">' +
+      '<a href="#" class="submit-filter-btn" data-look="' + id + '">filter looks</a></div></div>' +
+      '<div class="other-looks"></div>'
+    );
+    var lookup = {
+      "client": parseInt($('#user-clip').data('userid')),
+      "allume_styling_session": search_page.session_id,
+      "stylist": parseInt($('#stylist').data('stylistid'))
+    }
+    look_builder.compareLooksMarkup(lookup, id);
   }
 }
