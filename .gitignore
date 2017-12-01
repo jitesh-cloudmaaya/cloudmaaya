@@ -9,6 +9,8 @@ catalogue_service/settings_local.py
 logstash/config/logstash.yml.default logstash/config/logstash.yml
 logstash/pipeline/logstash.conf.default logstash/pipeline/logstash.conf
 sql_data/catalogue_service.sql
+pd_temp
+sql_data/tasks_ranproducts.back.sql
 /static/
 .coverage
 pd_temp

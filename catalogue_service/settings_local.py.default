@@ -17,8 +17,8 @@ connections.create_connection(hosts=['http://localhost:9200'], timeout=20, http_
 
 DEBUG = True
 
+
 PRODUCT_FEED_TEMP = 'pd_temp'
 
 PRODUCT_INDEX = 'products'
-
 
