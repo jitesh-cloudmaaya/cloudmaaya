@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'shopping_tool',
     'shopping_tool_api',
     'rest_framework_swagger',
-    'django_nose'
+    'django_nose',
+    'tasks'
 ]
 
 MIDDLEWARE = [
