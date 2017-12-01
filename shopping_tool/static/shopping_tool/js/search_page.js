@@ -41,7 +41,27 @@ var search_page = {
         contentType : 'application/json',
         data: JSON.stringify(obj),
         success:function(response){
-          rack.append(search_page.itemTemplate(details, 'rack', idx, response.id));
+          var itm = search_page.itemTemplate(details, 'rack', idx, response.id);
+          var categories = [];
+          $.each(rack.find('div.block'), function(idx){
+            categories.push($(this).data('category'));
+          });
+          if(categories.indexOf(details.primary_category) == -1){
+            categories.push(details.primary_category);
+            categories.sort();
+            var idx = categories.indexOf(details.primary_category);
+            var new_category = '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
+              details.primary_category + '</a><div class="block" data-category="' + details.primary_category + 
+              '"></div>';
+            if(idx == 0){
+              rack.prepend(new_category);
+            }else if(idx == (categories.length -1)){
+              rack.append(new_category);
+            }else{
+              rack.find('div.block').eq((idx -1)).after(new_category);
+            }
+          }
+          rack.find('div.block[data-category="' + details.primary_category + '"]').append(itm)
           search_page.updateRackCount();
         },
         type: 'PUT',
@@ -103,18 +123,45 @@ var search_page = {
   init: function(){
     /* set rack existing products */
     var rack_list = $('#rack-list');
-    var existing_items = [];
-    $.each(rack_list.find('div.item'), function(idx){
-      var item = $(this);
-      existing_items.push(item.data('sku'));
+    initial_rack.sort(function(a,b){
+      if(a.primary_category.toLowerCase() > b.primary_category.toLowerCase()){ return 1}
+      if(a.primary_category.toLowerCase() < b.primary_category.toLowerCase()){ return -1}
+      return 0;
+    });
+    for(var i = 0, l = initial_rack.length; i<l; i++){
+      var obj = initial_rack[i];
+      var itm = search_page.itemTemplate(obj, 'rack', '', obj.rack_id);
+      var category_exists = rack_list.find('div.block[data-category="' + obj.primary_category + '"]').length;
+      if(category_exists == 0){
+        rack_list.append(
+          '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
+          obj.primary_category + '</a><div class="block" data-category="' + obj.primary_category + 
+          '"></div>'
+        );
+      }
+      rack_list.find('div.block[data-category="' + obj.primary_category + '"]').append(itm);
+    }
+    var existing_items = []
+    $.each(rack_list.find('a.remove-from-rack'), function(idx){
+      existing_items.push($(this).data('sku'));
     });
     rack_list.data('skus', existing_items.join(','));
     /* cache the session id */
     search_page.session_id = $('body').data('stylesession');
     /* add keyboard shortcuts for rack and client open/close */
     Mousetrap.bind('shift+z+x', function(e) {
-      $('#rack').toggleClass('show');
-      $('#look-list').toggleClass('show');
+      var rack = $('#rack');
+      if(rack.hasClass('show')){
+        $('#look-list').removeClass('show');
+        rack.delay(400)
+        .queue(function (next) { 
+          $(this).removeClass('show');
+          next(); 
+        });
+      }else{
+        rack.addClass('show');
+        $('#look-list').addClass('show');
+      }
       return false;
     });
     Mousetrap.bind('shift+a+s', function(e) {
@@ -212,10 +259,14 @@ var search_page = {
     });
     $('#close-rack').click(function(e){
       e.preventDefault();
-      $('#rack').removeClass('show');
       $('#look-list').removeClass('show');
+      $('#rack').delay(400)
+      .queue(function (next) { 
+        $(this).removeClass('show');
+        next(); 
+      });
     });
-    $('#rack-list').on('click','a.remove-from-rack',function(e){
+    rack_list.on('click','a.remove-from-rack',function(e){
       e.preventDefault();
       var link = $(this);
       var sku = link.data('sku');
@@ -236,7 +287,12 @@ var search_page = {
       }
       $.ajax({
         success:function(response){
+          var parent_block = link.closest('div.block');
           link.closest('div.item').remove();
+          if(parent_block.find('div.item').length == 0){
+            parent_block.prev('a.rack-section-toggle').remove();
+            parent_block.remove();
+          }
           /* add user friendly markup if rack is empty */
           if(rack.find('div.item').length == 0){
             rack.html('<div class="empty">Add items to your rack...</div>');
@@ -246,6 +302,20 @@ var search_page = {
         type: 'DELETE',
         url: '/shopping_tool_api/rack_item/' + link.data('rackid') + '/'
       });
+    }).on('click','a.rack-section-toggle', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var i = link.find('i')
+      var div = link.next('div.block')
+      if(link.hasClass('closed')){
+        link.removeClass('closed');
+        i.removeClass('fa-angle-right').addClass('fa-angle-down');
+        div.slideDown();
+      }else{
+        link.addClass('closed');
+        i.removeClass('fa-angle-down').addClass('fa-angle-right');
+        div.slideUp();       
+      }
     });
     $('#add-look-btn').click(function(e){
       e.preventDefault();
@@ -425,8 +495,7 @@ var search_page = {
   * @returns {string} HTML
   */   
   itemTemplate: function(details, view, idx, rack_item_id){
-    var w = $('#results').width() / 3
-    var dynamic_dim = 'style="width:' + (w - 15) + 'px;"'    
+    var w = $('#results').width() / 3;   
     var desc = details.long_product_description == '' ? details.short_product_description : details.long_product_description ;
     var retail = details.retail_price;
     var sale = details.sale_price;
@@ -444,7 +513,7 @@ var search_page = {
     if(view == 'list'){
       return '<div class="item"><div class="image"><a href="#" class="favorite">' +
         '<i class="fa fa-heart-o"></i></a><img src="' + 
-        details.product_image_url + '" ' + dynamic_dim + '></div><a href="' + details.product_url + 
+        details.product_image_url + '"></div><a href="' + details.product_url + 
         '" target="_blank" class="name">' + details.product_name + '</a>' + 
         '<a href="#" class="add-to-rack" data-productid="' + details.id + 
         '"><i class="icon-hanger"></i>add to rack</a>' + merch + 
