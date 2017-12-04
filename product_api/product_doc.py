@@ -3,7 +3,7 @@ from elasticsearch_dsl.field import (
     String, Date as ESDate, Float, Boolean
 )
 from elasticsearch_dsl import FacetedSearch
-from elasticsearch_dsl import TermsFacet, DateHistogramFacet, HistogramFacet
+from elasticsearch_dsl import TermsFacet, DateHistogramFacet, HistogramFacet, RangeFacet
 from elasticsearch_dsl.query import Q
 from six import itervalues
 import collections
@@ -70,7 +70,8 @@ class EProductSearch(FacetedSearch):
     index = PRODUCT_INDEX
 
     fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category']
-
+    price_ranges=[("0-1", (None, 1)), ("0-25", (1, 25)), ("25-50", (25, 50)), ("50-100", (50, 100)), ("100-250", (100, 250)), ("250 -500", (250, 500)), ("500 And Up", (250, None))]
+    
     facets = collections.OrderedDict((
         # use bucket aggregations to define facets
         ('manufacturer_name', TermsFacet(field='manufacturer_name.keyword', size=100)),
@@ -86,7 +87,8 @@ class EProductSearch(FacetedSearch):
         ('allume_score', TermsFacet(field='allume_score')), #HistogramFacet
         ('is_trending', TermsFacet(field='is_trending')),
         ('is_best_seller', TermsFacet(field='is_best_seller')),
-    ))
+        ('current_price_range', RangeFacet(field='current_price', ranges=price_ranges)),
+    )) 
 
     def filter(self, search):
         """
