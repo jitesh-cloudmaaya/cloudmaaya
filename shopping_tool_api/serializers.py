@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from product_api.models import Product, ProductSerializer
-from shopping_tool.models import LookLayout, AllumeStylingSessions, Rack, LookProduct, Look
+from shopping_tool.models import LookLayout, AllumeStylingSessions, Rack, LookProduct, Look, UserProductFavorite
 
 ####################################################################################
 ##  REST SERIALIZERS
@@ -54,4 +54,17 @@ class LookCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Look
+        fields = '__all__'#
+
+class UserProductFavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProductFavorite
+        fields = '__all__'#
+
+class UserProductFavoriteDetailSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = UserProductFavorite
         fields = '__all__'#

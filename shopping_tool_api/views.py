@@ -17,9 +17,87 @@ from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
 from product_api.models import Product
-from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, LookProduct
-from serializers import RackSerializer, RackCreateSerializer, LookCreateSerializer, LookProductSerializer, LookProductCreateSerializer, LookSerializer
+from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments
+from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite
+from serializers import RackSerializer, RackCreateSerializer, LookCreateSerializer, LookProductSerializer
+from serializers import UserProductFavoriteSerializer, LookProductCreateSerializer, LookSerializer, UserProductFavoriteDetailSerializer
 from rest_framework import status
+
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@check_login
+@permission_classes((AllowAny, ))
+def user_product_favorite(request, pk=None):
+    """
+    get:
+        View user favorite product ID
+
+        /shopping_tool_api/user_favorites/{favorite_id}/
+    put:
+        Add product to the user favorites
+
+        /shopping_tool_api/user_favorites/0/
+
+        Sample JSON Object
+
+        {
+          "stylist": 1,
+          "product": 393223
+        }
+
+    delete:
+        Remove a product from the rack for a styling session
+        
+    """
+    if request.method == 'GET':
+        try:
+            fav = UserProductFavorite.objects.get(id=pk)
+        except UserProductFavorite.DoesNotExist:
+            return HttpResponse(status=404)
+
+        serializer = UserProductFavoriteDetailSerializer(fav)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+        serializer = UserProductFavoriteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        try:
+            fav = UserProductFavorite.objects.get(id = pk)
+            fav.delete()
+            context = {'Success': True}
+            return JsonResponse(context, status=status.HTTP_201_CREATED)
+        except ObjectDoesNotExist as er:
+            context = {'Success': False, 'Info': str(er)}
+            return JsonResponse(context, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(context) 
+
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def user_product_favorites(request, pk=None):
+    """
+    get:
+        View list of user favorite product IDs
+
+        /shopping_tool_api/user_favorites/{userid}/
+
+    """
+    try:
+        favs = UserProductFavorite.objects.filter(stylist=pk).all()
+    except UserProductFavorite.DoesNotExist:
+        return HttpResponse(status=404)
+
+    serializer = UserProductFavoriteSerializer(favs, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -46,7 +124,6 @@ def rack_item(request, pk=None):
     if request.method == 'GET':
         try:
             rack_item = Rack.objects.get(id=pk)
-            print rack_item
         except Rack.DoesNotExist:
             return HttpResponse(status=404)
 
@@ -191,7 +268,6 @@ def look_item(request, pk=None):
     if request.method == 'GET':
         try:
             look_item = LookProduct.objects.get(id=pk)
-            print look_item
         except LookProduct.DoesNotExist:
             return HttpResponse(status=404)
 
@@ -209,7 +285,7 @@ def look_item(request, pk=None):
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-        print serializer.data
+
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
