@@ -509,8 +509,29 @@ div#design-look h2,
   line-height:49px;
 }
 div#look-list h2 {font-size:14px; font-weight:500;}
-#compare-looks h2 {background:#fff;border-bottom:1px solid#ddd;}
+#compare-looks h2 {background:#fff;border-bottom:1px solid#ddd; position:relative; z-index:5;}
 #rack-draggable h2 {background:#fff; border-bottom:1px solid#ddd; margin:-5px 0 0; padding:5px 15px 0; }
+#compare-looks h2 a.look-filter {
+  border:1px solid #ddd;
+  border-radius:5px;
+  color:#000;
+  display:inline-block;
+  font-weight:400;
+  line-height:18px;
+  margin: 0 5px;
+  padding: 5px 7px 7px;
+  position:relative;
+  top:0px;
+  text-decoration: none;
+}#compare-looks h2 a.look-filter i {margin-left:3px; font-size:14px;}
+#compare-looks h2 a.look-filter:hover { border-color:#ccc; box-shadow:0 1px 1px rgba(0,0,0,0.1);}
+#compare-looks h2 a.look-filter:active,
+#compare-looks h2 a.look-filter.open{ 
+  border-color:#444; 
+  background:#444;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.8);
+  color:#fff;
+}
 div#design-look h2 span {font-weight:500;}
 div#look-links { height:calc(100% - 60px); overflow:auto; padding:5px 0;}
 div#look-links a.look-link {
@@ -1079,7 +1100,7 @@ div.layout-option span.columns {font-size:10px; display:block;}
   padding:5px 0;
   width:345px;
 }
-#compare-looks { background:#fafafa; border-left:1px solid #ddd; height:calc(100% - 50px); right:0; width:319px; }
+#compare-looks { background:#fafafa; border-left:1px solid #ddd; height:calc(100% - 50px); overflow:hidden; right:0; width:319px; }
 #compare-looks div.other-looks,
 #rack-draggable div.look-builder-rack { height:calc(100% - 50px); overflow:auto; }
 #rack-draggable div.look-builder-rack {padding:0 5px;}
@@ -1112,7 +1133,7 @@ div.layout-option span.columns {font-size:10px; display:block;}
   cursor: -webkit-grabbing;
 }
 #look-drop div.drop-zone { float:left; height:100%; width:calc(75% - 20px); }
-#look-drop div.column { height:calc(100% - 17px);  margin:0 2px; padding:13px 0; width:200px; }
+#look-drop div.column { height:calc(100% - 17px); float:left; margin:0 2px; padding:13px 0; }
 #look-drop div.column div.row { border:1px dashed #bbb; border-radius:3px; margin:2px 0; overflow:hidden;}
 #look-drop div.column div.row div.item { height:100%; position:relative; width:100%; }
 #look-drop div.column div.row div.item img {
@@ -1374,6 +1395,100 @@ div.layout-option span.columns {font-size:10px; display:block;}
   font-weight:100;
   padding-right:5px;
 }
-
+#look-filter-options {
+  background:#fff;
+  box-shadow:0 0 3px rgba(0,0,0,0.6);
+  left:0;
+  padding:10px 0 0;
+  position:absolute;
+  top:-300px;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  width:319px;
+  z-index:4;
+}
+#look-filter-options.show {top:50px;}
+#look-filter-options label.toggle { 
+  cursor: pointer; 
+  display:block;
+  margin:0 10px 10px; 
+}
+#look-filter-options label.toggle em{
+  color:#000;
+  display:inline-block;
+  font-size:14px;
+  font-weight:400;
+  padding:0 10px 0 10px;
+  position:relative;
+  top:2px; 
+  white-space: nowrap;
+}
+#look-filter-options label.toggle span {
+  background-color: #fff;
+  border: 1px solid #dfdfdf;
+  border-radius: 12px;
+  box-shadow: 0px 0px 0px 0px rgb(223, 223, 223) inset; 
+  cursor: pointer;
+  display: inline-block;
+  height:15px;
+  position: relative;
+  -webkit-transition: background-color 1.2s ease 0s, border 0.4s ease 0s, box-shadow 0.4s ease 0s;
+  transition: background-color 1.2s ease 0s, border 0.4s ease 0s, box-shadow 0.4s ease 0s;  
+  vertical-align: middle;
+  width: 30px;
+}
+#look-filter-options label.toggle span small {
+  background: #fff;
+  border-radius: 100%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  height: 15px;
+  position: absolute;
+  top: 0;
+  left:0;
+  -webkit-transition: left 0.2s ease 0s;
+  transition: left 0.2s ease 0s;
+  width: 15px;
+}
+#look-filter-options label.toggle input {display:none;}
+#look-filter-options label.toggle input:checked + span { box-shadow: 0px 0px 0px 16px rgb(81,81,81) inset; border-color:#515151; }
+#look-filter-options label.toggle input:checked + span > small{ left:15px; }
+#look-filter-options input[type="text"] {
+  background:#fff;
+  border:1px solid #d0d0d0;
+  border-radius:3px;
+  display:block;
+  font-size:14px;
+  font-weight:200;
+  margin:0 0 15px 10px;
+  padding:8px;
+  width:281px;
+}
+#look-filter-options div.look-filter-submit {
+  border-top:1px solid #ddd;
+  padding:15px 0;
+}
+#look-filter-options div.look-filter-submit a {
+  background:#f2987e;
+  border-radius:5px;
+  color:#fff;
+  display:block;
+  font-size:16px;
+  font-variant: small-caps;
+  font-weight:400;
+  margin:0 auto;
+  padding:3px 0 6px;
+  text-align:center;
+  text-decoration: none;
+  width:119px;
+}
+#look-filter-options div.look-filter-submit a:hover {
+  background:#ed8365;
+  box-shadow:0 1px 1px rgba(0,0,0,0.1);
+}
+#look-filter-options div.look-filter-submit a:active {
+  background:#fafafa;
+  color:#000;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.3)
+}
 
 

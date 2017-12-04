@@ -275,15 +275,17 @@ var search_page = {
       var idx = existing.indexOf(sku);
       existing.splice(idx,1);
       rack.data('skus',existing.join(','));
-      if(link.hasClass('at-load') == false){
-        /* undo selected btn */
+      /* undo selected btn */
+      if(link.data('idx') != ''){
         var list_entry = $('#results div.item').eq(link.data('idx'));
         var add_link = list_entry.find('a.add-to-rack');
-        var details = add_link.data('details')
-        var link_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
-        if(link_sku == sku){
-          add_link.html('<i class="icon-hanger"></i>add to rack').removeClass('selected');
-        }        
+        if(add_link.length > 0){
+          var details = add_link.data('details')
+          var link_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
+          if(link_sku == sku){
+            add_link.html('<i class="icon-hanger"></i>add to rack').removeClass('selected');
+          }  
+        }
       }
       $.ajax({
         success:function(response){
