@@ -70,7 +70,7 @@ class EProductSearch(FacetedSearch):
     index = PRODUCT_INDEX
 
     fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category']
-    price_ranges=[("0-1", (None, 1)), ("0-25", (1, 25)), ("25-50", (25, 50)), ("50-100", (50, 100)), ("100-250", (100, 250)), ("250 -500", (250, 500)), ("500 And Up", (250, None))]
+    price_ranges=[("$0-$25", (None, 25)), ("$25-$50", (25, 50)), ("$50-$100", (50, 100)), ("$100-$250", (100, 250)), ("$250-$500", (250, 500)), ("$500 And Up", (500, None))]
     
     facets = collections.OrderedDict((
         # use bucket aggregations to define facets
@@ -87,7 +87,7 @@ class EProductSearch(FacetedSearch):
         ('allume_score', TermsFacet(field='allume_score')), #HistogramFacet
         ('is_trending', TermsFacet(field='is_trending')),
         ('is_best_seller', TermsFacet(field='is_best_seller')),
-        ('current_price_range', RangeFacet(field='current_price', ranges=price_ranges)),
+        ('price_range', RangeFacet(field='sale_price', ranges=price_ranges)), #current_price
     )) 
 
     def filter(self, search):
