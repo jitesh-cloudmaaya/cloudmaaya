@@ -9,5 +9,7 @@ urlpatterns = [
     url(r'^rack_item/(?P<pk>[0-9]+)/$', views.rack_item, name='rack_item'), 
     url(r'^look_item/(?P<pk>[0-9]+)/$', views.look_item, name='look_item'), 
     url(r'^look_list/$', views.look_list, name='look_list'),  
+    url(r'^user_product_favorites/(?P<pk>[0-9]+)/$', views.user_product_favorites, name='user_product_favorites'),  
+    url(r'^user_product_favorite/(?P<pk>[0-9]+)/$', views.user_product_favorite, name='user_product_favorite'),
 ]
 

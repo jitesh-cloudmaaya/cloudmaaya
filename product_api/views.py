@@ -48,6 +48,7 @@ def facets(self):
     print whitelisted_facet_args
     es = EProductSearch(query=text_query, filters=whitelisted_facet_args)
     es = es[start_record:end_record]
+    es.collapse = {"field": "size"}
     results = es.execute().to_dict()
 
 

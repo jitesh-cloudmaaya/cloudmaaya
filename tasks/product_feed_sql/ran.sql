@@ -42,7 +42,8 @@ INSERT INTO product_api_product
   merchant_name,
   is_best_seller,
   is_trending,
-  allume_score
+  allume_score,
+  current_price
 
 )
 SELECT * FROM (
@@ -82,10 +83,11 @@ SELECT
   m.name,
   0 as is_best_seller,
   0 as is_trending,
-  0 as allume_score
+  0 as allume_score,
+  CASE WHEN rp.sale_price > 0  OR NOT NULL THEN rp.sale_price ELSE rp.retail_price END as current_price
 FROM tasks_ranproducts rp LEFT JOIN product_api_product ap ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
 INNER JOIN product_api_merchant m ON m.external_merchant_id = rp.merchant_id
-WHERE ap.product_id IS NULL
+WHERE ap.current_price IS NULL
 AND rp.modification <> 'D' ) x;
 
 
@@ -125,7 +127,8 @@ SET
   ap.secondary_category =  rp.secondary_category,
   ap.brand =  rp.brand,
   ap.updated_at =  NOW(),
-  ap.is_deleted = CASE WHEN rp.modification = 'D' THEN 1 ELSE 0 END;
+  ap.is_deleted = CASE WHEN rp.modification = 'D' THEN 1 ELSE 0 END,
+  ap.current_price = CASE WHEN rp.sale_price > 0 OR NOT NULL THEN rp.sale_price ELSE rp.retail_price END;
 
 
 

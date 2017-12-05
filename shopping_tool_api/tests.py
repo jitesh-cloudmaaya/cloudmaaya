@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from shopping_tool.models import Look, AllumeStylingSessions, WpUsers, Rack, LookLayout, LookProduct
+from shopping_tool.models import Look, AllumeStylingSessions, WpUsers, Rack, LookLayout, LookProduct, UserProductFavorite
 from product_api.models import Product
 from django.http.cookie import SimpleCookie
 
@@ -14,7 +14,7 @@ from django.http.cookie import SimpleCookie
 
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product']
+    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite']
     shopper = ''
     client = ''
 
@@ -242,6 +242,49 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(LookLayout.objects.get(id = 1).name, response_data['name'])
         self.assertEqual(200, response.status_code)
 
+
+
+    def test_get_user_product_favorite(self):
+        """
+        Test to verify getting a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:user_product_favorite", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+
+
+    def test_add_user_product_favorite(self):
+        """
+        Test to verify getting a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:user_product_favorite", kwargs={'pk':1})
+        data = {"product": 1,"stylist": 1}
+
+        response = self.client.get(url, data)
+        self.assertEqual(200, response.status_code)
+
+    def test_delete_user_product_favorite(self):
+        """
+        Test to verify getting a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:user_product_favorite", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+
+    def test_user_product_favorites(self):
+        """
+        Test to verify getting a list of user favorite looks
+        """
+
+        url = reverse("shopping_tool_api:user_product_favorites", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
 
 
         

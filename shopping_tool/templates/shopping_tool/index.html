@@ -6,15 +6,17 @@
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css" rel="stylesheet"/>
   {% load static %}
   <link href="{% static 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
 </head>
-<body>
+<body data-stylesession="{{ styling_session.id }}">
 <div id="header">
-  <a href="/shopping_tool/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>({{ user.first_name }} {{ user.last_name }})
+  <a href="/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
+  <span id="stylist" data-stylistid="{{ user.id }}"></span>
 </div>
 <div id="user-card">
-  <a id="user-clip" href="#">
+  <a id="user-clip" href="#" data-userid="{{ client.id }}">
   <span class="name"><em>now styling:</em>{{ client.first_name }} {{ client.last_name }}</span>
   <span class="expanded locale">Mountain View, CA</span>
   <span class="expanded style"><em>goal:</em>I want people to think I am beautiful again...</span>
@@ -76,7 +78,7 @@
 </div>
 <div id="content">
   <div id="search">
-    <label>What are you looking for?</label>
+    <label>Hi <strong>{{ user.first_name }} {{ user.last_name }}</strong>, what are you looking for?</label>
     <a href="#" id="search-btn">show me</a>
     <input class="search" id="search-field" name="text" type="text" placeholder="I want..." data-lookup=""/>
     <div id="facets"></div>
@@ -88,25 +90,113 @@
     <div id="pager"></div>
   </div>
 </div>
-<a id="rack-toggle"><span>0</span> items in your rack</a>
+<a id="rack-toggle"><span>{{ rack_items|length }}</span> item{{ rack_items|length|pluralize }} in your rack</a>
 <div id="rack">
   <a href="#" id="close-rack"><i class="fa fa-times"></i></a>
-  <h2><i class="icon-hanger"></i>Wes Duenow's Rack</h2>
+  <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
   <div id="rack-list">
-    <div class="empty">Add items to your rack...</div>
+    {% for item in rack_items %}
+
+    {% empty %}
+      <div class="empty">Add items to your rack...</div>
+    {% endfor %}
   </div>
   <div id="rack-btns">
-    <span id="rack-number">0 items</span>
-    <a href="#" id="create-look">create look</a>
+    <span id="rack-number">{{ rack_items|length }} item{{ rack_items|length|pluralize }}</span>
+    <a href="#" id="add-look-btn">add look</a>
   </div>
 </div>
+<div id="look-list">
+  <h2>{{ looks|length }} Look{{ looks|length|pluralize }}</h2>
+  <div id="look-links">
+    {% for look in looks %}
+      <a href="#" class="look-link" data-lookid="{{ look.id }}" data-lookname="{{ look.name }}">
+        <table>
+          <tr>
+            <td class="icon"><i class="fa fa-shopping-bag"></i></td>
+            <td>
+              <span class="name">{{ look.name }}</span>
+              <span class="layout"><em>layout:</em> {{ look.look_layout.name }}</span>
+            </td>
+          </tr>
+        </table>
+      </a> 
+    {% endfor %}
+  </div>
+</div>
+<div id="create-look">
+  <div class="stage">
+    <a href="#" id="cancel-new-look"><i class="fa fa-times"></i></a>
+    <h2>New Look</h2>
+    <div id="new-look-error"></div>
+    <label>Name</label>
+    <input id="new-look-name" type="text" name="name" placeholder="Please provide a name for the look..."/>
+    <label>Layout</label>
+    <select id="new-look-layout" name="layout" placeholder="Please select a layout for the look..."></select>
+    <a href="#" id="create-new-look">create look</a>
+  </div>
+</div>
+<div id="design-look">
+  <a href="#" id="close-design-look"><i class="fa fa-times"></i></a>
+  <h2>Design Look: <span id="designing"></span></h2>
+  <div id="rack-draggable"></div>
+  <div id="look-drop"></div>
+  <div id="compare-looks"></div>
+</div>
+<div id="look-indepth"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+<script src="{% static 'shopping_tool/js/Sortable.min.js' %}"></script>
 <script src="{% static 'shopping_tool/js/search_page.js' %}"></script>
+<script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
-/* call the search page init function to set up the page */
-search_page.init();
+/**
+* @description layouts array for use in new look creation and look display
+*/ 
+var look_layouts = [
+{% for layout in layouts %}
+  { "id": {{ layout.id }},
+    "name": "{{layout.display_name}}",
+    "column_widths": "{{layout.column_widths}}",
+    "columns": {{layout.columns}},
+    "rows": {{layout.rows}},
+    "row_heights": "{{layout.row_heights}}"
+  },
+{% endfor %} 
+];
+/**
+* @description initial rack objects array
+*/ 
+var initial_rack = [
+{% for item in rack_items %}
+  { 
+    "rack_id": {{item.id}},
+    "id": {{item.product.id}},
+    "product_id": {{ item.product.product_id }},
+    "sku": "{{ item.product.sku}}",
+    "merchant_id": {{ item.product.merchant_id }},
+    "merchant_name": "{{ item.product.merchant_name }}",
+    "manufacturer_name": "{{ item.product.manufacturer_name }}",
+    "product_image_url": "{{item.product.product_image_url}}",
+    "primary_category": "{{item.product.primary_category}}",
+    "retail_price": {{item.product.retail_price}},
+    "sale_price" : {{item.product.sale_price}}
+  },
+{% endfor %} 
+];
+/* before initializing page get stylists favories */
+$.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
+  for(var i = 0, l = result.length;i<l;i++){
+    var fave = result[i];
+    search_page.favorites_product_ids.push(fave.product);
+    search_page.favorites.push(fave);
+  }
+  /* call the search page init function to set up the page */
+  search_page.init();
+})
+
 </script>
 </body>
 </html>
