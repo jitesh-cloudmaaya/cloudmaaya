@@ -186,8 +186,17 @@ var initial_rack = [
   },
 {% endfor %} 
 ];
-/* call the search page init function to set up the page */
-search_page.init();
+/* before initializing page get stylists favories */
+$.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
+  for(var i = 0, l = result.length;i<l;i++){
+    var fave = result[i];
+    search_page.favorites_product_ids.push(fave.product);
+    search_page.favorites.push(fave);
+  }
+  /* call the search page init function to set up the page */
+  search_page.init();
+})
+
 </script>
 </body>
 </html>

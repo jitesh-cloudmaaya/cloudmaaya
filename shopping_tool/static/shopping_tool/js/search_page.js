@@ -118,6 +118,14 @@ var search_page = {
     group.height(tallest);
   },
   /**
+  * @description cache array of stylist's favorites, updated at load
+  */
+  favorites: [],
+  /**
+  * @description cache array of favorited product ids, used to set correct favorite link 
+  */
+  favorites_product_ids: [],
+  /**
   * @description init function applying the functionality to the page elements
   */
   init: function(){
@@ -222,11 +230,44 @@ var search_page = {
       e.preventDefault();
       var link = $(this);
       if(link.hasClass('favorited')){
-        link.removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+        var fave = link.data('faveid');
+        var product_id = link.data('productid');
+        var index = search_page.favorites_product_ids.indexOf(product_id);
+        search_page.favorites_product_ids.splice(index, 1);
+        search_page.favorites.splice(index, 1);
+        $.ajax({
+          contentType : 'application/json',
+          error: function(response){
+            console.log(response);
+          },
+          success:function(response){
+            console.log(response);
+            link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+          },
+          type: 'DELETE',
+          url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
+        }); 
       }else{
-        link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+        var fave = {
+          "stylist": parseInt($('#stylist').data('stylistid')) ,
+          "product": parseInt(link.data('productid'))     
+        }
+        $.ajax({
+          contentType : 'application/json',
+          data: JSON.stringify(fave),
+          error: function(response){
+            console.log(response);
+          },
+          success:function(response){
+            console.log(response);
+            search_page.favorites.push(response);
+            search_page.favorites_product_ids.push(response.product);
+            link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+          },
+          type: 'PUT',
+          url: '/shopping_tool_api/user_product_favorite/0/'
+        }); 
       }
-      // ajax submission of favoriting will go here
     }).on('click','a.add-to-rack',function(e){
       e.preventDefault();
       var link = $(this);
@@ -513,8 +554,15 @@ var search_page = {
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
     if(view == 'list'){
-      return '<div class="item"><div class="image"><a href="#" class="favorite">' +
-        '<i class="fa fa-heart-o"></i></a><img src="' + 
+      var fave_link = '<a href="#" class="favorite" data-productid="' + 
+        details.id + '"><i class="fa fa-heart-o"></i></a>';
+      var fave_idx = search_page.favorites_product_ids.indexOf(details.id);
+      if(fave_idx > -1){
+        var favorite_object = search_page.favorites[fave_idx];
+        fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
+        details.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
+      }
+      return '<div class="item"><div class="image">' + fave_link + '<img src="' + 
         details.product_image_url + '"></div><a href="' + details.product_url + 
         '" target="_blank" class="name">' + details.product_name + '</a>' + 
         '<a href="#" class="add-to-rack" data-productid="' + details.id + 
