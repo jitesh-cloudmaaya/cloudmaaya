@@ -237,7 +237,7 @@ var look_builder = {
           lookup.client = parseInt($('#user-clip').data('userid'));         
         }
       }
-      lookup.text = $('#look-filter-options input.filter').val();
+      lookup.name = $('#look-filter-options input.filter').val();
       comp_looks.find('a.look-filter').html(link_text + ' <i class="fa fa-caret-down"></i>').removeClass('open');
       $('#look-filter-options').removeClass('show');
       look_builder.compareLooksMarkup(lookup, look_id);
@@ -260,13 +260,17 @@ var look_builder = {
         break;
       }
     }
-    $('#look-links').append(
+    var links = $('#look-links');
+    links.append(
       '<a href="#" class="look-link" data-lookid="' + data.id + '" data-lookname="' + data.name + '">' +
       '<table><tr><td class="icon"><i class="fa fa-shopping-bag"></i></td>' +
       '<td><span class="name">' + data.name + '</span>' +
       '<span class="layout"><em>layout:</em> ' + layout_name + 
       '</span></td></tr></table></a>' 
     );
+    var look_count = links.find('a.look-link').length;
+    var plural = look_count == 1 ? '' : 's';
+    $('#look-list h2').html(look_count + ' Look' + plural);
   },
   /**
   * @description set up the builder ui/ux from clicked look link

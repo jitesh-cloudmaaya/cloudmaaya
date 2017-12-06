@@ -17,8 +17,9 @@ var rack_builder = {
   /**
   * @description add to rack functionality
   * @param {DOM object} item - link clicked
+  * @param {string} page - which page the add to rack call initiated 
   */
-  addToRack: function(item){
+  addToRack: function(item, page){
     var rack = $('#rack-list');
     var existing = rack.data('skus');
     var details = item.data('details');
@@ -27,7 +28,9 @@ var rack_builder = {
     var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
     var add_to_list = false;
     if(existing == undefined){
-      item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
+      if(page == 'search'){
+        item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
+      }
       rack.data('skus', details.sku);
       add_to_list = true;
     }else{
@@ -35,7 +38,9 @@ var rack_builder = {
       if(existing.indexOf(sku) == -1){
         existing.push(sku);
         rack.data('skus', existing.join(','));
-        item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
+        if(page == 'search'){
+          item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
+        }
         add_to_list = true;
       }
     }
@@ -51,23 +56,23 @@ var rack_builder = {
         success:function(response){
           var itm = rack_builder.itemTemplate(details, 'rack', idx, response.id);
           var categories = [];
-          var sanitized_cat = details.primary_category.replace('&amp;', 'and');
+          var sanitized_cat = details.primary_category.replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
           $.each(rack.find('div.block'), function(idx){
             categories.push($(this).data('category'));
           });
           if(categories.indexOf(sanitized_cat) == -1){
             categories.push(sanitized_cat);
             categories.sort();
-            var idx = categories.indexOf(sanitized_cat);
+            var rackidx = categories.indexOf(sanitized_cat);
             var new_category = '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
               details.primary_category + '</a><div class="block" data-category="' + sanitized_cat + 
               '"></div>';
-            if(idx == 0){
+            if(rackidx == 0){
               rack.prepend(new_category);
-            }else if(idx == (categories.length -1)){
+            }else if(rackidx == (categories.length -1)){
               rack.append(new_category);
             }else{
-              rack.find('div.block').eq((idx -1)).after(new_category);
+              rack.find('div.block').eq((rackidx -1)).after(new_category);
             }
           }
           rack.find('div.block[data-category="' + sanitized_cat + '"]').append(itm)
@@ -107,7 +112,7 @@ var rack_builder = {
     for(var i = 0, l = initial_rack.length; i<l; i++){
       var obj = initial_rack[i];
       var itm = rack_builder.itemTemplate(obj, 'rack', '', obj.rack_id);
-      var sanitized_cat = obj.primary_category.replace('&amp;', 'and');
+      var sanitized_cat = obj.primary_category.replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
       var category_exists = rack_list.find('div.block[data-category="' + sanitized_cat + '"]').length;
       if(category_exists == 0){
         rack_list.append(
