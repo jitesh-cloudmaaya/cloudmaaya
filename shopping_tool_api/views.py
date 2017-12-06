@@ -210,7 +210,8 @@ def look_list(request):
         {
          "client": 1,
          "allume_styling_session":3,
-         "stylist": 117
+         "stylist": 117,
+         "name": "Body Suit"
         }
     """
     looks = Look.objects.all()
@@ -227,6 +228,10 @@ def look_list(request):
     if 'stylist' in request.data:
         stylist = request.data['stylist']
         looks = looks.filter(stylist = stylist)
+
+    if 'name' in request.data:
+        name = request.data['name']
+        looks = looks.filter(name__contains = name)
 
     serializer = LookSerializer(looks, many=True)
     return JsonResponse(serializer.data, safe=False)
