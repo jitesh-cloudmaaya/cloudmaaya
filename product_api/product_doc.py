@@ -11,7 +11,7 @@ import collections
 import inspect
 
 from catalogue_service.settings_local import PRODUCT_INDEX
-
+from six import iteritems, itervalues, string_types
 """
 #Commenting out for now I expect to delete soon unless we decide to not use logstash for indexing
 
@@ -90,23 +90,65 @@ class EProductSearch(FacetedSearch):
         ('price_range', RangeFacet(field='sale_price', ranges=price_ranges)), #current_price
     )) 
 
+    def __init__(self, query=None, filters={}, sort=(), favs=[]):
+        """
+        :arg query: the text to search for
+        :arg filters: facet values to filter
+        :arg sort: sort information to be passed to :class:`~elasticsearch_dsl.Search`
+        """
+        self._favs = favs
+        self._query = query
+        self._filters = {}
+        # TODO: remove in 6.0
+        if isinstance(sort, string_types):
+            self._sort = (sort,)
+        else:
+            self._sort = sort
+        self.filter_values = {}
+        for name, value in iteritems(filters):
+            self.add_filter(name, value)
+
+        self._s = self.build_search()
+
+
     def filter(self, search):
         """
         Over-ride default behaviour (which uses post_filter)
         to use filter instead.
         """
+
+        print self._filters
         filters = Q('match_all')
         for f in itervalues(self._filters):
-            print f
             filters &= f
+
         return search.filter(filters)
+
+
 
     def query(self, search, query):
         """Overriden to use bool AND by default"""
+
+        #Add in Filter for Fav Products
+        if self._favs:
+            q = Q({"ids" : {"values" : self._favs}})
+        else:
+            q = Q()
 
         if query:
             return search.query('multi_match',
                 fields=self.fields,
                 query=query,
                 operator='and'
-            )#.sort('-p')
+            ).query(q)#.sort('-p')
+
+"""
+  "collapse": {
+    "field": "product_name.keyword",
+    "inner_hits": {
+      "name": "collapsed_by_size",
+      "from": 1,
+      "size": 2
+    }
+  }
+"""

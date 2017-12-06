@@ -20,7 +20,7 @@ import json
 import urllib
 import datetime
 import urllib
-
+from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite
 
 
 from elasticsearch_dsl.connections import connections
@@ -30,10 +30,27 @@ from product_doc import EProductSearch#, EProduct
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
 def facets(self):
+    """
+    get:
+        Get Product Search Results
 
+        /product_api/facets?text=shirts
+
+        Optional Params:
+        favs=True : Filters the Search Results for Just User Favorites
+
+        
+    """
     text_query = self.query_params.get('text', 'shirt')
     num_per_page = int(self.query_params.get('num_per_page', 48))
     page = int(self.query_params.get('page', 1))
+
+    filter_favs = self.query_params.get('favs')
+    if filter_favs:
+        user_favs = list(UserProductFavorite.objects.filter(stylist=997).values_list('product_id', flat=True))
+    else:
+        user_favs = []
+    
 
     start_record = (num_per_page * (page - 1))
     print start_record
@@ -45,8 +62,8 @@ def facets(self):
         if key in EProductSearch.facets:
             whitelisted_facet_args[key] = urllib.unquote(value).split("|")
 
-    print whitelisted_facet_args
-    es = EProductSearch(query=text_query, filters=whitelisted_facet_args)
+
+    es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs)
     es = es[start_record:end_record]
     es.collapse = {"field": "size"}
     results = es.execute().to_dict()
