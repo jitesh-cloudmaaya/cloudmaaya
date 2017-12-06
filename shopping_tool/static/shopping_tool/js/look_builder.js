@@ -2,6 +2,10 @@
 * @description look builder name space containing functionality for create look UI/ux for building looks
 */
 var look_builder = {
+  /** 
+  * @description cache of styling session
+  */
+  session_id: '',  
   /**
   * @description gather the compar elooks objects and create markup for display
   * @param {object} lookup - json data for API call
@@ -61,6 +65,88 @@ var look_builder = {
   * @description look builder ui/ux functionality
   */
   functionality: function(){
+    /* cache the session id */
+    look_builder.session_id = $('body').data('stylesession');    
+    $('#add-look-btn').click(function(e){
+      e.preventDefault();
+      $('#new-look-error').html('');
+      $('#new-look-name').val('');
+      $('#new-look-layout')[0].selectize.setValue('',true);
+      $('#create-look').fadeIn();
+    });
+    $('#look-links').on('click', 'a.look-link', function(e){
+      e.preventDefault();
+      var link = $(this);
+      look_builder.setUpBuilder(link.data('lookid'))
+      $('#designing').html(link.data('lookname'));
+      $('#design-look').attr('class','').addClass('show');
+    });    
+    /* new look create form */
+    $('#new-look-layout').selectize({
+      valueField: 'id',
+      labelField: 'name',
+      searchField: 'name',
+      options: look_layouts,
+      create: false,
+      render: {
+        option: function(item, escape) {
+          return '<div class="layout-option">' +
+            '<span class="name">' + escape(item.name) + '</span>' +
+            '<span class="columns">columns: ' + escape(item.columns) + '</span>' +
+            '<span class="rows">rows: ' + escape(item.rows) + '</span>' +
+            '</div>';
+        }
+      }
+    });
+    $('#cancel-new-look').click(function(e){
+      e.preventDefault()
+      $('#create-look').fadeOut();
+    });
+    $('#create-new-look').click(function(e){
+      $('#new-look-error').html('');
+      e.preventDefault();
+      var pre = 0;
+      var msg = [];
+      var look_obj = {
+       "name": $('#new-look-name').val(),
+       "look_layout": parseInt($('#new-look-layout').val()),
+       "allume_styling_session": look_builder.session_id,
+       "stylist": parseInt($('#stylist').data('stylistid'))        
+      }
+      if(look_obj.name == ''){ 
+        pre++; 
+        msg.push('provide a look name'); 
+      }
+      if(isNaN(look_obj.look_layout)){ 
+        pre++; 
+        msg.push('select a look layout'); 
+      }
+      if(pre == 0){
+        $.ajax({
+          contentType : 'application/json',
+          data: JSON.stringify(look_obj),
+          success:function(response){
+            look_builder.newLookLink(response);
+            $('#create-look').fadeOut();
+          },
+          type: 'PUT',
+          url: '/shopping_tool_api/look/0/'
+        })
+      }else{
+        $('#new-look-error').html(
+          '<span><i class="fa fa-exclamation-circle"></i>' +
+          'You must ' + msg.join('; ') + 
+          '.</span>'
+        );
+      }
+    });  
+    Mousetrap.bind('shift+q+w', function(e) {
+      $('#new-look-error').html('');
+      $('#new-look-name').val('');
+      $('#new-look-layout')[0].selectize.setValue('',true);      
+      $('#create-look').fadeToggle();
+      return false;
+    });       
     $('#close-design-look').click(function(e){
       e.preventDefault();
       $('#design-look').addClass('hide');
@@ -141,7 +227,7 @@ var look_builder = {
       var lookup = {};
       if((checked.indexOf('session') > -1)||(checked.length == 0)){
         link_text = 'session looks';
-        lookup.allume_styling_session = search_page.session_id
+        lookup.allume_styling_session = look_builder.session_id
       }else{
         link_text = checked.join('/') + ' looks';
         if(checked.indexOf('stylist') > -1){
@@ -371,7 +457,7 @@ var look_builder = {
     );
     var lookup = {
       "client": parseInt($('#user-clip').data('userid')),
-      "allume_styling_session": search_page.session_id,
+      "allume_styling_session": look_builder.session_id,
       "stylist": parseInt($('#stylist').data('stylistid'))
     }
     look_builder.compareLooksMarkup(lookup, id);

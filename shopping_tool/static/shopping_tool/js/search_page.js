@@ -7,182 +7,18 @@ var search_page = {
   */
   session_id: '',
   /**
-  * @description add to rack functionality
-  * @param {DOM object} item - link clicked
-  */
-  addToRack: function(item){
-    var rack = $('#rack-list');
-    var existing = rack.data('skus');
-    var details = item.data('details');
-    var idx = item.closest('div.item').index();
-    var items = rack.find('div.item').length;
-    var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
-    var add_to_list = false;
-    if(existing == undefined){
-      item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
-      rack.data('skus', details.sku);
-      add_to_list = true;
-    }else{
-      existing = existing.split(',');
-      if(existing.indexOf(sku) == -1){
-        existing.push(sku);
-        rack.data('skus', existing.join(','));
-        item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
-        add_to_list = true;
-      }
-    }
-    if(add_to_list == true){
-      if(items == 0){rack.html('');}
-      var obj = {
-        product: parseInt(details.id),
-        allume_styling_session: parseInt(search_page.session_id)
-      }
-      $.ajax({
-        contentType : 'application/json',
-        data: JSON.stringify(obj),
-        success:function(response){
-          var itm = search_page.itemTemplate(details, 'rack', idx, response.id);
-          var categories = [];
-          $.each(rack.find('div.block'), function(idx){
-            categories.push($(this).data('category'));
-          });
-          if(categories.indexOf(details.primary_category) == -1){
-            categories.push(details.primary_category);
-            categories.sort();
-            var idx = categories.indexOf(details.primary_category);
-            var new_category = '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
-              details.primary_category + '</a><div class="block" data-category="' + details.primary_category + 
-              '"></div>';
-            if(idx == 0){
-              rack.prepend(new_category);
-            }else if(idx == (categories.length -1)){
-              rack.append(new_category);
-            }else{
-              rack.find('div.block').eq((idx -1)).after(new_category);
-            }
-          }
-          rack.find('div.block[data-category="' + details.primary_category + '"]').append(itm)
-          search_page.updateRackCount();
-        },
-        type: 'PUT',
-        url: '/shopping_tool_api/rack_item/0/'
-      });
-    }else{
-      var pos = item.offset();
-      if($('#air-' + idx).length < 1){
-        $('body').append(
-          '<div class="already-in-rack" id="air-' + idx + 
-          '" style="top:' + (pos.top - 32) + 'px;left:' + (pos.left - 37) + 
-          'px"><span class="msg">SKU already in rack</span>' +
-          '<span class="tail"></span></div>'
-        )
-        var id = 'air-' + idx;
-        window.setTimeout(function(){
-          $('#' + id).fadeOut(function(){
-            $('#' + id).remove();
-          })
-        }, 3000)
-      }
-    }
-  },
-  /**
-  * @description capitalize the first letter of a string
-  * @param {string} str - the string to process
-  * @returns {string} capitalized first letter of the same string
-  */
-  capitalizeFirstLetter: function(str){
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  },  
-  /**
-  * @description capitalize the first letter of every word in a string
-  * @param {string} str - the string to process
-  * @returns {string} fixed string
-  */
-  capitalizeEveryWord: function(str){
-    return str.replace(/\w\S*/g, function(txt){
-      return search_page.capitalizeFirstLetter(txt);
-    });
-  },
-  /**
-  * @description make a groups of DOM objects all the same height
-  * @params {DOM Array} - array of DOM objects
-  */
-  equalHeight: function(group) {
-    var tallest = 0;
-    group.each(function() {
-      var thisHeight = $(this).height();
-      if(thisHeight > tallest) {
-        tallest = thisHeight;
-      }
-    });
-    group.height(tallest);
-  },
-  /**
-  * @description cache array of stylist's favorites, updated at load
-  */
-  favorites: [],
-  /**
-  * @description cache array of favorited product ids, used to set correct favorite link 
-  */
-  favorites_product_ids: [],
-  /**
   * @description init function applying the functionality to the page elements
   */
   init: function(){
-    /* set rack existing products */
-    var rack_list = $('#rack-list');
-    initial_rack.sort(function(a,b){
-      if(a.primary_category.toLowerCase() > b.primary_category.toLowerCase()){ return 1}
-      if(a.primary_category.toLowerCase() < b.primary_category.toLowerCase()){ return -1}
-      return 0;
-    });
-    for(var i = 0, l = initial_rack.length; i<l; i++){
-      var obj = initial_rack[i];
-      var itm = search_page.itemTemplate(obj, 'rack', '', obj.rack_id);
-      var category_exists = rack_list.find('div.block[data-category="' + obj.primary_category + '"]').length;
-      if(category_exists == 0){
-        rack_list.append(
-          '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
-          obj.primary_category + '</a><div class="block" data-category="' + obj.primary_category + 
-          '"></div>'
-        );
-      }
-      rack_list.find('div.block[data-category="' + obj.primary_category + '"]').append(itm);
-    }
-    var existing_items = []
-    $.each(rack_list.find('a.remove-from-rack'), function(idx){
-      existing_items.push($(this).data('sku'));
-    });
-    rack_list.data('skus', existing_items.join(','));
+    rack_builder.init();
+    look_builder.functionality();
     /* cache the session id */
     search_page.session_id = $('body').data('stylesession');
-    /* add keyboard shortcuts for rack and client open/close */
-    Mousetrap.bind('shift+z+x', function(e) {
-      var rack = $('#rack');
-      if(rack.hasClass('show')){
-        $('#look-list').removeClass('show');
-        rack.delay(400)
-        .queue(function (next) { 
-          $(this).removeClass('show');
-          next(); 
-        });
-      }else{
-        rack.addClass('show');
-        $('#look-list').addClass('show');
-      }
-      return false;
-    });
+    /* add keyboard shortcuts for client open/close */
     Mousetrap.bind('shift+a+s', function(e) {
       $('#user-card').toggleClass('show')
       return false;
-    });
-    Mousetrap.bind('shift+q+w', function(e) {
-      $('#new-look-error').html('');
-      $('#new-look-name').val('');
-      $('#new-look-layout')[0].selectize.setValue('',true);      
-      $('#create-look').fadeToggle();
-      return false;
-    });    
+    }); 
     /* search functionality */
     $('#search-btn').click(function(e){
       e.preventDefault();
@@ -232,9 +68,9 @@ var search_page = {
       if(link.hasClass('favorited')){
         var fave = link.data('faveid');
         var product_id = link.data('productid');
-        var index = search_page.favorites_product_ids.indexOf(product_id);
-        search_page.favorites_product_ids.splice(index, 1);
-        search_page.favorites.splice(index, 1);
+        var index = rack_builder.favorites_product_ids.indexOf(product_id);
+        rack_builder.favorites_product_ids.splice(index, 1);
+        rack_builder.favorites.splice(index, 1);
         $.ajax({
           contentType : 'application/json',
           error: function(response){
@@ -260,8 +96,8 @@ var search_page = {
           },
           success:function(response){
             console.log(response);
-            search_page.favorites.push(response);
-            search_page.favorites_product_ids.push(response.product);
+            rack_builder.favorites.push(response);
+            rack_builder.favorites_product_ids.push(response.product);
             link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
           },
           type: 'PUT',
@@ -271,7 +107,7 @@ var search_page = {
     }).on('click','a.add-to-rack',function(e){
       e.preventDefault();
       var link = $(this);
-      search_page.addToRack(link);
+      rack_builder.addToRack(link);
     }).on('mouseenter', 'a.info-toggle', function(e){
       var link = $(this);
       var tt = link.siblings('div.tt');
@@ -292,88 +128,6 @@ var search_page = {
       search_page.performSearch(parseInt(link.data('page')));
       $('html,body').animate({ scrollTop: 0 }, 300);
     });
-    /* my rack functionality */
-    $('#rack-toggle').click(function(e){
-      e.preventDefault();
-      $('#rack').toggleClass('show');
-      $('#look-list').toggleClass('show');
-    });
-    $('#close-rack').click(function(e){
-      e.preventDefault();
-      $('#look-list').removeClass('show');
-      $('#rack').delay(400)
-      .queue(function (next) { 
-        $(this).removeClass('show');
-        next(); 
-      });
-    });
-    rack_list.on('click','a.remove-from-rack',function(e){
-      e.preventDefault();
-      var link = $(this);
-      var sku = link.data('sku');
-      var rack = $('#rack-list');
-      var existing = rack.data('skus').split(',');
-      var idx = existing.indexOf(sku);
-      existing.splice(idx,1);
-      rack.data('skus',existing.join(','));
-      /* undo selected btn */
-      if(link.data('idx') != ''){
-        var list_entry = $('#results div.item').eq(link.data('idx'));
-        var add_link = list_entry.find('a.add-to-rack');
-        if(add_link.length > 0){
-          var details = add_link.data('details')
-          var link_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
-          if(link_sku == sku){
-            add_link.html('<i class="icon-hanger"></i>add to rack').removeClass('selected');
-          }  
-        }
-      }
-      $.ajax({
-        success:function(response){
-          var parent_block = link.closest('div.block');
-          link.closest('div.item').remove();
-          if(parent_block.find('div.item').length == 0){
-            parent_block.prev('a.rack-section-toggle').remove();
-            parent_block.remove();
-          }
-          /* add user friendly markup if rack is empty */
-          if(rack.find('div.item').length == 0){
-            rack.html('<div class="empty">Add items to your rack...</div>');
-          }
-          search_page.updateRackCount();
-        },
-        type: 'DELETE',
-        url: '/shopping_tool_api/rack_item/' + link.data('rackid') + '/'
-      });
-    }).on('click','a.rack-section-toggle', function(e){
-      e.preventDefault();
-      var link = $(this);
-      var i = link.find('i')
-      var div = link.next('div.block')
-      if(link.hasClass('closed')){
-        link.removeClass('closed');
-        i.removeClass('fa-angle-right').addClass('fa-angle-down');
-        div.slideDown();
-      }else{
-        link.addClass('closed');
-        i.removeClass('fa-angle-down').addClass('fa-angle-right');
-        div.slideUp();       
-      }
-    });
-    $('#add-look-btn').click(function(e){
-      e.preventDefault();
-      $('#new-look-error').html('');
-      $('#new-look-name').val('');
-      $('#new-look-layout')[0].selectize.setValue('',true);
-      $('#create-look').fadeIn();
-    });
-    $('#look-links').on('click', 'a.look-link', function(e){
-      e.preventDefault();
-      var link = $(this);
-      look_builder.setUpBuilder(link.data('lookid'))
-      $('#designing').html(link.data('lookname'));
-      $('#design-look').attr('class','').addClass('show');
-    });
     /* client details functionality */
     $('#user-clip').delay(750)
       .queue(function (next) { 
@@ -384,66 +138,6 @@ var search_page = {
       e.preventDefault();
       $('#user-card').toggleClass('show')
     });
-    /* new look create form */
-    $('#new-look-layout').selectize({
-      valueField: 'id',
-      labelField: 'name',
-      searchField: 'name',
-      options: look_layouts,
-      create: false,
-      render: {
-        option: function(item, escape) {
-          return '<div class="layout-option">' +
-            '<span class="name">' + escape(item.name) + '</span>' +
-            '<span class="columns">columns: ' + escape(item.columns) + '</span>' +
-            '<span class="rows">rows: ' + escape(item.rows) + '</span>' +
-            '</div>';
-        }
-      }
-    });
-    $('#cancel-new-look').click(function(e){
-      e.preventDefault()
-      $('#create-look').fadeOut();
-    });
-    $('#create-new-look').click(function(e){
-      $('#new-look-error').html('');
-      e.preventDefault();
-      var pre = 0;
-      var msg = [];
-      var look_obj = {
-       "name": $('#new-look-name').val(),
-       "look_layout": parseInt($('#new-look-layout').val()),
-       "allume_styling_session": search_page.session_id,
-       "stylist": parseInt($('#stylist').data('stylistid'))        
-      }
-      if(look_obj.name == ''){ 
-        pre++; 
-        msg.push('provide a look name'); 
-      }
-      if(isNaN(look_obj.look_layout)){ 
-        pre++; 
-        msg.push('select a look layout'); 
-      }
-      if(pre == 0){
-        $.ajax({
-          contentType : 'application/json',
-          data: JSON.stringify(look_obj),
-          success:function(response){
-            look_builder.newLookLink(response);
-            $('#create-look').fadeOut();
-          },
-          type: 'PUT',
-          url: '/shopping_tool_api/look/0/'
-        })
-      }else{
-        $('#new-look-error').html(
-          '<span><i class="fa fa-exclamation-circle"></i>' +
-          'You must ' + msg.join('; ') + 
-          '.</span>'
-        );
-      }
-    }); 
-    look_builder.functionality(); 
   },
   /**
   * @description processing and template for facets
@@ -465,7 +159,7 @@ var search_page = {
           group_markup.markup[display_name] = [];
           group_markup.markup[display_name].push(
             '<a href="#" class="facet-group"><span>+</span>' + 
-            search_page.capitalizeEveryWord(display_name.replace(/_/g, ' ')) + 
+            utils.capitalizeEveryWord(display_name.replace(/_/g, ' ')) + 
             '</a><div class="facet-list" data-qparam="' + display_name + '">'
           );
           facet_list[display_name].buckets.sort(function(a,b){
@@ -532,12 +226,10 @@ var search_page = {
   /**
   * @description item template for results and rack
   * @param {object} details - item details JSON
-  * @param {string} view - which display
-  * @param {integer} idx - list idx used in 'rack' view
-  * @param {integer} rack_item_id - list idx used in 'rack' view  
+  * @param {string} view - which display 
   * @returns {string} HTML
   */   
-  itemTemplate: function(details, view, idx, rack_item_id){
+  itemTemplate: function(details, view){
     var w = $('#results').width() / 3;   
     var desc = details.long_product_description == '' ? details.short_product_description : details.long_product_description ;
     var retail = details.retail_price;
@@ -553,33 +245,23 @@ var search_page = {
     }
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
-    if(view == 'list'){
-      var fave_link = '<a href="#" class="favorite" data-productid="' + 
-        details.id + '"><i class="fa fa-heart-o"></i></a>';
-      var fave_idx = search_page.favorites_product_ids.indexOf(details.id);
-      if(fave_idx > -1){
-        var favorite_object = search_page.favorites[fave_idx];
-        fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
-        details.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
-      }
-      return '<div class="item"><div class="image">' + fave_link + '<img src="' + 
-        details.product_image_url + '"></div><a href="' + details.product_url + 
-        '" target="_blank" class="name">' + details.product_name + '</a>' + 
-        '<a href="#" class="add-to-rack" data-productid="' + details.id + 
-        '"><i class="icon-hanger"></i>add to rack</a>' + merch + 
-        '' + manu + '<a href="#" class="info-toggle"><i class="fa fa-info-circle"></i></a>' + 
-        price_display + '<div class="tt"><span><em>size:</em>' + 
-        details.size + '</span><span><em>description:</em>' + details.short_product_description + 
-        '</span></div></div>';
-    }else{
-      return '<div class="item" data-productid="' + details.id + '" title="' + details.merchant_name + ' by ' + 
-        details.manufacturer_name + '"><a href="#" class="remove-from-rack" data-sku="' + 
-        details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku + 
-        '" data-idx="' + idx + '" data-productid="' + details.id + '" data-rackid="' + 
-        rack_item_id + '"><i class="fa fa-times"></i></a>' +
-        '<div class="image"><img src="' + details.product_image_url + 
-        '"/></div><div class="details">' + price_display + '</div></div>';
+    var fave_link = '<a href="#" class="favorite" data-productid="' + 
+      details.id + '"><i class="fa fa-heart-o"></i></a>';
+    var fave_idx = rack_builder.favorites_product_ids.indexOf(details.id);
+    if(fave_idx > -1){
+      var favorite_object = rack_builder.favorites[fave_idx];
+      fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
+      details.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
     }
+    return '<div class="item"><div class="image">' + fave_link + '<img src="' + 
+      details.product_image_url + '"></div><a href="' + details.product_url + 
+      '" target="_blank" class="name">' + details.product_name + '</a>' + 
+      '<a href="#" class="add-to-rack" data-productid="' + details.id + 
+      '"><i class="icon-hanger"></i>add to rack</a>' + merch + 
+      '' + manu + '<a href="#" class="info-toggle"><i class="fa fa-info-circle"></i></a>' + 
+      price_display + '<div class="tt"><span><em>size:</em>' + 
+      details.size + '</span><span><em>description:</em>' + details.short_product_description + 
+      '</span></div></div>';
   },
   /**
   * @description processing and template for pagination of results
@@ -812,18 +494,9 @@ var search_page = {
           items.eq(i).find('a.add-to-rack').data('details',details);       
         }
       }
-      search_page.equalHeight($('#results div.item'));
+      utils.equalHeight($('#results div.item'));
     }else{
       $('#results').html('<div class="no-results">There were no products matching your supplied criteria...</div>');
     }
-  },
-  /**
-  * @description update the rack toggle button display
-  */
-  updateRackCount: function(){
-    var items = $('#rack-list div.item').length;
-    var s = items == 1 ? '' : 's';
-    $('#rack-toggle').html('<span>' + items + '</span> item' + s + ' in your rack');
-    $('#rack-number').html(items + ' item' + s)
   }
 }

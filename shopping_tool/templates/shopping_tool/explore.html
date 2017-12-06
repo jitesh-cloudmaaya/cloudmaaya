@@ -15,11 +15,15 @@
   <a href="/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
   <span id="stylist" data-stylistid="{{ user.id }}"></span>
 </div>
+{% include "shopping_tool/rack_partial.html" %}
+{% include "shopping_tool/looks_partial.html" %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
 <script src="{% static 'shopping_tool/js/Sortable.min.js' %}"></script>
+<script src="{% static 'shopping_tool/js/utils.js' %}"></script>
+<script src="{% static 'shopping_tool/js/explore_page.js' %}"></script>
 <script src="{% static 'shopping_tool/js/rack_builder.js' %}"></script>
 <script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
@@ -64,7 +68,7 @@ $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylist
     rack_builder.favorites_product_ids.push(fave.product);
     rack_builder.favorites.push(fave);
   }
-  rack_builder.init();
+  explore_page.init();
 })
 
 </script>
