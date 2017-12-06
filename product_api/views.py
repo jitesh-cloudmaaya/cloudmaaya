@@ -41,7 +41,7 @@ def facets(self):
 
         
     """
-    text_query = self.query_params.get('text', 'shirt')
+    text_query = self.query_params.get('text', '*')
     num_per_page = int(self.query_params.get('num_per_page', 48))
     page = int(self.query_params.get('page', 1))
 

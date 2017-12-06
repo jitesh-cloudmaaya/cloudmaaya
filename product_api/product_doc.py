@@ -129,18 +129,23 @@ class EProductSearch(FacetedSearch):
     def query(self, search, query):
         """Overriden to use bool AND by default"""
 
+        if query == "*":
+            main_q = Q({"match_all" : {}})
+        else:            
+            main_q = Q('multi_match',
+                    fields=self.fields,
+                    query=query,
+                    operator='and'
+                )
+
         #Add in Filter for Fav Products
         if self._favs:
-            q = Q({"ids" : {"values" : self._favs}})
+            q_faves = Q({"ids" : {"values" : self._favs}})
         else:
-            q = Q()
+            q_faves = Q()
 
-        if query:
-            return search.query('multi_match',
-                fields=self.fields,
-                query=query,
-                operator='and'
-            ).query(q)#.sort('-p')
+
+        return search.query(main_q).query(q_faves)#.sort('-p')
 
 """
   "collapse": {
