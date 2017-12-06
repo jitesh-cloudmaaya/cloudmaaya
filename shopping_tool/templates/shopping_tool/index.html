@@ -10,7 +10,7 @@
   {% load static %}
   <link href="{% static 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
 </head>
-<body data-stylesession="{{ styling_session.id }}">
+<body class="search-page" data-stylesession="{{ styling_session.id }}">
 <div id="header">
   <a href="/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
   <span id="stylist" data-stylistid="{{ user.id }}"></span>
@@ -102,40 +102,7 @@
 <script src="{% static 'shopping_tool/js/rack_builder.js' %}"></script>
 <script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
-/**
-* @description layouts array for use in new look creation and look display
-*/ 
-var look_layouts = [
-{% for layout in layouts %}
-  { "id": {{ layout.id }},
-    "name": "{{layout.display_name}}",
-    "column_widths": "{{layout.column_widths}}",
-    "columns": {{layout.columns}},
-    "rows": {{layout.rows}},
-    "row_heights": "{{layout.row_heights}}"
-  },
-{% endfor %} 
-];
-/**
-* @description initial rack objects array
-*/ 
-var initial_rack = [
-{% for item in rack_items %}
-  { 
-    "rack_id": {{item.id}},
-    "id": {{item.product.id}},
-    "product_id": {{ item.product.product_id }},
-    "sku": "{{ item.product.sku}}",
-    "merchant_id": {{ item.product.merchant_id }},
-    "merchant_name": "{{ item.product.merchant_name }}",
-    "manufacturer_name": "{{ item.product.manufacturer_name }}",
-    "product_image_url": "{{item.product.product_image_url}}",
-    "primary_category": "{{item.product.primary_category}}",
-    "retail_price": {{item.product.retail_price}},
-    "sale_price" : {{item.product.sale_price}}
-  },
-{% endfor %} 
-];
+{% include "shopping_tool/js_arrays.html" %}
 /* before initializing page get stylists favories */
 $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
   for(var i = 0, l = result.length;i<l;i++){

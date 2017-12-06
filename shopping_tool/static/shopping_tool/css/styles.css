@@ -632,7 +632,8 @@ div#rack-btns span {
 #close-rack, 
 #cancel-new-look,
 #close-design-look,
-#look-indepth a.close-indepth {
+#look-indepth a.close-indepth,
+#inspect-item a.close-inspect {
   color:#bbb;
   font-size:20px;
   padding:8px 15px;
@@ -647,11 +648,13 @@ div#rack-btns span {
 #close-rack:hover,
 #cancel-new-look:hover,
 #close-design-look:hover,
-#look-indepth a.close-indepth:hover {color:#474747;}
+#look-indepth a.close-indepth:hover,
+#inspect-item a.close-inspect:hover {color:#474747;}
 #close-rack:active,
 #cancel-new-look:active,
 #close-design-look:active,
-#look-indepth a.close-indepth:active {color:#0090D9;}
+#look-indepth a.close-indepth:active,
+#inspect-item a.close-inspect:active {color:#0090D9;}
 a.add-to-rack {
   border:1px solid #ddd;
   border-radius:3px;
@@ -1285,7 +1288,8 @@ div.layout-option span.columns {font-size:10px; display:block;}
 #rack-draggable a.rack-section-toggle i {margin-right:5px;}
 #rack-list div.block,
 #rack-draggable div.block {overflow:hidden;}
-#look-indepth {
+#look-indepth,
+#inspect-item {
   background:rgba(0,0,0,0.7) ;
   display:none;
   height:100%;
@@ -1295,7 +1299,8 @@ div.layout-option span.columns {font-size:10px; display:block;}
   width:100%;
   z-index:25;
 }
-#look-indepth div.stage {
+#look-indepth div.stage,
+#inspect-item div.stage {
   background:#fff;
   border-radius:5px;
   box-shadow:0 0 3px rgba(0,0,0,0.8);
@@ -1306,7 +1311,8 @@ div.layout-option span.columns {font-size:10px; display:block;}
   width:calc(100% - 40px);
   z-index:26;
 }
-#look-indepth div.stage h2 {
+#look-indepth div.stage h2,
+#inspect-item div.stage h2 {
   border-bottom:1px solid #ddd;
   font-size:18px;
   font-weight:500;
@@ -1323,29 +1329,38 @@ div.layout-option span.columns {font-size:10px; display:block;}
   padding:15px 0;
 }
 #look-indepth div.stage p.layout em {font-weight:500;}
-#look-indepth div.stage div.products {
+#look-indepth div.stage div.products{
   height:calc(100% - 120px);
   overflow:auto;
   padding:0 15px 20px;
 }
-#look-indepth div.stage div.products table {
+#look-indepth div.stage div.products table,
+#inspect-item div.stage table {
   margin:10px 0;
   width:100%;
 }
-#look-indepth div.stage div.products table td {border-bottom:1px solid #ddd; vertical-align: top}
-#look-indepth div.stage div.products table tr:last-child td {border:0;}
+#inspect-item div.stage table {width:calc(100% - 30px);margin:0 15px;}
+#look-indepth div.stage div.products table td,
+#inspect-item div.stage table td {border-bottom:1px solid #ddd; vertical-align: top}
+#look-indepth div.stage div.products table tr:last-child td,
+#inspect-item div.stage table td {border:0;}
 
 #look-indepth div.stage div.products table td.img { padding:15px 10px 10px 0; width:200px; }
-#look-indepth div.stage div.products table td.img img {
+#inspect-item div.stage table td.img { padding:15px 10px 10px 0; width:300px; }
+#look-indepth div.stage div.products table td.img img,
+#inspect-item div.stage table td.img img {
   box-shadow:0 0 3px rgba(0,0,0,0.25);
   display:block;
   height:200px;
   max-width:100%;
 }
-#look-indepth div.stage div.products table td.details {padding:15px 10px 10px;}
+#inspect-item div.stage table td.img img {height:300px; margin:0 auto;}
+#look-indepth div.stage div.products table td.details,
+#inspect-item div.stage table td.details {padding:15px 10px 10px;}
 #look-indepth div.stage div.products table tr:first-child td.img,
 #look-indepth div.stage div.products table tr:first-child td.details {padding-top:5px;}
-#look-indepth div.stage div.products table a.name {
+#look-indepth div.stage div.products table a.name,
+#inspect-item div.stage table a.name {
   color:#474747;
   display:block;
   font-size:18px;
@@ -1353,11 +1368,16 @@ div.layout-option span.columns {font-size:10px; display:block;}
   padding:0 0 2px;
   text-decoration: none;
 }
-#look-indepth div.stage div.products table a.name:hover {text-decoration: underline}
+#look-indepth div.stage div.products table a.name:hover,
+#inspect-item div.stage table a.name:hover {text-decoration: underline}
 #look-indepth div.stage div.products table span.price,
 #look-indepth div.stage div.products table span.manu,
 #look-indepth div.stage div.products table span.merch,
-#look-indepth div.stage div.products table span.general {
+#look-indepth div.stage div.products table span.general,
+#inspect-item div.stage table span.price,
+#inspect-item div.stage table span.manu,
+#inspect-item div.stage table span.merch,
+#inspect-item div.stage table span.general {
   color:#676767;;
   display:block;
   font-size:16px;
@@ -1365,13 +1385,16 @@ div.layout-option span.columns {font-size:10px; display:block;}
   padding:2px 0;
 }
 #look-indepth div.stage div.products table span.general em ,
-#look-indepth div.stage div.products table span.price em.label{
+#look-indepth div.stage div.products table span.price em.label,
+#inspect-item div.stage table span.general em,
+#inspect-item div.stage table span.price em.label{
   color:#777; 
   font-variant: small-caps;
   font-weight:100;
   padding-right:5px;
 }
-#look-indepth div.stage div.products table p.item-desc {
+#look-indepth div.stage div.products table p.item-desc,
+#inspect-item div.stage table p.item-desc {
   border-left:2px solid #444;
   box-shadow:inset 0 0 2px rgba(0,0,0,0.2);
   color:#777;
@@ -1382,18 +1405,12 @@ div.layout-option span.columns {font-size:10px; display:block;}
   padding:8px 15px 8px 10px; ;
   width:75%; 
 }
-#look-indepth div.stage div.products table span.price em.sale {
+#look-indepth div.stage div.products table span.price em.sale,
+#inspect-item div.stage table span.price em.sale {
   color:#D32F2F; 
   display:inline-block; 
   padding-right: 8px; 
   text-decoration: line-through;
-}
-#look-indepth div.stage div.products table span.general em ,
-#look-indepth div.stage div.products table span.price em.label{
-  color:#777; 
-  font-variant: small-caps;
-  font-weight:100;
-  padding-right:5px;
 }
 #look-filter-options {
   background:#fff;
@@ -1490,5 +1507,162 @@ div.layout-option span.columns {font-size:10px; display:block;}
   color:#000;
   box-shadow: inset 0 0 3px rgba(0,0,0,0.3)
 }
+/* explore look page styles */
+#explore-form {
+  border-bottom:1px solid #ddd;
+  margin-bottom:15px;
+  padding:15px;
+}
+#explore-form .selectize-control {display:inline-block; vertical-align:top; width:300px;}
+#explore-form span.label {
+  color:#000;
+  display:inline-block;
+  font-size:13px;
+  font-weight:300;
+  padding:10px 8px 0 0;
+  vertical-align: top;
+}
+#explore-form span.label.middle {padding-left:10px;}
+#explore-form input[type="text"] {
+  background:#fff;
+  border:1px solid #d0d0d0;
+  border-radius:3px;
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.1);
+  color:#303030;
+  display:inline-block;
+  font-size:13px;
+  font-weight:200;
+  line-height:18px;
+  margin:0;
+  padding:8px;
+  width:234px;
+}
+#explore-form a#looks-filter  {
+  background:#f2987e;
+  border-radius:5px;
+  color:#fff;
+  display:inline-block;
+  font-size:16px;
+  font-variant: small-caps;
+  font-weight:500;
+  margin-left:12px;
+  padding:7px 15px 10px;
+  text-align: center;
+  text-decoration:none;
+  vertical-align: top;
+}
+#explore-form a#looks-filter:hover {background:#ed8365;}
+#explore-form a#looks-filter:active{  
+  background:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+  color:#474747;
+}
+#stylist-select {display:none;}
+#looks-header h2 {
+  font-size:18px;
+  font-weight:300;
+  padding:0 15px 7.5px;
+}
+#looks-header h2 em {font-weight:500;}
+#all-looks-list {
+  margin:0 5px;
+  overflow:auto;
+  padding:0 0 7.5px;
+}
+#all-looks-list div.look {width:33% }
+#all-looks-list div.look div.display {
+  background:#fff;
+  border-radius:3px;
+  box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4);
+  margin:10px;
+  position:relative;
+}
+#all-looks-list div.look div.display a.favorite-look {
+  color:#EC407A;
+  display:block;
+  font-size:20px;
+  padding:4px;
+  position:absolute;
+  right:11px;
+  text-decoration: none;
+  top:11px;
+}
+#all-looks-list div.look div.display h3 {
+  background:#fafafa;
+  border-bottom:1px solid #ddd;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  font-size:18px;
+  font-weight:300;
+  margin-bottom:7.5px;
+  padding:13px 15px 15px;
+  text-shadow:0 1px #fff;
+}
+#all-looks-list div.look div.display h3 span {
+  color:#777;
+  display:block;
+  font-size:14px;
+  font-weight:100;
+  padding-top:2px;
+}
+#all-looks-list div.look div.display div.items {overflow:auto;padding:0 7.5px 7.5px;}
+#all-looks-list div.look div.display div.item {
+  box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
+  margin:7.5px;
+  float:left;
+  height:150px;
+  overflow:hidden;
+  padding:0;
+  position:relative;
+  width:120px;
+}
+#all-looks-list div.look div.display div.item div.link-bar {
+  border-top:1px solid #ddd;
+  height:29px;
+}
+#all-looks-list div.look div.display div.item img {display:block;margin:0 auto; height:120px; max-width:100%;}
+#all-looks-list div.look div.display div.item a.favorite,
+#all-looks-list div.look div.display div.item a.details {
+  border:1px solid #ccc;
+  border-radius:3px;
+  color:#EC407A;
+  display:inline-block;
+  font-size:13px;
+  margin:3px 5px  0 0;
+  padding:2px 8px 3px;
+  vertical-align: top;
+}
+#all-looks-list div.look div.display div.item a.details {color:#777;margin-left:6px;}
+#all-looks-list div.look div.display div.item a.favorite:hover { border-color:#EC407A; background:#EC407A; color:#fff; }
+#all-looks-list div.look div.display div.item a.details:hover {border-color:#999;  color:#474747;}
+#all-looks-list div.look div.display div.item a.favorite:active,
+#all-looks-list div.look div.display div.item a.details:active {
+  background:#fff;
+  border-color:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+}
+#all-looks-list div.look div.display div.item a.favorite:active {color:#EC407A;}
+#all-looks-list div.look div.display div.item div.link-bar a.add-to-rack { 
+  border:1px solid #ccc;
+  float:none; 
+  display:inline-block; 
+  margin:3px 0 0;
+  vertical-align: top;
+}
+#all-looks-list div.look div.display div.item div.link-bar a.add-to-rack:hover {
+  border-color:#999;
+  background:#fff;
+}
+#all-looks-list div.look div.display div.item div.link-bar a.add-to-rack:active {
+  background:#fff;
+  border-color:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+}
+
+#all-looks-list div.look div.display div.item div.link-bar a.add-to-rack i {padding:0;}
+
+
+
+
 
 

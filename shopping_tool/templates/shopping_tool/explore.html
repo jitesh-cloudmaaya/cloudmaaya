@@ -10,11 +10,26 @@
   {% load static %}
   <link href="{% static 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
 </head>
-<body data-stylesession="{{ styling_session.id }}">
+<body class="explore-page" data-stylesession="{{ styling_session.id }}">
 <div id="header">
   <a href="/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
   <span id="stylist" data-stylistid="{{ user.id }}"></span>
 </div>
+<div id="explore-form">
+  <span class="label">Show me looks by: </span>
+  <select id="stylist-select" placeholder="Please select a stylist...">
+    <option value=" ">All stylists</option>
+  {% for stylist in stylists %}
+    <option value="{{stylist.id}}">{{stylist.first_name}} {{stylist.last_name}}</option>
+  {% endfor %}
+  </select>
+  <span class="label middle">with look names including</span>
+  <input type="text" id="look-name" value="" placeholder=""/>
+  <a href="#" id="looks-filter">show me</a>
+</div>
+<div id="looks-header"></div>
+<div id="all-looks-list"></div>
+<div id="inspect-item"></div>
 {% include "shopping_tool/rack_partial.html" %}
 {% include "shopping_tool/looks_partial.html" %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -22,45 +37,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
 <script src="{% static 'shopping_tool/js/Sortable.min.js' %}"></script>
+<script src="{% static 'shopping_tool/js/waterfall.js' %}"></script>
 <script src="{% static 'shopping_tool/js/utils.js' %}"></script>
 <script src="{% static 'shopping_tool/js/explore_page.js' %}"></script>
 <script src="{% static 'shopping_tool/js/rack_builder.js' %}"></script>
 <script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
-/**
-* @description layouts array for use in new look creation and look display
-*/ 
-var look_layouts = [
-{% for layout in layouts %}
-  { "id": {{ layout.id }},
-    "name": "{{layout.display_name}}",
-    "column_widths": "{{layout.column_widths}}",
-    "columns": {{layout.columns}},
-    "rows": {{layout.rows}},
-    "row_heights": "{{layout.row_heights}}"
-  },
-{% endfor %} 
-];
-/**
-* @description initial rack objects array
-*/ 
-var initial_rack = [
-{% for item in rack_items %}
-  { 
-    "rack_id": {{item.id}},
-    "id": {{item.product.id}},
-    "product_id": {{ item.product.product_id }},
-    "sku": "{{ item.product.sku}}",
-    "merchant_id": {{ item.product.merchant_id }},
-    "merchant_name": "{{ item.product.merchant_name }}",
-    "manufacturer_name": "{{ item.product.manufacturer_name }}",
-    "product_image_url": "{{item.product.product_image_url}}",
-    "primary_category": "{{item.product.primary_category}}",
-    "retail_price": {{item.product.retail_price}},
-    "sale_price" : {{item.product.sale_price}}
-  },
-{% endfor %} 
-];
+{% include "shopping_tool/js_arrays.html" %}
+var stylist_names = {
+  {% for stylist in stylists %}
+    {{stylist.id}}: "{{stylist.first_name}} {{stylist.last_name}}",
+  {% endfor %}
+};
 /* before initializing page get stylists favories */
 $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
   for(var i = 0, l = result.length;i<l;i++){
@@ -69,8 +57,7 @@ $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylist
     rack_builder.favorites.push(fave);
   }
   explore_page.init();
-})
-
+});
 </script>
 </body>
 </html>

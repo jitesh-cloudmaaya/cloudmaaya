@@ -107,7 +107,7 @@ var search_page = {
     }).on('click','a.add-to-rack',function(e){
       e.preventDefault();
       var link = $(this);
-      rack_builder.addToRack(link);
+      rack_builder.addToRack(link, 'search');
     }).on('mouseenter', 'a.info-toggle', function(e){
       var link = $(this);
       var tt = link.siblings('div.tt');
@@ -264,140 +264,6 @@ var search_page = {
       '</span></div></div>';
   },
   /**
-  * @description processing and template for pagination of results
-  * @param {integer} page - page currently displayed
-  * @param {integer} total - total number of items in result set
-  * @param {integer} per_page - number of items per page payload
-  */  
-  pagerTemplate: function(page, total, per_page){
-    var markup = [];
-    var total_pages = Math.floor(total / per_page);
-    var excess = total % per_page;
-    if(excess > 0){ total_pages++};
-    /* create pager message string */
-    var showing_low = numeral(((page * per_page) - per_page + 1)).format('0,0');
-    var showing_high = numeral(page * per_page).format('0,0');
-    if(total < per_page){
-      showing_high = numeral(total).format('0,0');
-    }
-    var result_total = numeral(total).format('0,0');
-    $('#pager-message').html(
-      'Showing <strong>' + showing_low + '</strong> - <strong>' + 
-      showing_high + '</strong> of <strong>' + result_total + '</strong>'
-    );
-    /**
-    * @description private function to gerenate links
-    * @param {integer} page - current page
-    * @param {integer} low - low number to use in loop
-    * @param {integer} high - high number to use in loop
-    * @returns {string} HTML
-    */        
-    function makePager(page, low, high){
-      var pager = [];
-      for(var i = (page - low); i < (page + high); i++){
-        if(i > 0){        
-          if(i == page){
-            pager.push('<span class="current">' + i + '</span>');
-          }else{
-            if(i <= total_pages){
-              pager.push('<a href="#" data-page="' + i + '" class="page">' + i + '</a>');
-            }
-          }
-        }
-      }
-      return pager.join('');
-    }
-    if(page > 1){
-      markup.push(
-        '<a href="#" data-page="' + (page - 1) + 
-        '" class="page prev"><i class="fa fa-angle-left"></i>Previous</a>'
-      );
-    }
-    if(total_pages > page){
-      markup.push(
-        '<a href="#" data-page="' + (page + 1) + 
-        '" class="page next">Next<i class="fa fa-angle-right"></i></a>'
-      );
-    }
-    if((page > 3)&&(page <= (total_pages - 3))){
-      markup.push(
-        '<a href="#" data-page="1" class="page">1</a>' +
-        '<span class="break">...</span>' +
-        makePager(page, 1, 2)
-      );
-      if((page + 2) < total_pages){
-        markup.push(
-          '<span class="break">...</span>' +
-          '<a href="#" data-page="' + total_pages + '" class="page">' + total_pages + '</a>'
-        )          
-      }
-    }else{
-      var show_max_ellipse = false;
-      if(page == 1){
-        var max = total_pages > 5 ? 4 : 5;
-        markup.push(
-          makePager(page, 2, max)
-        );
-        if((page + max) < total_pages){ show_max_ellipse = true }
-      }else if(page == 2){
-        var max = total_pages > 5 ? 3 : 4;
-        markup.push(
-          makePager(page, 1, max)
-        );  
-        if((page + max) < total_pages){ show_max_ellipse = true }              
-      }else if(page == 3){
-        var max = total_pages > 5 ? 2 : 3;
-        markup.push(
-          makePager(page, 2, max)
-        );
-        if((page + max) < total_pages){ show_max_ellipse = true } 
-      }else if(page == total_pages){
-        var min = 2; 
-        if(total_pages > 5){ min = 3 }else if(total_pages <= 5){ min = 4}; 
-        if((page - min) > 2 ){
-          markup.push(
-            '<a href="#" data-page="1" class="page">1</a>' +
-            '<span class="break">...</span>'
-          );
-        } 
-        markup.push(
-          makePager(page, min , 2)
-        );       
-      }else if(page == (total_pages - 1)){
-        var min = 3; 
-        if(total_pages > 5){ min = 2 }else if(total_pages <= 5){ min = 3}; 
-        if((page - min) > 2 ){
-          markup.push(
-            '<a href="#" data-page="1" class="page">1</a>' +
-            '<span class="break">...</span>'
-          );
-        } 
-        markup.push(
-          makePager(page, min , 2)
-        );       
-      }else if(page == (total_pages - 2)){
-        var min = 4; 
-        if(total_pages > 5){ min = 1 }else if(total_pages <= 5){ min = 2}; 
-        if((page - min) > 2 ){
-          markup.push(
-            '<a href="#" data-page="1" class="page">1</a>' +
-            '<span class="break">...</span>'
-          );
-        } 
-        markup.push(
-          makePager(page, min , 3)
-        );       
-      }
-      if(show_max_ellipse == true){
-        markup.push(
-          '<span class="break">...</span>' +
-          '<a href="#" data-page="' + total_pages + '" class="page">' + total_pages + '</a>'
-        );
-      }
-    }
-    $('#pager').html(markup.join(''));
-  },
-  /**
   * @description ajax call to get search results
   * @param {integer} page - the page to fetch
   */
@@ -466,7 +332,7 @@ var search_page = {
       success: function(results){
         //console.log(results)
         if(results.data != undefined && results.data.length > 0){
-          search_page.pagerTemplate(results.page, results.total_items, results.num_per_page);
+          utils.pagerTemplate(results.page, results.total_items, results.num_per_page);
         }
         search_page.resultTemplate(results.data);
         if(new_search == true){
