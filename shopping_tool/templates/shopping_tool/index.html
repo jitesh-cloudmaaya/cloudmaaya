@@ -90,66 +90,16 @@
     <div id="pager"></div>
   </div>
 </div>
-<a id="rack-toggle"><span>{{ rack_items|length }}</span> item{{ rack_items|length|pluralize }} in your rack</a>
-<div id="rack">
-  <a href="#" id="close-rack"><i class="fa fa-times"></i></a>
-  <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
-  <div id="rack-list">
-    {% for item in rack_items %}
-
-    {% empty %}
-      <div class="empty">Add items to your rack...</div>
-    {% endfor %}
-  </div>
-  <div id="rack-btns">
-    <span id="rack-number">{{ rack_items|length }} item{{ rack_items|length|pluralize }}</span>
-    <a href="#" id="add-look-btn">add look</a>
-  </div>
-</div>
-<div id="look-list">
-  <h2>{{ looks|length }} Look{{ looks|length|pluralize }}</h2>
-  <div id="look-links">
-    {% for look in looks %}
-      <a href="#" class="look-link" data-lookid="{{ look.id }}" data-lookname="{{ look.name }}">
-        <table>
-          <tr>
-            <td class="icon"><i class="fa fa-shopping-bag"></i></td>
-            <td>
-              <span class="name">{{ look.name }}</span>
-              <span class="layout"><em>layout:</em> {{ look.look_layout.name }}</span>
-            </td>
-          </tr>
-        </table>
-      </a> 
-    {% endfor %}
-  </div>
-</div>
-<div id="create-look">
-  <div class="stage">
-    <a href="#" id="cancel-new-look"><i class="fa fa-times"></i></a>
-    <h2>New Look</h2>
-    <div id="new-look-error"></div>
-    <label>Name</label>
-    <input id="new-look-name" type="text" name="name" placeholder="Please provide a name for the look..."/>
-    <label>Layout</label>
-    <select id="new-look-layout" name="layout" placeholder="Please select a layout for the look..."></select>
-    <a href="#" id="create-new-look">create look</a>
-  </div>
-</div>
-<div id="design-look">
-  <a href="#" id="close-design-look"><i class="fa fa-times"></i></a>
-  <h2>Design Look: <span id="designing"></span></h2>
-  <div id="rack-draggable"></div>
-  <div id="look-drop"></div>
-  <div id="compare-looks"></div>
-</div>
-<div id="look-indepth"></div>
+{% include "shopping_tool/rack_partial.html" %}
+{% include "shopping_tool/looks_partial.html" %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
 <script src="{% static 'shopping_tool/js/Sortable.min.js' %}"></script>
+<script src="{% static 'shopping_tool/js/utils.js' %}"></script>
 <script src="{% static 'shopping_tool/js/search_page.js' %}"></script>
+<script src="{% static 'shopping_tool/js/rack_builder.js' %}"></script>
 <script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
 /**
@@ -190,8 +140,8 @@ var initial_rack = [
 $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
   for(var i = 0, l = result.length;i<l;i++){
     var fave = result[i];
-    search_page.favorites_product_ids.push(fave.product);
-    search_page.favorites.push(fave);
+    rack_builder.favorites_product_ids.push(fave.product);
+    rack_builder.favorites.push(fave);
   }
   /* call the search page init function to set up the page */
   search_page.init();
