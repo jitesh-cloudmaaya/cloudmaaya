@@ -22,8 +22,7 @@ from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavor
 from serializers import RackSerializer, RackCreateSerializer, LookCreateSerializer, LookProductSerializer
 from serializers import UserProductFavoriteSerializer, LookProductCreateSerializer, LookSerializer, UserProductFavoriteDetailSerializer
 from rest_framework import status
-
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -47,8 +46,7 @@ def user_product_favorite(request, pk=None):
         }
 
     delete:
-        Remove a product from the rack for a styling session
-        
+        Remove a product from the rack for a styling session        
     """
     if request.method == 'GET':
         try:
@@ -78,7 +76,6 @@ def user_product_favorite(request, pk=None):
 
         return Response(context) 
 
-
 @api_view(['GET'])
 @check_login
 @permission_classes((AllowAny, ))
@@ -88,7 +85,6 @@ def user_product_favorites(request, pk=None):
         View list of user favorite product IDs
 
         /shopping_tool_api/user_favorites/{userid}/
-
     """
     try:
         favs = UserProductFavorite.objects.filter(stylist=pk).all()
@@ -97,7 +93,6 @@ def user_product_favorites(request, pk=None):
 
     serializer = UserProductFavoriteSerializer(favs, many=True)
     return JsonResponse(serializer.data, safe=False)
-
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -147,9 +142,7 @@ def rack_item(request, pk=None):
             context = {'Success': False, 'Info': str(er)}
             return JsonResponse(context, status=status.HTTP_400_BAD_REQUEST)
 
-
         return Response(context) 
-
 
 @api_view(['GET', 'PUT'])
 @check_login
@@ -171,9 +164,6 @@ def look(request, pk):
          "stylist": 117
         }
     """
-
-
-
     if request.method == 'GET':
 
         try:
@@ -197,7 +187,6 @@ def look(request, pk):
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
-
 @api_view(['POST'])
 @check_login
 @permission_classes((AllowAny, ))
@@ -211,10 +200,20 @@ def look_list(request):
          "client": 1,
          "allume_styling_session":3,
          "stylist": 117,
-         "name": "Body Suit"
+         "name": "Body Suit",
+         "page": 1,
+         "per_page": 20
         }
     """
     looks = Look.objects.all()
+
+    page = 1
+    if 'page' in request.data:
+        page = request.data['page']
+
+    per_page = 20
+    if 'per_page' in request.data:
+        per_page = request.data['per_page']
 
     if 'client' in request.data:
         client = request.data['client']
@@ -233,9 +232,19 @@ def look_list(request):
         name = request.data['name']
         looks = looks.filter(name__contains = name)
 
-    serializer = LookSerializer(looks, many=True)
-    return JsonResponse(serializer.data, safe=False)
-   
+    paginator = Paginator(looks, per_page)
+
+    try:
+        looks_paged = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        looks_paged = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        looks_paged = paginator.page(paginator.num_pages)
+
+    serializer = LookSerializer(looks_paged, many=True)
+    return JsonResponse({"num_pages": paginator.num_pages, "page": page, "per_page": per_page, "looks": serializer.data}, safe=False)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -256,7 +265,6 @@ def look_item(request, pk=None):
           "product": 393223
         }
 
-
         Sample JSON Update Object
         URL: /shopping_tool_api/look_item/2/
 
@@ -266,7 +274,6 @@ def look_item(request, pk=None):
           "look": 5,
           "product": 393223
         }
-
     delete:
         Remove a product from a look for a styling session
     """
@@ -304,7 +311,6 @@ def look_item(request, pk=None):
             return JsonResponse(context, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(context) 
-
 
 @api_view(['GET'])
 @check_login
