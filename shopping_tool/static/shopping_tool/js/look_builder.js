@@ -17,9 +17,10 @@ var look_builder = {
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
+        console.log(response)
         var markup = [];
-        for(var i = 0, l = response.length; i<l; i++){
-          var comp = response[i];
+        for(var i = 0, l = response.looks.length; i<l; i++){
+          var comp = response.looks[i];
           if(comp.id != look_id){
             var look_products_markup = [];
             comp.look_products.sort(function(a,b){
@@ -154,7 +155,35 @@ var look_builder = {
       $('#look-drop').html('');
       $('#compare-looks').html('');
     });
-    $('#rack-draggable').on('click','a.rack-section-toggle', function(e){
+    $('#rack-draggable').on('click','a.close-all-rack-sections', function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('open-all') == false){
+        link.addClass('open-all').html('<i class="fa fa-caret-square-o-down"></i>expand all sections');
+        $.each($('#rack-draggable').find('a.rack-section-toggle'),function(idx){
+          var link = $(this);
+          var i = link.find('i')
+          var div = link.next('div.block');
+          if(link.hasClass('closed') == false){
+            link.addClass('closed');
+            i.removeClass('fa-angle-down').addClass('fa-angle-right');
+            div.slideUp();
+          }
+        });        
+      }else{
+        link.removeClass('open-all').html('<i class="fa fa-caret-square-o-up"></i>collapse all sections');
+        $.each($('#rack-draggable').find('a.rack-section-toggle'),function(idx){
+          var link = $(this);
+          var i = link.find('i')
+          var div = link.next('div.block');
+          if(link.hasClass('closed') == true){
+            link.removeClass('closed');
+            i.removeClass('fa-angle-right').addClass('fa-angle-down');
+            div.slideDown();
+          }
+        });
+      }
+    }).on('click','a.rack-section-toggle', function(e){
       e.preventDefault();
       var link = $(this);
       var i = link.find('i')
@@ -412,7 +441,14 @@ var look_builder = {
     });
     /* clone the contents of the rack for drag/drop */
     var rack_items = [];
-    $.each($('#rack-list div.block'), function(idx){
+    var rack_cats = $('#rack-list div.block');
+    if(rack_cats.length > 0){
+      rack_items.push(
+        '<a class="close-all-rack-sections" href="#">' +
+        '<i class="fa fa-caret-square-o-up"></i>collapse all sections</a>'
+      );
+    }  
+    $.each(rack_cats, function(idx){
       var block = $(this);
       var category = block.data('category');
       rack_items.push(
