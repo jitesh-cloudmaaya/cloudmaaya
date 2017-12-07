@@ -90,7 +90,7 @@ class EProductSearch(FacetedSearch):
         ('price_range', RangeFacet(field='sale_price', ranges=price_ranges)), #current_price
     )) 
 
-    def __init__(self, query=None, filters={}, sort=(), favs=[], card_count = False):
+    def __init__(self, query=None, filters={}, sort=(), favs=[]):
         """
         :arg query: the text to search for
         :arg filters: facet values to filter
@@ -99,7 +99,7 @@ class EProductSearch(FacetedSearch):
         self._favs = favs
         self._query = query
         self._filters = {}
-        self._card_count = card_count
+
         # TODO: remove in 6.0
         if isinstance(sort, string_types):
             self._sort = (sort,)
@@ -126,6 +126,26 @@ class EProductSearch(FacetedSearch):
         return search.filter(filters)
 
 
+    def aggregate(self, search):
+        """
+        Add aggregations representing the facets selected, including potential
+        filters.
+        """
+        for f, facet in iteritems(self.facets):
+            agg = facet.get_aggregation()
+            agg_filter = Q('match_all')
+            for field, filter in iteritems(self._filters):
+                if f == field:
+                    continue
+                agg_filter &= filter
+            search.aggs.bucket(
+                '_filter_' + f,
+                'filter',
+                filter=agg_filter
+            ).bucket(f, agg)
+
+        search.aggs.bucket("unique_product_name_count", {"cardinality" : {"field" : "product_name.keyword"}})
+
 
     def query(self, search, query):
         """Overriden to use bool AND by default"""
@@ -147,12 +167,8 @@ class EProductSearch(FacetedSearch):
 
 
         collapse_dict = {"field": "product_name.keyword","inner_hits": {"name": "collapsed_by_product_name","from": 1}}
-        cardinality_dict = {"unique_count" : {"cardinality" : {"field" : "product_name.keyword"}}}
 
-        if self._card_count:
-            return search.query(main_q).query(q_faves).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
-        else:
-            return search.query(main_q).query(q_faves).extra(collapse=collapse_dict)
+        return search.query(main_q).query(q_faves).extra(collapse=collapse_dict)
         #.sort('-p')
 
 """
