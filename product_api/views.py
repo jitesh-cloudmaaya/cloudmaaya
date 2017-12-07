@@ -53,9 +53,9 @@ def facets(self):
     
 
     start_record = (num_per_page * (page - 1))
-    print start_record
+    #print start_record
     end_record = (num_per_page * page) 
-    print end_record
+    #print end_record
 
     whitelisted_facet_args = {}
     for key, value in self.query_params.items():
@@ -64,13 +64,16 @@ def facets(self):
 
 
     es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs)
+    es_count = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, card_count=True)
     es = es[start_record:end_record]
-    es.collapse = {"field": "size"}
     results = es.execute().to_dict()
+    results_count = es_count.execute().to_dict()
+    #results = results_count
 
 
-    total_count = results['hits']['total']
+    total_count = results_count['aggregations']['unique_count']['value']
     context = format_results(results, total_count, page, num_per_page, self, 'products', text_query, results['aggregations'])
+    print es_count
 
     return Response(context) 
 

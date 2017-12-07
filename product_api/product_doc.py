@@ -90,7 +90,7 @@ class EProductSearch(FacetedSearch):
         ('price_range', RangeFacet(field='sale_price', ranges=price_ranges)), #current_price
     )) 
 
-    def __init__(self, query=None, filters={}, sort=(), favs=[]):
+    def __init__(self, query=None, filters={}, sort=(), favs=[], card_count = False):
         """
         :arg query: the text to search for
         :arg filters: facet values to filter
@@ -99,6 +99,7 @@ class EProductSearch(FacetedSearch):
         self._favs = favs
         self._query = query
         self._filters = {}
+        self._card_count = card_count
         # TODO: remove in 6.0
         if isinstance(sort, string_types):
             self._sort = (sort,)
@@ -117,7 +118,7 @@ class EProductSearch(FacetedSearch):
         to use filter instead.
         """
 
-        print self._filters
+        #print self._filters
         filters = Q('match_all')
         for f in itervalues(self._filters):
             filters &= f
@@ -145,7 +146,14 @@ class EProductSearch(FacetedSearch):
             q_faves = Q()
 
 
-        return search.query(main_q).query(q_faves)#.sort('-p')
+        collapse_dict = {"field": "product_name.keyword","inner_hits": {"name": "collapsed_by_product_name","from": 1}}
+        cardinality_dict = {"unique_count" : {"cardinality" : {"field" : "product_name.keyword"}}}
+
+        if self._card_count:
+            return search.query(main_q).query(q_faves).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
+        else:
+            return search.query(main_q).query(q_faves).extra(collapse=collapse_dict)
+        #.sort('-p')
 
 """
   "collapse": {
