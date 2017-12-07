@@ -45,7 +45,7 @@ var rack_builder = {
       }
     }
     if(add_to_list == true){
-      if(items == 0){rack.html('');}
+      if(items == 0){rack_list.html('<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>')}
       var obj = {
         product: parseInt(details.id),
         allume_styling_session: parseInt(rack_builder.session_id)
@@ -109,6 +109,9 @@ var rack_builder = {
       if(a.primary_category.toLowerCase() < b.primary_category.toLowerCase()){ return -1}
       return 0;
     });
+    if(initial_rack.length > 0){
+      rack_list.append('<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>')
+    }
     for(var i = 0, l = initial_rack.length; i<l; i++){
       var obj = initial_rack[i];
       var itm = rack_builder.itemTemplate(obj, 'rack', '', obj.rack_id);
@@ -158,7 +161,35 @@ var rack_builder = {
       }
       return false;
     });
-    rack_list.on('click','a.remove-from-rack',function(e){
+    rack_list.on('click','a.close-all-rack-sections', function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('open-all') == false){
+        link.addClass('open-all').html('<i class="fa fa-caret-square-o-down"></i>expand all sections');
+        $.each(rack_list.find('a.rack-section-toggle'),function(idx){
+          var link = $(this);
+          var i = link.find('i')
+          var div = link.next('div.block');
+          if(link.hasClass('closed') == false){
+            link.addClass('closed');
+            i.removeClass('fa-angle-down').addClass('fa-angle-right');
+            div.slideUp();
+          }
+        });        
+      }else{
+        link.removeClass('open-all').html('<i class="fa fa-caret-square-o-up"></i>collapse all sections');
+        $.each(rack_list.find('a.rack-section-toggle'),function(idx){
+          var link = $(this);
+          var i = link.find('i')
+          var div = link.next('div.block');
+          if(link.hasClass('closed') == true){
+            link.removeClass('closed');
+            i.removeClass('fa-angle-right').addClass('fa-angle-down');
+            div.slideDown();
+          }
+        });
+      }
+    }).on('click','a.remove-from-rack',function(e){
       e.preventDefault();
       var link = $(this);
       var sku = link.data('sku');

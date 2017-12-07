@@ -137,12 +137,12 @@ var explore_page = {
   looksDisplay: function(arr){
     var div = $('#all-looks-list');
     var looks = [];
-    var plural = arr.length == 1 ? '' : 's';
+    var plural = arr.looks.length == 1 ? '' : 's';
     $('#looks-header').html(
-      '<h2><em>' + arr.length + '</em> Look' + plural + '</h2>'
+      '<h2><em>' + arr.looks.length + '</em> Look' + plural + '</h2>'
     );
-    for(var i = 0, l = arr.length; i<l; i++){
-      var look = arr[i];
+    for(var i = 0, l = arr.looks.length; i<l; i++){
+      var look = arr.looks[i];
       var markup = [];
 
       markup.push(

@@ -1269,14 +1269,16 @@ div.layout-option span.columns {font-size:10px; display:block;}
   cursor: -webkit-grabbing;
 }
 
-#rack-list a.rack-section-toggle {
+#rack-list a.rack-section-toggle,
+#rack-list a.close-all-rack-sections {
   color:#474747;
   display:block;
   font-size:16px;
   padding:10px 7.5px;
   text-decoration:none;
 }
-#rack-draggable a.rack-section-toggle {
+#rack-draggable a.rack-section-toggle,
+#rack-draggable a.close-all-rack-sections {
   color:#474747;
   display:block;
   font-size:14px;
@@ -1285,7 +1287,11 @@ div.layout-option span.columns {font-size:10px; display:block;}
   text-shadow:0 1px #fff;
 }
 #rack-list a.rack-section-toggle i,
-#rack-draggable a.rack-section-toggle i {margin-right:5px;}
+#rack-draggable a.rack-section-toggle i,
+#rack-list a.close-all-rack-sections i,
+#rack-draggable a.close-all-rack-sections i {margin-right:5px;}
+#rack-list a.close-all-rack-sections:active,
+#rack-draggable a.close-all-rack-sections:active {color:#f2987e;}
 #rack-list div.block,
 #rack-draggable div.block {overflow:hidden;}
 #look-indepth,
@@ -1617,12 +1623,14 @@ div.layout-option span.columns {font-size:10px; display:block;}
   width:120px;
 }
 #all-looks-list div.look div.display div.item div.link-bar {
+  background:#fafafa;
   border-top:1px solid #ddd;
   height:29px;
 }
 #all-looks-list div.look div.display div.item img {display:block;margin:0 auto; height:120px; max-width:100%;}
 #all-looks-list div.look div.display div.item a.favorite,
 #all-looks-list div.look div.display div.item a.details {
+  background:#fff;
   border:1px solid #ccc;
   border-radius:3px;
   color:#EC407A;
@@ -1643,6 +1651,7 @@ div.layout-option span.columns {font-size:10px; display:block;}
 }
 #all-looks-list div.look div.display div.item a.favorite:active {color:#EC407A;}
 #all-looks-list div.look div.display div.item div.link-bar a.add-to-rack { 
+  background:#fff;
   border:1px solid #ccc;
   float:none; 
   display:inline-block; 
