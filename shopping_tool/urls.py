@@ -5,8 +5,8 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^explore_looks$', views.explore, name='explore'),
+    url(r'^(?P<styling_session_id>[0-9]+)/$', views.index, name='index'),
+    url(r'^explore_looks/(?P<styling_session_id>[0-9]+)/$', views.explore, name='explore'),
     url(r'^set_cookie/$', views.set_cookie, name='set_cookie'),
     url(r'^delete_cookie/$', views.delete_cookie, name='delete_cookie')
 ]

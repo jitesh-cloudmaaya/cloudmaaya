@@ -21,13 +21,17 @@ from product_api.models import Product
 # Create your views here. 
 
 @check_login
-def index(request):
+def index(request, styling_session_id=None):
 
     user = request.user
     layouts = LookLayout.objects.values()
-    #styling_session = AllumeStylingSessions.objects.get(id = 3)
-    styling_session = AllumeStylingSessions.objects.get(id = 4)
-    #styling_session = AllumeStylingSessions.objects.get(id = 6)    
+    
+    try:
+        styling_session = AllumeStylingSessions.objects.get(id = styling_session_id) 
+    except AllumeStylingSessions.DoesNotExist:
+        context = {}
+        return render(request, 'shopping_tool/no_session_error.html', context)
+
     rack_items = Rack.objects.filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
@@ -37,13 +41,17 @@ def index(request):
 
 
 @check_login
-def explore(request):
+def explore(request, styling_session_id=None):
 
     user = request.user
     layouts = LookLayout.objects.values()
-    #styling_session = AllumeStylingSessions.objects.get(id = 3)
-    styling_session = AllumeStylingSessions.objects.get(id = 4)
-    #styling_session = AllumeStylingSessions.objects.get(id = 6)
+
+    try:
+        styling_session = AllumeStylingSessions.objects.get(id = styling_session_id) 
+    except AllumeStylingSessions.DoesNotExist:
+        context = {}
+        return render(request, 'shopping_tool/no_session_error.html', context)
+
     rack_items = Rack.objects.filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
