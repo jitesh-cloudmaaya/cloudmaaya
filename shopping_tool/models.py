@@ -257,6 +257,19 @@ class AllumeStylistAssignments(models.Model):
         managed = False
         db_table = 'allume_stylist_assignments'
 
+
+class AllumeWpUserStylingRoles(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    wp_stylist_id =  models.ForeignKey(WpUsers, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField(unique=True)
+    styling_role = models.CharField(max_length=20)
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_wp_user_styling_roles'
+
+
 class Rack(models.Model):
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
