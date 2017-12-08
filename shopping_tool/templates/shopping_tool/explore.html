@@ -11,10 +11,7 @@
   <link href="{% static 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
 </head>
 <body class="explore-page" data-stylesession="{{ styling_session.id }}">
-<div id="header">
-  <a href="/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
-  <span id="stylist" data-stylistid="{{ user.id }}"></span>
-</div>
+{% include "shopping_tool/header_partial.html" %}
 <div id="explore-form">
   <span class="label">Show me looks by: </span>
   <select id="stylist-select" placeholder="Please select a stylist...">
@@ -28,7 +25,10 @@
   <a href="#" id="looks-filter">show me</a>
 </div>
 <div id="looks-header"></div>
-<div id="all-looks-list"></div>
+<div id="explore-wrapper">
+  <div id="all-looks-list"></div>
+  <div id="loader" class="active" data-page="1">loading...</div>
+</div>
 <div id="inspect-item"></div>
 {% include "shopping_tool/rack_partial.html" %}
 {% include "shopping_tool/looks_partial.html" %}

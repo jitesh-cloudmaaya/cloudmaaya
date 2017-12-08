@@ -7,7 +7,7 @@ var look_builder = {
   */
   session_id: '',  
   /**
-  * @description gather the compar elooks objects and create markup for display
+  * @description gather the compare looks objects and create markup for display
   * @param {object} lookup - json data for API call
   * @param {integer} loopk_id - id of currently being edited look
   */  

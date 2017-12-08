@@ -10,6 +10,7 @@ var search_page = {
   * @description init function applying the functionality to the page elements
   */
   init: function(){
+    utils.menu();
     rack_builder.init();
     look_builder.functionality();
     /* cache the session id */

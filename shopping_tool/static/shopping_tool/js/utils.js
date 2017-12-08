@@ -35,6 +35,21 @@ var utils = {
     group.height(tallest);
   },
   /**
+  * @description menu button functionality
+  */
+  menu: function(){
+    $('#menu-toggle').click(function(e){
+      e.preventDefault();
+      $('#nav-menu').fadeIn();
+      $('#nav-menu div.menu').addClass('show');
+    });
+    $('#close-nav-menu').click(function(e){
+      e.preventDefault();
+      $('#nav-menu div.menu').removeClass('show');
+      $('#nav-menu').fadeOut();
+    });
+  },
+  /**
   * @description processing and template for pagination of results
   * @param {integer} page - page currently displayed
   * @param {integer} total - total number of items in result set

@@ -11,10 +11,7 @@
   <link href="{% static 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
 </head>
 <body class="search-page" data-stylesession="{{ styling_session.id }}">
-<div id="header">
-  <a href="/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
-  <span id="stylist" data-stylistid="{{ user.id }}"></span>
-</div>
+{% include "shopping_tool/header_partial.html" %}
 <div id="user-card">
   <a id="user-clip" href="#" data-userid="{{ client.id }}">
   <span class="name"><em>now styling:</em>{{ client.first_name }} {{ client.last_name }}</span>
