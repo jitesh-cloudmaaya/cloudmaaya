@@ -144,9 +144,6 @@ class EProductSearch(FacetedSearch):
                 filter=agg_filter
             ).bucket(f, agg)
 
-        #search.aggs.bucket("unique_product_name_count", {"cardinality" : {"field" : "product_name.keyword"}})
-
-
     def query(self, search, query):
         """Overriden to use bool AND by default"""
 
@@ -172,6 +169,7 @@ class EProductSearch(FacetedSearch):
         if self._card_count:
             return search.query(main_q).query(q_faves).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
         else:
+            #search.aggs.bucket("unique_product_name_count", {"cardinality" : {"field" : "product_name.keyword"}})
             return search.query(main_q).query(q_faves).extra(collapse=collapse_dict)
         #.sort('-p')
 

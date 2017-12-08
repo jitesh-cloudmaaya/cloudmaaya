@@ -230,7 +230,7 @@ def look_list(request):
 
     if 'name' in request.data:
         name = request.data['name']
-        looks = looks.filter(name__contains = name)
+        looks = looks.filter(name__icontains = name)
 
     paginator = Paginator(looks, per_page)
 
