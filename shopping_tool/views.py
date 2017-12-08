@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from decorators import check_login
 from django.core.exceptions import PermissionDenied
-from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUsers
+from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUsers, UserProductFavorite
 from product_api.models import Product, MerchantCategory
 
 # Create your views here. 
@@ -36,8 +36,9 @@ def index(request, styling_session_id=None):
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     categories = MerchantCategory.objects.filter(active = True)
+    favorites = UserProductFavorite.objects.filter(stylist = user.id)
 
-    context = {'categories': categories, 'user': user, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
+    context = {'favorites': favorites, 'categories': categories, 'user': user, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
     return render(request, 'shopping_tool/index.html', context)
 
 
@@ -57,8 +58,9 @@ def explore(request, styling_session_id=None):
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     stylists = WpUsers.objects.all()
+    favorites = UserProductFavorite.objects.filter(stylist = user.id)
 
-    context = {'user': user, 'stylists': stylists, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
+    context = {'favorites': favorites, 'user': user, 'stylists': stylists, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
     return render(request, 'shopping_tool/explore.html', context)
 
 

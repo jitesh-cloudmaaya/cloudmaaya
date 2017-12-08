@@ -32,3 +32,22 @@ var initial_rack = [
   },
 {% endfor %} 
 ];
+/**
+* @description favorites
+*/ 
+var stylist_favorites = [
+{% for item in favorites %}
+  { 
+    "id": {{item.product.id}},
+    "product_id": {{ item.product.product_id }},
+    "sku": "{{ item.product.sku}}",
+    "merchant_id": {{ item.product.merchant_id }},
+    "merchant_name": "{{ item.product.merchant_name }}",
+    "manufacturer_name": "{{ item.product.manufacturer_name }}",
+    "product_image_url": "{{item.product.product_image_url}}",
+    "primary_category": "{{item.product.primary_category}}",
+    "retail_price": {{item.product.retail_price}},
+    "sale_price" : {{item.product.sale_price}}
+  },
+{% endfor %} 
+];
