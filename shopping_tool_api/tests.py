@@ -14,7 +14,7 @@ from django.http.cookie import SimpleCookie
 
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite']
+    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'user_look_favorite']
     shopper = ''
     client = ''
 
@@ -301,5 +301,49 @@ class ShoppingToolAPITestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
 
+
+### Look Favs
+
+    def test_get_user_look_favorite(self):
+        """
+        Test to verify getting a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:user_look_favorite", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+
+
+    def test_add_user_look_favorite(self):
+        """
+        Test to verify getting a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:user_look_favorite", kwargs={'pk':1})
+        data = {"look": 1,"stylist": 1}
+
+        response = self.client.get(url, data)
+        self.assertEqual(200, response.status_code)
+
+    def test_delete_user_look_favorite(self):
+        """
+        Test to verify getting a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:user_look_favorite", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+
+    def test_user_look_favorites(self):
+        """
+        Test to verify getting a list of user favorite looks
+        """
+
+        url = reverse("shopping_tool_api:user_look_favorites", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
 
         

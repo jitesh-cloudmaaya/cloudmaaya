@@ -18,11 +18,80 @@ from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
 from product_api.models import Product
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments
-from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite
-from serializers import RackSerializer, RackCreateSerializer, LookCreateSerializer, LookProductSerializer
-from serializers import UserProductFavoriteSerializer, LookProductCreateSerializer, LookSerializer, UserProductFavoriteDetailSerializer
+from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite
+from serializers import *
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@check_login
+@permission_classes((AllowAny, ))
+def user_look_favorite(request, pk=None):
+    """
+    get:
+        View user favorite look ID
+
+        /shopping_tool_api/user_look_favorites/{favorite_id}/
+    put:
+        Add look to the user favorites
+
+        /shopping_tool_api/user_look_favorites/0/
+
+        Sample JSON Object
+
+        {
+          "stylist": 1,
+          "look": 393223
+        }
+
+    delete:
+        Remove a product from the rack for a styling session        
+    """
+    if request.method == 'GET':
+        try:
+            fav = UserLookFavorite.objects.get(id=pk)
+        except UserLookFavorite.DoesNotExist:
+            return HttpResponse(status=404)
+
+        serializer = UserLookFavoriteDetailSerializer(fav)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+        serializer = UserLookFavoriteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        try:
+            fav = UserLookFavorite.objects.get(id = pk)
+            fav.delete()
+            context = {'Success': True}
+            return JsonResponse(context, status=status.HTTP_201_CREATED)
+        except ObjectDoesNotExist as er:
+            context = {'Success': False, 'Info': str(er)}
+            return JsonResponse(context, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(context) 
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def user_look_favorites(request, pk=None):
+    """
+    get:
+        View list of user favorite looks
+
+        /shopping_tool_api/user_favorites/{userid}/
+    """
+    try:
+        favs = UserLookFavorite.objects.filter(stylist=pk).all()
+    except UserLookFavorite.DoesNotExist:
+        return HttpResponse(status=404)
+
+    serializer = UserLookFavoriteSerializer(favs, many=True)
+    return JsonResponse(serializer.data, safe=False)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -32,11 +101,11 @@ def user_product_favorite(request, pk=None):
     get:
         View user favorite product ID
 
-        /shopping_tool_api/user_favorites/{favorite_id}/
+        /shopping_tool_api/user_product_favorite/{favorite_id}/
     put:
-        Add product to the user favorites
+        Add product to the user user_product_favorite
 
-        /shopping_tool_api/user_favorites/0/
+        /shopping_tool_api/user_product_favorite/0/
 
         Sample JSON Object
 
@@ -84,7 +153,7 @@ def user_product_favorites(request, pk=None):
     get:
         View list of user favorite product IDs
 
-        /shopping_tool_api/user_favorites/{userid}/
+        /shopping_tool_api/user_product_favorites/{userid}/
     """
     try:
         favs = UserProductFavorite.objects.filter(stylist=pk).all()
@@ -262,7 +331,8 @@ def look_item(request, pk=None):
         {
           "layout_position": 4,
           "look": 5,
-          "product": 393223
+          "product": 393223,
+          "layout_position": "xx,yy,zz"
         }
 
         Sample JSON Update Object
@@ -272,7 +342,8 @@ def look_item(request, pk=None):
           "id": 2,
           "layout_position": 4,
           "look": 5,
-          "product": 393223
+          "product": 393223,
+          "layout_position": "xx,yy,zz"
         }
     delete:
         Remove a product from a look for a styling session
