@@ -16,7 +16,7 @@ from rest_framework import serializers
 from decorators import check_login
 from django.core.exceptions import PermissionDenied
 from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUsers
-from product_api.models import Product
+from product_api.models import Product, MerchantCategory
 
 # Create your views here. 
 
@@ -35,8 +35,9 @@ def index(request, styling_session_id=None):
     rack_items = Rack.objects.filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
+    categories = MerchantCategory.objects.filter(active = True)
 
-    context = {'user': user, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
+    context = {'categories': categories, 'user': user, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
     return render(request, 'shopping_tool/index.html', context)
 
 

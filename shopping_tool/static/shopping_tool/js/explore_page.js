@@ -15,6 +15,7 @@ var explore_page = {
   */
   init: function(){
     utils.menu();
+    utils.client();
     rack_builder.init();
     look_builder.functionality();
     /* cache the session id */

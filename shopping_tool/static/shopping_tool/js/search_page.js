@@ -11,6 +11,7 @@ var search_page = {
   */
   init: function(){
     utils.menu();
+    utils.client();
     rack_builder.init();
     look_builder.functionality();
     /* cache the session id */
@@ -52,6 +53,9 @@ var search_page = {
       if(link.hasClass('remove-search')){
         $('#search-field').val('');
         search_page.performSearch(1);
+      }else if(link.hasClass('remove-category')){
+        $('#search-categories')[0].selectize.setValue('',true);
+        search_page.performSearch(1);
       }else{
         var facets = $('#facets');
         var facet = link.data('facet');
@@ -62,6 +66,7 @@ var search_page = {
         search_page.performSearch(1);
       }
     });
+    $('#search-categories').val('').selectize({ create: false, sortField: 'text'});
     /* results functionality */
     $('#results').on('click','a.favorite',function(e){
       e.preventDefault();
@@ -129,16 +134,6 @@ var search_page = {
       search_page.performSearch(parseInt(link.data('page')));
       $('html,body').animate({ scrollTop: 0 }, 300);
     });
-    /* client details functionality */
-    $('#user-clip').delay(750)
-      .queue(function (next) { 
-        $(this).addClass('ready').width($('#user-clip span.name').width()); 
-        next(); 
-      });
-    $('#user-clip').click(function(e){
-      e.preventDefault();
-      $('#user-card').toggleClass('show')
-    });
   },
   /**
   * @description processing and template for facets
@@ -150,42 +145,60 @@ var search_page = {
       var social_facets = [];
       var group_markup = {names: [], markup: {}}
       /* build initial list of facet buckets */
-      var buckets = Object.keys(facets);
-      for(var i = 0, l = buckets.length; i<l; i++){
-        var bucket = buckets[i];
+      //var buckets = Object.keys(facets);
+      var display_order = ['_filter_size','_filter_price_range','_filter_brand',
+                           '_filter_merchant_name','_filter_color','_filter_material'];
+      for(var i = 0, l = display_order.length; i<l; i++){
+        var bucket = display_order[i];
+        console.log(bucket)
         var facet_list = facets[bucket];
-        if(['_filter_is_best_seller', '_filter_is_trending'].indexOf(bucket) == -1){
-          var display_name = bucket.replace('_filter_', '');
-          group_markup.names.push(display_name);
-          group_markup.markup[display_name] = [];
-          group_markup.markup[display_name].push(
-            '<a href="#" class="facet-group"><span>+</span>' + 
-            utils.capitalizeEveryWord(display_name.replace(/_/g, ' ')) + 
-            '</a><div class="facet-list" data-qparam="' + display_name + '">'
-          );
-          facet_list[display_name].buckets.sort(function(a,b){
-            if(a.key.toLowerCase() > b.key.toLowerCase()){ return 1}
-            if(a.key.toLowerCase() < b.key.toLowerCase()){ return -1}
-            return 0;
-          })
-          for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
-            var facet = facet_list[display_name].buckets[j];
-            if(facet.key != ''){
-              group_markup.markup[display_name].push(
-                '<label class="facet">' +
-                '<input class="facet-box" type="checkbox" value="' + 
-                facet.key + '" data-facetgroup="' + display_name + '"/><span>' +
-                '<i class="fa fa-circle-thin"></i>' +
-                '<i class="fa fa-check-circle"></i>' +
-                '</span><em class="number">' + 
-                numeral(facet.doc_count).format('0,0') +
-                '</em><em class="key">' + facet.key + '</em></label>'
-              );
+        console.log(facet_list)
+        if(facet_list){
+          if(['_filter_is_best_seller', '_filter_is_trending'].indexOf(bucket) == -1){
+            var display_name = bucket.replace('_filter_', '');
+            var pretty_name = display_name;
+            if(display_name == 'merchant_name'){pretty_name = 'store'}
+            group_markup.names.push(display_name);
+            group_markup.markup[display_name] = [];
+            group_markup.markup[display_name].push(
+              '<a href="#" class="facet-group"><span>+</span>' + 
+              utils.capitalizeEveryWord(pretty_name.replace(/_/g, ' ')) + 
+              '</a><div class="facet-list" data-qparam="' + display_name + '">'
+            );
+            if(display_name == 'price_range'){
+              facet_list[display_name].buckets.sort(function(a,b){
+                if(a.from == undefined){a.from == 0}
+                if(b.from == undefined){b.from == 0}
+                if(a.from > b.from){ return 1}
+                if(a.from < b.from){ return -1}
+                return 0;
+              })
+            }else{
+              facet_list[display_name].buckets.sort(function(a,b){
+                if(a.key.toLowerCase() > b.key.toLowerCase()){ return 1}
+                if(a.key.toLowerCase() < b.key.toLowerCase()){ return -1}
+                return 0;
+              })
             }
+            for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
+              var facet = facet_list[display_name].buckets[j];
+              if(facet.key != ''){
+                group_markup.markup[display_name].push(
+                  '<label class="facet">' +
+                  '<input class="facet-box" type="checkbox" value="' + 
+                  facet.key + '" data-facetgroup="' + display_name + '"/><span>' +
+                  '<i class="fa fa-circle-thin"></i>' +
+                  '<i class="fa fa-check-circle"></i>' +
+                  '</span><em class="number">' + 
+                  numeral(facet.doc_count).format('0,0') +
+                  '</em><em class="key">' + facet.key + '</em></label>'
+                );
+              }
+            }
+            group_markup.markup[display_name].push('</div>');
+          }else{
+            social_facets.push(facet_list);
           }
-          group_markup.markup[display_name].push('</div>');
-        }else{
-          social_facets.push(facet_list);
         }
       }
       if(social_facets.length > 0){
@@ -216,7 +229,7 @@ var search_page = {
         }
         group_markup.markup['social'].push('</div>');
       }
-      group_markup.names.sort();
+      //group_markup.names.sort();
       for(var i = 0, l = group_markup.names.length; i<l; i++){
         var group_name = group_markup.names[i];
         markup.push(group_markup.markup[group_name].join(''));
@@ -287,6 +300,15 @@ var search_page = {
       new_search = true;
     }
     var facets = [];
+    var category = $('#search-categories').val();
+    if(category != ''){
+      facets.push('&primary_category=' + category);
+      selection_markup.push(
+        '<a href="#" class="remove-category" data-qparam="primary_category" ' +
+        'data-facet="' + category + '">' + category + 
+        '<i class="fa fa-times-circle"></i></a>'
+      );      
+    }
     if(new_search == false){
       $.each($('#facets div.facet-list'), function(idx){
         var list = $(this);
@@ -331,7 +353,7 @@ var search_page = {
       url: '/product_api/facets?',
       data: q,
       success: function(results){
-        //console.log(results)
+        console.log(results)
         if(results.data != undefined && results.data.length > 0){
           utils.pagerTemplate(results.page, results.total_items, results.num_per_page);
         }

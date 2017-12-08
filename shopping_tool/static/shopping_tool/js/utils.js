@@ -21,6 +21,20 @@ var utils = {
     });
   },
   /**
+  * @descriptionclient details functionality
+  */  
+  client: function(){
+    $('#user-clip').delay(750)
+      .queue(function (next) { 
+        $(this).addClass('ready').width($('#user-clip span.name').width()); 
+        next(); 
+      });
+    $('#user-clip').click(function(e){
+      e.preventDefault();
+      $('#user-card').toggleClass('show')
+    });
+  },
+  /**
   * @description make a groups of DOM objects all the same height
   * @params {DOM Array} - array of DOM objects
   */
