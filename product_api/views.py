@@ -47,7 +47,7 @@ def facets(self):
 
     filter_favs = self.query_params.get('favs')
     if filter_favs:
-        user_favs = list(UserProductFavorite.objects.filter(stylist=997).values_list('product_id', flat=True))
+        user_favs = list(UserProductFavorite.objects.filter(stylist=filter_favs).values_list('product_id', flat=True))
     else:
         user_favs = []
     
