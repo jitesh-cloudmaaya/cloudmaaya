@@ -197,6 +197,14 @@ var look_builder = {
         i.removeClass('fa-angle-down').addClass('fa-angle-right');
         div.slideUp();       
       }
+    }).on('click','a.sort-link', function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('unsort-items')){
+        look_builder.unorderedRack();
+      }else{
+        look_builder.orderedRack();
+      }
     });
     $('#look-drop').on('click','a.look-more-details', function(e){
       e.preventDefault();
@@ -300,6 +308,54 @@ var look_builder = {
     var look_count = links.find('a.look-link').length;
     var plural = look_count == 1 ? '' : 's';
     $('#look-list h2').html(look_count + ' Look' + plural);
+  },
+  /**
+  * @description the ordered look and feel for look builder rack
+  */  
+  orderedRack: function(){
+    var rack_items = [];
+    var rack_cats = $('#rack-list div.block');
+    if(rack_cats.length > 0){
+      rack_items.push(
+        '<a class="close-all-rack-sections" href="#">' +
+        '<i class="fa fa-caret-square-o-up"></i>collapse all sections</a>' +
+        '<a class="sort-link unsort-items" href="#">' +
+        '<i class="fa fa-th"></i>unsort items</a>'
+      );
+    }  
+    $.each(rack_cats, function(idx){
+      var block = $(this);
+      var category = block.data('category');
+      rack_items.push(
+        '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
+        category + '</a><div class="block" data-category="' + category + 
+        '">'
+      );
+      $.each(block.find('div.item'), function(index){
+        var item = $(this);
+        rack_items.push(
+          '<div class="item" data-productid="' + item.data('productid') + '">' +
+          '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
+        );
+      })
+      rack_items.push('</div>');
+    });
+    /* add the clones and assign drag/drop functionality */
+    var drag_rack = $('#rack-draggable');
+    drag_rack.html(
+      '<h2>' + $('#rack').find('h2').html() + 
+      '</h2><div class="look-builder-rack">' + 
+      rack_items.join('') + '</div>'
+    );
+    $.each(drag_rack.find('div.block'), function(idx){
+      var box = $(this)[0];
+      new Sortable(box, {
+        handle: ".handle",
+        group: { name: "look", pull: 'clone', put: false },
+        sort: false,
+        draggable: ".item"
+      });
+    });
   },
   /**
   * @description set up the builder ui/ux from clicked look link
@@ -440,47 +496,7 @@ var look_builder = {
       });
     });
     /* clone the contents of the rack for drag/drop */
-    var rack_items = [];
-    var rack_cats = $('#rack-list div.block');
-    if(rack_cats.length > 0){
-      rack_items.push(
-        '<a class="close-all-rack-sections" href="#">' +
-        '<i class="fa fa-caret-square-o-up"></i>collapse all sections</a>'
-      );
-    }  
-    $.each(rack_cats, function(idx){
-      var block = $(this);
-      var category = block.data('category');
-      rack_items.push(
-        '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
-        category + '</a><div class="block" data-category="' + category + 
-        '">'
-      );
-      $.each(block.find('div.item'), function(index){
-        var item = $(this);
-        rack_items.push(
-          '<div class="item" data-productid="' + item.data('productid') + '">' +
-          '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
-        );
-      })
-      rack_items.push('</div>');
-    });
-    /* add the clones and assign drag/drop functionality */
-    var drag_rack = $('#rack-draggable');
-    drag_rack.html(
-      '<h2>' + $('#rack').find('h2').html() + 
-      '</h2><div class="look-builder-rack">' + 
-      rack_items.join('') + '</div>'
-    );
-    $.each(drag_rack.find('div.block'), function(idx){
-      var box = $(this)[0];
-      new Sortable(box, {
-        handle: ".handle",
-        group: { name: "look", pull: 'clone', put: false },
-        sort: false,
-        draggable: ".item"
-      });
-    });
+    look_builder.orderedRack();
     /* create compare looks scaffolding and get looks */
     $('#compare-looks').html(
       '<h2>Compare <a href="#" class="look-filter">session looks <i class="fa fa-caret-down"></i></a></h2>' +
@@ -501,5 +517,35 @@ var look_builder = {
       "stylist": parseInt($('#stylist').data('stylistid'))
     }
     look_builder.compareLooksMarkup(lookup, id);
+  },
+  /**
+  * @description the unordered look and feel for look builder rack
+  */
+  unorderedRack: function(){
+    var rack_items = [];
+    rack_items.push(
+      '<a class="sort-link sort-items" href="#">' +
+      '<i class="fa fa-th-list"></i>sort items</a>'
+    );
+    $.each($('#rack-list').find('div.item'), function(index){
+      var item = $(this);
+      rack_items.push(
+        '<div class="item" data-productid="' + item.data('productid') + '">' +
+        '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
+      );
+    });
+    /* add the clones and assign drag/drop functionality */
+    var drag_rack = $('#rack-draggable');
+    drag_rack.html(
+      '<h2>' + $('#rack').find('h2').html() + 
+      '</h2><div class="look-builder-rack">' + 
+      rack_items.join('') + '</div>'
+    );
+    new Sortable($('#rack-draggable div.look-builder-rack')[0], {
+      handle: ".handle",
+      group: { name: "look", pull: 'clone', put: false },
+      sort: true,
+      draggable: ".item"
+    });  
   }
 }

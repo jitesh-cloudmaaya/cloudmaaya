@@ -1355,7 +1355,8 @@ div.layout-option span.columns {font-size:10px; display:block;}
   text-decoration:none;
 }
 #rack-draggable a.rack-section-toggle,
-#rack-draggable a.close-all-rack-sections {
+#rack-draggable a.close-all-rack-sections,
+#rack-draggable a.sort-link {
   color:#474747;
   display:block;
   font-size:14px;
@@ -1366,9 +1367,11 @@ div.layout-option span.columns {font-size:10px; display:block;}
 #rack-list a.rack-section-toggle i,
 #rack-draggable a.rack-section-toggle i,
 #rack-list a.close-all-rack-sections i,
-#rack-draggable a.close-all-rack-sections i {margin-right:5px;}
+#rack-draggable a.close-all-rack-sections i,
+#rack-draggable a.sort-link i {margin-right:5px;}
 #rack-list a.close-all-rack-sections:active,
-#rack-draggable a.close-all-rack-sections:active {color:#f2987e;}
+#rack-draggable a.close-all-rack-sections:active,
+#rack-draggable a.sort-link:active {color:#f2987e;}
 #rack-list div.block,
 #rack-draggable div.block {overflow:hidden;}
 #look-indepth,
