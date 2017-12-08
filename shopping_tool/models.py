@@ -298,6 +298,7 @@ class LookProduct(models.Model):
     look = models.ForeignKey(Look, related_name='product_set')
     product = models.ForeignKey(Product)
     layout_position = models.IntegerField()
+    cropped_dimensions = models.CharField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
