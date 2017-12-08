@@ -1,0 +1,8 @@
+-   model: shopping_tool.userlookfavorite
+    pk: 1
+    fields: {stylist: 1, look: 1, created_at: !!timestamp '2017-12-01 20:56:06.621905+00:00',
+        updated_at: !!timestamp '2017-12-01 20:56:06.622117+00:00'}
+-   model: shopping_tool.userlookfavorite
+    pk: 3
+    fields: {stylist: 1, look: 2, created_at: !!timestamp '2017-12-01 21:55:30.045320+00:00',
+        updated_at: !!timestamp '2017-12-01 21:55:30.045381+00:00'}
