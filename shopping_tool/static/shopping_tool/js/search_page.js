@@ -84,6 +84,7 @@ var search_page = {
           },
           success:function(response){
             console.log(response);
+            $('#favorites-list').find('div.item[data-fave="' + fave + '"]').remove();
             link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
           },
           type: 'DELETE',
@@ -105,6 +106,7 @@ var search_page = {
             rack_builder.favorites.push(response);
             rack_builder.favorites_product_ids.push(response.product);
             link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+            $('#favorites-list').append(rack_builder.favoriteTemplate(link.data('details')))
           },
           type: 'PUT',
           url: '/shopping_tool_api/user_product_favorite/0/'
@@ -380,7 +382,9 @@ var search_page = {
         for(var i = 0, l = results.length; i<l; i++){
           var item = results[i];
           var details = item._source;   
-          items.eq(i).find('a.add-to-rack').data('details',details);       
+          var dom = items.eq(i)
+          dom.find('a.add-to-rack').data('details',details);
+          dom.find('a.favorite').data('details',details);     
         }
       }
       utils.equalHeight($('#results div.item'));

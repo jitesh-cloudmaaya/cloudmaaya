@@ -48,7 +48,6 @@
 {% include "shopping_tool/js_arrays.html" %}
 /* before initializing page get stylists favories */
 $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
-  console.log(result)
   for(var i = 0, l = result.length;i<l;i++){
     var fave = result[i];
     rack_builder.favorites_product_ids.push(fave.product);

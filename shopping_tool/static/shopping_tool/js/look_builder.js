@@ -310,22 +310,55 @@ var look_builder = {
     $('#look-list h2').html(look_count + ' Look' + plural);
   },
   /**
+  * @description generate rack itmes for favorits
+  * @param {array} faves - array of jquery items
+  * @returns {string} - HTML
+  */
+  rackFavorites: function(faves){
+    var markup = [];
+    $.each(faves, function(index){
+      var item = $(this);
+      markup.push(
+        '<div class="item" data-productid="' + item.data('productid') + '">' +
+        '<span class="fave"><i class="fa fa-heart"></i></span>' +
+        '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
+      );
+    });
+    return markup.join('');
+  },
+  /**
   * @description the ordered look and feel for look builder rack
   */  
   orderedRack: function(){
     var rack_items = [];
     var rack_cats = $('#rack-list div.block');
-    if(rack_cats.length > 0){
+    var cat_list = $.map(rack_cats, function(c){ return $(c).data('category')})
+    var faves = $('#favorites-list div.item');
+    if(faves.length > 0){
+      cat_list.push('Favorites');
+      cat_list.sort();
+    }
+    if((rack_cats.length > 0)||(faves.length > 0)){
       rack_items.push(
         '<a class="close-all-rack-sections" href="#">' +
         '<i class="fa fa-caret-square-o-up"></i>collapse all sections</a>' +
         '<a class="sort-link unsort-items" href="#">' +
         '<i class="fa fa-th"></i>unsort items</a>'
       );
-    }  
+    }
+    var added_favorites = 0;
     $.each(rack_cats, function(idx){
       var block = $(this);
       var category = block.data('category');
+      var list_idx = cat_list.indexOf(category);
+      if((list_idx != idx)&&(added_favorites == 0)){
+        added_favorites++;
+        rack_items.push(
+          '<a href="#" class="rack-section-toggle closed"><i class="fa fa-angle-right"></i>' + 
+          'Favorites</a><div class="block" style="display:none" data-category="favorites">' +
+          look_builder.rackFavorites(faves) + '</div>'
+        );
+      }
       rack_items.push(
         '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
         category + '</a><div class="block" data-category="' + category + 
@@ -534,6 +567,10 @@ var look_builder = {
         '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
       );
     });
+    var faves = $('#favorites-list div.item');
+    if(faves.length > 0){
+      rack_items.push(look_builder.rackFavorites(faves));
+    }
     /* add the clones and assign drag/drop functionality */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(

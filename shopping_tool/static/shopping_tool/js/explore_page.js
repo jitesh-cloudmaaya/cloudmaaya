@@ -36,9 +36,9 @@ var explore_page = {
     }).on('click','a.favorite',function(e){
       e.preventDefault();
       var link = $(this);
+      var product_id = link.data('productid');     
       if(link.hasClass('favorited')){
         var fave = link.data('faveid');
-        var product_id = link.data('productid');
         var index = rack_builder.favorites_product_ids.indexOf(product_id);
         rack_builder.favorites_product_ids.splice(index, 1);
         rack_builder.favorites.splice(index, 1);
@@ -49,7 +49,16 @@ var explore_page = {
           },
           success:function(response){
             console.log(response);
-            link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+            var look_links = $('#all-looks-list a.favorited');
+            $.each(look_links, function(idx){
+              var fav = $(this);
+              var fav_id = fav.data('faveid');
+              if(fav_id == fave){
+                fav.data('faveid','').removeClass('favorited').find('i')
+                .removeClass('fa-heart').addClass('fa-heart-o');
+              }
+            });         
+            $('#favorites-list').find('div.item[data-fave="' + fave + '"]').remove();
           },
           type: 'DELETE',
           url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
@@ -69,7 +78,12 @@ var explore_page = {
             console.log(response);
             rack_builder.favorites.push(response);
             rack_builder.favorites_product_ids.push(response.product);
-            link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+            //link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+            var look_links = $('#all-looks-list a.favorite[data-productid="' + product_id + '"]');
+            $.each(look_links, function(idx){
+              $(this).data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+            });
+            $('#favorites-list').append(rack_builder.favoriteTemplate(link.data('details')))        
           },
           type: 'PUT',
           url: '/shopping_tool_api/user_product_favorite/0/'
@@ -204,6 +218,7 @@ var explore_page = {
         var itm = $(this);
         itm.find('a.details').data('details', look.look_products[idx].product);
         itm.find('a.add-to-rack').data('details', look.look_products[idx].product);
+        itm.find('a.favorite').data('details', look.look_products[idx].product);
       });
     }
     var num = div.find('div.look').length
