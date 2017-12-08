@@ -5,6 +5,11 @@ from django.db import models
 from product_api.models import Product
 
 # Create your models here.
+class StylistManager(models.Manager):
+    def stylists(self):
+        return self.filter(allumewpuserstylingroles__styling_role__in = ['stylist', 'coordinator']).filter(is_active = 1)
+
+
 class WpUsers(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     user_login = models.CharField(unique=True, max_length=60)
@@ -32,6 +37,7 @@ class WpUsers(models.Model):
         managed = False
         db_table = 'wp_users'
 
+    objects = StylistManager()
 
 class AllumeClients(models.Model):
     id = models.BigAutoField(primary_key=True)

@@ -57,7 +57,7 @@ def explore(request, styling_session_id=None):
     rack_items = Rack.objects.filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
-    stylists = WpUsers.objects.filter(allumewpuserstylingroles__styling_role__in = ['stylist', 'coordinator'])
+    stylists = WpUsers.objects.stylists()
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
 
     context = {'favorites': favorites, 'user': user, 'stylists': stylists, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
