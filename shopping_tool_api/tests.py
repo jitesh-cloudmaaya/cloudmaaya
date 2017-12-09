@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from shopping_tool.models import Look, AllumeStylingSessions, WpUsers, Rack, LookLayout, LookProduct, UserProductFavorite
+from shopping_tool.models import Look, AllumeStylingSessions, WpUsers, Rack, LookLayout, LookProduct, UserProductFavorite, AllumeClient360
 from product_api.models import Product
 from django.http.cookie import SimpleCookie
 
@@ -14,7 +14,7 @@ from django.http.cookie import SimpleCookie
 
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'user_look_favorite']
+    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'user_look_favorite', 'allume_client_360_test']
     shopper = ''
     client = ''
 
@@ -346,4 +346,15 @@ class ShoppingToolAPITestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
 
+### Client 360
+
+    def test_get_client_360(self):
+        """
+        Test to verify getting a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:client_360", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
         

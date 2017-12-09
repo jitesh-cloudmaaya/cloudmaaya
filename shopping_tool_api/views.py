@@ -18,10 +18,28 @@ from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
 from product_api.models import Product
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments
-from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite
+from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360
 from serializers import *
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@check_login
+@permission_classes((AllowAny, ))
+def client_360(request, pk=None):
+    """
+    get:
+        View client 360
+
+        /shopping_tool_api/client_360/{client_id}/      
+    """
+    try:
+        client = AllumeClient360.objects.get(id=pk)
+    except AllumeClient360.DoesNotExist:
+        return HttpResponse(status=404)
+
+    serializer = AllumeClient360Serializer(client)
+    return JsonResponse(serializer.data, safe=client)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login

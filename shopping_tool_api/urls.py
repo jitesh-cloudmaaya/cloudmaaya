@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^user_product_favorite/(?P<pk>[0-9]+)/$', views.user_product_favorite, name='user_product_favorite'),
     url(r'^user_look_favorites/(?P<pk>[0-9]+)/$', views.user_look_favorites, name='user_look_favorites'),  
     url(r'^user_look_favorite/(?P<pk>[0-9]+)/$', views.user_look_favorite, name='user_look_favorite'),
+    url(r'^client_360/(?P<pk>[0-9]+)/$', views.client_360, name='client_360'),
 ]
 

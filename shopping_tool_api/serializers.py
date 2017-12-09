@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from product_api.models import Product, ProductSerializer
-from shopping_tool.models import LookLayout, AllumeStylingSessions, Rack, LookProduct, Look, UserProductFavorite, UserLookFavorite
+from shopping_tool.models import LookLayout, AllumeStylingSessions, Rack, LookProduct, Look, UserProductFavorite, UserLookFavorite, AllumeClient360
 
 ####################################################################################
 ##  REST SERIALIZERS
@@ -80,4 +80,10 @@ class UserLookFavoriteDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserLookFavorite
+        fields = '__all__'#
+
+class AllumeClient360Serializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AllumeClient360
         fields = '__all__'#
