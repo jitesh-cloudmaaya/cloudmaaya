@@ -38,7 +38,6 @@ class Weather(models.Model):
     winter_sun = models.CharField(max_length=15, blank=True)
 
     class Meta:
-        db_table = 'weather_service' # should I add/specify a table?
         unique_together = (('city', 'state'),)
 
     # update create method with arguments to use in weather initialization
