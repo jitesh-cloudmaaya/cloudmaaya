@@ -21,6 +21,7 @@ import urllib
 import datetime
 import urllib
 from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite
+from models import Product
 
 
 from elasticsearch_dsl.connections import connections
@@ -110,11 +111,37 @@ def basic_search(self):
     page = 1
     total_count = s.count()
 
-    context = format_results(results, total_count, page, self, 'products', text_query, facets_dict)
+    context = format_results(results, total_count, page, 100, self, 'products', text_query, facets_dict)
 
     return Response(context) 
 
 
+@api_view(['GET'])
+@permission_classes((AllowAny, ))
+def get_product(self, product_id):
+
+    product = Product.objects.get(id = product_id)
+    p_name = product.product_name
+
+
+    s = Search(index="products") \
+        .query("match_phrase", product_name=product.product_name)[0:100]#, brand=product.brand)
+
+
+
+    results = s.execute()
+
+
+    results_dict = results.to_dict()
+    #results = results_dict['hits']
+
+    total_count = s.count()
+    page = 1
+    facets_dict = {}
+
+    context = format_results(results_dict, total_count, page, 100, self, 'products', p_name, facets_dict)
+
+    return Response(context) 
 
 
 
