@@ -141,9 +141,9 @@ def get_weather(city, state):
                     else:
                         description[season] += 'hot, '
                 if attr == 'PSUN':
-                    if val >= 70:
+                    if val >= 80:
                         description[season] += 'sunny, '
-                    elif val < 40 and sunshine >= 70:
+                    elif val < 80 and val >= 50:
                         description[season] += 'cloudy, '
                     else:
                         description[season] += 'gray, '
