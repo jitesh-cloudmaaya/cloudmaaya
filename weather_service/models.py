@@ -146,10 +146,10 @@ class Weather(models.Model):
 
         # construct season_weather dictionary from response
         season_weather = {
-            'spring': {'PRCP': None, 'SNOW': None, 'TAVG': None, 'PSUN': None, 'AWND': None},
-            'summer': {'PRCP': None, 'SNOW': None, 'TAVG': None, 'PSUN': None, 'AWND': None},
-            'autumn': {'PRCP': None, 'SNOW': None, 'TAVG': None, 'PSUN': None, 'AWND': None},
-            'winter': {'PRCP': None, 'SNOW': None, 'TAVG': None, 'PSUN': None, 'AWND': None}
+            'spring': {'PRCP': '', 'SNOW': '', 'TAVG': '', 'PSUN': '', 'AWND': ''},
+            'summer': {'PRCP': '', 'SNOW': '', 'TAVG': '', 'PSUN': '', 'AWND': ''},
+            'autumn': {'PRCP': '', 'SNOW': '', 'TAVG': '', 'PSUN': '', 'AWND': ''},
+            'winter': {'PRCP': '', 'SNOW': '', 'TAVG': '', 'PSUN': '', 'AWND': ''}
         }
         for datum in results:
             date = datum['date']
@@ -168,10 +168,10 @@ class Weather(models.Model):
                 season = 'winter'
             
             try:
-                if season_weather[season][datatype] is None:
-                    season_weather[season][datatype] = [value]
-                else:
+                if season_weather[season][datatype]:
                     season_weather[season][datatype].append(value)
+                else:
+                    season_weather[season][datatype] = [value]
             except:
                 print('data error')
                 return
@@ -185,7 +185,7 @@ class Weather(models.Model):
         for season in season_weather:
             for attr in season_weather[season]:
                 val = season_weather[season][attr]
-                if val is not None:
+                if val != '':
                     if attr == 'TAVG':
                         if val < 60:
                             season_weather[season][attr] = 'cold'
