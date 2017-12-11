@@ -55,8 +55,8 @@ class Weather(models.Model):
     #     return 'helper works'
 
     def save(self, *args, **kwargs):
-        description = self.get_weather(self.city, self.state)
-        print(description)
+        season_weather = self.get_weather(self.city, self.state)
+        print(season_weather)
 
 
         super(Weather, self).save(*args, **kwargs)
@@ -147,45 +147,43 @@ class Weather(models.Model):
                 if season_weather[season][attr]:
                     season_weather[season][attr] = sum(season_weather[season][attr]) / len(season_weather[season][attr])
 
-        description = {'spring': '', 'summer': '', 'autumn': '', 'winter': ''}
-        # build season attrs
+        # maybe change to iteratve over season_weather?
         for season in season_weather:
             for attr in season_weather[season]:
                 val = season_weather[season][attr]
                 if val is not None:
-                    if attr == 'PRCP':
-                        if val > 3:
-                            description[season] += 'rainy, '
-                        else:
-                            description[season] += 'dry, '
-                    if attr == 'SNOW':
-                        if val > 2:
-                            description[season] += 'snowy, '
-                        else:
-                            description[season] += 'not snowy, '
                     if attr == 'TAVG':
                         if val < 60:
-                            description[season] += 'cold, '
+                            season_weather[season][attr] = 'cold'
                         elif val <= 80 and val > 60:
-                            description[season] += 'cool, '
+                            season_weather[season][attr] = 'cool'
                         elif val < 100 and val > 80:
-                            description[season] += 'warm, '
+                            season_weather[season][attr] = 'warm'
                         else:
-                            description[season] += 'hot, '
-                    if attr == 'PSUN':
-                        if val >= 80:
-                            description[season] += 'sunny, '
-                        elif val < 80 and val >= 50:
-                            description[season] += 'cloudy, '
+                            season_weather[season][attr] = 'hot'
+                    elif attr == 'PRCP':
+                        if val > 3:
+                            season_weather[season][attr] = 'rainy'
                         else:
-                            description[season] += 'gray, '
-                    if attr == 'AWND':
+                            season_weather[season][attr] = 'dry'
+                    elif attr == 'SNOW':
+                        if val > 2:
+                            season_weather[season][attr] = 'snowy'
+                        else:
+                            season_weather[season][attr] = 'not snowy'
+                    elif attr == 'AWND':
                         if val >= 8:
-                            description[season] += 'windy, '
+                            season_weather[season][attr] = 'windy'
                         else:
-                            description[season] += 'calm, '
-
-        return description
+                            season_weather[season][attr] = 'calm'
+                    elif attr == 'PSUN':
+                        if val >= 80:
+                            season_weather[season][attr] = 'sunny'
+                        elif val < 80 and val >= 50:
+                            season_weather[season][attr] = 'cloudy'
+                        else:
+                            season_weather[season][attr] = 'gray'
+        return season_weather
 
 
     def get_zip_codes(self, comp_city, comp_state):
