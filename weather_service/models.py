@@ -5,7 +5,6 @@ import requests
 
 from django.db import models
 
-# Create your models here.
 class Weather(models.Model):
     id = models.AutoField(primary_key=True) # added by Django by default?
     # id = models.BigAutoField(primary_key=True) # go with bigger?
@@ -45,25 +44,60 @@ class Weather(models.Model):
         #     ['city', 'state'],
         # ]
 
-
-    # def save(self, *args, **kwargs):
-    #     self.winter_sun = 'loool'
-    #     self.winter_snowfall = self.save_helper()
-    #     super(Weather, self).save(*args, **kwargs)
-
-    # def save_helper(self):
-    #     return 'helper works'
-
     def save(self, *args, **kwargs):
-        season_weather = self.get_weather(self.city, self.state)
-        print(season_weather)
-
+        for season, values in self.get_weather(self.city, self.state).items():
+            if season == 'spring':
+                for attr, label in values.items():
+                    if attr == 'TAVG':
+                        self.spring_temperature = label
+                    elif attr == 'PRCP':
+                        self.spring_precipitation = label
+                    elif attr == 'SNOW':
+                        self.spring_snowfall = label
+                    elif attr == 'AWND':
+                        self.spring_wind = label
+                    elif attr == 'PSUN':
+                        self.spring_sunshine = label
+            elif season == 'summer':
+                for attr, label in values.items():
+                    if attr == 'TAVG':
+                        self.summer_temperature = label
+                    elif attr == 'PRCP':
+                        self.summer_precipitation = label
+                    elif attr == 'SNOW':
+                        self.summer_snowfall = label
+                    elif attr == 'AWND':
+                        self.summer_wind = label
+                    elif attr == 'PSUN':
+                        self.summer_sunshine = label
+            elif season == 'autumn':
+                for attr, label in values.items():
+                    if attr == 'TAVG':
+                        self.autumn_temperature = label
+                    elif attr == 'PRCP':
+                        self.autumn_precipitation = label
+                    elif attr == 'SNOW':
+                        self.autumn_snowfall = label
+                    elif attr == 'AWND':
+                        self.autumn_wind = label
+                    elif attr == 'PSUN':
+                        self.autumn_sunshine = label
+            elif season == 'winter':
+                for attr, label in values.items():
+                    if attr == 'TAVG':
+                        self.winter_temperature = label
+                    elif attr == 'PRCP':
+                        self.winter_precipitation = label
+                    elif attr == 'SNOW':
+                        self.winter_snowfall = label
+                    elif attr == 'AWND':
+                        self.winter_wind = label
+                    elif attr == 'PSUN':
+                        self.winter_sunshine = label
 
         super(Weather, self).save(*args, **kwargs)
 
-
-    # define save helpers
-
+    # save helpers
     def get_weather(self, city, state):
         """
         Gets the weather description of a zip code from the database if it exists.
@@ -191,8 +225,8 @@ class Weather(models.Model):
         Given a city and state combination, returns the ZIP code(s).
 
         args:
-        city -- a string denoting city name
-        state -- a string denoting the state's abbreviation
+        comp_city -- a string denoting city name
+        comp_state -- a string denoting the state's abbreviation
         """
         if not comp_city or not comp_state:
             print('cannot leave either argument blank!')
@@ -211,37 +245,8 @@ class Weather(models.Model):
             zip_codes.append(place['post code'])
         return zip_codes
 
-
-    # update create method with arguments to use in weather initialization
-    # @classmethod
-    # def create(cls, city, state):
-    #     weather = cls(city=city, state=state)
-    #     weather.winter_sun = 'looool'
-    #     return weather
-
-    # def save(self, *args, **kwargs):
-    #     pass
-
-    # should I overwrite create or save
-
-    # in either case, that overridden method should contain the weather.py method code to generate the rest of 
-    # a Weather object's fields
-
-
     def __str__(self):
         return self.city + ', ' + self.state
-
-
-
-
-####### BEGIN WEATHER.PY
-# import json
-
-
-# implementation leveraging zippopotam.us
-
-
-
 
 
 
