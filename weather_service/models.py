@@ -39,6 +39,9 @@ class Weather(models.Model):
 
     class Meta:
         unique_together = (('city', 'state'),)
+        # index_together = [
+        #     ['city', 'state'],
+        # ]
 
     # update create method with arguments to use in weather initialization
     @classmethod
