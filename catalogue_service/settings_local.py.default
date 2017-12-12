@@ -22,3 +22,5 @@ PRODUCT_FEED_TEMP = 'pd_temp'
 
 PRODUCT_INDEX = 'products'
 
+PRODUCT_IMAGE_PROXY = "http://localhost:8000/image_proxy/?image_url="
+

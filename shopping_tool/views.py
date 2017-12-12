@@ -18,6 +18,10 @@ from django.core.exceptions import PermissionDenied
 from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUsers, UserProductFavorite
 from product_api.models import Product, MerchantCategory
 
+import requests
+from PIL import Image
+from catalogue_service.settings_local import PRODUCT_IMAGE_PROXY
+
 # Create your views here. 
 
 @check_login
@@ -37,8 +41,12 @@ def index(request, styling_session_id=None):
     client = styling_session.client
     categories = MerchantCategory.objects.filter(active = True)
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    product_image_proxy = PRODUCT_IMAGE_PROXY
 
-    context = {'favorites': favorites, 'categories': categories, 'user': user, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
+    context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
+               'categories': categories, 'user': user, 'styling_session': styling_session, 
+               'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
+               
     return render(request, 'shopping_tool/index.html', context)
 
 
@@ -63,6 +71,21 @@ def explore(request, styling_session_id=None):
     context = {'favorites': favorites, 'user': user, 'stylists': stylists, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
     return render(request, 'shopping_tool/explore.html', context)
 
+
+########################################################
+# localdev Only Method to support Image Proxy in order
+# to support cropping
+########################################################
+
+def image_proxy(request):
+    
+    url = request.GET.get('image_url')
+
+    im = Image.open(requests.get(url, stream=True).raw)
+    response = HttpResponse(content_type="image/png")
+    im.save(response, "PNG")
+
+    return response
 
 ########################################################
 # Some Localdev Methods In Order to Test Login
