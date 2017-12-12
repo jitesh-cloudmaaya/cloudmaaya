@@ -5,6 +5,19 @@ import requests
 
 from django.db import models
 
+class WeatherManager(models.Manager):
+    def retrieve_weather_object(self, city, state):
+        """
+        Returns a weather object based on a city and state pair from the database.
+        If it does not exist, creates it.
+
+        args
+        city - a string representing a city name
+        state - a string representing the state abbreviation
+        """
+        return self.get_or_create(city=city, state=state)[0] # get_or_create returns an obj, created_bool tuple
+
+
 class Weather(models.Model):
     id = models.AutoField(primary_key=True) # added by Django by default?
     # id = models.BigAutoField(primary_key=True) # go with bigger?
@@ -37,6 +50,8 @@ class Weather(models.Model):
     winter_snowfall = models.CharField(max_length=15, default='', blank=True)
     winter_wind = models.CharField(max_length=15, default='', blank=True)
     winter_sun = models.CharField(max_length=15, default='', blank=True)
+
+    objects = WeatherManager()
 
     class Meta:
         unique_together = (('city', 'state'),)
