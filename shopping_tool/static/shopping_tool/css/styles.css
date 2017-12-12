@@ -1138,6 +1138,14 @@ div.tt span {display:block; word-wrap: break-word;}
 div.tt span em {font-weight:400; padding-right:5px;}
 div.layout-option span.rows,
 div.layout-option span.columns {font-size:10px; display:block;}
+div.layout-option div.layout-grid {
+  height:100px;
+  float:left;
+  margin-right:10px;
+  width:100px;
+}
+div.layout-option div.layout-grid div.column {float:left;height:100px;margin:0 1px;}
+div.layout-option div.layout-grid div.row { border:1px solid #474747; border-radius:3px; margin:2px 0; overflow:hidden;}
 #create-look {
   background:rgba(0,0,0,0.7);
   display:none;

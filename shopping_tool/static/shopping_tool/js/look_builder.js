@@ -91,7 +91,23 @@ var look_builder = {
       create: false,
       render: {
         option: function(item, escape) {
+          /* create look option grid display */
+          var col_width = 100/item.columns;
+          var markup = [];
+          for(var i = 0; i<item.columns; i++){
+            var col = ['<div class="column" style="width:' + (col_width - 2) + 'px">'];
+            var heights = item.row_heights.split(',');
+            for(var j = 0; j<item.rows; j++){
+              var h = heights[j];
+              col.push(
+                '<div class="row" style="height:calc(' + h + '% - 6px)"></div>'
+              );
+            }
+            col.push('</div>');
+            markup.push(col.join(''));
+          }
           return '<div class="layout-option">' +
+            '<div class="layout-grid">' + markup.join('')+ '</div>' +
             '<span class="name">' + escape(item.name) + '</span>' +
             '<span class="columns">columns: ' + escape(item.columns) + '</span>' +
             '<span class="rows">rows: ' + escape(item.rows) + '</span>' +
