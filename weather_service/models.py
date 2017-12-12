@@ -14,29 +14,29 @@ class Weather(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     # seeasonal attributes as value or label?
-    spring_temperature = models.CharField(max_length=15, blank=True)
-    spring_precipitation = models.CharField(max_length=15, blank=True)
-    spring_snowfall = models.CharField(max_length=15, blank=True)
-    spring_wind = models.CharField(max_length=15, blank=True)
-    spring_sun = models.CharField(max_length=15, blank=True)
+    spring_temperature = models.CharField(max_length=15, default='', blank=True)
+    spring_precipitation = models.CharField(max_length=15, default='', blank=True)
+    spring_snowfall = models.CharField(max_length=15, default='', blank=True)
+    spring_wind = models.CharField(max_length=15, default='', blank=True)
+    spring_sun = models.CharField(max_length=15, default='', blank=True)
 
-    summer_temperature = models.CharField(max_length=15, blank=True)
-    summer_precipitation = models.CharField(max_length=15, blank=True)
-    summer_snowfall = models.CharField(max_length=15, blank=True)
-    summer_wind = models.CharField(max_length=15, blank=True)
-    summer_sun = models.CharField(max_length=15, blank=True)
+    summer_temperature = models.CharField(max_length=15, default='', blank=True)
+    summer_precipitation = models.CharField(max_length=15, default='', blank=True)
+    summer_snowfall = models.CharField(max_length=15, default='', blank=True)
+    summer_wind = models.CharField(max_length=15, default='', blank=True)
+    summer_sun = models.CharField(max_length=15, default='', blank=True)
 
-    autumn_temperature = models.CharField(max_length=15, blank=True)
-    autumn_precipitation = models.CharField(max_length=15, blank=True)
-    autumn_snowfall = models.CharField(max_length=15, blank=True)
-    autumn_wind = models.CharField(max_length=15, blank=True)
-    autumn_sun = models.CharField(max_length=15, blank=True)
+    autumn_temperature = models.CharField(max_length=15, default='', blank=True)
+    autumn_precipitation = models.CharField(max_length=15, default='', blank=True)
+    autumn_snowfall = models.CharField(max_length=15, default='', blank=True)
+    autumn_wind = models.CharField(max_length=15, default='', blank=True)
+    autumn_sun = models.CharField(max_length=15, default='', blank=True)
 
-    winter_temperature = models.CharField(max_length=15, blank=True)
-    winter_precipitation = models.CharField(max_length=15, blank=True)
-    winter_snowfall = models.CharField(max_length=15, blank=True)
-    winter_wind = models.CharField(max_length=15, blank=True)
-    winter_sun = models.CharField(max_length=15, blank=True)
+    winter_temperature = models.CharField(max_length=15, default='', blank=True)
+    winter_precipitation = models.CharField(max_length=15, default='', blank=True)
+    winter_snowfall = models.CharField(max_length=15, default='', blank=True)
+    winter_wind = models.CharField(max_length=15, default='', blank=True)
+    winter_sun = models.CharField(max_length=15, default='', blank=True)
 
     class Meta:
         unique_together = (('city', 'state'),)
@@ -45,55 +45,57 @@ class Weather(models.Model):
         # ]
 
     def save(self, *args, **kwargs):
-        for season, values in self.get_weather(self.city, self.state).items():
-            if season == 'spring':
-                for attr, label in values.items():
-                    if attr == 'TAVG':
-                        self.spring_temperature = label
-                    elif attr == 'PRCP':
-                        self.spring_precipitation = label
-                    elif attr == 'SNOW':
-                        self.spring_snowfall = label
-                    elif attr == 'AWND':
-                        self.spring_wind = label
-                    elif attr == 'PSUN':
-                        self.spring_sunshine = label
-            elif season == 'summer':
-                for attr, label in values.items():
-                    if attr == 'TAVG':
-                        self.summer_temperature = label
-                    elif attr == 'PRCP':
-                        self.summer_precipitation = label
-                    elif attr == 'SNOW':
-                        self.summer_snowfall = label
-                    elif attr == 'AWND':
-                        self.summer_wind = label
-                    elif attr == 'PSUN':
-                        self.summer_sunshine = label
-            elif season == 'autumn':
-                for attr, label in values.items():
-                    if attr == 'TAVG':
-                        self.autumn_temperature = label
-                    elif attr == 'PRCP':
-                        self.autumn_precipitation = label
-                    elif attr == 'SNOW':
-                        self.autumn_snowfall = label
-                    elif attr == 'AWND':
-                        self.autumn_wind = label
-                    elif attr == 'PSUN':
-                        self.autumn_sunshine = label
-            elif season == 'winter':
-                for attr, label in values.items():
-                    if attr == 'TAVG':
-                        self.winter_temperature = label
-                    elif attr == 'PRCP':
-                        self.winter_precipitation = label
-                    elif attr == 'SNOW':
-                        self.winter_snowfall = label
-                    elif attr == 'AWND':
-                        self.winter_wind = label
-                    elif attr == 'PSUN':
-                        self.winter_sunshine = label
+        season_weather = self.get_weather(self.city, self.state).items()
+        if season_weather:
+            for season, values in season_weather:
+                if season == 'spring':
+                    for attr, label in values.items():
+                        if attr == 'TAVG':
+                            self.spring_temperature = label
+                        elif attr == 'PRCP':
+                            self.spring_precipitation = label
+                        elif attr == 'SNOW':
+                            self.spring_snowfall = label
+                        elif attr == 'AWND':
+                            self.spring_wind = label
+                        elif attr == 'PSUN':
+                            self.spring_sunshine = label
+                elif season == 'summer':
+                    for attr, label in values.items():
+                        if attr == 'TAVG':
+                            self.summer_temperature = label
+                        elif attr == 'PRCP':
+                            self.summer_precipitation = label
+                        elif attr == 'SNOW':
+                            self.summer_snowfall = label
+                        elif attr == 'AWND':
+                            self.summer_wind = label
+                        elif attr == 'PSUN':
+                            self.summer_sunshine = label
+                elif season == 'autumn':
+                    for attr, label in values.items():
+                        if attr == 'TAVG':
+                            self.autumn_temperature = label
+                        elif attr == 'PRCP':
+                            self.autumn_precipitation = label
+                        elif attr == 'SNOW':
+                            self.autumn_snowfall = label
+                        elif attr == 'AWND':
+                            self.autumn_wind = label
+                        elif attr == 'PSUN':
+                            self.autumn_sunshine = label
+                elif season == 'winter':
+                    for attr, label in values.items():
+                        if attr == 'TAVG':
+                            self.winter_temperature = label
+                        elif attr == 'PRCP':
+                            self.winter_precipitation = label
+                        elif attr == 'SNOW':
+                            self.winter_snowfall = label
+                        elif attr == 'AWND':
+                            self.winter_wind = label
+                        elif attr == 'PSUN':
+                            self.winter_sunshine = label
 
         super(Weather, self).save(*args, **kwargs)
 
