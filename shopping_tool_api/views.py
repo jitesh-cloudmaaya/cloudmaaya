@@ -331,7 +331,7 @@ def look_list(request):
         looks_paged = paginator.page(paginator.num_pages)
 
     serializer = LookSerializer(looks_paged, many=True)
-    return JsonResponse({"num_pages": paginator.num_pages, "page": page, "per_page": per_page, "looks": serializer.data}, safe=False)
+    return JsonResponse({"num_pages": paginator.num_pages, "total_looks": paginator.num_pages, "page": page, "per_page": per_page, "looks": serializer.data}, safe=False)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
