@@ -67,51 +67,14 @@ var search_page = {
       }
     });
     $('#search-categories').val('').selectize({ create: false, sortField: 'text'});
+    $('#facet-show-faves').prop('checked', false).click(function(e){
+      search_page.performSearch(1);
+    });
     /* results functionality */
     $('#results').on('click','a.favorite',function(e){
       e.preventDefault();
       var link = $(this);
-      if(link.hasClass('favorited')){
-        var fave = link.data('faveid');
-        var product_id = link.data('productid');
-        var index = rack_builder.favorites_product_ids.indexOf(product_id);
-        rack_builder.favorites_product_ids.splice(index, 1);
-        rack_builder.favorites.splice(index, 1);
-        $.ajax({
-          contentType : 'application/json',
-          error: function(response){
-            console.log(response);
-          },
-          success:function(response){
-            console.log(response);
-            $('#favorites-list').find('div.item[data-fave="' + fave + '"]').remove();
-            link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
-          },
-          type: 'DELETE',
-          url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
-        }); 
-      }else{
-        var fave = {
-          "stylist": parseInt($('#stylist').data('stylistid')) ,
-          "product": parseInt(link.data('productid'))     
-        }
-        $.ajax({
-          contentType : 'application/json',
-          data: JSON.stringify(fave),
-          error: function(response){
-            console.log(response);
-          },
-          success:function(response){
-            console.log(response);
-            rack_builder.favorites.push(response);
-            rack_builder.favorites_product_ids.push(response.product);
-            link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
-            $('#favorites-list').append(rack_builder.favoriteTemplate(link.data('details')))
-          },
-          type: 'PUT',
-          url: '/shopping_tool_api/user_product_favorite/0/'
-        }); 
-      }
+      rack_builder.addFavorite(link);
     }).on('click','a.add-to-rack',function(e){
       e.preventDefault();
       var link = $(this);
@@ -332,7 +295,12 @@ var search_page = {
       });
     }
     q += '&page=' + page + '' + facets.join('');
-    //console.log('query string: ' + q)
+
+    var faves = $('#facet-show-faves').prop('checked');
+    if(faves == true){
+      q += '&favs=' + parseInt($('#stylist').data('stylistid'));
+    }
+    console.log('query string: ' + q)
     $('#search-form-selections').html(selection_markup.join(''));
     if(selection_markup.length > 0){
       $('#facet-bar').addClass('show');

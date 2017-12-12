@@ -25,105 +25,10 @@ var explore_page = {
     getLooks({});
     $('#stylist-select').val(' ').selectize({ create: false, sortField: 'text'});
     $('#look-name').val('');
-    $('#all-looks-list').on('click','a.favorite-look', function(e){
+    $('#all-looks-list').on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
-      if(link.hasClass('favorited')){
-        link.removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
-      }else{
-        link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
-      }
-    }).on('click','a.favorite',function(e){
-      e.preventDefault();
-      var link = $(this);
-      var product_id = link.data('productid');     
-      if(link.hasClass('favorited')){
-        var fave = link.data('faveid');
-        var index = rack_builder.favorites_product_ids.indexOf(product_id);
-        rack_builder.favorites_product_ids.splice(index, 1);
-        rack_builder.favorites.splice(index, 1);
-        $.ajax({
-          contentType : 'application/json',
-          error: function(response){
-            console.log(response);
-          },
-          success:function(response){
-            console.log(response);
-            var look_links = $('#all-looks-list a.favorited');
-            $.each(look_links, function(idx){
-              var fav = $(this);
-              var fav_id = fav.data('faveid');
-              if(fav_id == fave){
-                fav.data('faveid','').removeClass('favorited').find('i')
-                .removeClass('fa-heart').addClass('fa-heart-o');
-              }
-            });         
-            $('#favorites-list').find('div.item[data-fave="' + fave + '"]').remove();
-          },
-          type: 'DELETE',
-          url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
-        }); 
-      }else{
-        var fave = {
-          "stylist": parseInt($('#stylist').data('stylistid')) ,
-          "product": parseInt(link.data('productid'))     
-        }
-        $.ajax({
-          contentType : 'application/json',
-          data: JSON.stringify(fave),
-          error: function(response){
-            console.log(response);
-          },
-          success:function(response){
-            console.log(response);
-            rack_builder.favorites.push(response);
-            rack_builder.favorites_product_ids.push(response.product);
-            //link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
-            var look_links = $('#all-looks-list a.favorite[data-productid="' + product_id + '"]');
-            $.each(look_links, function(idx){
-              $(this).data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
-            });
-            $('#favorites-list').append(rack_builder.favoriteTemplate(link.data('details')))        
-          },
-          type: 'PUT',
-          url: '/shopping_tool_api/user_product_favorite/0/'
-        }); 
-      }
-    }).on('click','a.add-to-rack',function(e){
-      e.preventDefault();
-      var link = $(this);
-      rack_builder.addToRack(link, 'explore');
-    }).on('click','a.details',function(e){
-      e.preventDefault();
-      var link = $(this);
-      var product = link.data('details');
-      var retail = product.retail_price;
-      var sale = product.sale_price;
-      var price_display = '';
-      var merch = '<span class="merch">' + product.merchant_name + '</span>';
-      var manu = '<span class="manu">by ' + product.manufacturer_name + '</span>';    
-      if((sale >= retail)||(sale == 0)){
-        price_display = '<span class="price"><em class="label">price:</em>' + 
-          numeral(retail).format('$0,0.00') + '</span>';
-      }else{
-        price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
-          numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-      }   
-      $('#inspect-item').html(
-        '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
-        '<h2>' + product.product_name + '</h2><table>' +
-        '<tr><td class="img"><img src="' + product.product_image_url + '"/></td>' +
-        '<td class="details"><a href="' + product.product_url + '" target="_blank" class="name">' + 
-        product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
-        product.short_product_description + '</p>' + price_display +
-        '<span class="general"><em>size:</em>' + product.size + '</span>' +
-        '<span class="general"><em>category:</em>' + product.primary_category + 
-        '</span></td></tr></table></div>'
-      ).fadeIn();
-    });
-    $('#inspect-item').on('click', 'a.close-inspect', function(e){
-      e.preventDefault();
-      $('#inspect-item').fadeOut();
+      rack_builder.inspectItem(link);
     });
     /* get new filtered list of looks */
     $('#looks-filter').click(function(e){
@@ -206,20 +111,14 @@ var explore_page = {
           prod.product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
         }
         markup.push(
-          '<div class="item" data-productid="' + prod.product.id + '">' + 
-          '<img src="' + prod.product.product_image_url + '"/>' +
-          '<div class="link-bar"><a href="#" class="details"><i class="fa fa-search"></i></a>' + 
-          fave_link + '<a href="#" class="add-to-rack"><i class="icon-hanger"></i></a></div></div>'
+          '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
+          'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
+          '" data-productid="' + prod.product.id + '"><img src="' + prod.product.product_image_url + 
+          '"/></a></div>'
         );
       }
       markup.push('</div></div></div>');
       div.append(markup.join(''))
-      $.each(div.find('.look:last-child div.item'), function(idx){
-        var itm = $(this);
-        itm.find('a.details').data('details', look.look_products[idx].product);
-        itm.find('a.add-to-rack').data('details', look.look_products[idx].product);
-        itm.find('a.favorite').data('details', look.look_products[idx].product);
-      });
     }
     var num = div.find('div.look').length
     var plural = num == 1 ? '' : 's';

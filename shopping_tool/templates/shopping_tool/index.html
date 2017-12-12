@@ -8,6 +8,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css" rel="stylesheet"/>
   {% load static %}
+  <link href="{% static 'shopping_tool/css/croppr.min.css' %}" media="all" rel="stylesheet"/>
   <link href="{% static 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
 </head>
 <body class="search-page" data-stylesession="{{ styling_session.id }}">
@@ -25,6 +26,10 @@
     <a href="#" id="search-btn">show me</a>
     <input class="search" id="search-field" name="text" type="text" placeholder="I want..." data-lookup=""/>
     <div id="facets"></div>
+    <label class="toggle faves">
+      <input id="facet-show-faves" name="show-faves" type="checkbox"><span><small></small></span>
+      <em>show only favorites</em>
+    </label>
   </div>
   <div id="results-wrapper">
     <div id="facet-bar"><span class="title">your selection:</span><span id="search-form-selections"></span></div>
@@ -40,6 +45,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
 <script src="{% static 'shopping_tool/js/Sortable.min.js' %}"></script>
+<script src="{% static 'shopping_tool/js/croppr.min.js' %}"></script>
 <script src="{% static 'shopping_tool/js/utils.js' %}"></script>
 <script src="{% static 'shopping_tool/js/search_page.js' %}"></script>
 <script src="{% static 'shopping_tool/js/rack_builder.js' %}"></script>

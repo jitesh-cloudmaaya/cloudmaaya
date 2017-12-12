@@ -476,6 +476,12 @@ input.search {
   animation: heartbeat 900ms ease 0s infinite normal;
 }
 div.loader {padding:10px 20px; text-align:center;}
+#inspect-item div.loader {
+  font-style: italic;
+  margin:50px 25px;
+  text-align:left;
+
+}
 #pager {overflow:auto; padding:15px 5px; text-align:center;}
 #pager a.page,
 #pager span.current {
@@ -695,12 +701,16 @@ div#rack-btns {
   padding:10px 15px;
 }
 
-div#favorites-list div.item a.favorited {
+div#favorites-list div.item span.favorited {
   color:#EC407A;
   font-size:18px;
   position:absolute;
   right:5px;
   top:0;
+}
+div#favorites-list div.item a {
+  display:block;
+  text-decoration:none;
 }
 
 div#rack-btns a,
@@ -742,6 +752,7 @@ div#rack-btns span {
 #close-rack, 
 #cancel-new-look,
 #close-design-look,
+#close-cropper,
 #look-indepth a.close-indepth,
 #inspect-item a.close-inspect {
   color:#bbb;
@@ -759,12 +770,14 @@ div#rack-btns span {
 #cancel-new-look:hover,
 #close-design-look:hover,
 #look-indepth a.close-indepth:hover,
-#inspect-item a.close-inspect:hover {color:#474747;}
+#inspect-item a.close-inspect:hover,
+#close-cropper:hover {color:#474747;}
 #close-rack:active,
 #cancel-new-look:active,
 #close-design-look:active,
 #look-indepth a.close-indepth:active,
-#inspect-item a.close-inspect:active {color:#0090D9;}
+#inspect-item a.close-inspect:active,
+#close-cropper:active {color:#0090D9;}
 a.add-to-rack {
   border:1px solid #ddd;
   border-radius:3px;
@@ -815,7 +828,7 @@ a.remove-from-rack:active {color:#0090D9;}
 div.already-in-rack {
   position:absolute;
   width:100px;
-  z-index:4;
+  z-index:25;
 }
 div.already-in-rack span.msg {
   background:rgba(0,0,0,0.75);
@@ -1418,6 +1431,7 @@ div.layout-option span.columns {font-size:10px; display:block;}
 #rack-list div.block,
 #rack-draggable div.block {overflow:hidden;}
 #look-indepth,
+#cropper,
 #inspect-item {
   background:rgba(0,0,0,0.7) ;
   display:none;
@@ -1428,8 +1442,10 @@ div.layout-option span.columns {font-size:10px; display:block;}
   width:100%;
   z-index:25;
 }
+#cropper {z-index:30;}
 #look-indepth div.stage,
-#inspect-item div.stage {
+#inspect-item div.stage,
+#cropper div.stage {
   background:#fff;
   border-radius:5px;
   box-shadow:0 0 3px rgba(0,0,0,0.8);
@@ -1440,8 +1456,10 @@ div.layout-option span.columns {font-size:10px; display:block;}
   width:calc(100% - 40px);
   z-index:26;
 }
+#cropper div.stage {z-index:31;}
 #look-indepth div.stage h2,
-#inspect-item div.stage h2 {
+#inspect-item div.stage h2,
+#cropper div.stage h2 {
   border-bottom:1px solid #ddd;
   font-size:18px;
   font-weight:500;
@@ -1474,7 +1492,22 @@ div.layout-option span.columns {font-size:10px; display:block;}
 #look-indepth div.stage div.products table tr:last-child td,
 #inspect-item div.stage table td {border:0;}
 
-#look-indepth div.stage div.products table td.img { padding:15px 10px 10px 0; width:200px; }
+#look-indepth div.stage div.products table td.img { padding:15px 10px 10px 0; position:relative; width:200px; }
+#look-indepth div.stage div.products table td.img a.crop-product-image {
+  color:#000;
+  height:20px;
+  left:5px;
+  opacity:0.2;
+  position:relative;
+  text-align:center;
+  text-decoration: none;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out; 
+  top:22px;   
+  width:20px;
+}
+#look-indepth div.stage div.products table td.img a.crop-product-image i{ font-size:18px;}
+#look-indepth div.stage div.products table td.img a.crop-product-image:hover {opacity: 1}
 #inspect-item div.stage table td.img { padding:15px 10px 10px 0; width:300px; }
 #look-indepth div.stage div.products table td.img img,
 #inspect-item div.stage table td.img img {
@@ -1483,9 +1516,10 @@ div.layout-option span.columns {font-size:10px; display:block;}
   height:200px;
   max-width:100%;
 }
-#inspect-item div.stage table td.img img {height:300px; margin:0 auto;}
+#inspect-item div.stage table td.img img {height:300px; margin:0;}
 #look-indepth div.stage div.products table td.details,
 #inspect-item div.stage table td.details {padding:15px 10px 10px;}
+#inspect-item div.stage table td#inspect-sizes {padding:15px 10px 10px;}
 #look-indepth div.stage div.products table tr:first-child td.img,
 #look-indepth div.stage div.products table tr:first-child td.details {padding-top:5px;}
 #look-indepth div.stage div.products table a.name,
@@ -1554,12 +1588,15 @@ div.layout-option span.columns {font-size:10px; display:block;}
   z-index:4;
 }
 #look-filter-options.show {top:50px;}
-#look-filter-options label.toggle { 
+#look-filter-options label.toggle,
+#search label.toggle { 
   cursor: pointer; 
   display:block;
   margin:0 10px 10px; 
 }
-#look-filter-options label.toggle em{
+#search label.toggle.faves {margin:15px 0 0 ;}
+#look-filter-options label.toggle em,
+#search label.toggle em{
   color:#000;
   display:inline-block;
   font-size:14px;
@@ -1569,7 +1606,8 @@ div.layout-option span.columns {font-size:10px; display:block;}
   top:2px; 
   white-space: nowrap;
 }
-#look-filter-options label.toggle span {
+#look-filter-options label.toggle span,
+#search label.toggle span {
   background-color: #fff;
   border: 1px solid #dfdfdf;
   border-radius: 12px;
@@ -1583,7 +1621,8 @@ div.layout-option span.columns {font-size:10px; display:block;}
   vertical-align: middle;
   width: 30px;
 }
-#look-filter-options label.toggle span small {
+#look-filter-options label.toggle span small,
+#search label.toggle span small {
   background: #fff;
   border-radius: 100%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -1595,9 +1634,12 @@ div.layout-option span.columns {font-size:10px; display:block;}
   transition: left 0.2s ease 0s;
   width: 15px;
 }
-#look-filter-options label.toggle input {display:none;}
-#look-filter-options label.toggle input:checked + span { box-shadow: 0px 0px 0px 16px rgb(81,81,81) inset; border-color:#515151; }
-#look-filter-options label.toggle input:checked + span > small{ left:15px; }
+#look-filter-options label.toggle input,
+#search label.toggle input {display:none;}
+#look-filter-options label.toggle input:checked + span,
+#search label.toggle input:checked + span { box-shadow: 0px 0px 0px 16px rgb(81,81,81) inset; border-color:#515151; }
+#look-filter-options label.toggle input:checked + span > small,
+#search label.toggle input:checked + span > small { left:15px; }
 #look-filter-options input[type="text"] {
   background:#fff;
   border:1px solid #d0d0d0;
@@ -1753,59 +1795,20 @@ div.layout-option span.columns {font-size:10px; display:block;}
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   margin:7.5px;
   float:left;
-  height:150px;
+  height:120px;
   overflow:hidden;
   padding:0;
   position:relative;
   width:120px;
 }
-#all-looks-list div.look div.display div.item div.link-bar {
-  background:#fafafa;
-  border-top:1px solid #ddd;
-  height:29px;
+#all-looks-list div.look div.display div.item a.item-details {
+  display:block;
+  height:120px;
+  width:120px;
+  text-decoration: none;
 }
 #all-looks-list div.look div.display div.item img {display:block;margin:0 auto; height:120px; max-width:100%;}
-#all-looks-list div.look div.display div.item a.favorite,
-#all-looks-list div.look div.display div.item a.details {
-  background:#fff;
-  border:1px solid #ccc;
-  border-radius:3px;
-  color:#EC407A;
-  display:inline-block;
-  font-size:13px;
-  margin:3px 5px  0 0;
-  padding:2px 8px 3px;
-  vertical-align: top;
-}
-#all-looks-list div.look div.display div.item a.details {color:#777;margin-left:6px;}
-#all-looks-list div.look div.display div.item a.favorite:hover { border-color:#EC407A; background:#EC407A; color:#fff; }
-#all-looks-list div.look div.display div.item a.details:hover {border-color:#999;  color:#474747;}
-#all-looks-list div.look div.display div.item a.favorite:active,
-#all-looks-list div.look div.display div.item a.details:active {
-  background:#fff;
-  border-color:#fff;
-  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
-}
-#all-looks-list div.look div.display div.item a.favorite:active {color:#EC407A;}
-#all-looks-list div.look div.display div.item div.link-bar a.add-to-rack { 
-  background:#fff;
-  border:1px solid #ccc;
-  float:none; 
-  display:inline-block; 
-  margin:3px 0 0;
-  vertical-align: top;
-}
-#all-looks-list div.look div.display div.item div.link-bar a.add-to-rack:hover {
-  border-color:#999;
-  background:#fff;
-}
-#all-looks-list div.look div.display div.item div.link-bar a.add-to-rack:active {
-  background:#fff;
-  border-color:#fff;
-  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
-}
 
-#all-looks-list div.look div.display div.item div.link-bar a.add-to-rack i {padding:0;}
 #explore-wrapper {}
 #explore-wrapper #loader {
   height:100px; 
@@ -1815,7 +1818,58 @@ div.layout-option span.columns {font-size:10px; display:block;}
   text-align:center;
 }
 #explore-wrapper #loader.active {display:none;}
-
-
+#cropper-zone {
+  height:calc(100% - 90px);
+  overflow:hidden;
+  padding:20px 0;
+}
+#inspect-item div.inspect-overflow {
+  height:calc(100% - 50px);
+  overflow:auto;
+  padding:0; 
+}
+#inspect-sizes div.inspect-alt-size {
+  background:#fff; 
+  box-shadow:0 0 3px rgba(0,0,0,0.3);
+  float:left;
+  padding:10px;
+  margin:5px 15px 15px 5px;
+  width:calc(33% - 45px);
+}
+#inspect-item div.stage table td#inspect-sizes span.header {margin-bottom:10px;}
+#inspect-item div.stage table td#inspect-sizes td.size-img {width:90px;}
+#inspect-item div.stage table td#inspect-sizes table {margin:0;}
+#inspect-item span.price em {color:#D32F2F; display:inline-block; padding-right: 8px; text-decoration: line-through;}
+#inspect-item #inspect-sizes div.inspect-alt-size img {
+  box-shadow:0 0 3px rgba(0,0,0,0.25);
+  display:block;
+  height:100px;
+  margin:0 10px 0 0;
+  width:80px;
+}
+#inspect-item #inspect-sizes div.inspect-alt-size span.general{word-break: break-all;}
+#inspect-item a.add-to-rack {float:none;margin:10px 0 0;}
+#inspect-item a.favorite{
+  border:1px solid #ddd;
+  border-radius:3px;
+  color:#EC407A;
+  display:inline-block;
+  font-size:11px;
+  font-variant:small-caps;
+  margin:10px 10px 0 0;
+  padding:3px 8px 4px;
+  text-decoration: none;
+  text-transform:lowercase;
+}
+#inspect-item a.favorite.favorited { background:#EC407A; border-color:#EC407A; color:#fff;}
+#inspect-item a.favorite i {font-size:13px; position:relative; top:1px;}
+#inspect-item a.favorite:hover { background:#EC407A; border-color:#EC407A; color:#fff; }
+#inspect-item a.favorite.favorited:hover {background:#E91E63; border-color:#E91E63; color:#fff;}
+#inspect-item a.favorite:active {
+  background:#fff;
+  border-color:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+  color:#474747;
+}
 
 
