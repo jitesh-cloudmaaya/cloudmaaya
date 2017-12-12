@@ -208,17 +208,27 @@ class Weather(models.Model):
                         else:
                             season_weather[season][attr] = 'not snowy'
                     elif attr == 'AWND':
-                        if val >= 8:
+                        # if val >= 8:
+                        #     season_weather[season][attr] = 'windy'
+                        # else:
+                        #     season_weather[season][attr] = 'calm'
+                        if val >= 15:
                             season_weather[season][attr] = 'windy'
+                        elif val >= 8 and val < 15:
+                            season_weather[season][attr] = 'breezy'
                         else:
                             season_weather[season][attr] = 'calm'
                     elif attr == 'PSUN':
-                        if val >= 80:
+                        if val >= 95:
+                            season_weather[season][attr] = 'clear'
+                        elif val >= 75 and val < 95:
                             season_weather[season][attr] = 'sunny'
-                        elif val < 80 and val >= 50:
-                            season_weather[season][attr] = 'cloudy'
+                        elif val >= 50 and val < 75:
+                            season_weather[season][attr] = 'mostly sunny' # partly cloudy
+                        elif val >= 13 and val < 50:
+                            season_weather[season][attr] = 'partly sunny' # mostly cloudy
                         else:
-                            season_weather[season][attr] = 'gray'
+                            season_weather[season][attr] = 'cloudy' # or overcast
         return season_weather
 
 
