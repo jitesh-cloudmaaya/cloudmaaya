@@ -123,9 +123,15 @@ def get_product(self, product_id):
     product = Product.objects.get(id = product_id)
     p_name = product.product_name
 
+    print product.brand
 
-    s = Search(index="products") \
-        .query("match_phrase", product_name=product.product_name)[0:100]#, brand=product.brand)
+
+    s = Search(index="products")
+
+    s = s.query("match_phrase", product_name=product.product_name)[0:100]
+    s = s.filter("match_phrase", brand=product.brand)
+
+    #Bool(must=[Terms(brand__keyword=[u'Hudson']), Terms(merchant_name__keyword=[u'Bergdorf Goodman (Neiman Marcus)', u'Lord & Taylor'])]) 
 
 
 

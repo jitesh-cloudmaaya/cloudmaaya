@@ -4,14 +4,11 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
-import sys
+
 
 class Migration(migrations.Migration):
 
-    if 'test' in sys.argv:
-        create_table = True
-    else:
-        create_table = False
+
 
     dependencies = [
         ('shopping_tool', '0012_userlookfavorite'),
@@ -99,7 +96,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'allume_client_360',
-                'managed': create_table,
+                'managed': True,
             },
         ),
     ]
