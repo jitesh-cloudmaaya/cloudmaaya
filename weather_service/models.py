@@ -26,11 +26,21 @@ class WeatherManager(models.Manager):
         """
         Given a collection of (city, state) pairs, returns the Weather object associated with each,
         creating it if it does not exist.
+
+        args
+        cities_states -- a list of ('city', 'state') tuples
         """
         results = []
         for city, state in cities_states:
             results.append(self.retrieve_weather_object(city, state))
         return results
+
+    ## begin try more efficient bulk retrieval_or_create
+    # def bulk_create(self, objs, batch_size=None):
+    #     super().bulk_create(objs, batch_size)
+    #     return
+
+    ## end try
 
 
 class Weather(models.Model):
@@ -76,11 +86,14 @@ class Weather(models.Model):
         # ]
 
     def save(self, *args, **kwargs):
-        # capitalize city name and state abbreviation properly?
+        # capitalize city name and state abbreviation properly
+        self.city = self.city.lower().capitalize()
+        self.state = self.state.upper()
 
-        season_weather = self.get_weather(self.city, self.state).items()
+        # weather label assignment
+        season_weather = self.get_weather(self.city, self.state)
         if season_weather:
-            for season, values in season_weather:
+            for season, values in season_weather.items():
                 if season == 'spring':
                     for attr, label in values.items():
                         if attr == 'TAVG':
@@ -135,9 +148,7 @@ class Weather(models.Model):
     # save helpers
     def get_weather(self, city, state):
         """
-        Gets the weather description of a zip code from the database if it exists.
-        If it does not, accesses the noaa API to get the available weather data for the zip code,
-        writes this information to the database, and writes it to the database for later use.
+        Accesses the NOAA API to get the available weather data for the city and state provided.
 
         args
         city -- a string denoting city name
