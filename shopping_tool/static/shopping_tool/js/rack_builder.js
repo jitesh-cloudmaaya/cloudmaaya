@@ -96,7 +96,7 @@ var rack_builder = {
       }
     }
     if(add_to_list == true){
-      if(items == 0){rack_list.html('<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>')}
+      if(items == 0){rack.html('<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>')}
       var obj = {
         product: parseInt(details.id),
         allume_styling_session: parseInt(rack_builder.session_id)
@@ -119,7 +119,7 @@ var rack_builder = {
               details.primary_category + '</a><div class="block" data-category="' + sanitized_cat + 
               '"></div>';
             if(rackidx == 0){
-              rack.prepend(new_category);
+              rack.find('.close-all-rack-sections').after(new_category);
             }else if(rackidx == (categories.length -1)){
               rack.append(new_category);
             }else{
@@ -453,7 +453,7 @@ var rack_builder = {
               '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
               '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
               '<tr><td class="img" rowspan="2"><img src="' + product.product_image_url + '"/>' + 
-              fave_link + '' + rack_link + '</td>' +
+              fave_link + '' + rack_link + '<br/>' + product.id +'</td>' +
               '<td class="details"><a href="' + product.product_url + '" target="_blank" class="name">' + 
               product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
               product.short_product_description + '</p>' + price_display +
@@ -468,7 +468,7 @@ var rack_builder = {
               '<img src="' + product.product_image_url + '"/></td><td>' +
               '<span class="general"><em>store:</em>' + product.merchant_name + '</span>' +
               '<span class="general"><em>size:</em>' + product.size + '</span>' +
-              fave_link + '' + rack_link + '</td></tr></table></div>'
+              fave_link + '' + rack_link + '<br/>' + product.id +' </td></tr></table></div>'
             )
           }
         }
