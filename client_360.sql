@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS allume_client_360_temp (
 ID INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (ID),
+wp_user_id INT, 
 first_name TEXT, 
 last_name TEXT, 
 address_1 TEXT, 
@@ -103,6 +104,7 @@ ac.wp_user_id);
 SET SESSION group_concat_max_len=5000;
 
 INSERT INTO allume_client_360_temp (
+wp_user_id, 
 first_name, 
 last_name, 
 address_1, 
@@ -173,6 +175,7 @@ ears_pierced,
 jewelry_style,
 jewelry_type)
 SELECT 
+wu.id,
 wu.first_name, 
 wu.last_name, 
 sa.address_1, 

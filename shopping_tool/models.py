@@ -78,6 +78,7 @@ class AllumeClients(models.Model):
 
 class AllumeClient360(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+    client = models.OneToOneField(WpUsers, related_name='client_360', db_constraint=False, db_column='wp_user_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Shopper
     first_name = models.TextField(blank=True, null=True)
     last_name = models.TextField(blank=True, null=True)
     address_1 = models.TextField(blank=True, null=True)
