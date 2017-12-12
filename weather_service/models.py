@@ -17,6 +17,21 @@ class WeatherManager(models.Manager):
         """
         return self.get_or_create(city=city, state=state)[0] # get_or_create returns an obj, created_bool tuple
 
+    def retrieve_weather_objects(self, cities_states):
+        # do we expect to retrieve the objects more often, or create more often?
+        # could call get_or_create on every pairing
+        # OR 
+        # could get list of existing and list of not
+        # return existing and add created
+        """
+        Given a collection of (city, state) pairs, returns the Weather object associated with each,
+        creating it if it does not exist.
+        """
+        results = []
+        for city, state in cities_states:
+            results.append(self.retrieve_weather_object(city, state))
+        return results
+
 
 class Weather(models.Model):
     id = models.AutoField(primary_key=True) # added by Django by default?
@@ -51,6 +66,7 @@ class Weather(models.Model):
     winter_wind = models.CharField(max_length=15, default='', blank=True)
     winter_sun = models.CharField(max_length=15, default='', blank=True)
 
+    # extend default manager or add niche custom?
     objects = WeatherManager()
 
     class Meta:
@@ -60,6 +76,8 @@ class Weather(models.Model):
         # ]
 
     def save(self, *args, **kwargs):
+        # capitalize city name and state abbreviation properly?
+
         season_weather = self.get_weather(self.city, self.state).items()
         if season_weather:
             for season, values in season_weather:
