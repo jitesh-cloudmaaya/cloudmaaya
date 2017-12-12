@@ -87,7 +87,7 @@ class Weather(models.Model):
 
     def save(self, *args, **kwargs):
         # capitalize city name and state abbreviation properly
-        self.city = self.city.lower().capitalize()
+        self.city = self.city.lower().title()
         self.state = self.state.upper()
 
         # weather label assignment
