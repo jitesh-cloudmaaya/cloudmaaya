@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
             name='AllumeClient360',
             fields=[
                 ('id', models.AutoField(db_column='ID', primary_key=True, serialize=False)),
+                ('wp_user_id', models.IntegerField(blank=True, null=True)),
                 ('first_name', models.TextField(blank=True, null=True)),
                 ('last_name', models.TextField(blank=True, null=True)),
                 ('address_1', models.TextField(blank=True, null=True)),
