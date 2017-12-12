@@ -76,8 +76,11 @@ class Weather(models.Model):
         # ]
 
     def save(self, *args, **kwargs):
-        # capitalize city name and state abbreviation properly?
+        # capitalize city name and state abbreviation properly
+        self.city = self.city.lower().capitalize()
+        self.state = self.state.upper()
 
+        # weather label assignment
         season_weather = self.get_weather(self.city, self.state).items()
         if season_weather:
             for season, values in season_weather:
@@ -135,9 +138,7 @@ class Weather(models.Model):
     # save helpers
     def get_weather(self, city, state):
         """
-        Gets the weather description of a zip code from the database if it exists.
-        If it does not, accesses the noaa API to get the available weather data for the zip code,
-        writes this information to the database, and writes it to the database for later use.
+        Accesses the NOAA API to get the available weather data for the city and state provided.
 
         args
         city -- a string denoting city name
