@@ -162,7 +162,8 @@ class Weather(models.Model):
 
         url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/data?datasetid=GSOM'
         try:
-            for zip_code in zip_codes:
+            # refine how to limit zip code count
+            for zip_code in zip_codes[:180]:
                 url += '&locationid=ZIP:' + zip_code
         except:
             print('city, state pair produced no zip codes!')
@@ -180,11 +181,10 @@ class Weather(models.Model):
 
         headers = {'token': 'YdgPMhahlBcRshMkgsmDaoFlvAFcjwnr'}
 
-        response = requests.get(url, headers = headers)
-        response = response.json()
-
 
         try:
+            response = requests.get(url, headers = headers)
+            response = response.json()            
             results = response['results']
         except:
             print('no noaa data found for zip codes')
