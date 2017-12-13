@@ -9,7 +9,6 @@ from .models import Weather
 class SingleWeatherRetrievalTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # Weather.objects.create(city='San Jose', state='CA')
         cls.EXPECTED_WEATHER_COUNT = 3
 
     fixtures = ['SingleWeatherRetrievalTests']
@@ -60,6 +59,11 @@ class SingleWeatherRetrievalTests(TestCase):
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
 
 
+    # other edge cases
+
+
+
+
         # is this a mysql (used in dev) vs sqlite (used in test) string comparison thing
     # def test_retrieval_using_uncapitalized_city_state(self):
     #     """
@@ -87,16 +91,6 @@ class SingleWeatherRetrievalTests(TestCase):
     #     self.assertEqual('CA', w.state)
     #     print(Weather.objects.all())
     #     print(Weather.objects.count())
-
-
-    def test_retrieval_time_limit(self):
-        """
-        Test that a Weather object gets updated if its data is not recent enough.
-        """
-        pass
-
-    # def tearDown(self):
-    #     print('happens after every test')
 
 class BulkWeatherRetrievalTests(TestCase):
     @classmethod

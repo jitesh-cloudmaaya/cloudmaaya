@@ -9,8 +9,6 @@ from django.db import models
 
 class WeatherManager(models.Manager):
 
-    # TO-DO: add update check
-
     def retrieve_weather_object(self, city, state):
         """
         Returns a weather object based on a city and state pair from the database.
@@ -20,35 +18,15 @@ class WeatherManager(models.Manager):
         city - a string representing a city name
         state - a string representing the state abbreviation
         """
-        # return self.get_or_create(city=city, state=state)[0] # get_or_create returns an obj, created_bool tuple
-
-
         weather = self.get_or_create(city=city, state=state)[0] # get_or_create returns an obj, created_bool tuple
         if weather.id:
-            # print(weather)
-            # print(weather.date_created)
-            # print(weather.last_modified)
-
             # if data not recent enough
             if (datetime.datetime.now().year - 1) > weather.last_modified.year: # for now, check if the year prior the current year has 12 monthly summaries and is more recent than the last modified
-                weather.save() # ?
+                weather.save()
 
             return weather
 
-
-    # logic
-    # check if Weather exists in db
-    # if it does not, create it. if it does retrieve it
-    # check the last_modified field of the object
-    # if it is not 'recent' enough, update the data in the database?
-    # otherwise, return as is
-
     def retrieve_weather_objects(self, cities_states):
-        # do we expect to retrieve the objects more often, or create more often?
-        # could call get_or_create on every pairing
-        # OR 
-        # could get list of existing and list of not
-        # return existing and add created
         """
         Given a collection of (city, state) pairs, returns the Weather object associated with each,
         creating it if it does not exist.
@@ -61,13 +39,6 @@ class WeatherManager(models.Manager):
             results.append(self.retrieve_weather_object(city, state))
         return results
 
-    ## begin try more efficient bulk retrieval_or_create
-    # def bulk_create(self, objs, batch_size=None):
-    #     super().bulk_create(objs, batch_size)
-    #     return
-
-    ## end try
-
 
 class Weather(models.Model):
     id = models.AutoField(primary_key=True) # added by Django by default?
@@ -77,7 +48,6 @@ class Weather(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    # seeasonal attributes as value or label?
     spring_temperature = models.CharField(max_length=15, default='', blank=True)
     spring_precipitation = models.CharField(max_length=15, default='', blank=True)
     spring_snowfall = models.CharField(max_length=15, default='', blank=True)
@@ -102,7 +72,6 @@ class Weather(models.Model):
     winter_wind = models.CharField(max_length=15, default='', blank=True)
     winter_sun = models.CharField(max_length=15, default='', blank=True)
 
-    # extend default manager or add niche custom?
     objects = WeatherManager()
 
     class Meta:
@@ -119,14 +88,8 @@ class Weather(models.Model):
         data_year = datetime.datetime.now().year - 1
         data_year = str(data_year)
 
-        # if self.last_modified:
-        #     season_weather.get_weather()
-        # else:
-        #     season_weather = self.get_weather(self.city, self.state, current_year, current_year)
-
         # weather label assignment
         season_weather = self.get_weather(self.city, self.state, data_year, data_year)
-        # season_weather = self.get_weather(self.city, self.state)
         if season_weather:
             for season, values in season_weather.items():
                 if season == 'spring':
@@ -190,9 +153,6 @@ class Weather(models.Model):
         city -- a string denoting city name
         state -- a string denoting the state's abbreviation
         """
-
-        # START_YEAR = '2012'
-        # END_YEAR = '2012'
 
         START_MONTH = None
         END_MONTH = None
