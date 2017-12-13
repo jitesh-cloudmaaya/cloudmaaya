@@ -453,11 +453,13 @@ var rack_builder = {
               '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
               '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
               '<tr><td class="img" rowspan="2"><img src="' + product.product_image_url + '"/>' + 
-              fave_link + '' + rack_link + '<br/>' + product.id +'</td>' +
+              fave_link + '' + rack_link + '</td>' +
               '<td class="details"><a href="' + product.product_url + '" target="_blank" class="name">' + 
               product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
               product.short_product_description + '</p>' + price_display +
               '<span class="general"><em>size:</em>' + product.size + '</span>' +
+              '<span class="general"><em>sku:</em>' + product.sku + '</span>' +
+              '<span class="general"><em>color:</em>' + product.color + '</span>' +              
               '<span class="general"><em>category:</em>' + product.primary_category + 
               '</span></td></tr><tr><td id="inspect-sizes"><span class="general header"><em>other sizes:</em>' +
               '</span></td></table></div></div>'
@@ -468,7 +470,9 @@ var rack_builder = {
               '<img src="' + product.product_image_url + '"/></td><td>' +
               '<span class="general"><em>store:</em>' + product.merchant_name + '</span>' +
               '<span class="general"><em>size:</em>' + product.size + '</span>' +
-              fave_link + '' + rack_link + '<br/>' + product.id +' </td></tr></table></div>'
+              '<span class="general"><em>sku:</em>' + product.sku + '</span>' +
+              '<span class="general"><em>color:</em>' + product.color + '</span>' +
+              fave_link + '' + rack_link + '</td></tr></table></div>'
             )
           }
         }
