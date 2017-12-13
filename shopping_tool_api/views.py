@@ -322,8 +322,8 @@ def look_list(request):
 
     if 'favorites_only' in request.data:
         if request.data['favorites_only'] == "True":
-            favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('id', flat=True)
-            looks = looks.filter(allume_styling_session__in = favs)
+            favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('look_id', flat=True)
+            looks = looks.filter(id__in = favs)
 
     paginator = Paginator(looks, per_page)
 

@@ -252,11 +252,22 @@ class ShoppingToolAPITestCase(APITestCase):
 
         url = reverse("shopping_tool_api:look_list")
 
+        look_instance1 = Look.objects.get(id=1)
+        look_instance2 = Look.objects.get(id=2)
+
+        client = WpUsers.objects.filter(user_email= "client@allume.co").get()
+
+        print(client.id)
+
+        UserLookFavorite.objects.create(look=look_instance1, stylist = client)
+        UserLookFavorite.objects.create(look=look_instance2, stylist = client)
+
         #Test Paging
         favs_filter_data = {"favorites_only": "True"}
         response_favs = self.client.post(url, favs_filter_data)
         response_data_favs = json.loads(response_favs.content)
-        self.assertEqual(len(response_data_favs['looks']), 3)
+        print(response_data_favs)
+        self.assertEqual(len(response_data_favs['looks']), 2)
         self.assertEqual(200, response_favs.status_code)
 
 
