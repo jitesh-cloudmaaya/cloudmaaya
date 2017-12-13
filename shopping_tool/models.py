@@ -5,6 +5,11 @@ from django.db import models
 from product_api.models import Product
 
 # Create your models here.
+class StylistManager(models.Manager):
+    def stylists(self):
+        return self.filter(allumewpuserstylingroles__styling_role__in = ['stylist', 'coordinator']).filter(is_active = 1)
+
+
 class WpUsers(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     user_login = models.CharField(unique=True, max_length=60)
@@ -32,6 +37,7 @@ class WpUsers(models.Model):
         managed = False
         db_table = 'wp_users'
 
+    objects = StylistManager()
 
 class AllumeClients(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -68,6 +74,89 @@ class AllumeClients(models.Model):
     class Meta:
         managed = False
         db_table = 'allume_clients'
+
+
+class AllumeClient360(models.Model):
+    id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+    client = models.OneToOneField(WpUsers, related_name='client_360', db_constraint=False, db_column='wp_user_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Shopper
+    first_name = models.TextField(blank=True, null=True)
+    last_name = models.TextField(blank=True, null=True)
+    address_1 = models.TextField(blank=True, null=True)
+    address_2 = models.TextField(blank=True, null=True)
+    city = models.TextField(blank=True, null=True)
+    state = models.TextField(blank=True, null=True)
+    country = models.TextField(blank=True, null=True)
+    birthday = models.TextField(blank=True, null=True)
+    occupation = models.TextField(blank=True, null=True)
+    wear_to_work = models.TextField(blank=True, null=True)
+    spend_free_time = models.TextField(blank=True, null=True)
+    where_live = models.TextField(blank=True, null=True)
+    time_of_day_text = models.TextField(blank=True, null=True)
+    social_media = models.TextField(blank=True, null=True)
+    instagram = models.TextField(blank=True, null=True)
+    pinterest = models.TextField(blank=True, null=True)
+    linkedin = models.TextField(blank=True, null=True)
+    photo = models.TextField(blank=True, null=True)
+    winter = models.TextField(blank=True, null=True)
+    spring = models.TextField(blank=True, null=True)
+    summer = models.TextField(blank=True, null=True)
+    fall = models.TextField(blank=True, null=True)
+    styling_count = models.IntegerField(blank=True, null=True)
+    last_styling_date = models.DateTimeField(blank=True, null=True)
+    order_count = models.IntegerField(blank=True, null=True)
+    last_order_amt = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    last_order_date = models.DateTimeField(blank=True, null=True)
+    avg_items = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    avg_amt = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    heart_count = models.IntegerField(blank=True, null=True)
+    comment_count = models.IntegerField(blank=True, null=True)
+    star_count = models.IntegerField(blank=True, null=True)
+    signup_date = models.DateTimeField(blank=True, null=True)
+    utm_source = models.TextField(blank=True, null=True)
+    utm_campaign = models.TextField(blank=True, null=True)
+    utm_term = models.TextField(blank=True, null=True)
+    utm_medium = models.TextField(blank=True, null=True)
+    referral_site = models.TextField(blank=True, null=True)
+    hear_about_allume = models.TextField(blank=True, null=True)
+    height = models.TextField(blank=True, null=True)
+    weight = models.TextField(blank=True, null=True)
+    bra_size = models.TextField(blank=True, null=True)
+    body_part_attention = models.TextField(blank=True, null=True)
+    body_part_conceal = models.TextField(blank=True, null=True)
+    fit_challenges = models.TextField(blank=True, null=True)
+    hair_complex_color = models.TextField(blank=True, null=True)
+    first_session_focus = models.TextField(blank=True, null=True)
+    looks_goal = models.TextField(blank=True, null=True)
+    pieces_focus = models.TextField(blank=True, null=True)
+    outfits_preference = models.TextField(blank=True, null=True)
+    other_goals = models.TextField(blank=True, null=True)
+    stores = models.TextField(blank=True, null=True)
+    brands = models.TextField(blank=True, null=True)
+    spending_tops = models.TextField(blank=True, null=True)
+    spending_bottoms = models.TextField(blank=True, null=True)
+    spending_dresses = models.TextField(blank=True, null=True)
+    spending_jackets = models.TextField(blank=True, null=True)
+    spending_shoes = models.TextField(blank=True, null=True)
+    style_celebs = models.TextField(blank=True, null=True)
+    style_looks = models.TextField(blank=True, null=True)
+    style_jeans = models.TextField(blank=True, null=True)
+    style_tops = models.TextField(blank=True, null=True)
+    style_dress = models.TextField(blank=True, null=True)
+    style_jacket = models.TextField(blank=True, null=True)
+    style_shoe = models.TextField(blank=True, null=True)
+    colors_preference = models.TextField(blank=True, null=True)
+    style_avoid = models.TextField(blank=True, null=True)
+    size_pants = models.TextField(blank=True, null=True)
+    size_jeans = models.TextField(blank=True, null=True)
+    size_tops = models.TextField(blank=True, null=True)
+    size_shoe = models.TextField(blank=True, null=True)
+    ears_pierced = models.TextField(blank=True, null=True)
+    jewelry_style = models.TextField(blank=True, null=True)
+    jewelry_type = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'allume_client_360'
 
 
 class AllumeQuizAnswerItems(models.Model):
@@ -257,6 +346,19 @@ class AllumeStylistAssignments(models.Model):
         managed = False
         db_table = 'allume_stylist_assignments'
 
+
+class AllumeWpUserStylingRoles(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    wp_stylist_id =  models.ForeignKey(WpUsers, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField(unique=True)
+    styling_role = models.CharField(max_length=20)
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_wp_user_styling_roles'
+
+
 class Rack(models.Model):
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
@@ -288,6 +390,9 @@ class Look(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+    class Meta:
+        ordering = ['-updated_at']
+        
     def __str__(self):
         return self.name
 
@@ -295,6 +400,7 @@ class LookProduct(models.Model):
     look = models.ForeignKey(Look, related_name='product_set')
     product = models.ForeignKey(Product)
     layout_position = models.IntegerField()
+    cropped_dimensions = models.CharField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
@@ -306,3 +412,9 @@ class UserProductFavorite(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True)
     
 
+class UserLookFavorite(models.Model):
+    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
+    look = models.ForeignKey(Look)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    
