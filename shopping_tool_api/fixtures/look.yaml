@@ -8,3 +8,8 @@
     fields: {allume_styling_session: 3, name: Fixture Test Look 2, look_layout: 1, stylist: 118,
         status: Active, created_at: !!timestamp '2017-11-29 17:36:28.436062+00:00',
         updated_at: !!timestamp '2017-11-29 17:36:28.436188+00:00'}
+-   model: shopping_tool.look
+    pk: 3
+    fields: {allume_styling_session: 1, name: Fixture Test Look 2, look_layout: 1, stylist: 118,
+        status: Active, created_at: !!timestamp '2017-11-29 17:36:28.436062+00:00',
+        updated_at: !!timestamp '2017-11-29 17:36:28.436188+00:00'}

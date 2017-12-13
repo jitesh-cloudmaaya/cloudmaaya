@@ -289,7 +289,8 @@ def look_list(request):
          "stylist": 117,
          "name": "Body Suit",
          "page": 1,
-         "per_page": 20
+         "per_page": 20,
+         "favorites_only": True
         }
     """
     looks = Look.objects.all()
@@ -318,6 +319,11 @@ def look_list(request):
     if 'name' in request.data:
         name = request.data['name']
         looks = looks.filter(name__icontains = name)
+
+    if 'favorites_only' in request.data:
+        if request.data['favorites_only'] == "True":
+            favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('id', flat=True)
+            looks = looks.filter(allume_styling_session__in = favs)
 
     paginator = Paginator(looks, per_page)
 
