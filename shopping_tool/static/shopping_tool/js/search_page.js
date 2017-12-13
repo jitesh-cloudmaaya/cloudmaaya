@@ -115,9 +115,9 @@ var search_page = {
                            '_filter_merchant_name','_filter_color','_filter_material'];
       for(var i = 0, l = display_order.length; i<l; i++){
         var bucket = display_order[i];
-        console.log(bucket)
+        //console.log(bucket)
         var facet_list = facets[bucket];
-        console.log(facet_list)
+        //console.log(facet_list)
         if(facet_list){
           if(['_filter_is_best_seller', '_filter_is_trending'].indexOf(bucket) == -1){
             var display_name = bucket.replace('_filter_', '');
@@ -300,7 +300,6 @@ var search_page = {
     if(faves == true){
       q += '&favs=' + parseInt($('#stylist').data('stylistid'));
     }
-    console.log('query string: ' + q)
     $('#search-form-selections').html(selection_markup.join(''));
     if(selection_markup.length > 0){
       $('#facet-bar').addClass('show');
@@ -323,7 +322,7 @@ var search_page = {
       url: '/product_api/facets?',
       data: q,
       success: function(results){
-        console.log(results)
+        //console.log(results)
         if(results.data != undefined && results.data.length > 0){
           utils.pagerTemplate(results.page, results.total_items, results.num_per_page);
         }

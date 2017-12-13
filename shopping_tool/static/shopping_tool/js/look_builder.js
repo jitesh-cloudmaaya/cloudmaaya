@@ -17,7 +17,7 @@ var look_builder = {
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
-        console.log(response)
+        //console.log(response)
         var markup = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
           var comp = response.looks[i];
@@ -233,6 +233,7 @@ var look_builder = {
           if(a.layout_position < b.layout_position){ return -1}
           return 0;
         });
+        var cropped_images = [];
         for(var i = 0, l = result.look_products.length; i<l; i++){
           var prod = result.look_products[i];
           var retail = prod.product.retail_price;
@@ -247,10 +248,22 @@ var look_builder = {
             price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
               numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
           }
+          var src = prod.product.product_image_url;
+          /* if product has been cropped for the look add crop object */
+          if(prod.cropped_dimensions != null){
+            var crop = {
+              id: 'detailsitem-' + prod.id,
+              src: look_proxy + '' + src,
+              dims: prod.cropped_dimensions
+            }
+            cropped_images.push(crop);
+          }
           markup.push(
             '<tr><td class="img"><a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
-            '" data-url="' + prod.product.product_image_url  + '"><i class="fa fa-crop"></i></a>' +
-            '<img src="' + prod.product.product_image_url + '"/></td>' +
+            '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
+            '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
+            '"><i class="fa fa-crop"></i></a><span id="detailsitem-' + prod.id + '">' +
+            '<img src="' + src + '"/></span></td>' +
             '<td class="details"><a href="' + prod.product.product_url + '" target="_blank" class="name">' + 
             prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
             prod.product.short_product_description + '</p>' + price_display +
@@ -264,6 +277,11 @@ var look_builder = {
           '<h2>' + result.name + '</h2><p class="layout"><em>layout: </em>' + result.look_layout.display_name + 
           '</p><div class="products">' + markup.join('') + '</div></div>'
         );
+        if(cropped_images.length > 0){
+          for(var i = 0, l = cropped_images.length; i<l; i++){
+            look_builder.getCroppedImage(cropped_images[i], '#look-indepth');
+          }
+        }
       });
     });
     $('#compare-looks').on('click','a.look-filter', function(e){
@@ -303,36 +321,118 @@ var look_builder = {
     }).on('click','a.crop-product-image',function(e){
       e.preventDefault();
       var link = $(this);
+      var data = link.data();
       var work_station = $('#cropper-zone');
-      work_station.html('<img id="image-to-crop" src="' + link.data('url') + '"/>');
+      work_station.html(
+        '<p>Crop the product image to your desired dimensions. You will ' +
+        'see a live preview to the right. When happy hit the save crop button.</p>' +
+        '<img id="image-to-crop" src="' + look_proxy + '' + link.data('url') + '"/>' +
+        '<div id="thumb"><h6>crop preview</h6></div>'
+      );
       var img  = $('#image-to-crop');
-      var imgObject = new Image();
-      imgObject.src = link.data('url');
-      imgObject.onLoad = onImgLoaded();
-      function onImgLoaded(){
-        var w = img.width();
-        var h = img.height()
-        var ratio = w/h;
-        console.log(w)
-        console.log(h)
-        console.log(ratio)
-
+      var display_w = $('#cropper-zone').width();
+      $('#cropper').fadeIn(function(){
+        var imgObject = new Image();
+        imgObject.src = look_proxy + '' +link.data('url');
         var croppr = new Croppr('#image-to-crop', {
-          aspectRatio: ratio,
           startSize: [50,50, '%'],
           onUpdate: function(value) {
+            var newImg = look_builder.getImagePortion(imgObject, value.width, value.height, value.x, value.y, 1);
+            /* place image in appropriate div */
+            $('#thumb').html(
+              '<h6>crop preview</h6>' +
+              '<img alt="" src="' +newImg+ '"/>' +
+              '<a href="#" class="save-crop" data-look="' + data.look + 
+              '" data-productid="' + data.productid + '" data-lookitemid="'+
+              data.lookitemid + '" data-position="' + data.position + '" data-crop="' + 
+              value.width + ',' + value.height + ',' +  value.x + ',' + value.y + '">save crop</a>'
+            );
             //console.log(value.x, value.y, value.width, value.height);
           }
-        });
-
-        $('#cropper').fadeIn();        
+        }); 
+      });
+    })
+    $('#cropper').on('click','a.save-crop',function(e){
+      e.preventDefault();
+      var link = $(this);
+      var data = link.data();
+      /* set up update object with correct/new values */
+      var update_json = {
+        "id": data.lookitemid,
+        "layout_position": data.position,
+        "look": data.look,
+        "product": data.productid,
+        "cropped_dimensions": data.crop
       }
-
+      /* update the look item */
+      $.ajax({
+        contentType : 'application/json',
+        data: JSON.stringify(update_json),
+        success:function(response){
+          //console.log(response)
+          $('#look-indepth').fadeOut();
+          $('#cropper').fadeOut();
+          /* redraw look builder do we pick up the new crop */
+          look_builder.setUpBuilder(data.look);
+        },
+        type: 'PUT',
+        url: '/shopping_tool_api/look_item/' + data.lookitemid + '/'
+      })
     })
     $('#close-cropper').click(function(e){
       e.preventDefault();
       $('#cropper').fadeOut();
-    })
+    });
+  },
+  /**
+  * @description to handle invalid states we use a recursive loading check for images before we crop them
+  * @param {object} crop - object containing the image attributes we need to send top cropper function
+  * @param {string} selectore - css selector used to update the correct item with new cropped image
+  */
+  getCroppedImage: function(crop, selector){
+    var loadTimer;
+    var imgObject = new Image();
+    imgObject.src = crop.src;          
+    imgObject.onLoad = onImgLoaded();
+    function onImgLoaded() {
+      if (loadTimer != null){ clearTimeout(loadTimer); };
+      if (!imgObject.complete) {
+        loadTimer = setTimeout(function() {
+          onImgLoaded();
+        }, 3);
+      } else {
+        var dims = crop.dims.split(',')
+        var new_src= look_builder.getImagePortion(imgObject, dims[0],dims[1],dims[2], dims[3], 1);
+        $(selector + ' #' + crop.id).html('<img src="' + new_src + '"/>');
+      }
+    }
+  },
+  /**
+  * @description take and image and apply user provided crop coordinates and return new image via HTML5 canvas
+  * @param {object} imgObj - the image to be used for cropping
+  * @param {integer} newWidth - the new width
+  * @param {integer} newHeight - the new height
+  * @param {integer} startX - X coordinates to begin the crop
+  * @param {integer} startY - Y coordinates to begin crop
+  * @param {integer} ratio - aspect ratio to apply to the crop
+  * @returns {string} data url of new image
+  */ 
+  getImagePortion: function(imgObj, newWidth, newHeight, startX, startY, ratio){
+    /* set up canvas for thumbnail */
+    var tnCanvas = document.createElement('canvas');
+    var tnCanvasContext = tnCanvas.getContext('2d');
+    tnCanvas.width = newWidth; tnCanvas.height = newHeight;
+    /* use the sourceCanvas to duplicate the entire image. */
+    var bufferCanvas = document.createElement('canvas');
+    var bufferContext = bufferCanvas.getContext('2d');
+    bufferCanvas.width = imgObj.width;
+    bufferCanvas.height = imgObj.height;
+    bufferContext.drawImage(imgObj, 0, 0);
+    /* now we use the drawImage method to take the pixels from our bufferCanvas and draw them into our thumbnail canvas */
+    tnCanvasContext.drawImage(bufferCanvas, startX, startY, newWidth * ratio, newHeight * ratio, 0, 0, newWidth, newHeight);
+    var img_data = tnCanvas.toDataURL();
+    $('canvas').remove();
+    return img_data
   },
   /**
   * @description build new look link for drawer in rack
@@ -414,8 +514,9 @@ var look_builder = {
   setUpBuilder: function(id){
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
-      console.log(result)
+      //console.log(result)
       var look_drop = $('#look-drop');
+      var cropped_images = [];
       /* dynamically generate the width of look columns */
       var available_space = (look_drop.width() * 0.75) - 20;
       var col_width_margins = result.look_layout.columns * 5;
@@ -432,11 +533,21 @@ var look_builder = {
           for(var p = 0, prods = result.look_products.length; p<prods; p++){
             var prod = result.look_products[p];
             if(prod.layout_position == position){
+              var src = prod.product.product_image_url;
+              /* if product has been cropped for the look add crop object */
+              if(prod.cropped_dimensions != null){
+                var crop = {
+                  id: 'lookitem-' + prod.id,
+                  src: look_proxy + '' + src,
+                  dims: prod.cropped_dimensions
+                }
+                cropped_images.push(crop);
+              }
               product_markup.push(
-                '<div class="item" data-productid="' + prod.product.id + 
+                '<div class="item" id="lookitem-' + prod.id + 
+                '" data-productid="' + prod.product.id + 
                 '" data-lookitemid="' + prod.id + '">' +
-                '<img class="handle" src="' + prod.product.product_image_url + 
-                '"/></div>'
+                '<img class="handle" src="' + src + '"/></div>'
               );
             }
           }
@@ -459,6 +570,11 @@ var look_builder = {
         '<i class="fa fa-search"></i>look details</a>' + 
         '</div><div class="drop-zone">' + markup.join('') + '</div>'
       );
+      if(cropped_images.length > 0){
+        for(var i = 0, l = cropped_images.length; i<l; i++){
+          look_builder.getCroppedImage(cropped_images[i], '#look-drop div.drop-zone');
+        }
+      }
       /* add the trash functionality - simply accept objects and immediately remove from ui */
       new Sortable(document.getElementById('look-trash'), {
         group: "look",
