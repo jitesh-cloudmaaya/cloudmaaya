@@ -10,41 +10,69 @@ class SingleWeatherRetrievalTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Weather.objects.create(city='San Jose', state='CA')
-        pass
+        cls.EXPECTED_WEATHER_COUNT = 3
 
     fixtures = ['SingleWeatherRetrievalTests']
+
 
     def test_retrieve_existing_weather(self):
         """
         Test Weather retrieval on existing Weather object.
         """
         print('running 1st test')
-        self.assertEqual(1, Weather.objects.count())
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
         self.assertEqual('San Jose', Weather.objects.retrieve_weather_object(city='San Jose', state='CA').city)
-        self.assertEqual(1, Weather.objects.count())
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
 
     def test_retrieve_non_existing_weather(self):
         """
         Test Weather retrieval on not yet existing Weather object.
         """
         print('running 2nd test')
-        self.assertEqual(1, Weather.objects.count())
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
         self.assertEqual('San Diego', Weather.objects.retrieve_weather_object(city='San Diego', state='CA').city)
-        self.assertEqual(2, Weather.objects.count())
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT+1, Weather.objects.count())
 
     def test_retrieve_weather_from_non_existing_location(self):
         """
         Test Weather retrieval method behavior on being queried for non-existent location.
         """
         print('running 3rd test')
-        pass
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+        # non-existent locations do not write to DB
+        Weather.objects.retrieve_weather_object(city='Atlantis', state='OC') # fake city and state
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+        Weather.objects.retrieve_weather_object(city='San Jose', state='MD') # mismatched city and state
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+        Weather.objects.retrieve_weather_object(city='El Dorado', state='CA') # fake city
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+        Weather.objects.retrieve_weather_object(city='Merced', state='RA') # fake state
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+
+    def test_retrieve_weather_empty(self):
+        """
+        Test the behavior of retrieve_weather_object method when provided with empty strings
+        for one or more arguments.
+        """
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+        Weather.objects.retrieve_weather_object(city='', state='')
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+        Weather.objects.retrieve_weather_object(city='San Jose', state='')
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+        Weather.objects.retrieve_weather_object(city='', state='CA')
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
 
     def test_retrieval_using_uncapitalized_city_state(self):
         """
         Test city and state string formatting behavior of Weather object.
         """
         print('running 4th test')
-        pass
+        self.assertEqual('San Jose', Weather.objects.retrieve_weather_object(city='san jose', state='CA').city)
+        self.assertEqual('CA', Weather.objects.retrieve_weather_object(city='San Francisco', state='ca').state)
+        w = Weather.objects.retrieve_weather_object(city='mountain view', state='ca')
+        self.assertEqual('Mountain View', w.city)
+        self.assertEqual('CA', w.state)  
+
 
     # def tearDown(self):
     #     print('happens after every test')

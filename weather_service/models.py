@@ -146,7 +146,7 @@ class Weather(models.Model):
                         elif attr == 'PSUN':
                             self.winter_sunshine = label
 
-        super(Weather, self).save(*args, **kwargs)
+            super(Weather, self).save(*args, **kwargs)
 
     # save helpers
     # change method to accept year parameter
