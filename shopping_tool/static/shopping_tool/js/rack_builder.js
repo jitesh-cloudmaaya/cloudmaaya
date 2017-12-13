@@ -31,7 +31,7 @@ var rack_builder = {
           console.log(response);
         },
         success:function(response){
-          console.log(response);
+          //console.log(response);
           $('#favorites-list').find('div.item[data-fave="' + fave + '"]').remove();
           link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
         },
@@ -50,7 +50,7 @@ var rack_builder = {
           console.log(response);
         },
         success:function(response){
-          console.log(response);
+          //console.log(response);
           rack_builder.favorites.push(response);
           rack_builder.favorites_product_ids.push(response.product);
           link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
@@ -233,7 +233,6 @@ var rack_builder = {
       e.preventDefault();
       var target = $(e.target);
       var link = $(this);
-      console.log(target)
       if(target.hasClass('fa')){
         var fave = target.closest('span').data('faveid');
         var product_id = target.closest('span').data('productid');
@@ -246,7 +245,7 @@ var rack_builder = {
             console.log(response);
           },
           success:function(response){
-            console.log(response);
+            //console.log(response);
             var result_links = $('#results a.favorited');
             if(result_links.length > 0){
               $.each(result_links, function(idx){
@@ -412,8 +411,7 @@ var rack_builder = {
       type: "GET",
       url: '/product_api/get_product/' + id,
       success: function(results){
-        console.log(id)
-        console.log(results)
+        //console.log(results)
         var sizes_list = [];
         var markup = [];
         results.data.sort(function(a,b){

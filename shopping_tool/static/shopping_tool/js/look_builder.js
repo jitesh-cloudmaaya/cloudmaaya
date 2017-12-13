@@ -17,7 +17,7 @@ var look_builder = {
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
-        console.log(response)
+        //console.log(response)
         var markup = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
           var comp = response.looks[i];
@@ -236,7 +236,6 @@ var look_builder = {
         var cropped_images = [];
         for(var i = 0, l = result.look_products.length; i<l; i++){
           var prod = result.look_products[i];
-          console.log(prod)
           var retail = prod.product.retail_price;
           var sale = prod.product.sale_price;
           var price_display = '';
@@ -370,7 +369,7 @@ var look_builder = {
         contentType : 'application/json',
         data: JSON.stringify(update_json),
         success:function(response){
-          console.log(response)
+          //console.log(response)
           $('#look-indepth').fadeOut();
           $('#cropper').fadeOut();
           /* redraw look builder do we pick up the new crop */
@@ -515,7 +514,7 @@ var look_builder = {
   setUpBuilder: function(id){
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
-      console.log(result)
+      //console.log(result)
       var look_drop = $('#look-drop');
       var cropped_images = [];
       /* dynamically generate the width of look columns */

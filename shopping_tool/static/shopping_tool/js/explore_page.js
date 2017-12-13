@@ -52,7 +52,7 @@ var explore_page = {
             console.log(response);
           },
           success:function(response){
-            console.log(response);
+            //console.log(response);
             link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
           },
           type: 'DELETE',
@@ -70,7 +70,7 @@ var explore_page = {
             console.log(response);
           },
           success:function(response){
-            console.log(response);
+            //console.log(response);
             explore_page.favorite_looks.push(response);
             explore_page.favorite_look_ids.push(response.look);
             link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
@@ -87,10 +87,10 @@ var explore_page = {
       var stylist = $('#stylist-select').val();
       var name = $('#look-name').val();
       lookup.page = 1
-      console.log(stylist)
+      //console.log(stylist)
       if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
       if(name != ''){ lookup.name = name; }
-      console.log(lookup)
+      //console.log(lookup)
       $('#loader').data('filter',lookup);
       $('#all-looks-list').html('');
       getLooks(lookup);
@@ -122,7 +122,7 @@ var explore_page = {
         contentType : 'application/json',
         data: JSON.stringify(lookup),
         success:function(response){
-          console.log(response)
+          //console.log(response)
           explore_page.looksDisplay(response);
         },
         type: 'POST',
