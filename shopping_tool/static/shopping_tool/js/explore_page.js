@@ -163,39 +163,44 @@ var explore_page = {
         '<h3>' + look.name + '<span>by ' + 
         stylist_names[look.stylist] + '</span></h3><div class="items">' 
       );
-      look.look_products.sort(function(a,b){
-        if(a.layout_position > b.layout_position){ return 1}
-        if(a.layout_position < b.layout_position){ return -1}
-        return 0;
-      });
-      for(var j = 0, prods = look.look_products.length; j<prods; j++){
-        var prod = look.look_products[j];
-        var fave_link = '<a href="#" class="favorite" data-productid="' + 
-          prod.product.id + '"><i class="fa fa-heart-o"></i></a>';
-        var fave_idx = rack_builder.favorites_product_ids.indexOf(prod.product.id );
-        if(fave_idx > -1){
-          var favorite_object = rack_builder.favorites[fave_idx];
-          fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
-          prod.product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
-        }
-        var src = prod.product.product_image_url;
-        if(prod.cropped_dimensions != null){
-          var crop = {
-            id: 'look-' + look.id + '-item-' + prod.id,
-            src: look_proxy + '' + src,
-            dims: prod.cropped_dimensions
+      var col_width = 100/look.look_layout.columns ;
+      for(var k = 0; k<look.look_layout.columns; k++){
+        var col = ['<div class="column" style="width:calc(' + col_width + '% - 2px)">'];
+        var heights = look.look_layout.row_heights.split(',');
+        for(var j = 0; j<look.look_layout.rows; j++){
+          var h = heights[j];
+          var position = k > 0 ? ((j + 1) + (k * look.look_layout.rows)) : j + 1 ;
+          var product_markup = [];
+          /* check if a look product has the same position as the newlay added row */
+          for(var p = 0, prods = look.look_products.length; p<prods; p++){
+            var prod = look.look_products[p];
+            if(prod.layout_position == position){
+              var src = prod.product.product_image_url;
+              if(prod.cropped_dimensions != null){
+                var crop = {
+                  id: 'look-' + look.id + '-item-' + prod.id,
+                  src: look_proxy + '' + src,
+                  dims: prod.cropped_dimensions
+                }
+                cropped_images.push(crop);
+              }
+              product_markup.push(
+                '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
+                'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
+                '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
+                '"><img style="height:' + ((h/100 * 300) - 6) + 'px" src="' + src + '"/></span></a></div>'
+              );
+            }
           }
-          cropped_images.push(crop);
+          col.push(
+            '<div class="row" style="height:' + ((h/100 * 300) - 6) + 'px">' + 
+            product_markup.join('') + '</div>'
+          );
         }
-        markup.push(
-          '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
-          'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
-          '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
-          '"><img src="' + src + '"/></a></div>'
-        );
+        col.push('</div>');
+        markup.push(col.join(''));
       }
-      markup.push('</div></div></div>');
-      div.append(markup.join(''))
+      div.append(markup.join('') + '</div></div></div>')
     }
     if(cropped_images.length > 0){
       for(var i = 0, l = cropped_images.length; i<l; i++){

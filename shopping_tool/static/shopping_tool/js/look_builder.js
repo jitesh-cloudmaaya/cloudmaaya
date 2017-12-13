@@ -10,14 +10,15 @@ var look_builder = {
   * @description gather the compare looks objects and create markup for display
   * @param {object} lookup - json data for API call
   * @param {integer} loopk_id - id of currently being edited look
+  * @param {integer} call_number - index of calls performed to looks markup generator used for the infinte scrolling checks
   */  
-  compareLooksMarkup: function(lookup, look_id){
+  compareLooksMarkup: function(lookup, look_id, call_number){
     var comp_looks = $('#compare-looks div.other-looks');
     $.ajax({
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
-        //console.log(response)
+        console.log(response)
         var markup = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
           var comp = response.looks[i];
@@ -44,9 +45,19 @@ var look_builder = {
         }
         /* display no looks message or add looks and drag/drop functionality */
         if(markup.length == 0){ 
-          comp_looks.html('<span class="no-looks">no looks ready to compare</span>'); 
+          if(call_number == 1){
+            comp_looks.html('<span class="no-looks">no looks ready to compare</span>'); 
+          }
         }else if(markup.length > 0){
-          comp_looks.html(markup.join(''));
+          var page = parseInt(comp_looks.data('page'));
+          comp_looks.data('page', page + 1).data('total', response.num_pages)
+          if(call_number == 1){
+            comp_looks.html(markup.join(''));
+          }else{
+            comp_looks.append(markup.join(''))
+          }
+          /* 
+          hide draggable for now until decision on how to add previous look items to current look
           $.each(comp_looks.find('div.comp-look'), function(idx){
             var box = $(this)[0];
             new Sortable(box, {
@@ -55,6 +66,25 @@ var look_builder = {
               sort: false,
               draggable: ".item"
             });
+          });
+          */
+        }
+        /* if the first t ime compare looks are loaded add the infinite scroll functionality */
+        if(call_number == 1){
+          $('#compare-looks div.other-looks').scroll(function(){
+            var div = $(this);
+            var st = div.scrollTop();
+            var ih = div.innerHeight();
+            var sh = div[0].scrollHeight
+            //console.log(st + " " + ih + " " + sh)
+            if(st + ih >= sh) {
+              var next_page = parseInt(comp_looks.data('page'));
+              var total = parseInt(comp_looks.data('total'));
+              lookup.page = next_page;
+              if(next_page <= total){
+                look_builder.compareLooksMarkup(lookup, look_id, next_page);
+              }
+            }
           });
         }
       },
@@ -311,9 +341,11 @@ var look_builder = {
         }
       }
       lookup.name = $('#look-filter-options input.filter').val();
+      lookup.page = 1;
+      comp_looks.data('page', 1);
       comp_looks.find('a.look-filter').html(link_text + ' <i class="fa fa-caret-down"></i>').removeClass('open');
       $('#look-filter-options').removeClass('show');
-      look_builder.compareLooksMarkup(lookup, look_id);
+      look_builder.compareLooksMarkup(lookup, look_id, 1);
     });
     $('#look-indepth').on('click', 'a.close-indepth', function(e){
       e.preventDefault();
@@ -403,7 +435,9 @@ var look_builder = {
       } else {
         var dims = crop.dims.split(',')
         var new_src= look_builder.getImagePortion(imgObject, dims[0],dims[1],dims[2], dims[3], 1);
-        $(selector + ' #' + crop.id).html('<img src="' + new_src + '"/>');
+        var dom = $(selector + ' #' + crop.id);
+        var img_h = dom.find('img').height()
+        dom.html('<img style="height:' + img_h + 'px" src="' + new_src + '"/>');
       }
     }
   },
@@ -675,14 +709,15 @@ var look_builder = {
       '<em>client looks</em></label><input type="text" placeholder="' +
       'Enter filter keywords..." class="filter"/><div class="look-filter-submit">' +
       '<a href="#" class="submit-filter-btn" data-look="' + id + '">filter looks</a></div></div>' +
-      '<div class="other-looks"></div>'
+      '<div class="other-looks" data-page="1"></div>'
     );
     var lookup = {
       "client": parseInt($('#user-clip').data('userid')),
       "allume_styling_session": look_builder.session_id,
-      "stylist": parseInt($('#stylist').data('stylistid'))
+      "stylist": parseInt($('#stylist').data('stylistid')),
+      "page": 1
     }
-    look_builder.compareLooksMarkup(lookup, id);
+    look_builder.compareLooksMarkup(lookup, id, 1);
   },
   /**
   * @description the unordered look and feel for look builder rack
