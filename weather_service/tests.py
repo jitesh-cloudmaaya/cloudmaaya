@@ -9,10 +9,10 @@ from .models import Weather
 class SingleWeatherRetrievalTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        Weather.objects.create(city='San Jose', state='CA')
+        # Weather.objects.create(city='San Jose', state='CA')
+        pass
 
-    # def testTest(self):
-    #     self.assertEqual(True, True)
+    fixtures = ['SingleWeatherRetrievalTests']
 
     def test_retrieve_existing_weather(self):
         """
@@ -36,23 +36,25 @@ class SingleWeatherRetrievalTests(TestCase):
         """
         Test Weather retrieval method behavior on being queried for non-existent location.
         """
+        print('running 3rd test')
         pass
 
     def test_retrieval_using_uncapitalized_city_state(self):
         """
         Test city and state string formatting behavior of Weather object.
         """
+        print('running 4th test')
         pass
 
-    def tearDown(self):
-        print('happens after every test')
+    # def tearDown(self):
+    #     print('happens after every test')
 
 class BulkWeatherRetrievalTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        Weather.objects.create(city='Boston', state='MA')
-        Weather.objects.create(city='Richmond', state='VA')
-        Weather.objects.create(city='Sacramento', state='CA')
+        pass
+
+    fixtures = ['BulkWeatherRetrievalTests']
 
     def test_bulk_retrieve_existing_weather_all_exist(self):
         """
@@ -91,9 +93,6 @@ class BulkWeatherRetrievalTests(TestCase):
         print('running 7th test')
         self.assertEqual(3, Weather.objects.count())
         weathers = Weather.objects.retrieve_weather_objects([('Philadelphia', 'PA'), ('New York', 'NY'), ('Houston', 'TX')])
-        for weather in weathers:
-            print(weather.city)
-            print(weather.summer_temperature)
         self.assertEqual('Philadelphia', weathers[0].city)
         self.assertEqual('New York', weathers[1].city)
         self.assertEqual('Houston', weathers[2].city)

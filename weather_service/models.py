@@ -6,6 +6,9 @@ import requests
 from django.db import models
 
 class WeatherManager(models.Manager):
+
+    # TO-DO: add update check
+
     def retrieve_weather_object(self, city, state):
         """
         Returns a weather object based on a city and state pair from the database.
@@ -146,6 +149,7 @@ class Weather(models.Model):
         super(Weather, self).save(*args, **kwargs)
 
     # save helpers
+    # change method to accept year parameter
     def get_weather(self, city, state):
         """
         Accesses the NOAA API to get the available weather data for the city and state provided.

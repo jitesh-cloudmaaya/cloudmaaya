@@ -1,0 +1,4 @@
+-   model: weather_service.weather
+    pk: 1
+    fields: {city: San Jose, state: CA, date_created: !!timestamp '2017-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2017-11-29 17:36:28.436188+00:00'}
