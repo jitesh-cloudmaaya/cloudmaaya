@@ -165,7 +165,7 @@ CELERY_RESULT_BACKEND = 'django-db'
 # Tell nose to measure coverage 
 NOSE_ARGS = [
     '--with-coverage',
-    '--cover-package=shopping_tool_api',
+    '--cover-package=shopping_tool_api, weather_service',
     '--nocapture',
     '--nologcapture',
 ]
