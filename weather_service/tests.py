@@ -37,7 +37,6 @@ class SingleWeatherRetrievalTests(TestCase):
         """
         Test Weather retrieval on existing Weather object.
         """
-        # print('running 1st test')
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
         self.assertEqual('San Jose', Weather.objects.retrieve_weather_object(city='San Jose', state='CA').city)
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
@@ -46,7 +45,6 @@ class SingleWeatherRetrievalTests(TestCase):
         """
         Test Weather retrieval on not yet existing Weather object.
         """
-        # print('running 2nd test')
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
         self.assertEqual('San Diego', Weather.objects.retrieve_weather_object(city='San Diego', state='CA').city)
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+1, Weather.objects.count())
@@ -55,14 +53,13 @@ class SingleWeatherRetrievalTests(TestCase):
         """
         Test Weather retrieval method behavior on being queried for non-existent location.
         """
-        # print('running 3rd test')
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
         # non-existent locations do not write to DB
         self.assertIsNone(Weather.objects.retrieve_weather_object(city='Atlantis', state='OC')) # fake city and state
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
         self.assertIsNone(Weather.objects.retrieve_weather_object(city='San Jose', state='MD')) # mismatched city and state
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-        self.assertIsNone(Weather.objects.retrieve_weather_object(city='El Dorado', state='CA')) # fake city
+        self.assertIsNone(Weather.objects.retrieve_weather_object(city='Emerald City', state='OZ')) # fake city
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
         self.assertIsNone(Weather.objects.retrieve_weather_object(city='Merced', state='RA')) # fake state
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
@@ -88,7 +85,6 @@ class SingleWeatherRetrievalTests(TestCase):
     #     """
     #     pass
     #     # BREAKS CIRLCECI
-        # print('running 4th test')
     #     print(Weather.objects.all())
     #     print(Weather.objects.count())
     #     self.assertEqual('San Jose', Weather.objects.retrieve_weather_object(city='san jose', state='CA').city)
@@ -131,7 +127,6 @@ class BulkWeatherRetrievalTests(TestCase):
         """
         Test small bulk retrieval of pre-existing Weather objects.
         """
-        # print('running 5th test')
         self.assertEqual(3, Weather.objects.count())
         weathers = Weather.objects.retrieve_weather_objects([('Boston', 'MA'), ('Richmond', 'VA'), ('Sacramento', 'CA')])
         self.assertEqual('Boston', weathers[0].city)
@@ -146,7 +141,6 @@ class BulkWeatherRetrievalTests(TestCase):
         """
         Test small bulk retrieval of Weather objects where some do not yet exist.
         """
-        # print('running 6th test')
         self.assertEqual(3, Weather.objects.count())
         weathers = Weather.objects.retrieve_weather_objects([('Atlanta', 'GA'), ('Boston', 'MA'), ('Phoenix', 'AZ')])
         self.assertEqual('Atlanta', weathers[0].city)
@@ -161,7 +155,6 @@ class BulkWeatherRetrievalTests(TestCase):
         """
         Test small bulk retrieval of Weather objects where none of the objects yet exist.
         """
-        # print('running 7th test')
         self.assertEqual(3, Weather.objects.count())
         weathers = Weather.objects.retrieve_weather_objects([('Philadelphia', 'PA'), ('New York', 'NY'), ('Houston', 'TX')])
         self.assertEqual('Philadelphia', weathers[0].city)

@@ -116,8 +116,17 @@ class Weather(models.Model):
         self.city = self.city.lower().title()
         self.state = self.state.upper()
 
+        data_year = datetime.datetime.now().year - 1
+        data_year = str(data_year)
+
+        # if self.last_modified:
+        #     season_weather.get_weather()
+        # else:
+        #     season_weather = self.get_weather(self.city, self.state, current_year, current_year)
+
         # weather label assignment
-        season_weather = self.get_weather(self.city, self.state)
+        season_weather = self.get_weather(self.city, self.state, data_year, data_year)
+        # season_weather = self.get_weather(self.city, self.state)
         if season_weather:
             for season, values in season_weather.items():
                 if season == 'spring':
@@ -173,7 +182,7 @@ class Weather(models.Model):
 
     # save helpers
     # change method to accept year parameter
-    def get_weather(self, city, state):
+    def get_weather(self, city, state, start_year, end_year):
         """
         Accesses the NOAA API to get the available weather data for the city and state provided.
 
@@ -182,8 +191,8 @@ class Weather(models.Model):
         state -- a string denoting the state's abbreviation
         """
 
-        START_YEAR = '2012'
-        END_YEAR = '2012'
+        # START_YEAR = '2012'
+        # END_YEAR = '2012'
 
         START_MONTH = None
         END_MONTH = None
@@ -199,7 +208,7 @@ class Weather(models.Model):
             # print('city, state pair produced no zip codes!')
             return
             
-        url += '&startdate=' + START_YEAR + '-01-01&enddate=' + END_YEAR + '-12-31'
+        url += '&startdate=' + start_year + '-01-01&enddate=' + end_year + '-12-31'
         url += '&datatypeid=PSUN' # Daily percent of possible sunshine for the period
         url += '&datatypeid=PRCP' # rainfall in in
         url += '&datatypeid=SNOW' # snowfall in in
