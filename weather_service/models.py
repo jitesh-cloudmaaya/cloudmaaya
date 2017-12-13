@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 import requests
 
+import datetime # temp?
+
 from django.db import models
 
 class WeatherManager(models.Manager):
@@ -12,13 +14,34 @@ class WeatherManager(models.Manager):
     def retrieve_weather_object(self, city, state):
         """
         Returns a weather object based on a city and state pair from the database.
-        If it does not exist, creates it.
+        If it does not exist, creates it. Returns None if no weather object could be created.
 
         args
         city - a string representing a city name
         state - a string representing the state abbreviation
         """
-        return self.get_or_create(city=city, state=state)[0] # get_or_create returns an obj, created_bool tuple
+        # return self.get_or_create(city=city, state=state)[0] # get_or_create returns an obj, created_bool tuple
+
+
+        weather = self.get_or_create(city=city, state=state)[0] # get_or_create returns an obj, created_bool tuple
+        if weather.id:
+            # print(weather)
+            # print(weather.date_created)
+            # print(weather.last_modified)
+
+            # if data not recent enough
+            if (datetime.datetime.now().year - 1) > weather.last_modified.year: # for now, check if the year prior the current year has 12 monthly summaries and is more recent than the last modified
+                weather.save() # ?
+
+            return weather
+
+
+    # logic
+    # check if Weather exists in db
+    # if it does not, create it. if it does retrieve it
+    # check the last_modified field of the object
+    # if it is not 'recent' enough, update the data in the database?
+    # otherwise, return as is
 
     def retrieve_weather_objects(self, cities_states):
         # do we expect to retrieve the objects more often, or create more often?
@@ -161,6 +184,9 @@ class Weather(models.Model):
 
         START_YEAR = '2012'
         END_YEAR = '2012'
+
+        START_MONTH = None
+        END_MONTH = None
 
         zip_codes = self.get_zip_codes(city, state)
 
