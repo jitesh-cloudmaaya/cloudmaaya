@@ -86,8 +86,10 @@ var explore_page = {
   */
   looksDisplay: function(list_object){
     var div = $('#all-looks-list');
+    var cropped_images = [];
     for(var i = 0, l = list_object.looks.length; i<l; i++){
       var look = list_object.looks[i];
+      console.log(look)
       var markup = [];
       markup.push(
         '<div class="look"><div class="display">' +
@@ -110,15 +112,29 @@ var explore_page = {
           fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
           prod.product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
         }
+        var src = prod.product.product_image_url;
+        if(prod.cropped_dimensions != null){
+          var crop = {
+            id: 'look-' + look.id + '-item-' + prod.id,
+            src: look_proxy + '' + src,
+            dims: prod.cropped_dimensions
+          }
+          cropped_images.push(crop);
+        }
         markup.push(
           '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
           'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
-          '" data-productid="' + prod.product.id + '"><img src="' + prod.product.product_image_url + 
-          '"/></a></div>'
+          '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
+          '"><img src="' + src + '"/></a></div>'
         );
       }
       markup.push('</div></div></div>');
       div.append(markup.join(''))
+    }
+    if(cropped_images.length > 0){
+      for(var i = 0, l = cropped_images.length; i<l; i++){
+        look_builder.getCroppedImage(cropped_images[i], '#all-looks-list');
+      }
     }
     var num = div.find('div.look').length
     var plural = num == 1 ? '' : 's';
