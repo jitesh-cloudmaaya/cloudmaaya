@@ -52,7 +52,7 @@
 <script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
 {% include "shopping_tool/js_arrays.html" %}
-/* before initializing page get stylists favories */
+/* before initializing page get stylist's favorites */
 $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
   for(var i = 0, l = result.length;i<l;i++){
     var fave = result[i];

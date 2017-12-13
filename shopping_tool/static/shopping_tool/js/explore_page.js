@@ -6,6 +6,14 @@ var explore_page = {
   * @description cache of all looks for in page filtering
   */
   all_looks: [],
+  /**
+  * @description cache array of stylist's favorite looks, updated at load
+  */
+  favorite_looks: [],
+  /**
+  * @description cache array of favorited look ids, used to set correct favorite link 
+  */
+  favorite_look_ids: [],  
   /** 
   * @description cache of styling session
   */
@@ -29,6 +37,48 @@ var explore_page = {
       e.preventDefault();
       var link = $(this);
       rack_builder.inspectItem(link);
+    }).on('click','a.favorite-look', function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('favorited')){
+        var fave = link.data('faveid');
+        var look_id = link.data('lookid');
+        var index = explore_page.favorite_look_ids.indexOf(look_id);
+        explore_page.favorite_look_ids.splice(index, 1);
+        explore_page.favorite_looks.splice(index, 1);
+        $.ajax({
+          contentType : 'application/json',
+          error: function(response){
+            console.log(response);
+          },
+          success:function(response){
+            console.log(response);
+            link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+          },
+          type: 'DELETE',
+          url: '/shopping_tool_api/user_look_favorite/' + fave + '/'
+        }); 
+      }else{
+        var fave = {
+          "stylist": parseInt($('#stylist').data('stylistid')) ,
+          "look": parseInt(link.data('lookid'))     
+        }
+        $.ajax({
+          contentType : 'application/json',
+          data: JSON.stringify(fave),
+          error: function(response){
+            console.log(response);
+          },
+          success:function(response){
+            console.log(response);
+            explore_page.favorite_looks.push(response);
+            explore_page.favorite_look_ids.push(response.look);
+            link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+          },
+          type: 'PUT',
+          url: '/shopping_tool_api/user_look_favorite/0/'
+        }); 
+      }
     });
     /* get new filtered list of looks */
     $('#looks-filter').click(function(e){
@@ -89,11 +139,17 @@ var explore_page = {
     var cropped_images = [];
     for(var i = 0, l = list_object.looks.length; i<l; i++){
       var look = list_object.looks[i];
-      console.log(look)
       var markup = [];
+      var look_fave_link = '<a href="#" class="favorite-look" data-lookid="' + 
+        look.id + '"><i class="fa fa-heart-o"></i></a>';
+      var look_fave_idx = explore_page.favorite_look_ids.indexOf(look.id);
+      if(look_fave_idx > -1){
+        var look_favorite_object = explore_page.favorite_looks[look_fave_idx];
+        look_fave_link = '<a href="#" class="favorite-look favorited" data-lookid="' + 
+        look.id + '" data-faveid="' + look_favorite_object.id + '"><i class="fa fa-heart"></i></a>';
+      }
       markup.push(
-        '<div class="look"><div class="display">' +
-        '<a href="#" data-lookid="' + look.id + '" class="favorite-look"><i class="fa fa-heart-o"></i></a>' +
+        '<div class="look"><div class="display">' + look_fave_link  +
         '<h3>' + look.name + '<span>by ' + 
         stylist_names[look.stylist] + '</span></h3><div class="items">' 
       );

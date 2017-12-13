@@ -50,12 +50,25 @@ var stylist_names = {
     {{stylist.id}}: "{{stylist.first_name}} {{stylist.last_name}}",
   {% endfor %}
 };
-/* before initializing page get stylists favories */
-$.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
-  for(var i = 0, l = result.length;i<l;i++){
-    var fave = result[i];
-    rack_builder.favorites_product_ids.push(fave.product);
-    rack_builder.favorites.push(fave);
+/* before initializing page get stylist's favorites */
+$.when(
+  $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/'),
+  $.get('/shopping_tool_api/user_look_favorites/' + $('#stylist').data('stylistid') + '/')
+).then(function(favorite_products, favorite_looks){
+  console.log(favorite_looks)
+  if(favorite_products[0] != undefined){
+    for(var i = 0, l = favorite_products[0].length;i<l;i++){
+      var fave = favorite_products[0][i];
+      rack_builder.favorites_product_ids.push(fave.product);
+      rack_builder.favorites.push(fave);
+    }
+  }
+  if(favorite_looks[0] != undefined){
+    for(var i = 0, l = favorite_looks[0].length;i<l;i++){
+      var fave = favorite_looks[0][i];
+      explore_page.favorite_look_ids.push(fave.look);
+      explore_page.favorite_looks.push(fave);
+    }
   }
   explore_page.init();
 });
