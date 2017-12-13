@@ -170,7 +170,7 @@ class Weather(models.Model):
             for zip_code in zip_codes[:180]:
                 url += '&locationid=ZIP:' + zip_code
         except:
-            print('city, state pair produced no zip codes!')
+            # print('city, state pair produced no zip codes!')
             return
             
         url += '&startdate=' + START_YEAR + '-01-01&enddate=' + END_YEAR + '-12-31'
@@ -191,7 +191,7 @@ class Weather(models.Model):
             response = response.json()            
             results = response['results']
         except:
-            print('no noaa data found for zip codes')
+            # print('no noaa data found for zip codes')
             return
 
         # construct season_weather dictionary from response
@@ -223,7 +223,7 @@ class Weather(models.Model):
                 else:
                     season_weather[season][datatype] = [value]
             except:
-                print('data error')
+                # print('data error')
                 return
 
         for season in season_weather:
@@ -289,7 +289,7 @@ class Weather(models.Model):
         comp_state -- a string denoting the state's abbreviation
         """
         if not comp_city or not comp_state:
-            print('cannot leave either argument blank!')
+            # print('cannot leave either argument blank!')
             return
         url = 'http://api.zippopotam.us/us/' + comp_state + '/' + comp_city
         try:
@@ -297,7 +297,7 @@ class Weather(models.Model):
             response = response.json()
             places = response['places']
         except:
-            print('invalid city/state combination!')
+            # print('invalid city/state combination!')
             return
 
         zip_codes = []
