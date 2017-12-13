@@ -1737,6 +1737,16 @@ div.layout-option div.layout-grid div.row { border:1px solid #474747; border-rad
   color:#474747;
 }
 #stylist-select {display:none;}
+#looks-header.sticky {
+  background:rgba(255,255,255,0.9);
+  box-shadow:0 0 3px rgba(0,0,0,0.3);
+  left:0;
+  padding:15px 0 10px;
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:5;
+}
 #looks-header h2 {
   font-size:18px;
   font-weight:300;

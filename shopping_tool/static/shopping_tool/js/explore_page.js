@@ -95,12 +95,22 @@ var explore_page = {
       $('#all-looks-list').html('');
       getLooks(lookup);
     });
+    var looks_header = $('#looks-header');
     /* infinte scroll/paging listen for when user scrolls within 100 px of bnottom of page */
     $(window).scroll(function(){
       var st = $(window).scrollTop();
       var dh = $(document).height();
       var wh = $(window).height(); 
       var tot = st + wh;
+      if(looks_header.hasClass('sticky') == false){
+        if(st > 148){
+          looks_header.addClass('sticky')
+        }
+      }else{
+        if(st < 148){
+          looks_header.removeClass('sticky')
+        }
+      }
       if( (dh - 100) < tot ){
         var loader = $('#loader');
         if(loader.hasClass('active') == false){
@@ -194,7 +204,7 @@ var explore_page = {
     }
     var num = div.find('div.look').length
     var plural = num == 1 ? '' : 's';
-    $('#looks-header').html('<h2><em>' + num + '</em> Look' + plural + '</h2>');
+    $('#looks-header').html('<h2>Showing 1 - ' + num + ' of ' + list_object.total_looks + ' Look' + plural + '</h2>');
     if((list_object.page + 1) <= list_object.num_pages){
       $('#loader').removeClass('active').data('page', list_object.page + 1);
     }
