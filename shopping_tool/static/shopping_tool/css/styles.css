@@ -1827,10 +1827,12 @@ div.layout-option div.layout-grid div.row { border:1px solid #474747; border-rad
 }
 #explore-wrapper #loader.active {display:none;}
 #cropper-zone {
-  height:calc(100% - 90px);
-  overflow:hidden;
-  padding:20px 0;
+  height:calc(100% - 50px);
+  overflow:auto;
+  padding:0;
 }
+
+#cropper-zone div.croppr {margin-left:20px;}
 #inspect-item div.inspect-overflow {
   height:calc(100% - 50px);
   overflow:auto;
@@ -1879,5 +1881,63 @@ div.layout-option div.layout-grid div.row { border:1px solid #474747; border-rad
   box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
   color:#474747;
 }
-
+#cropper-zone p {
+  color:#777;
+  font-size:18px;
+  font-weight:100;
+  line-height:22px;
+  padding:15px 20px;
+}
+#thumb {
+  background:#fff;
+  border-left:1px solid #ddd;
+  border-bottom-right-radius: 5px;
+  height:calc(100% - 50px);
+  position:absolute; 
+  top:50px;
+  right:0px;
+  width:190px;
+  z-index:3;
+}
+#thumb h6 {
+  background:#fafafa;
+  border-bottom:1px solid #ddd;
+  font-size:16px;
+  font-variant: small-caps;
+  font-weight:400;
+  margin-bottom:15px;
+  padding:10px;
+  text-align:center;
+}
+#thumb img {
+  box-shadow:0 0 2px rgba(0,0,0,0.3);
+  display:block;
+  margin:0 auto 15px;
+  max-width:150px;
+}
+#thumb a {
+  border:1px solid #ddd;
+  border-radius:3px;
+  color:#777;
+  display:inline-block;
+  font-size:16px;
+  font-variant:small-caps;
+  margin:0 0 0 45px;
+  padding:5px 0 6px;
+  text-align: center;
+  text-decoration: none;
+  text-transform:lowercase;
+  width:100px;
+}
+#thumb a:hover {
+  border-color:#ccc;
+  box-shadow:0 1px 1px rgba(0,0,0,0.1);
+  color:#474747;
+}
+#thumb a:active {
+  background:#fff;
+  border-color:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+  color:#474747;
+}
 

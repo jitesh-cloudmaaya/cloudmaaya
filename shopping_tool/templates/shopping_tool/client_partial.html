@@ -1,7 +1,91 @@
 <div id="user-card">
   <a id="user-clip" href="#" data-userid="{{ client.id }}">
   <span class="name"><em>now styling:</em>{{ client.first_name }} {{ client.last_name }}</span>
-  <span class="expanded locale">Mountain View, CA</span>
+
+
+<!--
+    first_name = models.TextField(blank=True, null=True)
+    last_name = models.TextField(blank=True, null=True)
+    address_1 = models.TextField(blank=True, null=True)
+    address_2 = models.TextField(blank=True, null=True)
+    city = models.TextField(blank=True, null=True)
+    state = models.TextField(blank=True, null=True)
+    country = models.TextField(blank=True, null=True)
+    birthday = models.TextField(blank=True, null=True)
+    occupation = models.TextField(blank=True, null=True)
+    wear_to_work = models.TextField(blank=True, null=True)
+    spend_free_time = models.TextField(blank=True, null=True)
+    where_live = models.TextField(blank=True, null=True)
+    time_of_day_text = models.TextField(blank=True, null=True)
+    social_media = models.TextField(blank=True, null=True)
+    instagram = models.TextField(blank=True, null=True)
+    pinterest = models.TextField(blank=True, null=True)
+    linkedin = models.TextField(blank=True, null=True)
+    photo = models.TextField(blank=True, null=True)
+    winter = models.TextField(blank=True, null=True)
+    spring = models.TextField(blank=True, null=True)
+    summer = models.TextField(blank=True, null=True)
+    fall = models.TextField(blank=True, null=True)
+    styling_count = models.IntegerField(blank=True, null=True)
+    last_styling_date = models.DateTimeField(blank=True, null=True)
+    order_count = models.IntegerField(blank=True, null=True)
+    last_order_amt = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    last_order_date = models.DateTimeField(blank=True, null=True)
+    avg_items = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    avg_amt = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    heart_count = models.IntegerField(blank=True, null=True)
+    comment_count = models.IntegerField(blank=True, null=True)
+    star_count = models.IntegerField(blank=True, null=True)
+    signup_date = models.DateTimeField(blank=True, null=True)
+    utm_source = models.TextField(blank=True, null=True)
+    utm_campaign = models.TextField(blank=True, null=True)
+    utm_term = models.TextField(blank=True, null=True)
+    utm_medium = models.TextField(blank=True, null=True)
+    referral_site = models.TextField(blank=True, null=True)
+    hear_about_allume = models.TextField(blank=True, null=True)
+    height = models.TextField(blank=True, null=True)
+    weight = models.TextField(blank=True, null=True)
+    bra_size = models.TextField(blank=True, null=True)
+    body_part_attention = models.TextField(blank=True, null=True)
+    body_part_conceal = models.TextField(blank=True, null=True)
+    fit_challenges = models.TextField(blank=True, null=True)
+    hair_complex_color = models.TextField(blank=True, null=True)
+    first_session_focus = models.TextField(blank=True, null=True)
+    looks_goal = models.TextField(blank=True, null=True)
+    pieces_focus = models.TextField(blank=True, null=True)
+    outfits_preference = models.TextField(blank=True, null=True)
+    other_goals = models.TextField(blank=True, null=True)
+    stores = models.TextField(blank=True, null=True)
+    brands = models.TextField(blank=True, null=True)
+    spending_tops = models.TextField(blank=True, null=True)
+    spending_bottoms = models.TextField(blank=True, null=True)
+    spending_dresses = models.TextField(blank=True, null=True)
+    spending_jackets = models.TextField(blank=True, null=True)
+    spending_shoes = models.TextField(blank=True, null=True)
+    style_celebs = models.TextField(blank=True, null=True)
+    style_looks = models.TextField(blank=True, null=True)
+    style_jeans = models.TextField(blank=True, null=True)
+    style_tops = models.TextField(blank=True, null=True)
+    style_dress = models.TextField(blank=True, null=True)
+    style_jacket = models.TextField(blank=True, null=True)
+    style_shoe = models.TextField(blank=True, null=True)
+    colors_preference = models.TextField(blank=True, null=True)
+    style_avoid = models.TextField(blank=True, null=True)
+    size_pants = models.TextField(blank=True, null=True)
+    size_jeans = models.TextField(blank=True, null=True)
+    size_tops = models.TextField(blank=True, null=True)
+    size_shoe = models.TextField(blank=True, null=True)
+    ears_pierced = models.TextField(blank=True, null=True)
+    jewelry_style = models.TextField(blank=True, null=True)
+    jewelry_type = models.TextField(blank=True, null=True)
+ -->
+
+
+
+
+
+
+  <span class="expanded locale">{{ client.client_360.city}}, {{client.client_360.state}}</span>
   <span class="expanded style"><em>goal:</em>I want people to think I am beautiful again...</span>
   <span class="expanded style"><em>style:</em>sporty, sophisticated, soho</span>
   <span class="expanded style"><em>faves:</em>chunky heel, crop tops, and boyfriend jeans</span>

@@ -67,8 +67,12 @@ def explore(request, styling_session_id=None):
     client = styling_session.client
     stylists = WpUsers.objects.stylists()
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    product_image_proxy = PRODUCT_IMAGE_PROXY
 
-    context = {'favorites': favorites, 'user': user, 'stylists': stylists, 'styling_session': styling_session, 'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
+    context = {'favorites': favorites, 'user': user, 'stylists': stylists, 
+               'styling_session': styling_session, 'rack_items': rack_items, 
+               'client': client, 'layouts': layouts, 'looks': looks, 'product_image_proxy': product_image_proxy}
+
     return render(request, 'shopping_tool/explore.html', context)
 
 

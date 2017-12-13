@@ -249,8 +249,8 @@ var look_builder = {
           }
           markup.push(
             '<tr><td class="img"><a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
-            '" data-url="' + prod.product.product_image_url  + '"><i class="fa fa-crop"></i></a>' +
-            '<img src="' + prod.product.product_image_url + '"/></td>' +
+            '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
+            '"><i class="fa fa-crop"></i></a><img src="' + prod.product.product_image_url + '"/></td>' +
             '<td class="details"><a href="' + prod.product.product_url + '" target="_blank" class="name">' + 
             prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
             prod.product.short_product_description + '</p>' + price_display +
@@ -304,36 +304,64 @@ var look_builder = {
       e.preventDefault();
       var link = $(this);
       var work_station = $('#cropper-zone');
-      work_station.html('<img id="image-to-crop" src="' + link.data('url') + '"/>');
+      work_station.html(
+        '<p>Crop the product image to your desired dimensions. You will ' +
+        'see a live preview to the right. When happy hit the save crop button.</p>' +
+        '<img id="image-to-crop" src="' + look_proxy + '' + link.data('url') + '"/>' +
+        '<div id="thumb"><h6>crop preview</h6></div>'
+      );
       var img  = $('#image-to-crop');
-      var imgObject = new Image();
-      imgObject.src = link.data('url');
-      imgObject.onLoad = onImgLoaded();
-      function onImgLoaded(){
-        var w = img.width();
-        var h = img.height()
-        var ratio = w/h;
-        console.log(w)
-        console.log(h)
-        console.log(ratio)
-
+      var display_w = $('#cropper-zone').width();
+      $('#cropper').fadeIn(function(){
+        var imgObject = new Image();
+        imgObject.src = look_proxy + '' +link.data('url');
         var croppr = new Croppr('#image-to-crop', {
-          aspectRatio: ratio,
+          //aspectRatio: ratio,
           startSize: [50,50, '%'],
           onUpdate: function(value) {
-            //console.log(value.x, value.y, value.width, value.height);
+            var newImg = look_builder.getImagePortion(imgObject, value.width, value.height, value.x, value.y, 1);
+            //place image in appropriate div
+            $('#thumb').html(
+              '<h6>crop preview</h6>' +
+              '<img alt="" src="' +newImg+ '"/>' +
+              '<a href="#" class="save-crop">save crop</a>'
+            );
+            console.log(value.x, value.y, value.width, value.height);
           }
-        });
-
-        $('#cropper').fadeIn();        
-      }
-
+        }); 
+      });
+    }).on('click','a.save-crop',function(e){
+      e.preventDefault();
+      var link = $(this);
     })
     $('#close-cropper').click(function(e){
       e.preventDefault();
       $('#cropper').fadeOut();
     })
   },
+
+  getImagePortion: function(imgObj, newWidth, newHeight, startX, startY, ratio){
+    /* the parameters: - the image element - the new width - the new height - the x point we start taking pixels - the y point we start taking pixels - the ratio */
+    //set up canvas for thumbnail
+    var tnCanvas = document.createElement('canvas');
+    var tnCanvasContext = tnCanvas.getContext('2d');
+    tnCanvas.width = newWidth; tnCanvas.height = newHeight;
+
+    /* use the sourceCanvas to duplicate the entire image. This step was crucial for iOS4 and under devices. Follow the link at the end of this post to see what happens when you don’t do this */
+    var bufferCanvas = document.createElement('canvas');
+    var bufferContext = bufferCanvas.getContext('2d');
+    bufferCanvas.width = imgObj.width;
+    bufferCanvas.height = imgObj.height;
+    bufferContext.drawImage(imgObj, 0, 0);
+
+    /* now we use the drawImage method to take the pixels from our bufferCanvas and draw them into our thumbnail canvas */
+    tnCanvasContext.drawImage(bufferCanvas, startX,startY,newWidth * ratio, newHeight * ratio,0,0,newWidth,newHeight);
+    var img_data = tnCanvas.toDataURL();
+    $('canvas').remove();
+    return img_data
+  },
+
+
   /**
   * @description build new look link for drawer in rack
   * @param {object} data - the newly created look object
