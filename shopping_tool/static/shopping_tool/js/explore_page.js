@@ -204,7 +204,10 @@ var explore_page = {
     }
     var num = div.find('div.look').length
     var plural = num == 1 ? '' : 's';
-    $('#looks-header').html('<h2>Showing 1 - ' + num + ' of ' + list_object.total_looks + ' Look' + plural + '</h2>');
+    $('#looks-header').html(
+      '<h2>Showing 1 - ' + numeral(num).format('0,0') + ' of ' + 
+      numeral(list_object.total_looks).format('0,0') + ' Look' + plural + '</h2>'
+    );
     if((list_object.page + 1) <= list_object.num_pages){
       $('#loader').removeClass('active').data('page', list_object.page + 1);
     }
