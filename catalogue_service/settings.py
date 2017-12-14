@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'tasks',
     'weather_service',
     'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
