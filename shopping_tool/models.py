@@ -382,7 +382,8 @@ class LookLayout(models.Model):
 
 class Look(models.Model):
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000, blank=True, null=True)
     look_layout = models.ForeignKey(LookLayout)
     look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()

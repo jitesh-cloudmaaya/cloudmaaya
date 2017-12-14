@@ -22,6 +22,7 @@ from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavor
 from serializers import *
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -248,7 +249,8 @@ def look(request, pk):
          "name": "Test Look 5huck",
          "look_layout": 1,
          "allume_styling_session":3,
-         "stylist": 117
+         "stylist": 117,
+         "description": ""
         }
     """
     if request.method == 'GET':
@@ -318,7 +320,7 @@ def look_list(request):
 
     if 'name' in request.data:
         name = request.data['name']
-        looks = looks.filter(name__icontains = name)
+        looks = looks.filter(Q(name__icontains = name) | Q(description__icontains = name))
 
     if 'favorites_only' in request.data:
         if request.data['favorites_only'] == "True":
