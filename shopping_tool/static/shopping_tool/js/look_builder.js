@@ -20,26 +20,52 @@ var look_builder = {
       success:function(response){
         console.log(response)
         var markup = [];
+        var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
           var comp = response.looks[i];
           if(comp.id != look_id){
             var look_products_markup = [];
-            comp.look_products.sort(function(a,b){
-              if(a.layout_position > b.layout_position){ return 1}
-              if(a.layout_position < b.layout_position){ return -1}
-              return 0;
-            });
-            for(var j = 0, prods = comp.look_products.length; j<prods; j++){
-              var prod = comp.look_products[j];
-              look_products_markup.push(
-                '<div class="item" data-productid="' + prod.product.id + '">' +
-                '<img class="handle" src="' + prod.product.product_image_url + '"/></div>'
-              );
+            var col_width = 100/comp.look_layout.columns ;
+            for(var k = 0; k<comp.look_layout.columns; k++){
+              var col = ['<div class="column" style="width:calc(' + col_width + '% - 2px)">'];
+              var heights = comp.look_layout.row_heights.split(',');
+              for(var j = 0; j<comp.look_layout.rows; j++){
+                var h = heights[j];
+                var position = k > 0 ? ((j + 1) + (k * comp.look_layout.rows)) : j + 1 ;
+                var product_markup = [];
+                /* check if a look product has the same position as the newlay added row */
+                for(var p = 0, prods = comp.look_products.length; p<prods; p++){
+                  var prod = comp.look_products[p];
+                  if(prod.layout_position == position){
+                    var src = prod.product.product_image_url;
+                    if(prod.cropped_dimensions != null){
+                      var crop = {
+                        id: 'complook-' + comp.id + '-item-' + prod.id,
+                        src: look_proxy + '' + src,
+                        dims: prod.cropped_dimensions
+                      }
+                      cropped_images.push(crop);
+                    }
+                    product_markup.push(
+                      '<div class="item"><a href="#" class="item-detail" ' + 
+                      'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
+                      '" data-productid="' + prod.product.id + '"><span id="complook-' + comp.id + '-item-' + prod.id + 
+                      '"><img style="height:' + ((h/100 * 300) - 6) + 'px" src="' + src + '"/></span></a></div>'
+                    );
+                  }
+                }
+                col.push(
+                  '<div class="row" style="height:' + ((h/100 * 300) - 6) + 'px">' + 
+                  product_markup.join('') + '</div>'
+                );
+              }
+              col.push('</div>');
+              look_products_markup.push(col.join(''));
             }
             markup.push(
               '<div class="comp-look"><h3>' + comp.name + '</h3>' +
               '<span class="layout"><em>layout: </em>' + comp.look_layout.display_name + '</span>' +
-              look_products_markup.join('') + '</div>'
+              '<div class="comp-look-display">' + look_products_markup.join('') + '</div></div>'
             );
           }
         }
@@ -56,18 +82,12 @@ var look_builder = {
           }else{
             comp_looks.append(markup.join(''))
           }
-          /* 
-          hide draggable for now until decision on how to add previous look items to current look
-          $.each(comp_looks.find('div.comp-look'), function(idx){
-            var box = $(this)[0];
-            new Sortable(box, {
-              handle: ".handle",
-              group: { name: "look", pull: 'clone', put: false },
-              sort: false,
-              draggable: ".item"
-            });
-          });
-          */
+          /* afix cropped images if present */
+          if(cropped_images.length > 0){
+            for(var i = 0, l = cropped_images.length; i<l; i++){
+              look_builder.getCroppedImage(cropped_images[i], '#compare-looks');
+            }
+          }
         }
         /* if the first t ime compare looks are loaded add the infinite scroll functionality */
         if(call_number == 1){
@@ -346,6 +366,10 @@ var look_builder = {
       comp_looks.find('a.look-filter').html(link_text + ' <i class="fa fa-caret-down"></i>').removeClass('open');
       $('#look-filter-options').removeClass('show');
       look_builder.compareLooksMarkup(lookup, look_id, 1);
+    }).on('click', 'a.item-detail', function(e){
+      e.preventDefault();
+      var link = $(this);
+      rack_builder.inspectItem(link);
     });
     $('#look-indepth').on('click', 'a.close-indepth', function(e){
       e.preventDefault();
@@ -434,7 +458,7 @@ var look_builder = {
         }, 3);
       } else {
         var dims = crop.dims.split(',')
-        var new_src= look_builder.getImagePortion(imgObject, dims[0],dims[1],dims[2], dims[3], 1);
+        var new_src = look_builder.getImagePortion(imgObject, dims[0],dims[1],dims[2], dims[3], 1);
         var dom = $(selector + ' #' + crop.id);
         var img_h = dom.find('img').height()
         dom.html('<img style="height:' + img_h + 'px" src="' + new_src + '"/>');

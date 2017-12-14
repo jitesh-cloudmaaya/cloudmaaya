@@ -1383,7 +1383,7 @@ div.layout-option div.layout-grid div.row { border:1px solid #474747; border-rad
   padding:10px 5px;
 }
 #compare-looks div.comp-look span.layout em {font-weight:400;}
-#compare-looks div.comp-look div.item {
+/*#compare-looks div.comp-look div.item {
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   margin:5px;
   float:left;
@@ -1399,7 +1399,28 @@ div.layout-option div.layout-grid div.row { border:1px solid #474747; border-rad
   margin: 0 auto; 
   overflow:hidden; 
   max-width:100%;
+}*/
+
+#compare-looks div.comp-look div.item {
+  background:#fff;
+  padding:0;
+  position:relative;
 }
+#compare-looks div.comp-look div.item a.item-details {
+  display:block;
+  height:100%;
+  text-decoration: none;
+  width:100%;
+}
+#compare-looks div.comp-look div.item img {
+  display:block;
+  margin:0 auto; 
+  height:100%; 
+  max-width:100%;
+}
+
+
+
 #rack-list a.rack-section-toggle,
 #rack-list a.close-all-rack-sections {
   color:#474747;
@@ -1799,9 +1820,12 @@ div.layout-option div.layout-grid div.row { border:1px solid #474747; border-rad
   padding-top:2px;
 }
 
-#all-looks-list div.look div.display div.items {overflow:auto;padding:0 7.5px;}
-#all-looks-list div.look div.display div.items div.column {float:left; height:300px; margin:0 1px;}
-#all-looks-list div.look div.display div.items div.column div.row {border:1px solid #ddd; border-radius:3px; margin:2px 0;}
+#all-looks-list div.look div.display div.items,
+#compare-looks div.other-looks div.comp-look div.comp-look-display {overflow:auto;padding:0 7.5px;}
+#all-looks-list div.look div.display div.items div.column,
+#compare-looks div.other-looks div.comp-look div.comp-look-display div.column {float:left; height:300px; margin:0 1px;}
+#all-looks-list div.look div.display div.items div.column div.row,
+#compare-looks div.other-looks div.comp-look div.comp-look-display div.row {border:1px solid #ddd; border-radius:3px; margin:2px 0;}
 #all-looks-list div.look div.display div.item {
   background:#fff;
   padding:0;
