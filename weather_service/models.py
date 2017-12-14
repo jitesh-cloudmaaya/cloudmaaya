@@ -40,6 +40,22 @@ class WeatherManager(models.Manager):
         return results
 
 
+### BEGIN LOGIC TO ASSIGN LABELS/values
+
+# I would think we want values, labels, and the icon to use
+# e.g. temp = x, prcp = y, label is 'warm but x', icon is 'erikflowers.css'
+
+
+# cases 
+
+# temperature, hot vs cold
+
+
+
+
+### END LOGIC TO ASSIGN LABELS/values
+
+
 class Weather(models.Model):
     id = models.AutoField(primary_key=True) # added by Django by default?
     # id = models.BigAutoField(primary_key=True) # go with bigger?
@@ -53,6 +69,22 @@ class Weather(models.Model):
     spring_snowfall = models.CharField(max_length=15, default='', blank=True)
     spring_wind = models.CharField(max_length=15, default='', blank=True)
     spring_sun = models.CharField(max_length=15, default='', blank=True)
+
+    # first guesses at description and icon fields for Weather
+    
+    # spring_description = models.CharField(max_length=255, default='', blank=True)
+    # spring_icon = models.CharField(max_length=255, default='', blank=True)
+
+    # summer_description = models.CharField(max_length=255, default='', blank=True)
+    # summer_icon = models.CharField(max_length=255, default='', blank=True)
+
+    # autumn_description = models.CharField(max_length=255, default='', blank=True)
+    # autumn_icon = models.CharField(max_length=255, default='', blank=True)
+
+    # winter_description = models.CharField(max_length=255, default='', blank=True)
+    # winter_icon = models.CharField(max_length=255, default='', blank=True)
+
+    # end field guesses
 
     summer_temperature = models.CharField(max_length=15, default='', blank=True)
     summer_precipitation = models.CharField(max_length=15, default='', blank=True)
@@ -88,8 +120,70 @@ class Weather(models.Model):
         data_year = datetime.datetime.now().year - 1
         data_year = str(data_year)
 
+
+        # current input can look like
+        # {'spring': {'temp': 'cool', 'precip': 'rainy', 'snow': 'not snowy', 'wind': 'breezy', 'sun': None},
+        #  'summer': {'temp', 'precip', 'snow', 'wind', 'sun'},
+        #  'autumn': {'temp', 'precip', 'snow', 'wind', 'sun'},
+        #  'winter': {'temp', 'precip', 'snow', 'wind', 'sun'},}
+
+        ### BEGIN NEW LABEL ASSIGNMENT
+
+
+
+
+        # season_weather = self.get_weather(self.city, self.state, data_year, data_year) # start and end year currently the same
+
+
+        # if season_weather:
+        #     for season in season_weather:
+        #         if season == 'spring':
+        #             attrs = season_weather[season]
+
+        #             temperature_label = ''
+        #             additional_labels = []
+
+        #             seen = set() # track which attrs have been looped over for this property:
+        #             # always include temp if able, one of snowy or rainy if present, additional properties until len == 2
+
+        #             for attr in attrs:
+        #                 if attr == 'TAVG':
+        #                     temperature_label = attrs[attr]
+        #                 elif attr == 'PRCP':
+
+        #                     pass
+        #                 elif attr == 'SNOW':
+        #                     pass
+        #                 else:
+        #                     additional_labels.append(attrs[attr])
+
+        #             spring_description = temperature_label
+        #             spring_icon = choose_icon(spring_description)
+
+
+        #         elif season == 'summer':
+        #             pass
+        #         elif season == 'autumn':
+        #             pass
+        #         elif season == 'winter':
+        #             pass
+
+
+        # temperature_label = 
+        # additional_labels = # should be no longer than 2 items
+        # description = temperature_label
+        # for label in additional_labels:
+        #     description += label + ', '
+        # description[:-2] # remove trailing ', '
+
+
+
+
+
+        ### END NEW LABEL ASSIGNMENT
+
         # weather label assignment
-        season_weather = self.get_weather(self.city, self.state, data_year, data_year)
+        season_weather = self.get_weather(self.city, self.state, data_year, data_year) # start and end year currently the same
         if season_weather:
             for season, values in season_weather.items():
                 if season == 'spring':
@@ -142,6 +236,17 @@ class Weather(models.Model):
                             self.winter_sunshine = label
 
             super(Weather, self).save(*args, **kwargs)
+
+
+    def choose_icon(description):
+        """
+        Takes a seasonal description ('warm, rainy, and windy') and returns the appropriate icon from
+        erikflowers to use.
+        """
+        icon_label = None
+
+
+        return icon_label
 
     # save helpers
     # change method to accept year parameter
