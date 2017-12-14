@@ -28,10 +28,20 @@ var explore_page = {
     look_builder.functionality();
     /* cache the session id */
     explore_page.session_id = $('body').data('stylesession');
-    $('#loader').data('filter', {});
-    /* get the initial page of looks */
-    getLooks({});
+    /* explore page functionality */
+    var looks_header = $('#looks-header');
+    var at_load_stylist = utils.readURLParams('set_stylist');
     $('#stylist-select').val(' ').selectize({ create: false, sortField: 'text'});
+    if(at_load_stylist == null){
+      /* get the initial page of looks */
+      $('#loader').data('filter', {});
+      getLooks({});
+    }else{
+      $('#stylist-select')[0].selectize.setValue(at_load_stylist, false);
+      /* get the initial page of looks for specified stylist */
+      $('#loader').data('filter', {stylist: at_load_stylist});
+      getLooks({stylist: at_load_stylist});      
+    }
     $('#look-name').val('');
     $('#all-looks-list').on('click','a.item-detail',function(e){
       e.preventDefault();
@@ -93,24 +103,21 @@ var explore_page = {
       var stylist = $('#stylist-select').val();
       var name = $('#look-name').val();
       var faves = $('#look-favorite-status').hasClass('fave');
-      console.log(faves)
       lookup.page = 1
-      //console.log(stylist)
       if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
       if(name != ''){ lookup.name = name; }
       if(faves == true){ lookup.favorites_only = "True"};
-      //console.log(lookup)
       $('#loader').data('filter',lookup);
       $('#all-looks-list').html('');
       getLooks(lookup);
     });
-    var looks_header = $('#looks-header');
     /* infinte scroll/paging listen for when user scrolls within 100 px of bnottom of page */
     $(window).scroll(function(){
       var st = $(window).scrollTop();
       var dh = $(document).height();
       var wh = $(window).height(); 
       var tot = st + wh;
+      /* sticky header checks */
       if(looks_header.hasClass('sticky') == false){
         if(st > 148){
           looks_header.addClass('sticky')
@@ -120,6 +127,7 @@ var explore_page = {
           looks_header.removeClass('sticky')
         }
       }
+      /* load more looks check */
       if( (dh - 100) < tot ){
         var loader = $('#loader');
         if(loader.hasClass('active') == false){
@@ -223,7 +231,7 @@ var explore_page = {
     if(num == 0){
       now_showing_text = 'No looks to display'
     }else if(num == 1){
-      now_showing_text = 'Showing 1 look'
+      now_showing_text = 'Showing 1 Look'
     }
     $('#looks-header').html('<h2>' + now_showing_text + '</h2>');
     if((list_object.page + 1) <= list_object.num_pages){

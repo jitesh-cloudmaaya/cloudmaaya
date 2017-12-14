@@ -196,5 +196,14 @@ var utils = {
       }
     }
     $('#pager').html(markup.join(''));
-  }  
+  },
+    /**
+  * @description read url params value from window.location.search
+  * @param {string} param - parameter we are checking for
+  * @returns {string | null} returns param value or null if not present
+  */
+  readURLParams: function(param){
+    var match = RegExp('[?&]' + param + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+  } 
 }
