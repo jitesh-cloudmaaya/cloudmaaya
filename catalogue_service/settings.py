@@ -46,7 +46,10 @@ INSTALLED_APPS = [
     'shopping_tool_api',
     'rest_framework_swagger',
     'django_nose',
-    'tasks'
+    'tasks',
+    'weather_service',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -158,10 +161,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # Use nose to run all tests
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+CELERY_RESULT_BACKEND = 'django-db'
+
 # Tell nose to measure coverage 
 NOSE_ARGS = [
     '--with-coverage',
-    '--cover-package=shopping_tool_api',
+    '--cover-package=shopping_tool_api, weather_service',
     '--nocapture',
     '--nologcapture',
 ]
