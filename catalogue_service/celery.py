@@ -7,13 +7,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'catalogue_service.settings')
 
 
 app = Celery('catalogue_service')
-app.conf.ONCE = {
-    'backend': 'celery_once.backends.Redis',
-    'settings': {
-        'url': 'redis://lcoalhost:6379/0',
-        'defalt_timeout': 60 * 60
-    }
-}
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.
