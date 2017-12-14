@@ -80,16 +80,25 @@ var explore_page = {
         }); 
       }
     });
+    /* set look favorite filter inclusion */
+    $('#look-favorite-status').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      link.toggleClass('any').toggleClass('fave');
+    });
     /* get new filtered list of looks */
     $('#looks-filter').click(function(e){
       e.preventDefault();
       var lookup = {};
       var stylist = $('#stylist-select').val();
       var name = $('#look-name').val();
+      var faves = $('#look-favorite-status').hasClass('fave');
+      console.log(faves)
       lookup.page = 1
       //console.log(stylist)
       if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
       if(name != ''){ lookup.name = name; }
+      if(faves == true){ lookup.favorites_only = "True"};
       //console.log(lookup)
       $('#loader').data('filter',lookup);
       $('#all-looks-list').html('');
@@ -209,10 +218,14 @@ var explore_page = {
     }
     var num = div.find('div.look').length
     var plural = num == 1 ? '' : 's';
-    $('#looks-header').html(
-      '<h2>Showing 1 - ' + numeral(num).format('0,0') + ' of ' + 
-      numeral(list_object.total_looks).format('0,0') + ' Look' + plural + '</h2>'
-    );
+    var now_showing_text = 'Showing 1 - ' + numeral(num).format('0,0') + ' of ' + 
+      numeral(list_object.total_looks).format('0,0') + ' Look' + plural + ''
+    if(num == 0){
+      now_showing_text = 'No looks to display'
+    }else if(num == 1){
+      now_showing_text = 'Showing 1 look'
+    }
+    $('#looks-header').html('<h2>' + now_showing_text + '</h2>');
     if((list_object.page + 1) <= list_object.num_pages){
       $('#loader').removeClass('active').data('page', list_object.page + 1);
     }
