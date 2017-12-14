@@ -36,7 +36,7 @@ var explore_page = {
     $('#all-looks-list').on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
-      rack_builder.inspectItem(link);
+      rack_builder.inspectItem(link, 'rack');
     }).on('click','a.favorite-look', function(e){
       e.preventDefault();
       var link = $(this);

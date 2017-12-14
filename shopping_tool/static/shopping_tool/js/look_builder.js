@@ -369,7 +369,7 @@ var look_builder = {
     }).on('click', 'a.item-detail', function(e){
       e.preventDefault();
       var link = $(this);
-      rack_builder.inspectItem(link);
+      rack_builder.inspectItem(link, 'compare');
     });
     $('#look-indepth').on('click', 'a.close-indepth', function(e){
       e.preventDefault();
@@ -623,7 +623,8 @@ var look_builder = {
         'Drag rack items from the left into open spots within the look layout.' +
         '<br/><br/>Dragging an item into an occupied spot will remove the old item ' +
         'from that position.<br/><br/>Drag items to trash to remove from the look.<br/><br/>' + 
-        'Compare to other looks for the client to the right.<br/><br/>' +
+        'Compare to other looks for the client to the right.<br/><br/>You can crop a product image ' +
+        'from within the look details view, link below:<br/><br/>' +
         '<a href="#" class="look-more-details" data-look="' + id + '">' +
         '<i class="fa fa-search"></i>look details</a>' + 
         '</div><div class="drop-zone">' + markup.join('') + '</div>'

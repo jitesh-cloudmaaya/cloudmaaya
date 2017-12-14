@@ -65,8 +65,9 @@ var rack_builder = {
   * @description add to rack functionality
   * @param {DOM object} item - link clicked
   * @param {string} page - which page the add to rack call initiated 
+  * @param {boolean} from_compare - if inpsect initiation came from compare looks list
   */
-  addToRack: function(item, page){
+  addToRack: function(item, page, from_compare){
     var rack = $('#rack-list');
     var existing = rack.data('skus');
     var details = item.data('details');
@@ -128,6 +129,9 @@ var rack_builder = {
           }
           rack.find('div.block[data-category="' + sanitized_cat + '"]').append(itm)
           rack_builder.updateRackCount();
+          if(from_compare == true){
+            look_builder.orderedRack();
+          }
         },
         type: 'PUT',
         url: '/shopping_tool_api/rack_item/0/'
@@ -388,15 +392,18 @@ var rack_builder = {
     }).on('click','a.add-to-rack',function(e){
       e.preventDefault();
       var link = $(this);
-      rack_builder.addToRack(link, 'inspect');
+      var from_compare = link.hasClass('compare') ? true : false;
+      rack_builder.addToRack(link, 'inspect', from_compare);
     });
   },
   /**
   * @description inpect item functionality allows for clicking favorites or look items to view fuller details 
   *              and either rack of favorite any of the sizes associated with the clicked upon item
   * @param {DOM object} link - item link triggering the inspect
+  * @param {string} view - option view flag to add additional processing if required
   */
-  inspectItem: function(link){
+  inspectItem: function(link, view){
+    var view_class = view == undefined ? '' : view;
     var id = parseInt(link.data('productid'));
     $.ajax({
       beforeSend: function(){
@@ -431,8 +438,8 @@ var rack_builder = {
             fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
             product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
           }
-          var rack_link = '<a href="#" class="add-to-rack" data-productid="' + product.id + 
-              '"><i class="icon-hanger"></i>add to rack</a>';          
+          var rack_link = '<a href="#" class="add-to-rack ' + view_class + 
+              '" data-productid="' + product.id + '"><i class="icon-hanger"></i>add to rack</a>';          
           if(product.id == id){
             var retail = product.retail_price;
             var sale = product.sale_price;

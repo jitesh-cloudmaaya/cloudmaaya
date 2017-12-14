@@ -1768,21 +1768,22 @@ div.layout-option div.layout-grid div.row { border:1px solid #474747; border-rad
   margin:0 5px 7.5px;
   overflow:auto;
   padding:0 5px 7.5px;
-  -moz-column-gap: 0px;
+  /*-moz-column-gap: 0px;
   -webkit-column-gap: 0px;
   column-gap: 0px;
   -moz-column-count: 3;
   -webkit-column-count: 3;
-  column-count: 3;
+  column-count: 3;*/
 }
 
 #all-looks-list div.look {
-    box-sizing: border-box;
+   /* box-sizing: border-box;
     -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    display:inline-block;
-    margin:0 0 5px;
-    width:100%;  
+    -webkit-box-sizing: border-box;*/
+    display:block;
+    float:left;
+    margin:0 7.5 15px;
+    width:calc(100%/3);  
 }
 #all-looks-list div.look div.display {
   background:#fff;

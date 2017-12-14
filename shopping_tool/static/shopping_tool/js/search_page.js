@@ -78,7 +78,7 @@ var search_page = {
     }).on('click','a.add-to-rack',function(e){
       e.preventDefault();
       var link = $(this);
-      rack_builder.addToRack(link, 'search');
+      rack_builder.addToRack(link, 'search', false);
     }).on('mouseenter', 'a.info-toggle', function(e){
       var link = $(this);
       var tt = link.siblings('div.tt');
