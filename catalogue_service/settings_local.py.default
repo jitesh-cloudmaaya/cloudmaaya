@@ -30,3 +30,12 @@ REDIS_DB = "2"
 
 CELERY_RESULT_BACKEND = "redis://%s:%s/%s" % (REDIS_HOST, REDIS_PORT, REDIS_DB)
 BROKER_URL = "redis://%s:%s/%s" % (REDIS_HOST, REDIS_PORT, REDIS_DB)
+
+
+ONCE = {
+    'backend': 'celery_once.backends.Redis',
+        'settings': {
+        'url': BROKER_URL,
+        'default_timeout': 60 * 60
+        }
+    }

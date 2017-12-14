@@ -20,3 +20,4 @@ django-celery-results==1.0.1
 Pillow==4.3.0
 redis==2.10.6
 django-celery-beat==1.1.0
+celery-once==1.2.0
