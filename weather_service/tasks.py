@@ -1,9 +1,11 @@
 # Create your tasks here
 from __future__ import absolute_import, unicode_literals
-from celery import shared_task
+from celery import task, shared_task
 
 from shopping_tool.models import AllumeClient360
 from weather_service.models import Weather
+
+from celery_once import QueueOnce
 
 
 @shared_task
@@ -12,7 +14,8 @@ def add(x, y):
 
 # begin celery task for weather_data
 
-@shared_task
+# @shared_task
+@task(base=QueueOnce)
 def create_weather_data_from_allumeclient360():
     print('Begin attempt')
 
