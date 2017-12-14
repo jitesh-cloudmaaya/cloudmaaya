@@ -197,7 +197,7 @@ var utils = {
     }
     $('#pager').html(markup.join(''));
   },
-    /**
+  /**
   * @description read url params value from window.location.search
   * @param {string} param - parameter we are checking for
   * @returns {string | null} returns param value or null if not present
