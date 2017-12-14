@@ -10,7 +10,7 @@ app = Celery('catalogue_service')
 app.conf.ONCE = {
     'backend': 'celery_once.backends.Redis',
     'settings': {
-        'url': 'redis://lcoalhost:6379/0',
+        'url': 'redis://localhost:6379/0',
         'defalt_timeout': 60 * 60
     }
 }
