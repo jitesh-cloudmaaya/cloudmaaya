@@ -18,3 +18,4 @@ django-nose==1.4.5
 coverage==4.4.2
 django-celery-results==1.0.1
 Pillow==4.3.0
+redis==2.10.6
