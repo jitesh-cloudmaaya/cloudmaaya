@@ -71,18 +71,18 @@ class Weather(models.Model):
     spring_sun = models.CharField(max_length=15, default='', blank=True)
 
     # first guesses at description and icon fields for Weather
-    
-    # spring_description = models.CharField(max_length=255, default='', blank=True)
-    # spring_icon = models.CharField(max_length=255, default='', blank=True)
+    # icon fieldtype is a guess    
+    spring_description = models.CharField(max_length=255, default='', blank=True)
+    spring_icon = models.CharField(max_length=255, default='', blank=True)
 
-    # summer_description = models.CharField(max_length=255, default='', blank=True)
-    # summer_icon = models.CharField(max_length=255, default='', blank=True)
+    summer_description = models.CharField(max_length=255, default='', blank=True)
+    summer_icon = models.CharField(max_length=255, default='', blank=True)
 
-    # autumn_description = models.CharField(max_length=255, default='', blank=True)
-    # autumn_icon = models.CharField(max_length=255, default='', blank=True)
+    autumn_description = models.CharField(max_length=255, default='', blank=True)
+    autumn_icon = models.CharField(max_length=255, default='', blank=True)
 
-    # winter_description = models.CharField(max_length=255, default='', blank=True)
-    # winter_icon = models.CharField(max_length=255, default='', blank=True)
+    winter_description = models.CharField(max_length=255, default='', blank=True)
+    winter_icon = models.CharField(max_length=255, default='', blank=True)
 
     # end field guesses
 
