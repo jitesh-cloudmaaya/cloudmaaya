@@ -33,64 +33,38 @@ class SingleWeatherRetrievalTests(TestCase):
     def test_retrieve_weather_from_non_existing_location(self):
         """
         Test Weather retrieval method behavior on being queried for non-existent location.
+        Behavior now asserts that objects are created as long as a city and state are provided,
+        but both locations with no zip codes or no data are initialized to have zeros in weather data.
         """
+        # locations with no zip codes or no data for zip codes initialize with zeros
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-        # non-existent locations do not write to DB
-        self.assertIsNone(Weather.objects.retrieve_weather_object(city='Atlantis', state='OC')) # fake city and state
-        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-        self.assertIsNone(Weather.objects.retrieve_weather_object(city='San Jose', state='MD')) # mismatched city and state
-        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-        self.assertIsNone(Weather.objects.retrieve_weather_object(city='Emerald City', state='OZ')) # fake city
-        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-        self.assertIsNone(Weather.objects.retrieve_weather_object(city='Merced', state='RA')) # fake state
-        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='Atlantis', state='OC').spring_wind) # fake city and state
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT+1, Weather.objects.count())
+        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='San Jose', state='MD').summer_wind) # mismatched city and state
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT+2, Weather.objects.count())
+        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='Emerald City', state='OZ').winter_temperature) # fake city
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT+3, Weather.objects.count())
+        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='Merced', state='RA').autumn_snowfall) # fake state
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT+4, Weather.objects.count())
 
     def test_retrieve_weather_empty(self):
         """
         Test the behavior of retrieve_weather_object method when provided with empty strings
-        for one or more arguments.
+        for one or more arguments. Behavior now asserts that objects are created as long as
+        a city and state are provided, but both locations with no zip codes or no data are
+        initialized to have zeros in weather data.
         """
+        # locations with no zip codes or no data for zip codes initialize with zeros
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-        self.assertIsNone(Weather.objects.retrieve_weather_object(city='', state=''))
-        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-        self.assertIsNone(Weather.objects.retrieve_weather_object(city='San Jose', state=''))
-        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-        self.assertIsNone(Weather.objects.retrieve_weather_object(city='', state='CA'))
-        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-
+        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='', state='').spring_temperature)
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT+1, Weather.objects.count())
+        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='San Jose', state='').summer_precipitation)
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT+2, Weather.objects.count())
+        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='', state='CA').autumn_sun)
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT+3, Weather.objects.count())
 
     # other edge cases
 
-
-
-
-        # is this a mysql (used in dev) vs sqlite (used in test) string comparison thing
-    # def test_retrieval_using_uncapitalized_city_state(self):
-    #     """
-    #     Test city and state string formatting behavior of Weather object.
-    #     """
-    #     pass
-    #     # BREAKS CIRLCECI because of db difference
-    #     print(Weather.objects.all())
-    #     print(Weather.objects.count())
-    #     self.assertEqual('San Jose', Weather.objects.retrieve_weather_object(city='san jose', state='CA').city)
-    #     print(Weather.objects.all())
-    #     print(Weather.objects.count())
-    #     self.assertEqual('CA', Weather.objects.retrieve_weather_object(city='San Francisco', state='ca').state)
-    #     print(Weather.objects.all())
-    #     print(Weather.objects.count())
-    #     w = Weather.objects.retrieve_weather_object(city='mountain view', state='ca')
-    #     print(Weather.objects.all())
-    #     print(Weather.objects.count())
-    #     self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-    #     print(Weather.objects.all())
-    #     print(Weather.objects.count())
-    #     self.assertEqual('Mountain View', w.city)
-    #     print(Weather.objects.all())
-    #     print(Weather.objects.count())
-    #     self.assertEqual('CA', w.state)
-    #     print(Weather.objects.all())
-    #     print(Weather.objects.count())
 
 class BulkWeatherRetrievalTests(TestCase):
     @classmethod
@@ -176,23 +150,23 @@ class UpdateOnStaleDataTests(TestCase):
         w = Weather.objects.retrieve_weather_object(city='San Francisco', state='CA')
         self.assertEqual(self.CURRENT_YEAR, w.last_modified.year)
 
-    # def test_update_stale_data_bulk(self):
-    #     w0 = Weather.objects.get(city='San Francisco', state='CA')
-    #     w1 = Weather.objects.get(city='Merced', state='CA')
-    #     w2 = Weather.objects.get(city='Tracy', state='CA')
+    def test_update_stale_data_bulk(self):
+        w0 = Weather.objects.get(city='San Francisco', state='CA')
+        w1 = Weather.objects.get(city='Merced', state='CA')
+        w2 = Weather.objects.get(city='Tracy', state='CA')
 
-    #     last_modified_year0 = w0.last_modified.year
-    #     last_modified_year1 = w1.last_modified.year
-    #     last_modified_year2 = w2.last_modified.year
+        last_modified_year0 = w0.last_modified.year
+        last_modified_year1 = w1.last_modified.year
+        last_modified_year2 = w2.last_modified.year
 
-    #     self.assertEqual(self.LAST_UPDATED_YEAR_3, last_modified_year0)
-    #     self.assertEqual(self.LAST_UPDATED_YEAR_4, last_modified_year1)
-    #     self.assertEqual(self.LAST_UPDATED_YEAR_5, last_modified_year2)
+        self.assertEqual(self.LAST_UPDATED_YEAR_3, last_modified_year0)
+        self.assertEqual(self.LAST_UPDATED_YEAR_4, last_modified_year1)
+        self.assertEqual(self.LAST_UPDATED_YEAR_5, last_modified_year2)
 
-    #     locations = [('San Francisco', 'CA'), ('Merced', 'CA'), ('Tracy', 'CA')]
-    #     weathers = Weather.objects.retrieve_weather_objects(locations)
-    #     for weather in weathers:
-    #         self.assertEqual(self.CURRENT_YEAR, weather.last_modified.year)
+        locations = [('San Francisco', 'CA'), ('Merced', 'CA'), ('Tracy', 'CA')]
+        weathers = Weather.objects.retrieve_weather_objects(locations)
+        for weather in weathers:
+            self.assertEqual(self.CURRENT_YEAR, weather.last_modified.year)
 
     def test_no_update_fresh_data_single(self):
         w = Weather.objects.get(city='Azusa', state='CA')

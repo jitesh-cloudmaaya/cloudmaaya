@@ -213,7 +213,7 @@ class Weather(models.Model):
                         elif attr == 'PSUN':
                             self.winter_sunshine = value
 
-            super(Weather, self).save(*args, **kwargs)
+        super(Weather, self).save(*args, **kwargs)
 
     # save helpers
     # change method to accept year parameter
@@ -263,10 +263,10 @@ class Weather(models.Model):
 
         # construct season_weather dictionary from response
         season_weather = {
-            'spring': {'PRCP': '', 'SNOW': '', 'TAVG': '', 'PSUN': '', 'AWND': ''},
-            'summer': {'PRCP': '', 'SNOW': '', 'TAVG': '', 'PSUN': '', 'AWND': ''},
-            'autumn': {'PRCP': '', 'SNOW': '', 'TAVG': '', 'PSUN': '', 'AWND': ''},
-            'winter': {'PRCP': '', 'SNOW': '', 'TAVG': '', 'PSUN': '', 'AWND': ''}
+            'spring': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
+            'summer': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
+            'autumn': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
+            'winter': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'PSUN': 0.0, 'AWND': 0.0}
         }
         for datum in results:
             date = datum['date']
@@ -296,7 +296,7 @@ class Weather(models.Model):
         for season in season_weather:
             for attr in season_weather[season]:
                 if season_weather[season][attr]:
-                    season_weather[season][attr] = sum(season_weather[season][attr]) / len(season_weather[season][attr])
+                    season_weather[season][attr] = float(sum(season_weather[season][attr]) / len(season_weather[season][attr]))
 
         return season_weather
 
@@ -328,6 +328,9 @@ class Weather(models.Model):
 
     def __str__(self):
         return self.city + ', ' + self.state
+
+
+
 
 
 
