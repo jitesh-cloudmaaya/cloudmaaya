@@ -7,4 +7,4 @@ touch /srv/log/logfile
 #sudo service celeryd start
 export C_FORCE_ROOT=true
 #tail -n 0 -f /srv/logs/*.log
-celery beat -A catalogue_service.celeryconf -S djcelery.schedulers.DatabaseScheduler
+celery -A catalogue_service beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
