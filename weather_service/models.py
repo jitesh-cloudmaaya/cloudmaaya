@@ -83,60 +83,41 @@ class Weather(models.Model):
     @property
     def icon(self):
         "Returns the id of the appropriate icon to display based on snow, precipitation, wind, and sunshine."
-        season = 'summer'
-        icon_id = 'wi-day-cloudy' # default to zero sunshine state?
+        # define conditions
+        sunny = self.summer_sun >= 50
+        windy = self.summer_wind >= 8
+        gusty = self.summer_wind > 15
+        rainy = self.summer_precipitation > 3
+        snowy = self.summer_snowfall > 2
 
-        # make sure fields are initialized to 0 rather than None for comparison or otherwise handle
-        if self.summer_sun >= 50:
+        # choose icon
+        icon_id = 'wi-day-cloudy' # default
+        if sunny:
             icon_id = 'wi-day-sunny'
-        if self.summer_wind >= 8:
-            icon_id = 'wi-day-cloudy-windy'
-        if self.summer_wind > 15:
-            icon_id = 'wi-day-cloudy-gusts'
-        if self.summer_precipitation > 3:
-            icon_id = 'wi-day-rain'
-        if self.summer_snowfall > 2:
-            icon_id = 'wi-day-snow'
+        if windy:
+            if not sunny:
+                icon_id = 'wi-day-cloudy-windy'
+            else:
+                icon_id = 'wi-day-light-wind'
+        if gusty:
+            if not sunny:
+                icon_id = 'wi-day-cloudy-gusts'
+            else:
+                icon_id = 'wi-day-windy'
+        if rainy:
+            if windy:
+                icon_id = 'wi-day-rain-wind'
+            else:
+                icon_id = 'wi-day-rain'
+        if snowy:
+            if windy:
+                icon_id = 'wi-day-snow-wind'
+            else:
+                icon_id = 'wi-day-snow'
         return icon_id
-
-
-
-        # if season == 'summer':
-        #     if self.summer_sun >= 50:
-        #         icon_id = 'wi-day-sunny'
-        #     if self.summer_wind >= 8:
-        #         icon_id = 'wi-day-cloudy-windy'
-        #     if self.summer_wind > 15:
-        #         icon_id = 'wi-day-cloudy-gusts'
-        #     if self.summer_precipitation > 3:
-        #         icon_id = 'wi-day-rain'
-        #     if self.summer_snowfall > 2:
-        #         icon_id = 'wi-day-snow'
-        # elif season == 'spring':
-        #     pass
-        # elif season == 'autumn':
-        #     pass
-        # elif season == 'winter':
-        #     pass
-        
-        # return icon_id
-
-
 
     # @property
     # def winter_icon(self):
-    #     icon_id = 'wi-day-cloudy'
-    #     if self.winter_sun >= 50:
-    #         icon_id = 'wi-day-sunny'
-    #     if self.winter_wind >= 8:
-    #         icon_id = 'wi-day-cloudy-windy'
-    #     if self.winter_wind > 15:
-    #         icon_id = 'wi-day-cloudy-gusts'
-    #     if self.winter_precipitation > 3:
-    #         icon_id = 'wi-day-rain'
-    #     if self.winter_snowfall > 2:
-    #         icon_id = 'wi-day-snow'
-
     #     return icon_id
 
 
@@ -269,6 +250,7 @@ class Weather(models.Model):
             value = datum['value']
             season = None
 
+            # seasons as defined by meterological convention in the northern hemisphere 
             if month == '03' or month == '04' or month == '05':
                 season = 'spring'
             elif month == '06' or month == '07' or month == '08':

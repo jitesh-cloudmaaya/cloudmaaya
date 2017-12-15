@@ -1,4 +1,4 @@
-# should correspond to wi-day-sunny
+# should correspond to wi-day-cloudy
 -   model: weather_service.weather
     pk: 1
     fields: {city: San Jose, state: CA,
@@ -8,9 +8,9 @@
         summer_precipitation: 2.999,
         summer_snowfall: 1.999,
         summer_wind: 7.999,
-        summer_sun: 50.01,
+        summer_sun: 49.0,
     }
-# should correspond to wi-day-cloudy-windy
+# should correspond to wi-day-sunny
 -   model: weather_service.weather
     pk: 2
     fields: {city: Sunnyvale, state: CA,
@@ -19,10 +19,10 @@
         summer_temperature_average: 68.23,
         summer_precipitation: 2.999,
         summer_snowfall: 1.999,
-        summer_wind: 8.13,
+        summer_wind: 7.999,
         summer_sun: 50.01,
     }
-# should correspond to wi-day-cloudy-gusts
+# should correspond to wi-day-light-wind
 -   model: weather_service.weather
     pk: 3
     fields: {city: Mountain View, state: CA,
@@ -31,13 +31,49 @@
         summer_temperature_average: 68.23,
         summer_precipitation: 2.999,
         summer_snowfall: 1.999,
-        summer_wind: 15.2,
+        summer_wind: 8.13,
         summer_sun: 50.01,
     }
-# should correspond to wi-day-rain
+# should correspond to wi-day-cloudy-windy
 -   model: weather_service.weather
     pk: 4
     fields: {city: San Diego, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.99,
+        summer_snowfall: 1.999,
+        summer_wind: 8.13,
+        summer_sun: 49.0,
+    }
+# should correspond to wi-day-windy
+-   model: weather_service.weather
+    pk: 5
+    fields: {city: San Francisco, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 1.9999,
+        summer_wind: 15.2,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-cloudy-gusts
+-   model: weather_service.weather
+    pk: 6
+    fields: {city: Los Angeles, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 1.999,
+        summer_wind: 15.2,
+        summer_sun: 49.0,
+    }
+# should correspond to wi-day-rain
+-   model: weather_service.weather
+    pk: 7
+    fields: {city: Houston, state: TX,
         date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
         last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
         summer_temperature_average: 68.23,
@@ -46,15 +82,60 @@
         summer_wind: 7.999,
         summer_sun: 50.01,
     }
+# should correspond to wi-day-rain-wind
+-   model: weather_service.weather
+    pk: 8
+    fields: {city: Orlando, state: FL,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 3.14,
+        summer_snowfall: 1.999,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+    }
 # should correspond to wi-day-snow
 -   model: weather_service.weather
-    pk: 5
-    fields: {city: San Francisco, state: CA,
+    pk: 9
+    fields: {city: Denver, state: CO,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.99,
+        summer_snowfall: 2.10,
+        summer_wind: 7.999,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-snow-wind
+-   model: weather_service.weather
+    pk: 10
+    fields: {city: New York, state: NY,
         date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
         last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
         summer_temperature_average: 68.23,
         summer_precipitation: 2.999,
         summer_snowfall: 2.10,
-        summer_wind: 7.999,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+    }
+
+# model for testing default behavior with no initialized values.
+-   model: weather_service.weather
+    pk: 11
+    fields: {city: Seattle, state: WA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+    }
+
+# models for multiple case choice testing
+-   model: weather_service.weather
+    pk: 12
+    fields: {city: Boston, state: MA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 2.10,
+        summer_wind: 8.13,
         summer_sun: 50.01,
     }
