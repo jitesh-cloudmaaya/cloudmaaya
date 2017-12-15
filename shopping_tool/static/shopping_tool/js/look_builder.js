@@ -123,15 +123,43 @@ var look_builder = {
       $('#new-look-error').html('');
       $('#new-look-name').val('');
       $('#new-look-layout')[0].selectize.setValue('',true);
+      $('#new-look-description').val('');
       $('#create-look').fadeIn();
     });
     $('#look-links').on('click', 'a.look-link', function(e){
       e.preventDefault();
       var link = $(this);
-      look_builder.setUpBuilder(link.data('lookid'))
-      $('#designing').html(link.data('lookname'));
+      var data = link.data();
+      look_builder.setUpBuilder(data.lookid);
+      setTimeout(function(){
+        $('#look-list').removeClass('show');
+        $('#rack').removeClass('show');
+      },1000);
+      $('#designing').html(
+        data.lookname + '<a href="#" class="edit-look" data-lookname="' + data.lookname + 
+        '" data-lookid="' + data.lookid + '" data-lookdesc="' + data.lookdesc + 
+        '" data-looklayoutid="' + data.looklayoutid + '"><i class="fa fa-pencil"></i> edit</a>'
+      ).after(
+        '<p id="look-desc">' + data.lookdesc + '</p>'
+      );
       $('#design-look').attr('class','').addClass('show');
-    });    
+    });
+    $('#designing').mouseenter(function(e){
+      var title = $(this);
+      title.next('p').fadeIn();
+    }).mouseleave(function(e){
+      var title = $(this);
+      title.next('p').fadeOut();
+    }).on('click', 'a.edit-look', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var data = link.data();
+      $('#edit-look-error').html('');
+      $('#edit-look-name').val(data.lookname);
+      $('#edit-look-description').val(data.lookdesc);
+      $('#submit-edit-look').data('lookid', data.lookid).data('looklayoutid', data.looklayoutid);
+      $('#edit-look').fadeIn();
+    });
     /* new look create form */
     $('#new-look-layout').selectize({
       valueField: 'id',
@@ -169,6 +197,10 @@ var look_builder = {
       e.preventDefault()
       $('#create-look').fadeOut();
     });
+    $('#cancel-edit-look').click(function(e){
+      e.preventDefault()
+      $('#edit-look').fadeOut();
+    });    
     $('#create-new-look').click(function(e){
       $('#new-look-error').html('');
       e.preventDefault();
@@ -177,6 +209,7 @@ var look_builder = {
       var look_obj = {
        "name": $('#new-look-name').val(),
        "look_layout": parseInt($('#new-look-layout').val()),
+       "description": $('#new-look-description').val(),
        "allume_styling_session": look_builder.session_id,
        "stylist": parseInt($('#stylist').data('stylistid'))        
       }
@@ -187,6 +220,10 @@ var look_builder = {
       if(isNaN(look_obj.look_layout)){ 
         pre++; 
         msg.push('select a look layout'); 
+      }
+      if(look_obj.description == ''){
+        pre++
+        msg.push('provide a look description')
       }
       if(pre == 0){
         $.ajax({
@@ -206,11 +243,67 @@ var look_builder = {
           '.</span>'
         );
       }
-    });  
+    }); 
+    $('#submit-edit-look').click(function(e){
+      $('#edit-look-error').html('');
+      e.preventDefault();
+      var link = $(this);
+      var data = link.data()
+      var pre = 0;
+      var msg = [];
+      var look_obj = {
+       "name": $('#edit-look-name').val(),
+       "look_layout": data.looklayoutid,
+       "description": $('#edit-look-description').val(),
+       "allume_styling_session": look_builder.session_id,
+       "stylist": parseInt($('#stylist').data('stylistid'))        
+      }
+      if(look_obj.name == ''){ 
+        pre++; 
+        msg.push('provide a look name'); 
+      }
+      if(look_obj.description == ''){
+        pre++
+        msg.push('provide a look description')
+      }
+      if(pre == 0){
+        $.ajax({
+          contentType : 'application/json',
+          data: JSON.stringify(look_obj),
+          success:function(response){
+            $('#designing').html(
+              response.name + '<a href="#" class="edit-look" data-lookname="' + response.name + 
+              '" data-lookid="' + response.id + '" data-lookdesc="' + response.description + 
+              '" data-looklayoutid="' + response.look_layout.id + 
+              '"><i class="fa fa-pencil"></i> edit</a>'
+            ).after(
+              '<p id="look-desc">' + response.description + '</p>'
+            );
+            $('#look-links a.look-link[data-lookid="' + response.id + '"]').data('lookname', response.name)
+            .find('span.name').html(response.name);
+            var exp_look = $('#all-looks-list').find('em[data-lookid="' + response.id + '"]');
+            if(exp_look.length > 0){
+              exp_look.html(response.name)
+            }
+            look_builder.setUpBuilder(data.lookid);
+            $('#edit-look').fadeOut();
+          },
+          type: 'PUT',
+          url: '/shopping_tool_api/look/' + data.lookid + '/'
+        })
+      }else{
+        $('#edit-look-error').html(
+          '<span><i class="fa fa-exclamation-circle"></i>' +
+          'You must ' + msg.join('; ') + 
+          '.</span>'
+        );
+      }
+    });
     Mousetrap.bind('shift+q+w', function(e) {
       $('#new-look-error').html('');
       $('#new-look-name').val('');
-      $('#new-look-layout')[0].selectize.setValue('',true);      
+      $('#new-look-layout')[0].selectize.setValue('',true);  
+      $('#new-look-description').val('');    
       $('#create-look').fadeToggle();
       return false;
     });       
@@ -312,8 +405,8 @@ var look_builder = {
             '<tr><td class="img"><a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
             '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
             '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
-            '"><i class="fa fa-crop"></i></a><span id="detailsitem-' + prod.id + '">' +
-            '<img src="' + src + '"/></span></td>' +
+            '" data-crop="' + prod.cropped_dimensions + '"><i class="fa fa-crop"></i></a>' +
+            '<span id="detailsitem-' + prod.id + '"><img src="' + src + '"/></span></td>' +
             '<td class="details"><a href="' + prod.product.product_url + '" target="_blank" class="name">' + 
             prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
             prod.product.short_product_description + '</p>' + price_display +
@@ -378,6 +471,11 @@ var look_builder = {
       e.preventDefault();
       var link = $(this);
       var data = link.data();
+      var crop_dim = data.crop != null ? data.crop.split(',') : [];
+      var start_size = [50,50, '%'];
+      if(crop_dim[0] != undefined){
+        start_size = [crop_dim[0], crop_dim[1], 'px']
+      }
       var work_station = $('#cropper-zone');
       work_station.html(
         '<p>Crop the product image to your desired dimensions. You will ' +
@@ -391,7 +489,7 @@ var look_builder = {
         var imgObject = new Image();
         imgObject.src = look_proxy + '' +link.data('url');
         var croppr = new Croppr('#image-to-crop', {
-          startSize: [50,50, '%'],
+          startSize: start_size,
           onUpdate: function(value) {
             var newImg = look_builder.getImagePortion(imgObject, value.width, value.height, value.x, value.y, 1);
             /* place image in appropriate div */
@@ -403,9 +501,12 @@ var look_builder = {
               data.lookitemid + '" data-position="' + data.position + '" data-crop="' + 
               value.width + ',' + value.height + ',' +  value.x + ',' + value.y + '">save crop</a>'
             );
-            //console.log(value.x, value.y, value.width, value.height);
-          }
-        }); 
+            console.log(value.x, value.y, value.width, value.height);
+          },
+        });
+        if(crop_dim[0] != undefined){
+          croppr.moveTo(parseInt(crop_dim[2]),parseInt(crop_dim[3]));
+        }
       });
     })
     $('#cropper').on('click','a.save-crop',function(e){
@@ -461,7 +562,7 @@ var look_builder = {
         var new_src = look_builder.getImagePortion(imgObject, dims[0],dims[1],dims[2], dims[3], 1);
         var dom = $(selector + ' #' + crop.id);
         var img_h = dom.find('img').height()
-        dom.html('<img style="height:' + img_h + 'px" src="' + new_src + '"/>');
+        dom.html('<img class="handle" style="height:' + img_h + 'px" src="' + new_src + '"/>');
       }
     }
   },
@@ -507,7 +608,9 @@ var look_builder = {
     }
     var links = $('#look-links');
     links.append(
-      '<a href="#" class="look-link" data-lookid="' + data.id + '" data-lookname="' + data.name + '">' +
+      '<a href="#" class="look-link" data-lookid="' + data.id + 
+      '" data-lookname="' + data.name + '" data-lookdesc="' + data.description + 
+      '" data-looklayoutid="' + data.look_layout + '">' +
       '<table><tr><td class="icon"><i class="fa fa-shopping-bag"></i></td>' +
       '<td><span class="name">' + data.name + '</span>' +
       '<span class="layout"><em>layout:</em> ' + layout_name + 

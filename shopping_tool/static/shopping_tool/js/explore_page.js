@@ -177,7 +177,7 @@ var explore_page = {
       }
       markup.push(
         '<div class="look"><div class="display">' + look_fave_link  +
-        '<h3>' + look.name + '<span>by ' + 
+        '<h3><em data-lookid="' + look.id + '">' + look.name + '</em><span>by ' + 
         stylist_names[look.stylist] + '</span></h3><div class="items">' 
       );
       var col_width = 100/look.look_layout.columns ;
