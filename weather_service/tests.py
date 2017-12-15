@@ -324,6 +324,9 @@ class WeatherIconPropertyTests(TestCase):
 
 
 
-# class SaveHelpersTests(TestCase):
-    # test the get_weather and get_zip_codes method via unittests?
+
+
+
+
+
 

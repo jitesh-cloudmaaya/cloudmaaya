@@ -159,7 +159,7 @@ class Weather(models.Model):
         data_year = str(data_year)
 
         # using weather data, fill model attributes
-        season_weather = self.get_weather(data_year, data_year) # start and end year currently the same
+        season_weather = self.get_weather(data_year) # start and end year currently the same
         if season_weather:
             for season, values in season_weather.items():
                 if season == 'spring':
@@ -230,17 +230,16 @@ class Weather(models.Model):
         super(Weather, self).save(*args, **kwargs)
 
     # save helpers
-    def get_weather(self, start_year, end_year):
+    def get_weather(self, year):
         """
         Accesses the NOAA API to get the available weather data for the city and state provided.
 
         args
-        city -- a string denoting city name
-        state -- a string denoting the state's abbreviation
+        year -- string denoting the year to get reports from
         """
 
-        START_MONTH = None
-        END_MONTH = None
+        # START_MONTH = None
+        # END_MONTH = None
 
         zip_codes = self.get_zip_codes(self.city, self.state)
 
@@ -249,10 +248,9 @@ class Weather(models.Model):
             for zip_code in zip_codes[:150]:
                 url += '&locationid=ZIP:' + zip_code
         except:
-            # print('city, state pair produced no zip codes!')
             return
             
-        url += '&startdate=' + start_year + '-01-01&enddate=' + end_year + '-12-31'
+        url += '&startdate=' + year + '-01-01&enddate=' + year + '-12-31'
         url += '&datatypeid=PSUN' # Daily percent of possible sunshine for the period
         url += '&datatypeid=PRCP' # rainfall in in
         url += '&datatypeid=SNOW' # snowfall in in
@@ -272,7 +270,6 @@ class Weather(models.Model):
             response = response.json()            
             results = response['results']
         except:
-            # print('no noaa data found for zip codes')
             return
 
         # construct season_weather dictionary from response
@@ -281,10 +278,6 @@ class Weather(models.Model):
             'summer': {'TAVG': None, 'TMAX': None, 'TMIN': None, 'SNOW': 0.0, 'PRCP': 0.0, 'AWND': 0.0, 'PSUN': 0.0},
             'autumn': {'TAVG': None, 'TMAX': None, 'TMIN': None, 'SNOW': 0.0, 'PRCP': 0.0, 'AWND': 0.0, 'PSUN': 0.0},
             'winter': {'TAVG': None, 'TMAX': None, 'TMIN': None, 'SNOW': 0.0, 'PRCP': 0.0, 'AWND': 0.0, 'PSUN': 0.0}
-            # 'spring': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'TMIN': 0.0, 'TMAX': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
-            # 'summer': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'TMIN': 0.0, 'TMAX': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
-            # 'autumn': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'TMIN': 0.0, 'TMAX': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
-            # 'winter': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'TMIN': 0.0, 'TMAX': 0.0, 'PSUN': 0.0, 'AWND': 0.0}
         }
         for datum in results:
             date = datum['date']
@@ -309,7 +302,6 @@ class Weather(models.Model):
                 else:
                     season_weather[season][datatype] = [value]
             except:
-                # print('data error')
                 return
 
         for season in season_weather:
@@ -319,30 +311,30 @@ class Weather(models.Model):
 
         return season_weather
 
-    def get_zip_codes(self, comp_city, comp_state):
+    def get_zip_codes(self, city, state):
         """
         Given a city and state combination, returns the ZIP code(s).
 
         args:
-        comp_city -- a string denoting city name
-        comp_state -- a string denoting the state's abbreviation
+        city -- a string denoting city name
+        state -- a string denoting the state's abbreviation
         """
-        if not comp_city or not comp_state:
-            # print('cannot leave either argument blank!')
+        if not city or not state:
             return
-        url = 'http://api.zippopotam.us/us/' + comp_state + '/' + comp_city
+        url = 'http://api.zippopotam.us/us/' + state + '/' + city
         try:
             response = requests.get(url)
             response = response.json()
             places = response['places']
         except:
-            # print('invalid city/state combination!')
             return
 
         zip_codes = []
         for place in places:
             zip_codes.append(place['post code'])
-        return zip_codes
+        if zip_codes:
+            return zip_codes
+        return
 
     def __str__(self):
         return self.city + ', ' + self.state

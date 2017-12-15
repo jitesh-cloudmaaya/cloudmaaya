@@ -7,27 +7,16 @@ from weather_service.models import Weather
 
 from celery_once import QueueOnce
 
-# begin celery task for weather_data
-# @shared_task
 @task(base=QueueOnce)
 def create_weather_data_from_allumeclient360():
-    # print('Begin attempt')
-
-    query_set = AllumeClient360.objects.filter(city__isnull=False, state__isnull=False).values('city', 'state').distinct() # speed of this configuration?
-    print(query_set.count())    
-
+    query_set = AllumeClient360.objects.filter(city__isnull=False, state__isnull=False).values('city', 'state').distinct()
 
     locations = []
     for pair in query_set:
         locations.append((pair['city'], pair['state']))
 
-    # print(locations)
+    # this creates or fetches the Weather objects
+    Weather.objects.retrieve_weather_objects(locations)
 
-    # in theory, we can call bulk_weather retrieval here
-
-    # this creates or fetches the objects...
-    Weather.objects.retrieve_weather_objects(locations) # uncomment to actually perform read or write ops
-
-    # print('End attempt')
     return
     
