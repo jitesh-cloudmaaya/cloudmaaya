@@ -176,23 +176,23 @@ class UpdateOnStaleDataTests(TestCase):
         w = Weather.objects.retrieve_weather_object(city='San Francisco', state='CA')
         self.assertEqual(self.CURRENT_YEAR, w.last_modified.year)
 
-    def test_update_stale_data_bulk(self):
-        w0 = Weather.objects.get(city='San Francisco', state='CA')
-        w1 = Weather.objects.get(city='Merced', state='CA')
-        w2 = Weather.objects.get(city='Tracy', state='CA')
+    # def test_update_stale_data_bulk(self):
+    #     w0 = Weather.objects.get(city='San Francisco', state='CA')
+    #     w1 = Weather.objects.get(city='Merced', state='CA')
+    #     w2 = Weather.objects.get(city='Tracy', state='CA')
 
-        last_modified_year0 = w0.last_modified.year
-        last_modified_year1 = w1.last_modified.year
-        last_modified_year2 = w2.last_modified.year
+    #     last_modified_year0 = w0.last_modified.year
+    #     last_modified_year1 = w1.last_modified.year
+    #     last_modified_year2 = w2.last_modified.year
 
-        self.assertEqual(self.LAST_UPDATED_YEAR_3, last_modified_year0)
-        self.assertEqual(self.LAST_UPDATED_YEAR_4, last_modified_year1)
-        self.assertEqual(self.LAST_UPDATED_YEAR_5, last_modified_year2)
+    #     self.assertEqual(self.LAST_UPDATED_YEAR_3, last_modified_year0)
+    #     self.assertEqual(self.LAST_UPDATED_YEAR_4, last_modified_year1)
+    #     self.assertEqual(self.LAST_UPDATED_YEAR_5, last_modified_year2)
 
-        locations = [('San Francisco', 'CA'), ('Merced', 'CA'), ('Tracy', 'CA')]
-        weathers = Weather.objects.retrieve_weather_objects(locations)
-        for weather in weathers:
-            self.assertEqual(self.CURRENT_YEAR, weather.last_modified.year)
+    #     locations = [('San Francisco', 'CA'), ('Merced', 'CA'), ('Tracy', 'CA')]
+    #     weathers = Weather.objects.retrieve_weather_objects(locations)
+    #     for weather in weathers:
+    #         self.assertEqual(self.CURRENT_YEAR, weather.last_modified.year)
 
     def test_no_update_fresh_data_single(self):
         w = Weather.objects.get(city='Azusa', state='CA')
@@ -217,6 +217,12 @@ class WeatherIconPropertyTests(TestCase):
 
     Create 4 to 5 Weather objects of differing values and test that they give the expected icons.
     """
+    @classmethod
+    def setUpTestData(cls):
+        pass
+
+    fixtures = []
+
     def test_sunny_icon(self):
         pass
 
@@ -233,9 +239,10 @@ class WeatherIconPropertyTests(TestCase):
         pass
 
     # additional testing thoughts, may have to test by season if methods get split up
+    # create redundant tests for each season icon method to ensure behavior???
 
-
-
+    def test_winter_sunny_icon(self):
+        pass
 
 
 

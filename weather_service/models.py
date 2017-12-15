@@ -86,8 +86,6 @@ class Weather(models.Model):
 
     objects = WeatherManager()
 
-    # for now assume season is always spring
-    # BUT CHANGE
     @property
     def icon(self):
         "Returns the id of the appropriate icon to display based on snow, precipitation, wind, and sunshine."
