@@ -46,39 +46,33 @@ class Weather(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    spring_temperature = models.FloatField(default=0)
+    spring_temperature_average = models.FloatField(default=0)
+    spring_temperature_high = models.FloatField(default=0)
+    spring_temperature_low = models.FloatField(default=0)
     spring_precipitation = models.FloatField(default=0)
     spring_snowfall = models.FloatField(default=0)
     spring_wind = models.FloatField(default=0)
     spring_sun = models.FloatField(default=0)
 
-    # first guesses at description and icon fields for Weather
-    # icon fieldtype is a guess    
-    spring_description = models.CharField(max_length=255, default='', blank=True)
-    spring_icon = models.CharField(max_length=255, default='', blank=True)
-
-    summer_description = models.CharField(max_length=255, default='', blank=True)
-    summer_icon = models.CharField(max_length=255, default='', blank=True)
-
-    autumn_description = models.CharField(max_length=255, default='', blank=True)
-    autumn_icon = models.CharField(max_length=255, default='', blank=True)
-
-    winter_description = models.CharField(max_length=255, default='', blank=True)
-    winter_icon = models.CharField(max_length=255, default='', blank=True)
-
-    summer_temperature = models.FloatField(default=0)
+    summer_temperature_average = models.FloatField(default=0)
+    summer_temperature_high = models.FloatField(default=0)
+    summer_temperature_low = models.FloatField(default=0)
     summer_precipitation = models.FloatField(default=0)
     summer_snowfall = models.FloatField(default=0)
     summer_wind = models.FloatField(default=0)
     summer_sun = models.FloatField(default=0)
 
-    autumn_temperature = models.FloatField(default=0)
+    autumn_temperature_average = models.FloatField(default=0)
+    autumn_temperature_high = models.FloatField(default=0)
+    autumn_temperature_low = models.FloatField(default=0)
     autumn_precipitation = models.FloatField(default=0)
     autumn_snowfall = models.FloatField(default=0)
     autumn_wind = models.FloatField(default=0)
     autumn_sun = models.FloatField(default=0)
 
-    winter_temperature = models.FloatField(default=0)
+    winter_temperature_average = models.FloatField(default=0)
+    winter_temperature_high = models.FloatField(default=0)
+    winter_temperature_low = models.FloatField(default=0)
     winter_precipitation = models.FloatField(default=0)
     winter_snowfall = models.FloatField(default=0)
     winter_wind = models.FloatField(default=0)
@@ -167,7 +161,7 @@ class Weather(models.Model):
                 if season == 'spring':
                     for attr, value in values.items():
                         if attr == 'TAVG':
-                            self.spring_temperature = value
+                            self.spring_temperature_average = value
                         elif attr == 'SNOW':
                             self.spring_snowfall = value
                         elif attr == 'PRCP':
@@ -179,7 +173,7 @@ class Weather(models.Model):
                 if season == 'summer':
                     for attr, value in values.items():
                         if attr == 'TAVG':
-                            self.summer_temperature = value
+                            self.summer_temperature_average = value
                         elif attr == 'SNOW':
                             self.summer_snowfall = value
                         elif attr == 'PRCP':
@@ -191,7 +185,7 @@ class Weather(models.Model):
                 if season == 'autumn':
                     for attr, value in values.items():
                         if attr == 'TAVG':
-                            self.autumn_temperature = value
+                            self.autumn_temperature_average = value
                         elif attr == 'SNOW':
                             self.autumn_snowfall = value
                         elif attr == 'PRCP':
@@ -203,7 +197,7 @@ class Weather(models.Model):
                 if season == 'winter':
                     for attr, value in values.items():
                         if attr == 'TAVG':
-                            self.winter_temperature = value
+                            self.winter_temperature_average = value
                         elif attr == 'SNOW':
                             self.winter_snowfall = value
                         elif attr == 'PRCP':
