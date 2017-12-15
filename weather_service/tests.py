@@ -13,7 +13,6 @@ class SingleWeatherRetrievalTests(TestCase):
 
     fixtures = ['SingleWeatherRetrievalTests']
 
-
     def test_retrieve_existing_weather(self):
         """
         Test Weather retrieval on existing Weather object.
@@ -62,8 +61,6 @@ class SingleWeatherRetrievalTests(TestCase):
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+2, Weather.objects.count())
         self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='', state='CA').autumn_sun)
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+3, Weather.objects.count())
-
-    # other edge cases
 
 
 class BulkWeatherRetrievalTests(TestCase):
@@ -115,19 +112,11 @@ class BulkWeatherRetrievalTests(TestCase):
         self.assertEqual('TX', weathers[2].state)
         self.assertEqual(6, Weather.objects.count())
 
-# test update weather data
+
 class UpdateOnStaleDataTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.CURRENT_YEAR = datetime.datetime.now().year
-        cls.LAST_UPDATED_YEAR_1 = 2012
-        cls.LAST_UPDATED_YEAR_2 = 2010
-        cls.LAST_UPDATED_YEAR_3 = 2008
-        cls.LAST_UPDATED_YEAR_4 = 2007
-        cls.LAST_UPDATED_YEAR_5 = 2015
-        cls.FRESH_YEAR = datetime.datetime.now().year - 1
-
-        # cls.LAST_UPDATED_MONTH = 
 
     fixtures = ['UpdateOnStaleDataTests']
 
@@ -135,22 +124,18 @@ class UpdateOnStaleDataTests(TestCase):
         """
         Test the update of a single Weather object that has stale data.
         """
-
-        w = Weather.objects.get(city='San Jose', state='CA')
-        last_modified_year = w.last_modified.year
-        self.assertEqual(self.LAST_UPDATED_YEAR_1, last_modified_year)
+        w = Weather.objects.get(pk=1)
+        self.assertNotEqual(self.CURRENT_YEAR, w.last_modified.year)
         w = Weather.objects.retrieve_weather_object(city='San Jose', state='CA')
         self.assertEqual(self.CURRENT_YEAR, w.last_modified.year)
 
-        w = Weather.objects.get(city='San Diego', state='CA')
-        last_modified_year = w.last_modified.year
-        self.assertEqual(self.LAST_UPDATED_YEAR_2, last_modified_year)
+        w = Weather.objects.get(pk=2)
+        self.assertNotEqual(self.CURRENT_YEAR, w.last_modified.year)
         w = Weather.objects.retrieve_weather_object(city='San Diego', state='CA')
         self.assertEqual(self.CURRENT_YEAR, w.last_modified.year)
 
-        w = Weather.objects.get(city='San Francisco', state='CA')
-        last_modified_year = w.last_modified.year
-        self.assertEqual(self.LAST_UPDATED_YEAR_3, last_modified_year)
+        w = Weather.objects.get(pk=3)
+        self.assertNotEqual(self.CURRENT_YEAR, w.last_modified.year)
         w = Weather.objects.retrieve_weather_object(city='San Francisco', state='CA')
         self.assertEqual(self.CURRENT_YEAR, w.last_modified.year)
 
@@ -158,17 +143,13 @@ class UpdateOnStaleDataTests(TestCase):
         """
         Test the update of a multiple Weather objects at one time that have stale data.
         """
-        w0 = Weather.objects.get(city='San Francisco', state='CA')
-        w1 = Weather.objects.get(city='Merced', state='CA')
-        w2 = Weather.objects.get(city='Tracy', state='CA')
+        w0 = Weather.objects.get(pk=3)
+        w1 = Weather.objects.get(pk=4)
+        w2 = Weather.objects.get(pk=5)
 
-        last_modified_year0 = w0.last_modified.year
-        last_modified_year1 = w1.last_modified.year
-        last_modified_year2 = w2.last_modified.year
-
-        self.assertEqual(self.LAST_UPDATED_YEAR_3, last_modified_year0)
-        self.assertEqual(self.LAST_UPDATED_YEAR_4, last_modified_year1)
-        self.assertEqual(self.LAST_UPDATED_YEAR_5, last_modified_year2)
+        self.assertNotEqual(self.CURRENT_YEAR, w0.last_modified.year)
+        self.assertNotEqual(self.CURRENT_YEAR, w1.last_modified.year)
+        self.assertNotEqual(self.CURRENT_YEAR, w2.last_modified.year)
 
         locations = [('San Francisco', 'CA'), ('Merced', 'CA'), ('Tracy', 'CA')]
         weathers = Weather.objects.retrieve_weather_objects(locations)
@@ -179,7 +160,7 @@ class UpdateOnStaleDataTests(TestCase):
         """
         Test that a Weather object that has fresh data is not updated.
         """
-        w = Weather.objects.get(city='Azusa', state='CA')
+        w = Weather.objects.get(pk=6)
         weather = Weather.objects.retrieve_weather_object(city='Azusa', state='CA')
         self.assertEqual(w.last_modified, weather.last_modified)
 
@@ -187,15 +168,38 @@ class UpdateOnStaleDataTests(TestCase):
         """
         Test that retrieving multiple Weather objects with fresh data are not updated.
         """
-        w0 = Weather.objects.get(city='Azusa', state='CA')
-        w1 = Weather.objects.get(city='Claremont', state='CA')
-        w2 = Weather.objects.get(city='Fresno', state='CA')
+        w0 = Weather.objects.get(pk=6)
+        w1 = Weather.objects.get(pk=7)
+        w2 = Weather.objects.get(pk=8)
 
         last_modifieds = [w0.last_modified, w1.last_modified, w2.last_modified]
         locations = [('Azusa', 'CA'), ('Claremont', 'CA'), ('Fresno', 'CA')]
         weathers = Weather.objects.retrieve_weather_objects(locations)
         for i in range(0, len(weathers)):
             self.assertEqual(last_modifieds[i], weathers[i].last_modified)
+
+    def test_update_only_stale_bulk(self):
+        """
+        Test that, in a bulk update, only Weathers that have stale data are updated.
+        """
+        # current setup is w0 and w1 are stale, w2 and w3 are recent
+
+        w0 = Weather.objects.get(pk=9)
+        w1 = Weather.objects.get(pk=10)
+        w2 = Weather.objects.get(pk=11)
+        w3 = Weather.objects.get(pk=12)
+
+        self.assertNotEqual(self.CURRENT_YEAR, w0.last_modified.year)
+        self.assertNotEqual(self.CURRENT_YEAR, w1.last_modified.year)
+
+        locations = [('Denver', 'CO'), ('Atlanta', 'GA'), ('Boston', 'MA'), ('Dallas', 'TX')]
+        weathers = Weather.objects.retrieve_weather_objects(locations)
+
+        self.assertEqual(self.CURRENT_YEAR, weathers[0].last_modified.year)
+        self.assertEqual(self.CURRENT_YEAR, weathers[1].last_modified.year)
+
+        self.assertEqual(w2.last_modified, weathers[2].last_modified)
+        self.assertEqual(w3.last_modified, weathers[3].last_modified)
 
 
 class WeatherIconPropertyTests(TestCase):
@@ -321,11 +325,6 @@ class WeatherIconPropertyTests(TestCase):
         self.assertEqual('wi-day-rain-wind', w.summer_icon)
         self.assertEqual('wi-day-cloudy-gusts', w.autumn_icon)
         self.assertEqual('wi-day-snow', w.winter_icon)
-
-
-
-
-
 
 
 
