@@ -18,8 +18,8 @@ class WeatherManager(models.Manager):
         """
         weather = self.get_or_create(city=city, state=state)[0] # get_or_create returns an obj, created_bool tuple
         if weather.id:
-            # if data not recent enough
-            if (datetime.datetime.now().year - 1) > weather.last_modified.year: # for now, check if the year prior the current year has 12 monthly summaries and is more recent than the last modified
+            # check if the year prior the current year has 12 monthly summaries and is more recent than the last modified
+            if (datetime.datetime.now().year - 1) > weather.last_modified.year:
                 weather.save()
 
             return weather
@@ -39,85 +39,45 @@ class WeatherManager(models.Manager):
 
 
 class Weather(models.Model):
-    id = models.AutoField(primary_key=True) # added by Django by default?
-    # id = models.BigAutoField(primary_key=True) # go with bigger?
+    id = models.AutoField(primary_key=True)
     city = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    # change temperature defaults?
-    spring_temperature_average = models.FloatField(default=0)
-    spring_temperature_high = models.FloatField(default=0)
-    spring_temperature_low = models.FloatField(default=0)
-    spring_precipitation = models.FloatField(default=0)
-    spring_snowfall = models.FloatField(default=0)
-    spring_wind = models.FloatField(default=0)
-    spring_sun = models.FloatField(default=0)
+    spring_temperature_average = models.FloatField(default=None, null=True)
+    spring_temperature_high = models.FloatField(default=None, null=True)
+    spring_temperature_low = models.FloatField(default=None, null=True)
+    spring_precipitation = models.FloatField(default=0.0)
+    spring_snowfall = models.FloatField(default=0.0)
+    spring_wind = models.FloatField(default=0.0)
+    spring_sun = models.FloatField(default=0.0)
 
-    summer_temperature_average = models.FloatField(default=0)
-    summer_temperature_high = models.FloatField(default=0)
-    summer_temperature_low = models.FloatField(default=0)
-    summer_precipitation = models.FloatField(default=0)
-    summer_snowfall = models.FloatField(default=0)
-    summer_wind = models.FloatField(default=0)
-    summer_sun = models.FloatField(default=0)
+    summer_temperature_average = models.FloatField(default=None, null=True)
+    summer_temperature_high = models.FloatField(default=None, null=True)
+    summer_temperature_low = models.FloatField(default=None, null=True)
+    summer_precipitation = models.FloatField(default=0.0)
+    summer_snowfall = models.FloatField(default=0.0)
+    summer_wind = models.FloatField(default=0.0)
+    summer_sun = models.FloatField(default=0.0)
 
-    autumn_temperature_average = models.FloatField(default=0)
-    autumn_temperature_high = models.FloatField(default=0)
-    autumn_temperature_low = models.FloatField(default=0)
-    autumn_precipitation = models.FloatField(default=0)
-    autumn_snowfall = models.FloatField(default=0)
-    autumn_wind = models.FloatField(default=0)
-    autumn_sun = models.FloatField(default=0)
+    autumn_temperature_average = models.FloatField(default=None, null=True)
+    autumn_temperature_high = models.FloatField(default=None, null=True)
+    autumn_temperature_low = models.FloatField(default=None, null=True)
+    autumn_precipitation = models.FloatField(default=0.0)
+    autumn_snowfall = models.FloatField(default=0.0)
+    autumn_wind = models.FloatField(default=0.0)
+    autumn_sun = models.FloatField(default=0.0)
 
-    winter_temperature_average = models.FloatField(default=0)
-    winter_temperature_high = models.FloatField(default=0)
-    winter_temperature_low = models.FloatField(default=0)
-    winter_precipitation = models.FloatField(default=0)
-    winter_snowfall = models.FloatField(default=0)
-    winter_wind = models.FloatField(default=0)
-    winter_sun = models.FloatField(default=0)
+    winter_temperature_average = models.FloatField(default=None, null=True)
+    winter_temperature_high = models.FloatField(default=None, null=True)
+    winter_temperature_low = models.FloatField(default=None, null=True)
+    winter_precipitation = models.FloatField(default=0.0)
+    winter_snowfall = models.FloatField(default=0.0)
+    winter_wind = models.FloatField(default=0.0)
+    winter_sun = models.FloatField(default=0.0)
 
     objects = WeatherManager()
-
-    # @property
-    # def icon(self):
-    #     "Returns the id of the appropriate icon to display based on snow, precipitation, wind, and sunshine."
-    #     # define conditions
-    #     sunny = self.summer_sun >= 50
-    #     windy = self.summer_wind >= 8
-    #     gusty = self.summer_wind > 15
-    #     rainy = self.summer_precipitation > 3
-    #     snowy = self.summer_snowfall > 2
-
-    #     # choose icon
-    #     icon_id = 'wi-day-cloudy' # default
-    #     if sunny:
-    #         icon_id = 'wi-day-sunny'
-    #     if windy:
-    #         if not sunny:
-    #             icon_id = 'wi-day-cloudy-windy'
-    #         else:
-    #             icon_id = 'wi-day-light-wind'
-    #     if gusty:
-    #         if not sunny:
-    #             icon_id = 'wi-day-cloudy-gusts'
-    #         else:
-    #             icon_id = 'wi-day-windy'
-    #     if rainy:
-    #         if windy:
-    #             icon_id = 'wi-day-rain-wind'
-    #         else:
-    #             icon_id = 'wi-day-rain'
-    #     if snowy:
-    #         if windy:
-    #             icon_id = 'wi-day-snow-wind'
-    #         else:
-    #             icon_id = 'wi-day-snow'
-    #     return icon_id
-
-    # begin 4 seperate icons for season
 
     @property
     def spring_icon(self):
@@ -184,8 +144,6 @@ class Weather(models.Model):
                 icon_id = 'wi-day-snow'
         return icon_id
 
-    # end four separate icons for seasons
-
     class Meta:
         unique_together = (('city', 'state'),)
         # index_together = [
@@ -208,6 +166,10 @@ class Weather(models.Model):
                     for attr, value in values.items():
                         if attr == 'TAVG':
                             self.spring_temperature_average = value
+                        elif attr == 'TMAX':
+                            self.spring_temperature_high = value
+                        elif attr == 'TMIN':
+                            self.spring_temperature_low = value
                         elif attr == 'SNOW':
                             self.spring_snowfall = value
                         elif attr == 'PRCP':
@@ -220,6 +182,10 @@ class Weather(models.Model):
                     for attr, value in values.items():
                         if attr == 'TAVG':
                             self.summer_temperature_average = value
+                        elif attr == 'TMAX':
+                            self.summer_temperature_high = value
+                        elif attr == 'TMIN':
+                            self.summer_temperature_low = value
                         elif attr == 'SNOW':
                             self.summer_snowfall = value
                         elif attr == 'PRCP':
@@ -232,6 +198,10 @@ class Weather(models.Model):
                     for attr, value in values.items():
                         if attr == 'TAVG':
                             self.autumn_temperature_average = value
+                        elif attr == 'TMAX':
+                            self.autumn_temperature_high = value
+                        elif attr == 'TMIN':
+                            self.autumn_temperature_low = value
                         elif attr == 'SNOW':
                             self.autumn_snowfall = value
                         elif attr == 'PRCP':
@@ -244,6 +214,10 @@ class Weather(models.Model):
                     for attr, value in values.items():
                         if attr == 'TAVG':
                             self.winter_temperature_average = value
+                        elif attr == 'TMAX':
+                            self.winter_temperature_high = value
+                        elif attr == 'TMIN':
+                            self.winter_temperature_low = value
                         elif attr == 'SNOW':
                             self.winter_snowfall = value
                         elif attr == 'PRCP':
@@ -256,7 +230,6 @@ class Weather(models.Model):
         super(Weather, self).save(*args, **kwargs)
 
     # save helpers
-    # change method to accept year parameter
     def get_weather(self, start_year, end_year):
         """
         Accesses the NOAA API to get the available weather data for the city and state provided.
@@ -273,8 +246,7 @@ class Weather(models.Model):
 
         url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/data?datasetid=GSOM'
         try:
-            # refine how to limit zip code count
-            for zip_code in zip_codes[:180]:
+            for zip_code in zip_codes[:150]:
                 url += '&locationid=ZIP:' + zip_code
         except:
             # print('city, state pair produced no zip codes!')
@@ -285,6 +257,8 @@ class Weather(models.Model):
         url += '&datatypeid=PRCP' # rainfall in in
         url += '&datatypeid=SNOW' # snowfall in in
         url += '&datatypeid=TAVG' # temperature average in fahrenheit
+        url += '&datatypeid=TMAX' # maximum temperature in fahrenheit
+        url += '&datatypeid=TMIN' # minimum temperature in fahrenheit
         url += '&datatypeid=AWND' # average wind speed in mph
         url += '&limit=1000'
         url += '&units=standard' # converts to standard
@@ -303,10 +277,14 @@ class Weather(models.Model):
 
         # construct season_weather dictionary from response
         season_weather = {
-            'spring': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
-            'summer': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
-            'autumn': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
-            'winter': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'PSUN': 0.0, 'AWND': 0.0}
+            'spring': {'TAVG': None, 'TMAX': None, 'TMIN': None, 'SNOW': 0.0, 'PRCP': 0.0, 'AWND': 0.0, 'PSUN': 0.0},
+            'summer': {'TAVG': None, 'TMAX': None, 'TMIN': None, 'SNOW': 0.0, 'PRCP': 0.0, 'AWND': 0.0, 'PSUN': 0.0},
+            'autumn': {'TAVG': None, 'TMAX': None, 'TMIN': None, 'SNOW': 0.0, 'PRCP': 0.0, 'AWND': 0.0, 'PSUN': 0.0},
+            'winter': {'TAVG': None, 'TMAX': None, 'TMIN': None, 'SNOW': 0.0, 'PRCP': 0.0, 'AWND': 0.0, 'PSUN': 0.0}
+            # 'spring': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'TMIN': 0.0, 'TMAX': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
+            # 'summer': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'TMIN': 0.0, 'TMAX': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
+            # 'autumn': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'TMIN': 0.0, 'TMAX': 0.0, 'PSUN': 0.0, 'AWND': 0.0},
+            # 'winter': {'PRCP': 0.0, 'SNOW': 0.0, 'TAVG': 0.0, 'TMIN': 0.0, 'TMAX': 0.0, 'PSUN': 0.0, 'AWND': 0.0}
         }
         for datum in results:
             date = datum['date']
