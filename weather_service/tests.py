@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import datetime
 
 from django.test import TestCase
-from .models import Weather
+from weather_service.models import Weather
 
 class SingleWeatherRetrievalTests(TestCase):
     @classmethod
@@ -70,7 +70,7 @@ class SingleWeatherRetrievalTests(TestCase):
     #     Test city and state string formatting behavior of Weather object.
     #     """
     #     pass
-    #     # BREAKS CIRLCECI
+    #     # BREAKS CIRLCECI because of db difference
     #     print(Weather.objects.all())
     #     print(Weather.objects.count())
     #     self.assertEqual('San Jose', Weather.objects.retrieve_weather_object(city='san jose', state='CA').city)
@@ -209,5 +209,55 @@ class UpdateOnStaleDataTests(TestCase):
         weathers = Weather.objects.retrieve_weather_objects(locations)
         for i in range(0, len(weathers)):
             self.assertEqual(last_modifieds[i], weathers[i].last_modified)
+
+
+class WeatherIconPropertyTests(TestCase):
+    """
+    Testing strategy:
+
+    Create 4 to 5 Weather objects of differing values and test that they give the expected icons.
+    """
+    def test_sunny_icon(self):
+        pass
+
+    def test_windy_icon(self):
+        pass
+
+    def test_gusty_icon(self):
+        pass
+
+    def test_rainy_icon(self):
+        pass
+
+    def test_snowy_icon(self):
+        pass
+
+    # additional testing thoughts, may have to test by season if methods get split up
+
+
+
+
+
+
+
+
+
+
+            # if self.summer_sun >= 50:
+            #     icon_id = 'wi-day-sunny'
+            # if self.summer_wind >= 8:
+            #     icon_id = 'wi-day-cloudy-windy'
+            # if self.summer_wind > 15:
+            #     icon_id = 'wi-day-cloudy-gusts'
+            # if self.summer_precipitation > 3:
+            #     icon_id = 'wi-day-rain'
+            # if self.summer_snowfall > 2:
+            #     icon_id = 'wi-day-snow'
+
+
+
+
+
+
 
 
