@@ -220,23 +220,36 @@ class WeatherIconPropertyTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         pass
+        
 
-    fixtures = []
+    fixtures = ["WeatherIconPropertyTests"]
 
+    # assertEqual(expected, actual)
     def test_sunny_icon(self):
-        pass
+        w = Weather.objects.get(pk=1)
+        self.assertEqual('wi-day-sunny', w.icon)
+        # test a few different ways?
+        
 
     def test_windy_icon(self):
-        pass
+        w = Weather.objects.get(pk=2)
+        self.assertEqual('wi-day-cloudy-windy', w.icon)
 
     def test_gusty_icon(self):
-        pass
+        w = Weather.objects.get(pk=3)
+        self.assertEqual('wi-day-cloudy-gusts', w.icon)
 
     def test_rainy_icon(self):
-        pass
+        w = Weather.objects.get(pk=4)
+        self.assertEqual('wi-day-rain', w.icon)
 
     def test_snowy_icon(self):
-        pass
+        w = Weather.objects.get(pk=5)
+        self.assertEqual('wi-day-snow', w.icon)
+
+
+    # def test zero behavior
+    # test on no-zip code and no-data
 
     # additional testing thoughts, may have to test by season if methods get split up
     # create redundant tests for each season icon method to ensure behavior???
@@ -246,6 +259,20 @@ class WeatherIconPropertyTests(TestCase):
 
 
 
+
+
+    #     if self.summer_sun >= 50:
+    #         icon_id = 'wi-day-sunny'
+    #     if self.summer_wind >= 8:
+    #         icon_id = 'wi-day-cloudy-windy'
+    #     if self.summer_wind > 15:
+    #         icon_id = 'wi-day-cloudy-gusts'
+    #     if self.summer_precipitation > 3:
+    #         icon_id = 'wi-day-rain'
+    #     if self.summer_snowfall > 2:
+    #         icon_id = 'wi-day-snow'
+        
+        # return icon_id
 
 
 

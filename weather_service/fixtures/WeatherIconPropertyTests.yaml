@@ -1,0 +1,60 @@
+# should correspond to wi-day-sunny
+-   model: weather_service.weather
+    pk: 1
+    fields: {city: San Jose, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 1.999,
+        summer_wind: 7.999,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-cloudy-windy
+-   model: weather_service.weather
+    pk: 2
+    fields: {city: Sunnyvale, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 1.999,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-cloudy-gusts
+-   model: weather_service.weather
+    pk: 3
+    fields: {city: Mountain View, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 1.999,
+        summer_wind: 15.2,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-rain
+-   model: weather_service.weather
+    pk: 4
+    fields: {city: San Diego, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature: 68.23,
+        summer_precipitation: 3.14,
+        summer_snowfall: 1.999,
+        summer_wind: 7.999,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-snow
+-   model: weather_service.weather
+    pk: 5
+    fields: {city: San Francisco, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 2.10,
+        summer_wind: 7.999,
+        summer_sun: 50.01,
+    }

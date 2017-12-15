@@ -93,25 +93,41 @@ class Weather(models.Model):
         icon_id = 'wi-day-cloudy' # default to zero sunshine state?
 
         # make sure fields are initialized to 0 rather than None for comparison or otherwise handle
-        if season == 'summer':
-            if self.summer_sun >= 50:
-                icon_id = 'wi-day-sunny'
-            if self.summer_wind >= 8:
-                icon_id = 'wi-day-cloudy-windy'
-            if self.summer_wind > 15:
-                icon_id = 'wi-day-cloudy-gusts'
-            if self.summer_precipitation > 3:
-                icon_id = 'wi-day-rain'
-            if self.summer_snowfall > 2:
-                icon_id = 'wi-day-snow'
-        elif season == 'spring':
-            pass
-        elif season == 'autumn':
-            pass
-        elif season == 'winter':
-            pass
-        
+        if self.summer_sun >= 50:
+            icon_id = 'wi-day-sunny'
+        if self.summer_wind >= 8:
+            icon_id = 'wi-day-cloudy-windy'
+        if self.summer_wind > 15:
+            icon_id = 'wi-day-cloudy-gusts'
+        if self.summer_precipitation > 3:
+            icon_id = 'wi-day-rain'
+        if self.summer_snowfall > 2:
+            icon_id = 'wi-day-snow'
         return icon_id
+
+
+
+        # if season == 'summer':
+        #     if self.summer_sun >= 50:
+        #         icon_id = 'wi-day-sunny'
+        #     if self.summer_wind >= 8:
+        #         icon_id = 'wi-day-cloudy-windy'
+        #     if self.summer_wind > 15:
+        #         icon_id = 'wi-day-cloudy-gusts'
+        #     if self.summer_precipitation > 3:
+        #         icon_id = 'wi-day-rain'
+        #     if self.summer_snowfall > 2:
+        #         icon_id = 'wi-day-snow'
+        # elif season == 'spring':
+        #     pass
+        # elif season == 'autumn':
+        #     pass
+        # elif season == 'winter':
+        #     pass
+        
+        # return icon_id
+
+
 
     # @property
     # def winter_icon(self):
