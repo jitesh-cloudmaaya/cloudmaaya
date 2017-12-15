@@ -112,6 +112,46 @@ var look_builder = {
       url: '/shopping_tool_api/look_list/'
     });
   },
+  cropImage: function(link){
+    var data = link.data();
+    var crop_dim = data.crop != null ? data.crop.split(',') : [];
+    var start_size = [50,50, '%'];
+    if(crop_dim[0] != undefined){
+      start_size = [crop_dim[0], crop_dim[1], 'px']
+    }
+    var work_station = $('#cropper-zone');
+    work_station.html(
+      '<p>Crop the product image to your desired dimensions. You will ' +
+      'see a live preview to the right. When happy hit the save crop button.</p>' +
+      '<img id="image-to-crop" src="' + look_proxy + '' + link.data('url') + '"/>' +
+      '<div id="thumb"><h6>crop preview</h6></div>'
+    );
+    var img  = $('#image-to-crop');
+    var display_w = $('#cropper-zone').width();
+    $('#cropper').fadeIn(function(){
+      var imgObject = new Image();
+      imgObject.src = look_proxy + '' +link.data('url');
+      var croppr = new Croppr('#image-to-crop', {
+        startSize: start_size,
+        onUpdate: function(value) {
+          var newImg = look_builder.getImagePortion(imgObject, value.width, value.height, value.x, value.y, 1);
+          /* place image in appropriate div */
+          $('#thumb').html(
+            '<h6>crop preview</h6>' +
+            '<img alt="" src="' +newImg+ '"/>' +
+            '<a href="#" class="save-crop" data-look="' + data.look + 
+            '" data-productid="' + data.productid + '" data-lookitemid="'+
+            data.lookitemid + '" data-position="' + data.position + '" data-crop="' + 
+            value.width + ',' + value.height + ',' +  value.x + ',' + value.y + '">save crop</a>'
+          );
+          //console.log(value.x, value.y, value.width, value.height);
+        },
+      });
+      if(crop_dim[0] != undefined){
+        croppr.moveTo(parseInt(crop_dim[2]),parseInt(crop_dim[3]));
+      }
+    });
+  },
   /**
   * @description look builder ui/ux functionality
   */
@@ -271,6 +311,7 @@ var look_builder = {
           contentType : 'application/json',
           data: JSON.stringify(look_obj),
           success:function(response){
+            /* update the look builder header section */
             $('#designing').html(
               response.name + '<a href="#" class="edit-look" data-lookname="' + response.name + 
               '" data-lookid="' + response.id + '" data-lookdesc="' + response.description + 
@@ -279,12 +320,15 @@ var look_builder = {
             ).after(
               '<p id="look-desc">' + response.description + '</p>'
             );
+            /* update the look list link name */
             $('#look-links a.look-link[data-lookid="' + response.id + '"]').data('lookname', response.name)
             .find('span.name').html(response.name);
+            /* check and see if an explore looks page look matches the id of the edited look
+            * if we find a match then update to the edited name
+            */
             var exp_look = $('#all-looks-list').find('em[data-lookid="' + response.id + '"]');
-            if(exp_look.length > 0){
-              exp_look.html(response.name)
-            }
+            if(exp_look.length > 0){ exp_look.html(response.name); }
+            /* redraw the look builder to get the new settings */
             look_builder.setUpBuilder(data.lookid);
             $('#edit-look').fadeOut();
           },
@@ -426,6 +470,10 @@ var look_builder = {
           }
         }
       });
+    }).on('click','a.crop-product-image',function(e){
+      e.preventDefault();
+      var link = $(this);
+      look_builder.cropImage(link);
     });
     $('#compare-looks').on('click','a.look-filter', function(e){
       e.preventDefault();
@@ -470,45 +518,8 @@ var look_builder = {
     }).on('click','a.crop-product-image',function(e){
       e.preventDefault();
       var link = $(this);
-      var data = link.data();
-      var crop_dim = data.crop != null ? data.crop.split(',') : [];
-      var start_size = [50,50, '%'];
-      if(crop_dim[0] != undefined){
-        start_size = [crop_dim[0], crop_dim[1], 'px']
-      }
-      var work_station = $('#cropper-zone');
-      work_station.html(
-        '<p>Crop the product image to your desired dimensions. You will ' +
-        'see a live preview to the right. When happy hit the save crop button.</p>' +
-        '<img id="image-to-crop" src="' + look_proxy + '' + link.data('url') + '"/>' +
-        '<div id="thumb"><h6>crop preview</h6></div>'
-      );
-      var img  = $('#image-to-crop');
-      var display_w = $('#cropper-zone').width();
-      $('#cropper').fadeIn(function(){
-        var imgObject = new Image();
-        imgObject.src = look_proxy + '' +link.data('url');
-        var croppr = new Croppr('#image-to-crop', {
-          startSize: start_size,
-          onUpdate: function(value) {
-            var newImg = look_builder.getImagePortion(imgObject, value.width, value.height, value.x, value.y, 1);
-            /* place image in appropriate div */
-            $('#thumb').html(
-              '<h6>crop preview</h6>' +
-              '<img alt="" src="' +newImg+ '"/>' +
-              '<a href="#" class="save-crop" data-look="' + data.look + 
-              '" data-productid="' + data.productid + '" data-lookitemid="'+
-              data.lookitemid + '" data-position="' + data.position + '" data-crop="' + 
-              value.width + ',' + value.height + ',' +  value.x + ',' + value.y + '">save crop</a>'
-            );
-            console.log(value.x, value.y, value.width, value.height);
-          },
-        });
-        if(crop_dim[0] != undefined){
-          croppr.moveTo(parseInt(crop_dim[2]),parseInt(crop_dim[3]));
-        }
-      });
-    })
+      look_builder.cropImage(link);
+    });
     $('#cropper').on('click','a.save-crop',function(e){
       e.preventDefault();
       var link = $(this);
@@ -535,7 +546,7 @@ var look_builder = {
         type: 'PUT',
         url: '/shopping_tool_api/look_item/' + data.lookitemid + '/'
       })
-    })
+    });
     $('#close-cropper').click(function(e){
       e.preventDefault();
       $('#cropper').fadeOut();
@@ -562,7 +573,7 @@ var look_builder = {
         var new_src = look_builder.getImagePortion(imgObject, dims[0],dims[1],dims[2], dims[3], 1);
         var dom = $(selector + ' #' + crop.id);
         var img_h = dom.find('img').height()
-        dom.html('<img class="handle" style="height:' + img_h + 'px" src="' + new_src + '"/>');
+        dom.find('img').attr('src', new_src );
       }
     }
   },
@@ -644,9 +655,10 @@ var look_builder = {
       );
       $.each(block.find('div.item'), function(index){
         var item = $(this);
+        var src = item.find('img').attr('src');
         rack_items.push(
-          '<div class="item" data-productid="' + item.data('productid') + '">' +
-          '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
+          '<div class="item" data-productid="' + item.data('productid') + 
+          '" data-url="' + src + '"><img class="handle" src="' + src + '"/></div>'
         );
       })
       rack_items.push('</div>');
@@ -708,6 +720,10 @@ var look_builder = {
                 '<div class="item" id="lookitem-' + prod.id + 
                 '" data-productid="' + prod.product.id + 
                 '" data-lookitemid="' + prod.id + '">' +
+                '<a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
+                '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
+                '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
+                '" data-crop="' + prod.cropped_dimensions + '"><i class="fa fa-crop"></i></a>' +
                 '<img class="handle" src="' + src + '"/></div>'
               );
             }
@@ -769,42 +785,47 @@ var look_builder = {
             var obj = {
               layout_position: position,
               look: id,
-              product: parseInt(el_id)              
+              product: parseInt(el_id),
+              cropped_dimensions:  null         
+            }
+            var dims = $(el).find('a.crop-product-image').data('crop')
+            if(dims != null){
+              obj.cropped_dimensions = dims;
             }
             /* create new look item in db */
             $.ajax({
               contentType : 'application/json',
               data: JSON.stringify(obj),
               success:function(response){
+                console.log(response)
                 /* assign the look item id to the element */
-                el.setAttribute('data-lookitemid', response.id);
-                if(list.children.length > 1){
+                //el.setAttribute('data-lookitemid', response.id);
+                var elem = $(el);
+                elem.data('lookitemid', response.id)
+                if(elem.find('a.crop-product-image').length == 0){
+                  elem.append(
+                    '<a href="#" class="crop-product-image" data-productid="' + response.product + 
+                    '" data-url="' + elem.data('url')  + '" data-look="' + response.look + 
+                    '" data-lookitemid="' + response.id + '" data-position="' + response.layout_position + 
+                    '" data-crop="' + response.cropped_dimensions + '"><i class="fa fa-crop"></i></a>'
+                  );
+                }
+                var list_items = $(box).find('div.item');
+                if(list_items.length > 1){
                   var match_count = 0;
-                  for(var i = 0, l = list.children.length; i<l; i++){
-                    var child = list.children[i]
-                    if(child.dataset.productid != el_id){
-                      /* delete the item from the look/db and remove DOM from ui */
+                  $.each(list_items, function(e){
+                    var item = $(this);
+                    var id = item.data('lookitemid');
+                    if(id !=response.id){
                       $.ajax({
                         success:function(response){
-                          list.removeChild(child);
+                          item.remove();
                         },
                         type: 'DELETE',
-                        url: '/shopping_tool_api/look_item/' + child.dataset.lookitemid + '/'
+                        url: '/shopping_tool_api/look_item/' + id+ '/'
                       });
-                    }else if(child.dataset.productid == el_id){
-                      match_count++;
-                      if(match_count > 1){
-                        /* delete the item from the look/db and remove DOM from ui */
-                        $.ajax({
-                          success:function(response){
-                            list.removeChild(child);
-                          },
-                          type: 'DELETE',
-                          url: '/shopping_tool_api/look_item/' + child.dataset.lookitemid + '/'
-                        });                    
-                      }
                     }
-                  }
+                  })
                 }
               },
               type: 'PUT',
@@ -858,9 +879,10 @@ var look_builder = {
     );
     $.each($('#rack-list').find('div.item'), function(index){
       var item = $(this);
+      var src = item.find('img').attr('src');
       rack_items.push(
-        '<div class="item" data-productid="' + item.data('productid') + '">' +
-        '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
+        '<div class="item" data-productid="' + item.data('productid') + 
+        '" data-url="' + src + '"><img class="handle" src="' + src + '"/></div>'
       );
     });
     /* add the clones and assign drag/drop functionality */

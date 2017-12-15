@@ -1331,6 +1331,22 @@ div.layout-option div.layout-grid div.row { border:1px solid #474747; border-rad
   cursor: -moz-grabbing;
   cursor: -webkit-grabbing;
 }
+#look-drop div.column div.row div.item a.crop-product-image {
+  color:#000;
+  height:20px;
+  left:5px;
+  opacity:0.2;
+  position:absolute;
+  text-align:center;
+  text-decoration: none;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out; 
+  top:5px;   
+  width:20px;
+  z-index:2;
+}
+#look-drop div.column div.row div.item a.crop-product-image i{ font-size:18px;}
+#look-drop div.column div.row div.item a.crop-product-image:hover {opacity: 1}
 #look-drop div.instructions {
   color:#777;
   float:left;
@@ -1365,7 +1381,8 @@ div.layout-option div.layout-grid div.row { border:1px solid #474747; border-rad
   top:-1px;
   width:100%; 
 }
-#look-drop #look-trash div.item img {display:none;}
+#look-drop #look-trash div.item img,
+#look-drop #look-trash div.item a.crop-product-image {display:none;}
 #look-drop #look-trash div.item span.fave {display:none;}
 #look-drop #look-trash div.item:before {
   color:#000;
