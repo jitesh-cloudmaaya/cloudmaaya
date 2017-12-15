@@ -208,7 +208,6 @@ class WeatherIconPropertyTests(TestCase):
     def setUpTestData(cls):
         pass
         
-
     fixtures = ["WeatherIconPropertyTests"]
 
     # single case tests
@@ -217,7 +216,7 @@ class WeatherIconPropertyTests(TestCase):
         Test cloudy icon conditions.
         """
         w = Weather.objects.get(pk=1)
-        self.assertEqual('wi-day-cloudy', w.icon)
+        self.assertEqual('wi-day-cloudy', w.summer_icon)
         # self.assertEqual('wi-day-cloudy', w.winter_icon)
 
     def test_sunny_icon(self):
@@ -225,84 +224,106 @@ class WeatherIconPropertyTests(TestCase):
         Test sunny icon conditions.
         """
         w = Weather.objects.get(pk=2)
-        self.assertEqual('wi-day-sunny', w.icon)
+        self.assertEqual('wi-day-sunny', w.summer_icon)
 
     def test_windy_icon(self):
         """
         Test windy icon conditions.
         """
         w = Weather.objects.get(pk=3)
-        self.assertEqual('wi-day-light-wind', w.icon)
+        self.assertEqual('wi-day-light-wind', w.summer_icon)
 
     def test_cloudy_windy_icon(self):
         """
         Test cloudy and windy icon conditions.
         """
         w = Weather.objects.get(pk=4)
-        self.assertEqual('wi-day-cloudy-windy', w.icon)
+        self.assertEqual('wi-day-cloudy-windy', w.summer_icon)
 
     def test_gusty_icon(self):
         """
         Test gusty icon conditions.
         """
         w = Weather.objects.get(pk=5)
-        self.assertEqual('wi-day-windy', w.icon)
+        self.assertEqual('wi-day-windy', w.summer_icon)
 
     def test_cloudy_gusty_icon(self):
         """
         Test cloudy and gusty icon conditions.
         """
         w = Weather.objects.get(pk=6)
-        self.assertEqual('wi-day-cloudy-gusts', w.icon)
+        self.assertEqual('wi-day-cloudy-gusts', w.summer_icon)
 
     def test_rainy_icon(self):
         """
         Test rainy icon conditions.
         """
         w = Weather.objects.get(pk=7)
-        self.assertEqual('wi-day-rain', w.icon)
+        self.assertEqual('wi-day-rain', w.summer_icon)
 
     def test_rainy_windy_icon(self):
         """
         Test rainy and windy icon conditions.
         """
         w = Weather.objects.get(pk=8)
-        self.assertEqual('wi-day-rain-wind', w.icon)
+        self.assertEqual('wi-day-rain-wind', w.summer_icon)
 
     def test_snowy_icon(self):
         """
         Test snowy icon conditions.
         """
         w = Weather.objects.get(pk=9)
-        self.assertEqual('wi-day-snow', w.icon)
+        self.assertEqual('wi-day-snow', w.summer_icon)
 
     def test_snowy_windy_icon(self):
         """
         Test snowy and windy icon conditions.
         """
         w = Weather.objects.get(pk=10)
-        self.assertEqual('wi-day-snow-wind', w.icon)
+        self.assertEqual('wi-day-snow-wind', w.summer_icon)
 
     def test_default_weather(self):
         """
         Test default Weather object returns default icon.
         """
         w = Weather.objects.get(pk=11)
-        self.assertEqual('wi-day-cloudy', w.icon)
+        self.assertEqual('wi-day-cloudy', w.summer_icon)
 
-    # test case hierarchy (all conditions should go to snow)
+    def test_zeroes_icon(self):
+        """
+        Test that icon selection is default when all data is set to zero.
+        """
+        w = Weather.objects.get(pk=17)
+        self.assertEqual('wi-day-cloudy', w.summer_icon)
+
+    # test case hierarchy (sun/cloud < wind < rain < snow)
     def test_icon_hierarchy(self):
         """
         Test that ceratin icon case conditions overrule others (e.g. 
         all conditions lose to snow).
         """
-        pass
-
+        w = Weather.objects.get(pk=12)
+        self.assertEqual('wi-day-rain-wind', w.summer_icon)
+        w = Weather.objects.get(pk=13)
+        self.assertEqual('wi-day-snow-wind', w.summer_icon)
+        w = Weather.objects.get(pk=14)
+        self.assertEqual('wi-day-snow-wind', w.summer_icon)
+        w = Weather.objects.get(pk=15)
+        self.assertEqual('wi-day-snow-wind', w.summer_icon)
+        
     def test_different_icons(self):
         """
         Test that Weather objets with different attributes for 
         different seasons return appropriate icons.
         """
-        pass
+        w = Weather.objects.get(pk=16)
+        self.assertEqual('wi-day-cloudy', w.spring_icon)
+        self.assertEqual('wi-day-rain-wind', w.summer_icon)
+        self.assertEqual('wi-day-cloudy-gusts', w.autumn_icon)
+        self.assertEqual('wi-day-snow', w.winter_icon)
 
+
+
+# class SaveHelpersTests(TestCase):
+    # test the get_weather and get_zip_codes method via unittests?
 

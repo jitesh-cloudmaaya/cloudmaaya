@@ -46,6 +46,7 @@ class Weather(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    # change temperature defaults?
     spring_temperature_average = models.FloatField(default=0)
     spring_temperature_high = models.FloatField(default=0)
     spring_temperature_low = models.FloatField(default=0)
@@ -80,17 +81,84 @@ class Weather(models.Model):
 
     objects = WeatherManager()
 
+    # @property
+    # def icon(self):
+    #     "Returns the id of the appropriate icon to display based on snow, precipitation, wind, and sunshine."
+    #     # define conditions
+    #     sunny = self.summer_sun >= 50
+    #     windy = self.summer_wind >= 8
+    #     gusty = self.summer_wind > 15
+    #     rainy = self.summer_precipitation > 3
+    #     snowy = self.summer_snowfall > 2
+
+    #     # choose icon
+    #     icon_id = 'wi-day-cloudy' # default
+    #     if sunny:
+    #         icon_id = 'wi-day-sunny'
+    #     if windy:
+    #         if not sunny:
+    #             icon_id = 'wi-day-cloudy-windy'
+    #         else:
+    #             icon_id = 'wi-day-light-wind'
+    #     if gusty:
+    #         if not sunny:
+    #             icon_id = 'wi-day-cloudy-gusts'
+    #         else:
+    #             icon_id = 'wi-day-windy'
+    #     if rainy:
+    #         if windy:
+    #             icon_id = 'wi-day-rain-wind'
+    #         else:
+    #             icon_id = 'wi-day-rain'
+    #     if snowy:
+    #         if windy:
+    #             icon_id = 'wi-day-snow-wind'
+    #         else:
+    #             icon_id = 'wi-day-snow'
+    #     return icon_id
+
+    # begin 4 seperate icons for season
+
     @property
-    def icon(self):
-        "Returns the id of the appropriate icon to display based on snow, precipitation, wind, and sunshine."
-        # define conditions
+    def spring_icon(self):
+        sunny = self.spring_sun >= 50
+        windy = self.spring_wind >= 8
+        gusty = self.spring_wind > 15
+        rainy = self.spring_precipitation > 3
+        snowy = self.spring_snowfall > 2
+        return self.select_icon(sunny, windy, gusty, rainy, snowy)
+    
+    @property
+    def summer_icon(self):
         sunny = self.summer_sun >= 50
         windy = self.summer_wind >= 8
         gusty = self.summer_wind > 15
         rainy = self.summer_precipitation > 3
         snowy = self.summer_snowfall > 2
+        return self.select_icon(sunny, windy, gusty, rainy, snowy)
 
-        # choose icon
+    @property
+    def autumn_icon(self):
+        sunny = self.autumn_sun >= 50
+        windy = self.autumn_wind >= 8
+        gusty = self.autumn_wind > 15
+        rainy = self.autumn_precipitation > 3
+        snowy = self.autumn_snowfall > 2
+        return self.select_icon(sunny, windy, gusty, rainy, snowy)
+
+    @property
+    def winter_icon(self):
+        sunny = self.winter_sun >= 50
+        windy = self.winter_wind >= 8
+        gusty = self.winter_wind > 15
+        rainy = self.winter_precipitation > 3
+        snowy = self.winter_snowfall > 2
+        return self.select_icon(sunny, windy, gusty, rainy, snowy)
+
+    def select_icon(self, sunny, windy, gusty, rainy, snowy):
+        """
+        Helper method that takes in boolean weather conditions to determine which icon to use.
+        """
         icon_id = 'wi-day-cloudy' # default
         if sunny:
             icon_id = 'wi-day-sunny'
@@ -116,10 +184,7 @@ class Weather(models.Model):
                 icon_id = 'wi-day-snow'
         return icon_id
 
-    # @property
-    # def winter_icon(self):
-    #     return icon_id
-
+    # end four separate icons for seasons
 
     class Meta:
         unique_together = (('city', 'state'),)
@@ -275,7 +340,6 @@ class Weather(models.Model):
                     season_weather[season][attr] = float(sum(season_weather[season][attr]) / len(season_weather[season][attr]))
 
         return season_weather
-
 
     def get_zip_codes(self, comp_city, comp_state):
         """
