@@ -112,6 +112,10 @@ var look_builder = {
       url: '/shopping_tool_api/look_list/'
     });
   },
+  /** 
+  * @description create the crop image ui/ux
+  * @param {DOM object} link - a element that triggered the crop initiation
+  */
   cropImage: function(link){
     var data = link.data();
     var crop_dim = data.crop != null ? data.crop.split(',') : [];
@@ -797,11 +801,11 @@ var look_builder = {
               contentType : 'application/json',
               data: JSON.stringify(obj),
               success:function(response){
-                console.log(response)
-                /* assign the look item id to the element */
-                //el.setAttribute('data-lookitemid', response.id);
                 var elem = $(el);
+                /* assign item number and add crop link if it needs it */
                 elem.data('lookitemid', response.id)
+                elem.data('isnew', 'yes');
+                elem.siblings('div.item').data('isnew','no')
                 if(elem.find('a.crop-product-image').length == 0){
                   elem.append(
                     '<a href="#" class="crop-product-image" data-productid="' + response.product + 
@@ -810,22 +814,21 @@ var look_builder = {
                     '" data-crop="' + response.cropped_dimensions + '"><i class="fa fa-crop"></i></a>'
                   );
                 }
-                var list_items = $(box).find('div.item');
+                var list_items = box.find('div.item');
                 if(list_items.length > 1){
-                  var match_count = 0;
                   $.each(list_items, function(e){
                     var item = $(this);
-                    var id = item.data('lookitemid');
-                    if(id !=response.id){
+                    var data = item.data();
+                    if(data.isnew == 'no'){
                       $.ajax({
                         success:function(response){
                           item.remove();
                         },
                         type: 'DELETE',
-                        url: '/shopping_tool_api/look_item/' + id+ '/'
+                        url: '/shopping_tool_api/look_item/' + data.lookitemid + '/'
                       });
                     }
-                  })
+                  });
                 }
               },
               type: 'PUT',
@@ -833,12 +836,12 @@ var look_builder = {
             });
           },
           onRemove: function(evt){
-            var el = evt.item;
+            var elem = $(evt.item);
             /* delete the item from the look/db when removed from a drop box */
             $.ajax({
               success:function(response){},
               type: 'DELETE',
-              url: '/shopping_tool_api/look_item/' + el.dataset.lookitemid + '/'
+              url: '/shopping_tool_api/look_item/' + elem.data('lookitemid') + '/'
             });            
           }
         });        
