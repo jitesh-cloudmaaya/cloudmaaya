@@ -88,6 +88,7 @@ SELECT
 FROM tasks_ranproducts rp LEFT JOIN product_api_product ap ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
 INNER JOIN product_api_merchant m ON m.external_merchant_id = rp.merchant_id
 WHERE ap.current_price IS NULL
+AND m.active = 1
 AND rp.modification <> 'D' ) x;
 
 

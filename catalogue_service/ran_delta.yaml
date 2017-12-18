@@ -57,7 +57,7 @@ ftp_config:
   host: aftp.linksynergy.com
   password: yT%6-Pl@h
   user: allumestye
-leave_temp_files: false
+leave_temp_files: true
 local_temp_dir: pd_temp/ran
 remote_dir: /
 table: tasks_ranproducts

@@ -71,6 +71,13 @@ class MerchantCategory(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
 
+class ColorMap(models.Model):
+    external_color = models.CharField(max_length=128, blank=True, null=True)
+    allume_color = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
