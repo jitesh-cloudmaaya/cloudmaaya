@@ -41,6 +41,16 @@ WHERE wu.id NOT IN (
 -- DELETE
 
 
+-- working update command?
+UPDATE temp ac3
+LEFT JOIN allume_wp_user_shipping_addresses sa ON t.wp_user_id = sa.wp_user_id
+SET ac3.address_1 = sa.address_1
+    ac3.address_2 = sa.address_2
+    ac3.city = sa.city
+    ac3.state = sa.state
+    ac3.country = sa.country;
+
+
 -- 4) update the recently populated table
 -- UPDATE allume_client_360 
 -- SET wp_user_id = (SELECT wu.id from wp_users wu),
