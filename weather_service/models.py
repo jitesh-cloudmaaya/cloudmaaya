@@ -5,6 +5,7 @@ import requests
 import datetime
 
 from django.db import models
+from django.conf import settings
 
 class WeatherManager(models.Manager):
     def retrieve_weather_object(self, city, state):
@@ -16,6 +17,71 @@ class WeatherManager(models.Manager):
         city - a string representing a city name
         state - a string representing the state abbreviation
         """
+        # trim potential whitespace
+        try:
+            city = city.strip()
+            state = state.strip()
+
+            # map abbrevations to full state names, where possible
+            us_state_abbrev = {
+            'alabama': 'AL',
+            'alaska': 'AK',
+            'arizona': 'AZ',
+            'arkansas': 'AR',
+            'california': 'CA',
+            'colorado': 'CO',
+            'connecticut': 'CT',
+            'delaware': 'DE',
+            'florida': 'FL',
+            'georgia': 'GA',
+            'hawaii': 'HI',
+            'idaho': 'ID',
+            'illinois': 'IL',
+            'indiana': 'IN',
+            'iowa': 'IA',
+            'kansas': 'KS',
+            'kentucky': 'KY',
+            'louisiana': 'LA',
+            'maine': 'ME',
+            'maryland': 'MD',
+            'massachusetts': 'MA',
+            'michigan': 'MI',
+            'minnesota': 'MN',
+            'mississippi': 'MS',
+            'missouri': 'MO',
+            'montana': 'MT',
+            'nebraska': 'NE',
+            'nevada': 'NV',
+            'new hampshire': 'NH',
+            'new jersey': 'NJ',
+            'new mexico': 'NM',
+            'new york': 'NY',
+            'north carolina': 'NC',
+            'north dakota': 'ND',
+            'ohio': 'OH',
+            'oklahoma': 'OK',
+            'oregon': 'OR',
+            'pennsylvania': 'PA',
+            'rhode island': 'RI',
+            'south carolina': 'SC',
+            'south dakota': 'SD',
+            'tennessee': 'TN',
+            'texas': 'TX',
+            'utah': 'UT',
+            'vermont': 'VT',
+            'virginia': 'VA',
+            'washington': 'WA',
+            'west virginia': 'WV',
+            'wisconsin': 'WI',
+            'wyoming': 'WY',
+            'district of columbia': 'DC',
+            }
+
+            state = us_state_abbrev.pop(state.lower(), state) # convert name to abbrev if in dict, else use what should be 2 letter state abbr
+        except:
+            city = ''
+            state = ''
+
         weather = self.get_or_create(city=city, state=state)[0] # get_or_create returns an obj, created_bool tuple
         if weather.id:
             # check if the year prior the current year has 12 monthly summaries and is more recent than the last modified
@@ -262,8 +328,7 @@ class Weather(models.Model):
         url += '&units=standard' # converts to standard
         url += '&includemetadata=false' # impove response time by preventing calc of result metadata    
 
-        headers = {'token': 'YdgPMhahlBcRshMkgsmDaoFlvAFcjwnr'}
-
+        headers = {'token': settings.NOAA_TOKEN}
 
         try:
             response = requests.get(url, headers = headers)

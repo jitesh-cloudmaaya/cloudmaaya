@@ -9,7 +9,7 @@ from weather_service.models import Weather
 class SingleWeatherRetrievalTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.EXPECTED_WEATHER_COUNT = 3
+        cls.EXPECTED_WEATHER_COUNT = 7
 
     fixtures = ['SingleWeatherRetrievalTests']
 
@@ -61,6 +61,42 @@ class SingleWeatherRetrievalTests(TestCase):
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+2, Weather.objects.count())
         self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='', state='CA').autumn_sun)
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+3, Weather.objects.count())
+
+
+# test city and state with whitespace on one side or the other
+# 
+    def test_retrieve_w_white_space(self):
+        """
+        Test that whitespace on either side of the string in either case will be intrepreted correctly.
+        """
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+        Weather.objects.retrieve_weather_object(city='       San Jose', state='CA')
+        Weather.objects.retrieve_weather_object(city='       San Jose      ', state='CA')
+        Weather.objects.retrieve_weather_object(city='San Jose       ', state='CA')
+        Weather.objects.retrieve_weather_object(city='San Jose', state='      CA')
+        Weather.objects.retrieve_weather_object(city='San Jose', state='CA       ')
+        Weather.objects.retrieve_weather_object(city='San Jose', state='      CA       ')
+        Weather.objects.retrieve_weather_object(city='    San Jose    ', state='      CA       ')
+        Weather.objects.retrieve_weather_object(city='    San Jose', state='CA       ')
+        Weather.objects.retrieve_weather_object(city='San Jose   ', state='  CA')
+        # affirm that none of these strings are treated as new locations
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+
+
+    def test_retrieve_state_by_full_name(self):
+        """
+        Test that we can retrieve a Weather by using its full state name.
+        """
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+        Weather.objects.retrieve_weather_object('San Jose', 'California')
+        Weather.objects.retrieve_weather_object('Boston', 'Massachusetts')
+        Weather.objects.retrieve_weather_object('New York', 'New York')
+        Weather.objects.retrieve_weather_object('Seattle', 'Washington')
+        Weather.objects.retrieve_weather_object('Asheville', 'North Carolina')
+        Weather.objects.retrieve_weather_object('San Jose', 'california')
+        # affirm that using a state's full name is not interpreted as a new location
+        self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
+
 
 
 class BulkWeatherRetrievalTests(TestCase):
