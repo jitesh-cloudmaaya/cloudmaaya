@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import json
+import re
+
 from django.db import models
 from product_api.models import Product
 
@@ -157,6 +160,37 @@ class AllumeClient360(models.Model):
     class Meta:
         managed = False
         db_table = 'allume_client_360'
+
+
+    # regex (will match until the } and leave it off)
+    # ^([^}]+)
+    @property
+    def where_live_city(self):
+        try:
+            # trim potentially duplicate
+            regex = '^([^}]+)'
+            shortened = re.search(regex, self.where_live).group(0)
+            shortened += '}'
+
+            json_string = shortened
+            obj = json.loads(json_string)
+            return obj['city']
+        except:
+            return ''
+
+    @property
+    def where_live_state(self):
+        try:
+            # trim potentially duplicate
+            regex = '^([^}]+)'
+            shortened = re.search(regex, self.where_live).group(0)
+            shortened += '}'
+
+            json_string = shortened
+            obj = json.loads(json_string)
+            return obj['state']
+        except:
+            return ''
 
 
 class AllumeQuizAnswerItems(models.Model):

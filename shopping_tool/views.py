@@ -22,6 +22,9 @@ import requests
 from PIL import Image
 from catalogue_service.settings_local import PRODUCT_IMAGE_PROXY
 
+
+from weather_service.models import Weather
+
 # Create your views here. 
 
 @check_login
@@ -39,13 +42,15 @@ def index(request, styling_session_id=None):
     rack_items = Rack.objects.filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
+    weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     categories = MerchantCategory.objects.filter(active = True)
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
-               'rack_items': rack_items, 'client': client, 'layouts': layouts, 'looks': looks}
+               'rack_items': rack_items, 'client': client, 'layouts': layouts,
+               'looks': looks, 'weather_info': weather_info}
                
     return render(request, 'shopping_tool/index.html', context)
 
@@ -65,13 +70,15 @@ def explore(request, styling_session_id=None):
     rack_items = Rack.objects.filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
+    weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     stylists = WpUsers.objects.stylists()
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
     context = {'favorites': favorites, 'user': user, 'stylists': stylists, 
                'styling_session': styling_session, 'rack_items': rack_items, 
-               'client': client, 'layouts': layouts, 'looks': looks, 'product_image_proxy': product_image_proxy}
+               'client': client, 'layouts': layouts, 'looks': looks,
+               'product_image_proxy': product_image_proxy, 'weather_info': weather_info}
 
     return render(request, 'shopping_tool/explore.html', context)
 

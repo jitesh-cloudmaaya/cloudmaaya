@@ -1,0 +1,237 @@
+# should correspond to wi-day-cloudy
+-   model: weather_service.weather
+    pk: 1
+    fields: {city: San Jose, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 1.999,
+        summer_wind: 7.999,
+        summer_sun: 49.0,
+    }
+# should correspond to wi-day-sunny
+-   model: weather_service.weather
+    pk: 2
+    fields: {city: Sunnyvale, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 1.999,
+        summer_wind: 7.999,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-light-wind
+-   model: weather_service.weather
+    pk: 3
+    fields: {city: Mountain View, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 1.999,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-cloudy-windy
+-   model: weather_service.weather
+    pk: 4
+    fields: {city: San Diego, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.99,
+        summer_snowfall: 1.999,
+        summer_wind: 8.13,
+        summer_sun: 49.0,
+    }
+# should correspond to wi-day-windy
+-   model: weather_service.weather
+    pk: 5
+    fields: {city: San Francisco, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 1.9999,
+        summer_wind: 15.2,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-cloudy-gusts
+-   model: weather_service.weather
+    pk: 6
+    fields: {city: Los Angeles, state: CA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 1.999,
+        summer_wind: 15.2,
+        summer_sun: 49.0,
+    }
+# should correspond to wi-day-rain
+-   model: weather_service.weather
+    pk: 7
+    fields: {city: Houston, state: TX,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 3.14,
+        summer_snowfall: 1.999,
+        summer_wind: 7.999,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-rain-wind
+-   model: weather_service.weather
+    pk: 8
+    fields: {city: Orlando, state: FL,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 3.14,
+        summer_snowfall: 1.999,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-snow
+-   model: weather_service.weather
+    pk: 9
+    fields: {city: Denver, state: CO,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.99,
+        summer_snowfall: 2.10,
+        summer_wind: 7.999,
+        summer_sun: 50.01,
+    }
+# should correspond to wi-day-snow-wind
+-   model: weather_service.weather
+    pk: 10
+    fields: {city: New York, state: NY,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 2.10,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+    }
+
+# model for testing default behavior with no initialized values.
+-   model: weather_service.weather
+    pk: 11
+    fields: {city: Seattle, state: WA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+    }
+
+# models for multiple case choice testing
+# even if windy/sunny, choose rainy
+# should correspond to wi-day-rain-wind
+-   model: weather_service.weather
+    pk: 12
+    fields: {city: Boston, state: MA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 3.14,
+        summer_snowfall: 1.999,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+    }
+# even if windy/sunny, choose snowy
+# should correspond to wi-day-snow-wind
+-   model: weather_service.weather
+    pk: 13
+    fields: {city: San Antonio, state: TX,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 2.999,
+        summer_snowfall: 2.10,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+    }
+# even if windy/sunny/rainy, choose snowy
+# should correspond to wi-day-snow-wind
+-   model: weather_service.weather
+    pk: 14
+    fields: {city: Dallas, state: TX,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 3.14,
+        summer_snowfall: 2.10,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+    }
+# if all, choose snowy
+# should correspond to wi-day-snow-wind
+-   model: weather_service.weather
+    pk: 15
+    fields: {city: Atlanta, state: GA,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        summer_temperature_average: 68.23,
+        summer_precipitation: 3.14,
+        summer_snowfall: 2.10,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+    }
+
+# model for determining that different, but appropriate icons return for different season weather
+-   model: weather_service.weather
+    pk: 16
+    fields: {city: Cleveland, state: OH,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        spring_temperature_average: 68.23,
+        spring_precipitation: 2.11,
+        spring_snowfall: 0.00,
+        spring_wind: 2.13,
+        spring_sun: 44.0,
+        summer_temperature_average: 68.23,
+        summer_precipitation: 3.14,
+        summer_snowfall: 1.01,
+        summer_wind: 8.13,
+        summer_sun: 50.01,
+        autumn_temperature_average: 68.23,
+        autumn_precipitation: 2.999,
+        autumn_snowfall: 1.0,
+        autumn_wind: 15.15,
+        autumn_sun: 42.0,
+        winter_temperature_average: 68.23,
+        winter_precipitation: 2.999,
+        winter_snowfall: 2.10,
+        winter_wind: 2.2,
+        winter_sun: 50.01,
+    }
+
+-   model: weather_service.weather
+    pk: 17
+    fields: {city: Madison, state: WI,
+        date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00',
+        spring_temperature_average: 0.0,
+        spring_precipitation: 0.0,
+        spring_snowfall: 0.0,
+        spring_wind: 0.0,
+        spring_sun: 0.0,
+        summer_temperature_average: 0.0,
+        summer_precipitation: 0.0,
+        summer_snowfall: 0.0,
+        summer_wind: 0.0,
+        summer_sun: 0.0,
+        autumn_temperature_average: 0.0,
+        autumn_precipitation: 0.0,
+        autumn_snowfall: 0.0,
+        autumn_wind: 0.0,
+        autumn_sun: 0.0,
+        winter_temperature_average: 0.0,
+        winter_precipitation: 0.0,
+        winter_snowfall: 0.0,
+        winter_wind: 0.0,
+        winter_sun: 0.0,
+    }
