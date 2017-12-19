@@ -990,7 +990,8 @@ body.explore-page #user-card{position:absolute;}
   width:500px;
 }
 #user-card div.weather,
-#user-card div.demo {
+#user-card div.demo,
+#user-card div.social {
   border-bottom:1px solid #ddd;
   overflow:auto;
   width:500px;
@@ -1010,13 +1011,11 @@ body.explore-page #user-card{position:absolute;}
   display:block;
   font-size:14px;
   font-weight:200;
-  height:18px;
   line-height:18px;
-  overflow:hidden;
   padding:0 10px;
   text-align: right;
 }
-#user-card div.demo span em {float:left; font-weight:200; padding-right:5px;}
+#user-card div.demo span em {float:left; font-weight:200; padding-right:15px; text-align:left;}
 #user-card div.weather span:nth-of-type(4) {border:0;}
 #user-card div.weather span em {
   color:#999;
@@ -1074,6 +1073,24 @@ body.explore-page #user-card{position:absolute;}
   text-align:center;
   width:65px;
 }
+#user-card div.social a,
+#user-card div.social span {
+  color:#000;
+  display:inline-block;
+  font-size:20px;
+  margin:10px 5px;
+  text-decoration:none;
+  vertical-align: top;
+}
+#user-card div.social span {
+  font-size:14px;
+  font-weight:100;
+  padding-top:13px;
+  margin:0 5px 0 10px;
+}
+#user-card div.social a.pinterest{color:#BD081C}
+#user-card div.social a.instagram{color:#A82BB5}
+#user-card div.social a.linkedin{color:#006699}
 #facet-bar {
   background:#fafafa;
   border:1px solid #ddd;
