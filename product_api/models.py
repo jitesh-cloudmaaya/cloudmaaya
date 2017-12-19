@@ -80,6 +80,8 @@ class MerchantCategory(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = "Merchant Categories"
 
 class ColorMap(models.Model):
     external_color = models.CharField(max_length=128, blank=True, null=True)

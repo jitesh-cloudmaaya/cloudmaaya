@@ -7,7 +7,17 @@ from .models import *
 
 # Register your models here.
 
-class MerchanttInLine(admin.TabularInline):
+class MerchantAdmin(admin.ModelAdmin):
+    list_display = ('name', 'active', 'network')
+
+class NetworkAdmin(admin.ModelAdmin):
+    list_display = ('name', 'active')
+
+class MerchantCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'active', 'network')
+
+class MerchantInLine(admin.TabularInline):
+
     model = Merchant
     extra = 0
 
@@ -19,8 +29,8 @@ class MerchantCategoryInLine(admin.TabularInline):
     model = MerchantCategory
     extra = 0 
 
-admin.site.register(Merchant)
-admin.site.register(Network)
-admin.site.register(MerchantCategory)
+admin.site.register(Merchant, MerchantAdmin)
+admin.site.register(Network, NetworkAdmin)
+admin.site.register(MerchantCategory, MerchantCategoryAdmin)
 
 
