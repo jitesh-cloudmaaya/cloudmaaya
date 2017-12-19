@@ -29,13 +29,17 @@ ac.wp_user_id);
 SET SESSION group_concat_max_len=5000;
 
 -- 3) update the table for any wp_user_id entries
+
+-- REALLY CONFIRM THAT THIS STATEMENT UPDATES NEW ENTRIES on simple example
 INSERT INTO allume_client_360 (wp_user_id, first_name, last_name)
 SELECT wu.id, wu.first_name, wu.last_name FROM wp_users wu
 WHERE wu.id NOT IN (
-    SELECT wp_user_id from temp
+    SELECT wp_user_id from allume_client_360
 );
 
 -- 3a) remove no longer existing id, first/last name from allume_client_360?
+-- DELETE
+
 
 -- 4) update the recently populated table
 -- UPDATE allume_client_360 
