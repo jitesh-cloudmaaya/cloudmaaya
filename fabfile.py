@@ -88,7 +88,7 @@ def deploy_nginx():
     run('docker rm $(docker stop $(docker ps -a -q --filter name=nginx))')
     env.warn_only = False
 #    run("docker run --restart=on-failure -d -p 80:80 -p 443:443 --name=%s_nginx --link %s_flower:flower --link %s_clio_web:clio_web -v ~/.ssl:/etc/ssl/certs/ --volumes-from %s_clio_web intermix/nginx" % (env.environment, env.environment, env.environment, env.environment))
-    run("docker run --restart=on-failure -d -v /etc/nginx:/etc/nginx -v /etc/pki/nginx:/etc/pki/nginx -p 80:80 -p 443:443 --link shopping_tool_web:shopping_tool_web --volumes-from shopping_tool_web --name shopping_tool_nginx raybeam/nginx")
+    run("docker run --restart=on-failure -d -v /etc/nginx:/etc/nginx -v /etc/pki/nginx:/etc/pki/nginx -p 80:80 -p 443:443 --link %s_shopping_tool_web:%s_shopping_tool_web --volumes-from %s_shopping_tool_web --name %s_shopping_tool_nginx raybeam/nginx" % (env.environment, env.environment, env.environment, env.environment))
 
 def deploy_web_container():
     #Restart UWSGI - Web Server
@@ -98,23 +98,24 @@ def deploy_web_container():
     run('docker rm $(docker stop $(docker ps -a -q --filter name=web))')
     env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v ~/static:/srv/catalogue_service/static -p 8000:8000 --name shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service:%s" % (env.docker_tag))
+    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v ~/static:/srv/catalogue_service/static -p 8000:8000 --name %s_shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service:%s" % (env.environment, env.docker_tag))
 
 def deploy_celery_container():
-    #Restart Celery Beat
-    env.warn_only = True#Allows process to proceed if there is no current container
-    run('docker rm $(docker stop $(docker ps -a -q --filter name=celery_beat))')
-    env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py --name=%s_clio_celery_beat --entrypoint=\"/docker-entrypoint-celery-beat.sh\" allumestyle/catalogue-service:%s >> ~/clio_celery_beat.log 2>&1" % (env.environment, env.docker_tag))
-    
     #Restart Celery
     env.warn_only = True#Allows process to proceed if there is no current container
     run('docker rm $(docker stop $(docker ps -a -q --filter name=celery))')
     env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v /var/run/docker.sock:/var/run/docker.sock --name=%s_clio_celery --entrypoint=\"/docker-entrypoint-celery.sh\" allumestyle/catalogue-service:%s >> ~/clio_celery.log 2>&1" % (env.environment, env.docker_tag))
+    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v /var/run/docker.sock:/var/run/docker.sock --name=%s_shopping_tool_celery --entrypoint=\"/docker-entrypoint-celery.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery.log 2>&1" % (env.environment, env.docker_tag))
 
+    #Restart Celery Beat
+    env.warn_only = True#Allows process to proceed if there is no current container
+    run('docker rm $(docker stop $(docker ps -a -q --filter name=celery_beat))')
+    env.warn_only = False
+
+    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py --name=%s_shopping_tool_celery_beat --entrypoint=\"/docker-entrypoint-celery-beat.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery_beat.log 2>&1" % (env.environment, env.docker_tag))
+    
 
 
 def deploy():
