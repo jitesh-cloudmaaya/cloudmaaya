@@ -6,15 +6,14 @@ from django.core.urlresolvers import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from shopping_tool.models import Look, AllumeStylingSessions, WpUsers, Rack, LookLayout, LookProduct, UserProductFavorite
-from product_api.models import Product
+from shopping_tool.models import *
 from django.http.cookie import SimpleCookie
 
 #http://www.django-rest-framework.org/api-guide/testing/
 
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite']
+    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'user_look_favorite', 'allume_client_360_test']
     shopper = ''
     client = ''
 
@@ -37,7 +36,7 @@ class ShoppingToolAPITestCase(APITestCase):
 
 
         self.assertEqual(201, response.status_code)
-        self.assertEqual(Look.objects.count(), 3)
+        self.assertEqual(Look.objects.count(), 4)
         self.assertEqual(Look.objects.get(id = response_data['id']).name, 'Api Test Look')
         self.assertEqual(Look.objects.get(id = response_data['id']).look_layout.name, '5 Item Outfit')
         
@@ -61,7 +60,7 @@ class ShoppingToolAPITestCase(APITestCase):
 
 
         self.assertEqual(201, response.status_code)
-        self.assertEqual(Look.objects.count(), 2)
+        self.assertEqual(Look.objects.count(), 3)
         self.assertEqual(Look.objects.get(id = 2).name, 'Api Test Update Look')
 
 
@@ -195,7 +194,7 @@ class ShoppingToolAPITestCase(APITestCase):
 
     def test_get_look_list(self):
         """
-        Test to verify getting a look
+        Test to verify getting looks list
         """
 
         url = reverse("shopping_tool_api:look_list")
@@ -204,29 +203,73 @@ class ShoppingToolAPITestCase(APITestCase):
         #Test Getting UnFiltered List
         response_all = self.client.post(url)
         response_data_all = json.loads(response_all.content)
-        self.assertEqual(len(response_data_all), 2)
+        self.assertEqual(len(response_data_all['looks']), 3)
         self.assertEqual(200, response_all.status_code)
 
         #Test Getting Client Filtered List
         client_filter_data = {"client": 8}
         response_client = self.client.post(url, client_filter_data)
         response_data_client = json.loads(response_client.content)
-        self.assertEqual(len(response_data_client), 2)
+        self.assertEqual(len(response_data_client['looks']), 2)
         self.assertEqual(200, response_client.status_code)
 
         #Test Getting Stylist Filtered List
         stylist_filter_data = {"stylist": 117}
         response_stylist = self.client.post(url, stylist_filter_data)
         response_data_stylist = json.loads(response_stylist.content)
-        self.assertEqual(len(response_data_stylist), 1)
-        self.assertEqual(200, response_client.status_code)
+        self.assertEqual(len(response_data_stylist['looks']), 1)
+        self.assertEqual(200, response_stylist.status_code)
 
         #Test Getting allume_styling_session Filtered List
         styling_session_filter_data = {"allume_styling_session": 3}
         response_styling_session = self.client.post(url, styling_session_filter_data)
         response_data_styling_session = json.loads(response_styling_session.content)
-        self.assertEqual(len(response_data_styling_session), 2)
-        self.assertEqual(200, response_client.status_code)
+        self.assertEqual(len(response_data_styling_session['looks']), 2)
+        self.assertEqual(200, response_styling_session.status_code)
+
+
+
+    def test_get_look_list_paging(self):
+        """
+        Test to verify getting looks list with Paging
+        """
+
+        url = reverse("shopping_tool_api:look_list")
+
+        #Test Paging
+        paging_filter_data = {"per_page": 1}
+        response_paging = self.client.post(url, paging_filter_data)
+        response_data_paging = json.loads(response_paging.content)
+        self.assertEqual(len(response_data_paging['looks']), 1)
+        self.assertEqual(200, response_paging.status_code)
+
+
+
+    def test_get_look_list_favorites(self):
+        """
+        Test to verify getting looks list filtered by favorites
+        """
+
+        url = reverse("shopping_tool_api:look_list")
+
+        look_instance1 = Look.objects.get(id=1)
+        look_instance2 = Look.objects.get(id=2)
+
+        client = WpUsers.objects.filter(user_email= "client@allume.co").get()
+
+        print(client.id)
+
+        UserLookFavorite.objects.create(look=look_instance1, stylist = client)
+        UserLookFavorite.objects.create(look=look_instance2, stylist = client)
+
+        #Test Paging
+        favs_filter_data = {"favorites_only": "True"}
+        response_favs = self.client.post(url, favs_filter_data)
+        response_data_favs = json.loads(response_favs.content)
+
+        self.assertEqual(len(response_data_favs['looks']), 3)
+        self.assertEqual(200, response_favs.status_code)
+
 
 
     def test_get_layouts(self):
@@ -287,4 +330,59 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(200, response.status_code)
 
 
+### Look Favs
+
+    def test_get_user_look_favorite(self):
+        """
+        Test to verify getting a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:user_look_favorite", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+
+
+    def test_add_user_look_favorite(self):
+        """
+        Test to verify adding a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:user_look_favorite", kwargs={'pk':1})
+        data = {"look": 1,"stylist": 2}
+
+        response = self.client.get(url, data)
+        self.assertEqual(200, response.status_code)
+
+    def test_delete_user_look_favorite(self):
+        """
+        Test to verify deleting a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:user_look_favorite", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+
+    def test_user_look_favorites(self):
+        """
+        Test to verify getting a list of user favorite looks
+        """
+
+        url = reverse("shopping_tool_api:user_look_favorites", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+
+### Client 360
+
+    def test_get_client_360(self):
+        """
+        Test to verify getting a user favorite look
+        """
+
+        url = reverse("shopping_tool_api:client_360", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
         

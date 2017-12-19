@@ -1,0 +1,60 @@
+# 2012
+-   model: weather_service.weather
+    pk: 1
+    fields: {city: San Jose, state: CA, date_created: !!timestamp '2012-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-11-29 17:36:28.436188+00:00'}
+# 2010
+-   model: weather_service.weather
+    pk: 2
+    fields: {city: San Diego, state: CA, date_created: !!timestamp '2010-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2010-11-29 17:36:28.436188+00:00'}
+# 2008
+-   model: weather_service.weather
+    pk: 3
+    fields: {city: San Francisco, state: CA, date_created: !!timestamp '2008-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2008-11-29 17:36:28.436188+00:00'}
+# 2007
+-   model: weather_service.weather
+    pk: 4
+    fields: {city: Merced, state: CA, date_created: !!timestamp '2007-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2007-11-29 17:36:28.436188+00:00'}
+# 2015
+-   model: weather_service.weather
+    pk: 5
+    fields: {city: Tracy, state: CA, date_created: !!timestamp '2015-11-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2015-11-29 17:36:28.436188+00:00'}
+# 2016
+-   model: weather_service.weather
+    pk: 6
+    fields: {city: Azusa, state: CA, date_created: !!timestamp '2016-01-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2016-11-29 17:36:28.436188+00:00'}
+# 2016
+-   model: weather_service.weather
+    pk: 7
+    fields: {city: Claremont, state: CA, date_created: !!timestamp '2016-03-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2016-10-29 17:36:28.436188+00:00'}
+# 2016
+-   model: weather_service.weather
+    pk: 8
+    fields: {city: Fresno, state: CA, date_created: !!timestamp '2016-04-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2016-12-29 17:36:28.436188+00:00'}
+# 2014
+-   model: weather_service.weather
+    pk: 9
+    fields: {city: Denver, state: CO, date_created: !!timestamp '2014-04-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2014-12-29 17:36:28.436188+00:00'}
+# 2012
+-   model: weather_service.weather
+    pk: 10
+    fields: {city: Atlanta, state: GA, date_created: !!timestamp '2012-04-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2012-12-29 17:36:28.436188+00:00'}
+# 2016
+-   model: weather_service.weather
+    pk: 11
+    fields: {city: Boston, state: MA, date_created: !!timestamp '2016-04-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2016-12-29 17:36:28.436188+00:00'}
+# 2016
+-   model: weather_service.weather
+    pk: 12
+    fields: {city: Dallas, state: TX, date_created: !!timestamp '2016-04-29 17:36:28.436062+00:00',
+        last_modified: !!timestamp '2016-12-29 17:36:28.436188+00:00'}
