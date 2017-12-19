@@ -1,0 +1,84 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Allume - Shopping Tool</title>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css" rel="stylesheet"/>
+  {% load static %}
+  <link href="{% static 'shopping_tool/css/croppr.min.css' %}" media="all" rel="stylesheet"/>
+  <link href="{% static 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
+</head>
+<body class="explore-page" data-stylesession="{{ styling_session.id }}">
+{% include "shopping_tool/header_partial.html" %}
+{% include "shopping_tool/client_partial.html" %}
+<div id="explore-form">
+  <span class="label">Show me looks by: </span>
+  <select id="stylist-select" placeholder="Please select a stylist...">
+    <option value=" ">All stylists</option>
+  {% for stylist in stylists %}
+    <option value="{{stylist.id}}">{{stylist.first_name}} {{stylist.last_name}}</option>
+  {% endfor %}
+  </select>
+  <span class="label middle">with look names including</span>
+  <input type="text" id="look-name" value="" placeholder=""/>
+  <span class="label fave">and 
+    <a href="#" id="look-favorite-status" class="any">
+      <span class="any">any favorite status</span>
+      <span class="faves">only favorite looks</span>
+      <i class="fa fa-sort"></i>
+    </a>
+  </span>
+  <a href="#" id="looks-filter">show me</a>
+</div>
+<div id="looks-header"></div>
+<div id="explore-wrapper">
+  <div id="all-looks-list"></div>
+  <div id="loader" class="active" data-page="1">loading...</div>
+</div>
+{% include "shopping_tool/rack_partial.html" %}
+{% include "shopping_tool/looks_partial.html" %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+<script src="{% static 'shopping_tool/js/Sortable.min.js' %}"></script>
+<script src="{% static 'shopping_tool/js/croppr.min.js' %}"></script>
+<script src="{% static 'shopping_tool/js/utils.js' %}"></script>
+<script src="{% static 'shopping_tool/js/explore_page.js' %}"></script>
+<script src="{% static 'shopping_tool/js/rack_builder.js' %}"></script>
+<script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
+<script>
+{% include "shopping_tool/js_arrays.html" %}
+var stylist_names = {
+  {% for stylist in stylists %}
+    {{stylist.id}}: "{{stylist.first_name}} {{stylist.last_name}}",
+  {% endfor %}
+};
+/* before initializing page get stylist's favorites */
+$.when(
+  $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/'),
+  $.get('/shopping_tool_api/user_look_favorites/' + $('#stylist').data('stylistid') + '/')
+).then(function(favorite_products, favorite_looks){
+  console.log(favorite_looks)
+  if(favorite_products[0] != undefined){
+    for(var i = 0, l = favorite_products[0].length;i<l;i++){
+      var fave = favorite_products[0][i];
+      rack_builder.favorites_product_ids.push(fave.product);
+      rack_builder.favorites.push(fave);
+    }
+  }
+  if(favorite_looks[0] != undefined){
+    for(var i = 0, l = favorite_looks[0].length;i<l;i++){
+      var fave = favorite_looks[0][i];
+      explore_page.favorite_look_ids.push(fave.look);
+      explore_page.favorite_looks.push(fave);
+    }
+  }
+  explore_page.init();
+});
+</script>
+</body>
+</html>

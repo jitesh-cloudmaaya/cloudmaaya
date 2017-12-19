@@ -20,7 +20,8 @@ import json
 import urllib
 import datetime
 import urllib
-
+from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite
+from models import Product
 
 
 from elasticsearch_dsl.connections import connections
@@ -30,30 +31,50 @@ from product_doc import EProductSearch#, EProduct
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
 def facets(self):
+    """
+    get:
+        Get Product Search Results
 
-    text_query = self.query_params.get('text', 'shirt')
+        /product_api/facets?text=shirts
+
+        Optional Params:
+        favs=True : Filters the Search Results for Just User Favorites
+
+        
+    """
+    text_query = self.query_params.get('text', '*')
     num_per_page = int(self.query_params.get('num_per_page', 48))
     page = int(self.query_params.get('page', 1))
 
+    filter_favs = self.query_params.get('favs')
+    if filter_favs:
+        user_favs = list(UserProductFavorite.objects.filter(stylist=filter_favs).values_list('product_id', flat=True))
+    else:
+        user_favs = []
+    
+
     start_record = (num_per_page * (page - 1))
-    print start_record
+    #print start_record
     end_record = (num_per_page * page) 
-    print end_record
+    #print end_record
 
     whitelisted_facet_args = {}
     for key, value in self.query_params.items():
         if key in EProductSearch.facets:
             whitelisted_facet_args[key] = urllib.unquote(value).split("|")
 
-    print whitelisted_facet_args
-    es = EProductSearch(query=text_query, filters=whitelisted_facet_args)
+
+    es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs)
+    es_count = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, card_count=True)
     es = es[start_record:end_record]
-    es.collapse = {"field": "size"}
     results = es.execute().to_dict()
+    results_count = es_count.execute().to_dict()
+    #results = results_count
 
 
-    total_count = results['hits']['total']
+    total_count = results_count['aggregations']['unique_count']['value']
     context = format_results(results, total_count, page, num_per_page, self, 'products', text_query, results['aggregations'])
+
 
     return Response(context) 
 
@@ -90,11 +111,43 @@ def basic_search(self):
     page = 1
     total_count = s.count()
 
-    context = format_results(results, total_count, page, self, 'products', text_query, facets_dict)
+    context = format_results(results, total_count, page, 100, self, 'products', text_query, facets_dict)
 
     return Response(context) 
 
 
+@api_view(['GET'])
+@permission_classes((AllowAny, ))
+def get_product(self, product_id):
+
+    product = Product.objects.get(id = product_id)
+    p_name = product.product_name
+
+    print product.brand
+
+
+    s = Search(index="products")
+
+    s = s.query("match_phrase", product_name=product.product_name)[0:100]
+    s = s.filter("match_phrase", brand=product.brand)
+
+    #Bool(must=[Terms(brand__keyword=[u'Hudson']), Terms(merchant_name__keyword=[u'Bergdorf Goodman (Neiman Marcus)', u'Lord & Taylor'])]) 
+
+
+
+    results = s.execute()
+
+
+    results_dict = results.to_dict()
+    #results = results_dict['hits']
+
+    total_count = s.count()
+    page = 1
+    facets_dict = {}
+
+    context = format_results(results_dict, total_count, page, 100, self, 'products', p_name, facets_dict)
+
+    return Response(context) 
 
 
 

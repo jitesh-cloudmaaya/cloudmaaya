@@ -54,6 +54,9 @@ class Network(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+    def __str__(self):
+        return self.name
+
 class Merchant(models.Model):
     external_merchant_id = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=128, blank=True, null=True)
@@ -61,6 +64,10 @@ class Merchant(models.Model):
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+
+
+    def __str__(self):
+        return self.name
 
 class MerchantCategory(models.Model):
     external_merchant_id = models.IntegerField(blank=True, null=True)
@@ -70,6 +77,18 @@ class MerchantCategory(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+    def __str__(self):
+        return self.name
+
+
+class ColorMap(models.Model):
+    external_color = models.CharField(max_length=128, blank=True, null=True)
+    allume_color = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:

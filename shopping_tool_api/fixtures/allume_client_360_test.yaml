@@ -1,0 +1,180 @@
+-   model: shopping_tool.allumeclient360
+    pk: 1
+    fields: {first_name: Jessica, last_name: Jones, address_1: null, address_2: null,
+        city: null, state: null, country: null, birthday: '{"month":"1","day":"2","year":"1992"}',
+        occupation: Office of emergency Management, wear_to_work: Business attire,
+        spend_free_time: 'Gym, relaxing, going out with my boyfriend', where_live: '{"city":"Boston","state":"MA"}',
+        time_of_day_text: null, social_media: null, instagram: null, pinterest: null,
+        linkedin: 'Yes', photo: /user_uploads/profile_pic/2609.jpg, winter: null,
+        spring: null, summer: null, fall: null, styling_count: null, last_styling_date: null,
+        order_count: null, last_order_amt: null, last_order_date: null, avg_items: null,
+        avg_amt: null, heart_count: null, comment_count: null, star_count: null, signup_date: !!timestamp '2017-10-03
+            05:23:20+00:00', utm_source: fb, utm_campaign: FB_M_Paid_Fall1, utm_term: '',
+        utm_medium: mobile_feed, referral_site: null, hear_about_allume: Facebook,
+        height: 5 ft 5 in, weight: '136', bra_size: '{"band":"34","cup":"A"}', body_part_attention: Collarbone,
+        body_part_conceal: Love handles, fit_challenges: 'No', hair_complex_color: 'Fair
+            skin, brown hair', first_session_focus: 'Casual wear, Night out, Work
+            looks', looks_goal: null, pieces_focus: 'Tops, Pants, Jackets/blazers,
+            Jeans, Dresses, Shoes, Skirts', outfits_preference: null, other_goals: null,
+        stores: null, brands: null, spending_tops: $0 - $50, spending_bottoms: $0
+            - $50, spending_dresses: $0 - $50, spending_jackets: $0 - $50, spending_shoes: $0
+            - $50, style_celebs: 'Jennifer Aniston, Kate Middleton, Miranda Kerr,
+            Olivia Palermo, Solange Knowles', style_looks: null, style_jeans: 'Straight
+            leg, Skinny, Boyfriend, Cropped', style_tops: null, style_dress: null,
+        style_jacket: null, style_shoe: 'Bootie, Flat, Stiletto, Open toe heel', colors_preference: 'Black,
+            Grey, White, Neutrals, Blue, Red', style_avoid: null, size_pants: 'S,
+            4', size_jeans: '27', size_tops: S, size_shoe: '9', ears_pierced: 'Yes',
+        jewelry_style: 'Silver, Gold, Rose Gold', jewelry_type: 'Classic pieces, Subtle/Feminine
+            pieces'}
+-   model: shopping_tool.allumeclient360
+    pk: 2
+    fields: {first_name: Myrlande, last_name: Metayer, address_1: null, address_2: null,
+        city: null, state: null, country: null, birthday: '{"month":"11","day":"9","year":"1961"}',
+        occupation: Financial specialist, wear_to_work: 'Jackets, cardegans, plants,
+            skirts, dresses', spend_free_time: 'Shopping, reading, cleaning, fixing
+            my closet', where_live: '{"city":"Rosedale ","state":"NY"}', time_of_day_text: null,
+        social_media: null, instagram: 'No', pinterest: 'No', linkedin: 'No', photo: /user_uploads/profile_pic/2562.jpg,
+        winter: null, spring: null, summer: null, fall: null, styling_count: null,
+        last_styling_date: null, order_count: null, last_order_amt: null, last_order_date: null,
+        avg_items: null, avg_amt: null, heart_count: null, comment_count: null, star_count: null,
+        signup_date: !!timestamp '2017-10-02 01:58:00+00:00', utm_source: fb, utm_campaign: fb_m_paid_2545_PinkNoF,
+        utm_term: '', utm_medium: mobile_feed, referral_site: null, hear_about_allume: Facebook,
+        height: 5 ft 4 in, weight: '155', bra_size: '{"band":"36","cup":"D"}', body_part_attention: 'Cleavage ',
+        body_part_conceal: Stomach, fit_challenges: 'I don''t like pointy heals and
+            not high heels ', hair_complex_color: 'Light brown, light skin', first_session_focus: 'Casual
+            wear, Night out, Work looks', looks_goal: null, pieces_focus: 'Tops, Dresses,
+            Shoes, Skirts', outfits_preference: null, other_goals: 'No', stores: H&M,
+        brands: null, spending_tops: '$0 - $50, Could be more depends if I''m crazy
+            about it', spending_bottoms: $50 - 100, spending_dresses: '$50 - 100,
+            More depends on the occasion', spending_jackets: '$100 - 150, $0 - $50',
+        spending_shoes: $150 - 200, style_celebs: 'Kate Middleton, Kristen Stewart,
+            Amal Clooney, Taylor Swift, Reese Witherspoon, Eva mendez', style_looks: null,
+        style_jeans: 'Flare, Cropped', style_tops: null, style_dress: null, style_jacket: null,
+        style_shoe: 'Block heel, Mule', colors_preference: 'Black, Grey, White, Brown,
+            Yellow, Orange, Red', style_avoid: 'Pink, purple,  animal print', size_pants: 'M,
+            L, 10, 12', size_jeans: '8, 10', size_tops: 'M, L, 12', size_shoe: '7.5',
+        ears_pierced: 'Yes', jewelry_style: I mix it up depending on my mood, jewelry_type: I
+            mix it up depending on my mood}
+-   model: shopping_tool.allumeclient360
+    pk: 3
+    fields: {first_name: Smita, last_name: Unnikrishnan, address_1: null, address_2: null,
+        city: null, state: null, country: null, birthday: '{"month":"N/A","day":"N/A","year":"1987"}',
+        occupation: IT, wear_to_work: 'Anything goes ', spend_free_time: null, where_live: '{"city":
+            "Fairfax", "state": "VA"}', time_of_day_text: 'Morning (9am-12pm), Evening
+            (6pm-9pm)', social_media: '', instagram: null, pinterest: null, linkedin: null,
+        photo: '', winter: null, spring: null, summer: null, fall: null, styling_count: null,
+        last_styling_date: null, order_count: null, last_order_amt: null, last_order_date: null,
+        avg_items: null, avg_amt: null, heart_count: null, comment_count: null, star_count: null,
+        signup_date: !!timestamp '2017-08-15 14:56:56+00:00', utm_source: fb, utm_campaign: fb_m_paid_2545_PinkNoF,
+        utm_term: '', utm_medium: mobile_feed, referral_site: null, hear_about_allume: '',
+        height: 5 ft 3 in, weight: '125', bra_size: 34b, body_part_attention: 'Sleeves,
+            legs', body_part_conceal: 'Cleavage, ', fit_challenges: null, hair_complex_color: 'Wheatish,
+            black, short', first_session_focus: 'Casual wear, Night out, Work looks,
+            Special event', looks_goal: '', pieces_focus: 'Tops, Pants, Jackets/blazers,
+            Jeans, Dresses, Shoes, Accessories', outfits_preference: null, other_goals: '',
+        stores: "Express, H&M, Lands' End, Macy\u2019s, The Gap", brands: 'BCBG, Free
+            People, Joe''s Jeans, Kate Spade, Ralph Lauren, Polo, Nike', spending_tops: $0
+            - $50, spending_bottoms: $50 - 100, spending_dresses: $50 - 100, spending_jackets: $50
+            - 100, spending_shoes: $50 - 100, style_celebs: 'Jennifer Aniston, Kate
+            Middleton, Vanessa Hudgens, Amal Clooney', style_looks: null, style_jeans: 'Straight
+            leg, Skinny, Boyfriend, Cropped', style_tops: 'Image #7 - Off-the-shoulder,
+            Image #2 - Poplin long sleeve, Image #4 - Fitted knit long sleeve, Image
+            #5 - Boxy knit short sleeve, Image #6 - Ruffled neck & sleeves, Image
+            #3 - Silk sleeveless, Image #1 - Ruffled short sleeve', style_dress: 'Image
+            #3 - High neck lace, Image #4 - Full skirt, puffy sleeve midi', style_jacket: "Image\
+            \ #1 - Blazer, Image #2 - Bomber, Image #3 - Drapey cardigan, Image #4\
+            \ - Denim jacket, Image #5 - Trench, Image #6 -\_Biker jacket", style_shoe: 'Image
+            #3 - Wedge, Image #5 - Strappy stiletto, Image #2 - Flat, Image #6 - High
+            heel, Image #4 - Sneaker, Image #9 - Pointy loafer, Image #7 - Flat sandal,
+            Image #8 - Mule, Image #1 - Espadrille, Image #10 - Driving moccasin',
+        colors_preference: 'Black, Grey, White, Brown, Neutrals, Purple, Blue, Green,
+            Yellow, Orange, Red, Pink', style_avoid: '', size_pants: 'S, M, 6', size_jeans: '28',
+        size_tops: 'XS, S, 6', size_shoe: '6.5, 7', ears_pierced: null, jewelry_style: null,
+        jewelry_type: null}
+-   model: shopping_tool.allumeclient360
+    pk: 4
+    fields: {first_name: Ronnett, last_name: 'Stanley ', address_1: null, address_2: null,
+        city: null, state: null, country: null, birthday: '{"month":"11","day":"5","year":"1971"}',
+        occupation: 'Health fields ', wear_to_work: Scrub, spend_free_time: 'Running
+            errands ', where_live: '{"city":"Federalsburg ","state":"MD"}', time_of_day_text: null,
+        social_media: null, instagram: 'No', pinterest: 'No', linkedin: 'No', photo: null,
+        winter: null, spring: null, summer: null, fall: null, styling_count: null,
+        last_styling_date: null, order_count: null, last_order_amt: null, last_order_date: null,
+        avg_items: null, avg_amt: null, heart_count: null, comment_count: null, star_count: null,
+        signup_date: !!timestamp '2017-09-03 07:19:50+00:00', utm_source: fb, utm_campaign: fb_m_paid_2545_PinkNoF,
+        utm_term: '', utm_medium: mobile_feed, referral_site: null, hear_about_allume: Facebook,
+        height: 5 ft 5 in, weight: '160', bra_size: '{"band":"42","cup":"A"}', body_part_attention: Butt,
+        body_part_conceal: 'Stomach ', fit_challenges: 'No', hair_complex_color: 'Black ',
+        first_session_focus: "I\u2019m not sure", looks_goal: null, pieces_focus: All
+            of the above, outfits_preference: null, other_goals: null, stores: null,
+        brands: null, spending_tops: '$0 - $50, Cheap', spending_bottoms: $0 - $50,
+        spending_dresses: $0 - $50, spending_jackets: $0 - $50, spending_shoes: $0
+            - $50, style_celebs: 'Vanessa Hudgens, Reese Witherspoon', style_looks: null,
+        style_jeans: 'Straight leg, High waist', style_tops: null, style_dress: null,
+        style_jacket: null, style_shoe: 'Flat, Kitty heel, Loafer, I love low heels ',
+        colors_preference: 'Black, Grey, White, Brown, Neutrals, Purple, Blue, Green,
+            Yellow, Orange, Red, Pink', style_avoid: null, size_pants: 'XXL, 18+',
+        size_jeans: 18+, size_tops: XXL, size_shoe: '9.5, 10', ears_pierced: 'Yes',
+        jewelry_style: I mix it up depending on my mood, jewelry_type: I mix it up
+            depending on my mood}
+-   model: shopping_tool.allumeclient360
+    pk: 5
+    fields: {first_name: 'Sabrina ', last_name: Davis, address_1: null, address_2: null,
+        city: null, state: null, country: null, birthday: '{"month":"9","day":"8","year":"1988"}',
+        occupation: 'Security ', wear_to_work: 'Uniform ', spend_free_time: Sleeping
+            and gaming, where_live: '{"city":"Seattle ","state":"WA"}', time_of_day_text: null,
+        social_media: null, instagram: '', pinterest: null, linkedin: 'No', photo: null,
+        winter: null, spring: null, summer: null, fall: null, styling_count: null,
+        last_styling_date: null, order_count: null, last_order_amt: null, last_order_date: null,
+        avg_items: null, avg_amt: null, heart_count: null, comment_count: null, star_count: null,
+        signup_date: !!timestamp '2017-10-06 09:44:25+00:00', utm_source: fb, utm_campaign: fb_m_paid_2545_PinkNoF,
+        utm_term: '', utm_medium: mobile_feed, referral_site: null, hear_about_allume: Facebook,
+        height: 5 ft, weight: '115', bra_size: '{"band":"32","cup":"C"}', body_part_attention: Legs
+            and rear end, body_part_conceal: Not really, fit_challenges: I'm short
+            so pants tend to drag on the ground., hair_complex_color: Dark brown and
+            slightly tan, first_session_focus: "Casual wear, Night out, I\u2019m not\
+            \ sure", looks_goal: null, pieces_focus: 'Tops, Dresses, Skirts', outfits_preference: null,
+        other_goals: null, stores: null, brands: null, spending_tops: $0 - $50, spending_bottoms: $0
+            - $50, spending_dresses: $0 - $50, spending_jackets: $0 - $50, spending_shoes: $0
+            - $50, style_celebs: 'Jennifer Aniston, Kristen Stewart, Taylor Swift,
+            Miranda Kerr, Selena Gomez', style_looks: null, style_jeans: 'Skinny,
+            Flare, Cropped', style_tops: null, style_dress: null, style_jacket: null,
+        style_shoe: 'Bootie, Flat, Sneaker, Stiletto', colors_preference: 'Black,
+            Grey, White, Brown, Neutrals, Purple, Blue, Green', style_avoid: 'Floral ',
+        size_pants: 'S, M, 4, 6', size_jeans: '26, 27', size_tops: 'S, M, 4', size_shoe: '6.5,
+            7, 7.5', ears_pierced: 'No', jewelry_style: 'Silver, I mix it up depending
+            on my mood', jewelry_type: "I don\u2019t wear jewelry"}
+-   model: shopping_tool.allumeclient360
+    pk: 6
+    fields: {first_name: Karma, last_name: Knavel, address_1: null, address_2: null,
+        city: null, state: null, country: null, birthday: '{"month":"N/A","day":"N/A","year":"2001"}',
+        occupation: part time employe, wear_to_work: Blue jeans with no holes and
+            y work shirt, spend_free_time: null, where_live: '{"city": "LaHarpe ",
+            "state": "Kansas"}', time_of_day_text: 'Early morning (6am-9am), Late
+            Afternoon (3pm-6pm), Evening (6pm-9pm)', social_media: karmaknavel, instagram: null,
+        pinterest: null, linkedin: null, photo: '', winter: null, spring: null, summer: null,
+        fall: null, styling_count: null, last_styling_date: null, order_count: null,
+        last_order_amt: null, last_order_date: null, avg_items: null, avg_amt: null,
+        heart_count: null, comment_count: null, star_count: null, signup_date: !!timestamp '2017-07-31
+            18:19:05+00:00', utm_source: '', utm_campaign: '', utm_term: '', utm_medium: '',
+        referral_site: null, hear_about_allume: Facebook, height: 5 ft 7 in, weight: '175',
+        bra_size: large or b32, body_part_attention: my arms and legs, body_part_conceal: 'my
+            back, my stomach and my chest', fit_challenges: null, hair_complex_color: 'fair
+            skin i have curly hairy that is blond ', first_session_focus: 'Casual
+            wear, Night out', looks_goal: '', pieces_focus: 'Tops, Shorts, Jeans,
+            Dresses, Shoes, Accessories', outfits_preference: null, other_goals: Going
+            into my Junior year in high school, stores: "Macy\u2019s, Zara, Urban\
+            \ Outfitters", brands: 'Vineyard Vines, Coach, Nike', spending_tops: $0
+            - $50, spending_bottoms: $50 - 100, spending_dresses: $50 - 100, spending_jackets: $50
+            - 100, spending_shoes: $50 - 100, style_celebs: 'Jennifer Aniston, Kate
+            Middleton, Kristen Stewart, Amal Clooney', style_looks: null, style_jeans: 'Straight
+            leg, Skinny, High waist, Cropped', style_tops: "Image #7 - Off-the-shoulder,\
+            \ Image #8 - Silk\_camisole, Image #4 - Fitted knit long sleeve, Image\
+            \ #3 - Silk sleeveless, Image #1 - Ruffled short sleeve", style_dress: 'Image
+            #3 - High neck lace', style_jacket: "Image #2 - Bomber, Image #3 - Drapey\
+            \ cardigan, Image #4 - Denim jacket, Image #5 - Trench, Image #6 -\_Biker\
+            \ jacket", style_shoe: 'Image #3 - Wedge, Image #2 - Flat, Image #6 -
+            High heel, Image #4 - Sneaker, Image #1 - Espadrille', colors_preference: 'Black,
+            Grey, White, Neutrals, Purple, Blue, Red', style_avoid: 'no floral patterns ',
+        size_pants: 'L, 16', size_jeans: '32, 34+', size_tops: 'L, XL, 16', size_shoe: '8.5',
+        ears_pierced: null, jewelry_style: null, jewelry_type: null}

@@ -11,7 +11,7 @@ import collections
 import inspect
 
 from catalogue_service.settings_local import PRODUCT_INDEX
-
+from six import iteritems, itervalues, string_types
 """
 #Commenting out for now I expect to delete soon unless we decide to not use logstash for indexing
 
@@ -90,23 +90,96 @@ class EProductSearch(FacetedSearch):
         ('price_range', RangeFacet(field='sale_price', ranges=price_ranges)), #current_price
     )) 
 
+    def __init__(self, query=None, filters={}, sort=(), favs=[], card_count = False):
+        """
+        :arg query: the text to search for
+        :arg filters: facet values to filter
+        :arg sort: sort information to be passed to :class:`~elasticsearch_dsl.Search`
+        """
+        self._favs = favs
+        self._query = query
+        self._filters = {}
+        self._card_count = card_count
+        # TODO: remove in 6.0
+        if isinstance(sort, string_types):
+            self._sort = (sort,)
+        else:
+            self._sort = sort
+        self.filter_values = {}
+        for name, value in iteritems(filters):
+            self.add_filter(name, value)
+
+        self._s = self.build_search()
+
+
     def filter(self, search):
         """
         Over-ride default behaviour (which uses post_filter)
         to use filter instead.
         """
+
+        #print self._filters
         filters = Q('match_all')
         for f in itervalues(self._filters):
-            print f
             filters &= f
+
         return search.filter(filters)
+
+
+    def aggregate(self, search):
+        """
+        Add aggregations representing the facets selected, including potential
+        filters.
+        """
+        for f, facet in iteritems(self.facets):
+            agg = facet.get_aggregation()
+            agg_filter = Q('match_all')
+            for field, filter in iteritems(self._filters):
+                if f == field:
+                    continue
+                agg_filter &= filter
+            search.aggs.bucket(
+                '_filter_' + f,
+                'filter',
+                filter=agg_filter
+            ).bucket(f, agg)
 
     def query(self, search, query):
         """Overriden to use bool AND by default"""
 
-        if query:
-            return search.query('multi_match',
-                fields=self.fields,
-                query=query,
-                operator='and'
-            )#.sort('-p')
+        if query == "*":
+            main_q = Q({"match_all" : {}})
+        else:            
+            main_q = Q('multi_match',
+                    fields=self.fields,
+                    query=query,
+                    operator='and'
+                )
+
+        #Add in Filter for Fav Products
+        if self._favs:
+            q_faves = Q({"ids" : {"values" : self._favs}})
+        else:
+            q_faves = Q()
+
+
+        collapse_dict = {"field": "product_name.keyword","inner_hits": {"name": "collapsed_by_product_name","from": 1}}
+        cardinality_dict = {"unique_count" : {"cardinality" : {"field" : "product_name.keyword"}}}
+
+        if self._card_count:
+            return search.query(main_q).query(q_faves).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
+        else:
+            #search.aggs.bucket("unique_product_name_count", {"cardinality" : {"field" : "product_name.keyword"}})
+            return search.query(main_q).query(q_faves).extra(collapse=collapse_dict)
+        #.sort('-p')
+
+"""
+  "collapse": {
+    "field": "product_name.keyword",
+    "inner_hits": {
+      "name": "collapsed_by_size",
+      "from": 1,
+      "size": 2
+    }
+  }
+"""

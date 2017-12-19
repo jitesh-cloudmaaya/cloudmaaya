@@ -1,0 +1,38 @@
+<a id="rack-toggle"><span>{{ rack_items|length }}</span> item{{ rack_items|length|pluralize }} in your rack</a>
+<div id="rack">
+  <a href="#" id="close-rack"><i class="fa fa-times"></i></a>
+  <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
+  <div id="rack-list">
+    {% for item in rack_items %}
+
+    {% empty %}
+      <div class="empty">Add items to your rack...</div>
+    {% endfor %}
+  </div>
+  <div id="favorites-list"></div>
+  <div id="rack-btns">
+    <span id="rack-number">{{ rack_items|length }} item{{ rack_items|length|pluralize }}</span>
+    <a href="#" id="add-look-btn">add look</a>
+    <a href="#" id="favorites-toggle">show my favorites</a>
+  </div>
+</div>
+<div id="look-list">
+  <h2>{{ looks|length }} Look{{ looks|length|pluralize }}</h2>
+  <div id="look-links">
+    {% for look in looks %}
+      <a href="#" class="look-link" data-lookid="{{ look.id }}" 
+        data-lookname="{{ look.name }}" data-lookdesc="{{ look.description }}" data-looklayoutid="{{ look.look_layout.id }}">
+        <table>
+          <tr>
+            <td class="icon"><i class="fa fa-shopping-bag"></i></td>
+            <td>
+              <span class="name">{{ look.name }}</span>
+              <span class="layout"><em>layout:</em> {{ look.look_layout.name }}</span>
+            </td>
+          </tr>
+        </table>
+      </a> 
+    {% endfor %}
+  </div>
+</div>
+<div id="inspect-item"></div>

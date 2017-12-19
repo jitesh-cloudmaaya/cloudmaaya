@@ -43,7 +43,8 @@ INSERT INTO product_api_product
   is_best_seller,
   is_trending,
   allume_score,
-  current_price
+  current_price,
+  is_deleted
 
 )
 SELECT * FROM (
@@ -65,7 +66,7 @@ SELECT
   rp.sale_price,
   rp.retail_price,
   rp.shippping,
-  UPPER(SUBSTRING_INDEX(rp.attribute_5_color, ',', 1)),
+  cm.allume_color,
   REPLACE(REPLACE(REPLACE(UPPER(rp.attribute_6_gender), "FEMALE", "WOMEN"), "MALE", "MEN"), "MAN", "MEN"),
   rp.attribute_7_style,
   REPLACE(UPPER(rp.attribute_3_size), '~', ','),
@@ -84,16 +85,22 @@ SELECT
   0 as is_best_seller,
   0 as is_trending,
   0 as allume_score,
-  CASE WHEN rp.sale_price > 0  OR NOT NULL THEN rp.sale_price ELSE rp.retail_price END as current_price
+  CASE WHEN rp.sale_price > 0  OR NOT NULL THEN rp.sale_price ELSE rp.retail_price END as current_price,
+  0 as is_deleted
 FROM tasks_ranproducts rp LEFT JOIN product_api_product ap ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
-INNER JOIN product_api_merchant m ON m.external_merchant_id = rp.merchant_id
+INNER JOIN product_api_merchant m ON rp.merchant_id = m.external_merchant_id
+LEFT JOIN product_api_colormap cm ON rp.attribute_5_color = cm.external_color 
 WHERE ap.current_price IS NULL
-AND rp.modification <> 'D' ) x;
+AND m.active = 1
+AND ap.id IS NULL
+AND rp.modification IS NULL ) x;
 
 
 -- Update Existing Products
 UPDATE product_api_product ap
 INNER JOIN tasks_ranproducts rp ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
+INNER JOIN product_api_merchant m ON rp.merchant_id = m.external_merchant_id
+LEFT JOIN product_api_colormap cm ON rp.attribute_5_color = cm.external_color 
 SET
   ap.product_id =  rp.product_id,
   ap.merchant_id =  rp.merchant_id,
@@ -112,7 +119,7 @@ SET
   ap.sale_price =  rp.sale_price,
   ap.retail_price =  rp.retail_price,
   ap.shipping_price =  rp.shippping,
-  ap.color =  UPPER(SUBSTRING_INDEX(rp.attribute_5_color, ',', 1)),
+  ap.color =  cm.allume_color,
   ap.gender =  REPLACE(REPLACE(REPLACE(UPPER(rp.attribute_6_gender), "FEMALE", "WOMEN"), "MALE", "MEN"), "MAN", "MEN"),
   ap.style =  rp.attribute_7_style,
   ap.size =  REPLACE(UPPER(rp.attribute_3_size), '~', ','),
@@ -129,6 +136,7 @@ SET
   ap.updated_at =  NOW(),
   ap.is_deleted = CASE WHEN rp.modification = 'D' THEN 1 ELSE 0 END,
   ap.current_price = CASE WHEN rp.sale_price > 0 OR NOT NULL THEN rp.sale_price ELSE rp.retail_price END;
+  WHERE m.active = 1
 
 
 
