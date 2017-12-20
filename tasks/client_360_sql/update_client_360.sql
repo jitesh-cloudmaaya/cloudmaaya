@@ -28,18 +28,17 @@ ac.wp_user_id);
 -- 2) set the session group_concat_max_len variable
 SET SESSION group_concat_max_len=5000;
 
--- 3) update the table for any wp_user_id entries
-
 -- replace temp with allume_client_360
+-- 3) update the table for any wp_user_id entries
 INSERT INTO allume_client_360 (wp_user_id)
 SELECT wu.id FROM wp_users wu
 WHERE wu.id NOT IN (
     SELECT wp_user_id FROM allume_client_360
 );
 
--- 3a) remove no longer existing id, first/last name from temp?
--- DELETE
-
+-- 3a) remove no longer existing ids
+DELETE FROM allume_client_360
+WHERE wp_user_id NOT IN (SELECT id FROM wp_users);
 
 -- 4) update the recently populated table
 UPDATE allume_client_360 ac3
