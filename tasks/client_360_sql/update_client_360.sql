@@ -1,3 +1,25 @@
+-- delete and insert subset of records of interest method
+
+-- query to find subset of records to update
+SELECT wp_user_id FROM allume_client_360 WHERE last_updated < (SELECT MAX(last_updated) FROM allume_client_360);
+
+
+-- delete these rows from allume_client_360
+
+-- reconstruct the relevant data using the join logic and re-insert into allume_client_360
+
+
+-- alternatively try and time and update version of this method as well
+
+
+
+
+
+
+
+
+
+
 -- steps
 
 -- 1) create the order list view
