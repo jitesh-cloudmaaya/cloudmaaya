@@ -30,22 +30,19 @@ SET SESSION group_concat_max_len=5000;
 
 -- 3) update the table for any wp_user_id entries
 
--- REALLY CONFIRM THAT THIS STATEMENT UPDATES NEW ENTRIES on simple example
-INSERT INTO allume_client_360 (wp_user_id, first_name, last_name, user_email)
-SELECT wu.id, wu.first_name, wu.last_name, wu.user_registered as signup_date, wu.user_email FROM wp_users wu
+-- replace temp with allume_client_360
+INSERT INTO allume_client_360 (wp_user_id)
+SELECT wu.id FROM wp_users wu
 WHERE wu.id NOT IN (
-    SELECT wp_user_id from allume_client_360
+    SELECT wp_user_id FROM allume_client_360
 );
 
--- 3a) remove no longer existing id, first/last name from allume_client_360?
+-- 3a) remove no longer existing id, first/last name from temp?
 -- DELETE
 
 
 -- 4) update the recently populated table
--- working update command?
-
--- replace temp with allume_client_360
-UPDATE temp ac3
+UPDATE allume_client_360 ac3
 LEFT JOIN allume_wp_user_shipping_addresses sa ON ac3.wp_user_id = sa.wp_user_id
 
 LEFT JOIN (
@@ -57,6 +54,8 @@ LEFT JOIN (
 ) styling_sessions ON ac3.wp_user_id = styling_sessions.wp_initiator_id
 
 LEFT JOIN allume_clients ac ON ac3.wp_user_id = ac.wp_client_id
+
+LEFT JOIN wp_users wu ON ac3.wp_user_id = wu.ID
 
 LEFT JOIN 
 (SELECT user_email, 
@@ -126,9 +125,50 @@ allume_quiz_user_answers
 WHERE 
 quiz_free_form_answer IS NOT NULL) user_answers 
 GROUP BY user_email) quiz
-ON ac3.user_email = quiz.user_email
+ON wu.user_email = quiz.user_email
 
-SET ac3.address_1 = sa.address_1,
+LEFT JOIN
+(SELECT 
+COUNT(*) as order_count, 
+MAX(order_date) as last_order_date, 
+AVG(items) as avg_items, 
+AVG(amt) as avg_amt, 
+wp_user_id 
+FROM 
+order_list 
+GROUP BY wp_user_id) order_summary
+ON ac3.wp_user_id = order_summary.wp_user_id
+
+LEFT JOIN
+(SELECT 
+ol.wp_user_id, 
+ol.amt
+FROM 
+order_list ol
+INNER JOIN 
+(SELECT wp_user_id, MAX(order_date) as last_order_date
+FROM order_list
+GROUP BY wp_user_id) AS lod ON 
+lod.last_order_date = ol.order_date 
+AND lod.wp_user_id = ol.wp_user_id) last_ord_amt
+ON ac3.wp_user_id = last_ord_amt.wp_user_id
+
+LEFT JOIN
+(SELECT 
+user_id, 
+count(case when action = 'hearted' then 1 end) heart_count, 
+count(case when action = 'commented' then 1 end) comment_count,
+count(case when action = 'starred' then 1 end) star_count 
+FROM
+allume_social_actions 
+GROUP BY
+user_id) social_actions
+ON ac3.wp_user_id = social_actions.user_id
+
+SET ac3.first_name = wu.first_name,
+    ac3.last_name = wu.last_name,
+    ac3.signup_date = wu.user_registered,
+    ac3.address_1 = sa.address_1,
     ac3.address_2 = sa.address_2,
     ac3.city = sa.city,
     ac3.state = sa.state,
@@ -161,7 +201,7 @@ SET ac3.address_1 = sa.address_1,
     ac3.first_session_focus = quiz.first_session_focus,
     ac3.looks_goal = quiz.looks_goal,
     ac3.pieces_focus = quiz.pieces_focus,
-    ac3.outfits_preference, = quiz.outfits_preference,
+    ac3.outfits_preference = quiz.outfits_preference,
     ac3.other_goals = quiz.other_goals,
     ac3.stores = quiz.stores,
     ac3.brands = quiz.brands,
@@ -185,8 +225,12 @@ SET ac3.address_1 = sa.address_1,
     ac3.size_shoe = quiz.size_shoe,
     ac3.ears_pierced = quiz.ears_pierced,
     ac3.jewelry_style = quiz.jewelry_style,
-    ac3.jewelry_type = quiz.jewelry_type;
-
-
-
-
+    ac3.jewelry_type = quiz.jewelry_type,
+    ac3.order_count = order_summary.order_count,
+    ac3.last_order_date = order_summary.last_order_date,
+    ac3.avg_items = order_summary.avg_items,
+    ac3.avg_amt = order_summary.avg_amt,
+    ac3.last_order_amt = last_ord_amt.amt,
+    ac3.heart_count = social_actions.heart_count,
+    ac3.comment_count = social_actions.comment_count,
+    ac3.star_count = social_actions.star_count;
