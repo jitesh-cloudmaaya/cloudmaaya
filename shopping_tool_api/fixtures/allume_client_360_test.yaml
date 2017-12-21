@@ -25,7 +25,7 @@
             Grey, White, Neutrals, Blue, Red', style_avoid: null, size_pants: 'S,
             4', size_jeans: '27', size_tops: S, size_shoe: '9', ears_pierced: 'Yes',
         jewelry_style: 'Silver, Gold, Rose Gold', jewelry_type: 'Classic pieces, Subtle/Feminine
-            pieces'}
+            pieces', last_updated: !!timestamp '2017-10-03 05:23:20+00:00'}
 -   model: shopping_tool.allumeclient360
     pk: 2
     fields: {first_name: Myrlande, last_name: Metayer, address_1: null, address_2: null,
@@ -54,7 +54,7 @@
             Yellow, Orange, Red', style_avoid: 'Pink, purple,  animal print', size_pants: 'M,
             L, 10, 12', size_jeans: '8, 10', size_tops: 'M, L, 12', size_shoe: '7.5',
         ears_pierced: 'Yes', jewelry_style: I mix it up depending on my mood, jewelry_type: I
-            mix it up depending on my mood}
+            mix it up depending on my mood, last_updated: !!timestamp '2017-10-03 05:23:20+00:00'}
 -   model: shopping_tool.allumeclient360
     pk: 3
     fields: {first_name: Smita, last_name: Unnikrishnan, address_1: null, address_2: null,
@@ -90,7 +90,7 @@
         colors_preference: 'Black, Grey, White, Brown, Neutrals, Purple, Blue, Green,
             Yellow, Orange, Red, Pink', style_avoid: '', size_pants: 'S, M, 6', size_jeans: '28',
         size_tops: 'XS, S, 6', size_shoe: '6.5, 7', ears_pierced: null, jewelry_style: null,
-        jewelry_type: null}
+        jewelry_type: null, last_updated: !!timestamp '2017-10-03 05:23:20+00:00'}
 -   model: shopping_tool.allumeclient360
     pk: 4
     fields: {first_name: Ronnett, last_name: 'Stanley ', address_1: null, address_2: null,
@@ -116,7 +116,7 @@
             Yellow, Orange, Red, Pink', style_avoid: null, size_pants: 'XXL, 18+',
         size_jeans: 18+, size_tops: XXL, size_shoe: '9.5, 10', ears_pierced: 'Yes',
         jewelry_style: I mix it up depending on my mood, jewelry_type: I mix it up
-            depending on my mood}
+            depending on my mood, last_updated: !!timestamp '2017-10-03 05:23:20+00:00'}
 -   model: shopping_tool.allumeclient360
     pk: 5
     fields: {first_name: 'Sabrina ', last_name: Davis, address_1: null, address_2: null,
@@ -143,7 +143,7 @@
             Grey, White, Brown, Neutrals, Purple, Blue, Green', style_avoid: 'Floral ',
         size_pants: 'S, M, 4, 6', size_jeans: '26, 27', size_tops: 'S, M, 4', size_shoe: '6.5,
             7, 7.5', ears_pierced: 'No', jewelry_style: 'Silver, I mix it up depending
-            on my mood', jewelry_type: "I don\u2019t wear jewelry"}
+            on my mood', jewelry_type: "I don\u2019t wear jewelry", last_updated: !!timestamp '2017-10-03 05:23:20+00:00'}
 -   model: shopping_tool.allumeclient360
     pk: 6
     fields: {first_name: Karma, last_name: Knavel, address_1: null, address_2: null,
@@ -177,4 +177,4 @@
             High heel, Image #4 - Sneaker, Image #1 - Espadrille', colors_preference: 'Black,
             Grey, White, Neutrals, Purple, Blue, Red', style_avoid: 'no floral patterns ',
         size_pants: 'L, 16', size_jeans: '32, 34+', size_tops: 'L, XL, 16', size_shoe: '8.5',
-        ears_pierced: null, jewelry_style: null, jewelry_type: null}
+        ears_pierced: null, jewelry_style: null, jewelry_type: null, last_updated: !!timestamp '2017-10-03 05:23:20+00:00'}

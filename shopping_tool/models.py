@@ -156,7 +156,7 @@ class AllumeClient360(models.Model):
     ears_pierced = models.TextField(blank=True, null=True)
     jewelry_style = models.TextField(blank=True, null=True)
     jewelry_type = models.TextField(blank=True, null=True)
-    # last_updated = models.DateTimeField(blank=True, null=True)
+    last_updated = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
