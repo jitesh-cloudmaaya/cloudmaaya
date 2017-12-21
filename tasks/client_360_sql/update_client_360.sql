@@ -46,7 +46,10 @@ CREATE TABLE IF NOT EXISTS update_subset (
     wp_user_id INT
 );
 INSERT INTO update_subset (wp_user_id)
-SELECT wp_user_id FROM allume_client_360 WHERE last_updated < (SELECT MAX(last_updated) FROM allume_client_360);
+# original update_subset selection
+-- SELECT wp_user_id FROM allume_client_360 WHERE last_updated < (SELECT MAX(last_updated) FROM allume_client_360);
+# new update_subset selection
+SELECT ID FROM wp_users WHERE last_modified > (SELECT MAX(last_updated) FROM allume_client_360);
 
 
 -- SELECT wp_user_id FROM allume_client_360 WHERE last_updated < (SELECT MAX(last_updated) FROM allume_client_360);
