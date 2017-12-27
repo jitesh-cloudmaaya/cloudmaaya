@@ -1002,7 +1002,7 @@ body.explore-page #user-card{position:absolute;}
 #user-card div.weather span {
   border-right:1px solid #eee; 
   float:left; 
-  margin:15px 0;
+  margin:5px 0;
   width:calc(25% - 1px);
 }
 #user-card div.demo div.left { border-right:1px solid #eee; float:left; width:calc(50% - 1px); }
@@ -1020,22 +1020,21 @@ body.explore-page #user-card{position:absolute;}
 #user-card div.weather span em {
   color:#999;
   display:block;
-  font-size:18px;
+  font-size:10px;
   font-size:200;
-  line-height:24px;
+  line-height:12px;
   text-align:center;
   text-transform: uppercase;
 }
 #user-card div.weather span em.desc{
   color:#777;
-  font-size:12px;
+  font-size:10px;
 }
 #user-card div.weather span i {
   color:#666;
   display:block;
-  font-size:40px;
-  height:65px;
-  line-height:65px;
+  font-size:18px;
+  padding:5px 0 2px;
   text-align:center;
 }
 #user-card div.notes h6 {

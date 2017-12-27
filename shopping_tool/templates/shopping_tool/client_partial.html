@@ -7,7 +7,7 @@
   <span class="expanded style"><em>look style:</em>{{ client.client_360.style_looks }}</span>
   <img class="client" src="{{ client.client_360.photo}}"/></a>
   <div class="details">
-    <div class="social">
+    <div class="social" id="client-social">
     	<span>social media:</span>
       <a href="{{ client.client_360.instagram }}" class="instagram" target="_blank"><i class="fa fa-instagram"></i></a>
       <a href="{{ client.client_360.pinterest }}" class="pinterest" target="_blank"><i class="fa fa-pinterest"></i></a>
@@ -18,7 +18,7 @@
         <span><em>height:</em>{{ client.client_360.height }}</span>
         <span><em>weight:</em>{{ client.client_360.weight }}</span>
         <span><em>pierced ears:</em>{{ client.client_360.ears_pierced }}</span>
-        <span><em>bra:</em>{{ client.client_360.bra_size }}</span>
+        <span id="bra-size" data-sizes="{{ client.client_360.bra_size }}"></span>
         <span><em>tops:</em>{{ client.client_360.size_tops }}</span>
         <span><em>pants:</em>{{ client.client_360.size_pants }}</span>
         <span><em>jeans:</em>{{ client.client_360.size_jeans }}</span>
@@ -37,44 +37,24 @@
     <div class="weather">
     	<span>
         <em class="season">winter</em>
-        <i class="wi wi-day-snow-wind"></i>
-        <em class="desc">{{ client.client_360.winter}}</em>
+        <i class="wi {{ weather_info.winter_icon }}"></i>
+        <em class="desc">{{ weather_info.winter_temperature_average }}</em>
       </span>
 			<span> 
         <em class="season">spring</em>
-        <i class="wi wi-day-sprinkle"></i>
-        <em class="desc">{{ client.client_360.spring}}</em>
+        <i class="wi {{ weather_info.spring_icon }}"></i>
+        <em class="desc">{{ weather_info.spring_temperature_average }}</em>
       </span>
       <span> 
         <em class="season">summer</em>
-        <i class="wi wi-day-sunny"></i>
-        <em class="desc">{{ client.client_360.summer}}</em>
+        <i class="wi {{ weather_info.summer_icon }}"></i>
+        <em class="desc">{{ weather_info.summer_temperature_average }}</em>
       </span>
       <span> 
         <em class="season">fall</em>
-        <i class="wi wi-day-cloudy"></i>
-        <em class="desc">{{ client.client_360.fall}}</em>
-      </span>
-      <!--<span>
-        <em class="season">winter</em>
-        <i class="wi wi-day-cloudy-gusts"></i>
-        <em class="desc">windy and gray</em>
-      </span>
-      <span> 
-        <em class="season">spring</em>
-        <i class="wi wi-day-sprinkle"></i>
-        <em class="desc">rainy, but warm</em>
-      </span>
-      <span> 
-        <em class="season">summer</em>
-        <i class="wi wi-day-sunny"></i>
-        <em class="desc">hot, lots of sun</em>
-      </span>
-      <span> 
-        <em class="season">fall</em>
-        <i class="wi wi-day-cloudy"></i>
-        <em class="desc">cloudy, but warm</em>
-      </span> -->           
+        <i class="wi {{ weather_info.autumn_icon }}"></i>
+        <em class="desc">{{ weather_info.autumn_temperature_average}}</em>
+      </span>     
     </div>
     <div class="notes">
      <!-- <h6>4 Notes</h6>
