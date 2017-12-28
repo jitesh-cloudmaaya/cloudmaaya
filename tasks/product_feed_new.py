@@ -35,18 +35,15 @@ class ProductFeed(object):
             os.makedirs(self._local_temp_dir_cleaned)
         print('finished?')
 
-
     def create_merchant_mapping(self):
+        cursor = connection.cursor()
+        cursor.execute("SELECT external_merchant_id, active FROM product_api_merchant")
+
         merchant_mapping = {}
+        for tup in cursor.fetchall():
+            merchant_mapping[tup[0]] = tup[1]
 
-        cnx = mysql.connector.connect(user='root', database='allume')
-        cursor = cnx.cursor()
-        print('works')
-
-
-
-
-
+        print(merchant_mapping)
         return merchant_mapping
 
 
