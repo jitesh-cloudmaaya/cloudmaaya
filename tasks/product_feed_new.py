@@ -29,7 +29,6 @@ class ProductFeed(object):
         self._leave_temp_files = config_dict['leave_temp_files']
         self.etl_file_name = config_dict['etl_file_name']
 
-
         self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
         self._clean_data_method = config_dict['clean_data_method']
 
