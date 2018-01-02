@@ -37,56 +37,39 @@ class ProductFeed(object):
         if not os.path.exists(self._local_temp_dir_cleaned):
             os.makedirs(self._local_temp_dir_cleaned)
 
-    # def read_merchant_file(self, remote_file):
-    # def process_merchant_file(self):
-    #     file_list = os.listdir(self._local_temp_dir) # will grap .txt, /cleaned, and 2 .gz files
-        
-
-    #     relevant_file = file_list[1] # currently gets 13816_3389478_mp_delta.txt
-    #     relevant_file = os.path.join(os.getcwd(), self._local_temp_dir, relevant_file)
-    #     print(relevant_file)
-    #     # need to get the merchant_id and add to every line in the file
-
-    #     # in theory we would do this in a for loop for every file
-    #     # also need to check the merchant name against whether or not they are 'active'
-    #     download_dir = self._local_temp_dir + '/cleaned/flat_file.txt'
-    #     with open(relevant_file, "r") as f:
-    #         with open(download_dir, "w") as csv:
-    #             csv.write('product_id|product_name|SKU|primary_category|secondary_category|produdct_url|product_image_url|buy_url|short_product_description|long_product_description|discount|discount_type|sale_price|retail_price|begin_date|end_date|brand|shippping|keywords|manufacturer_part_number|manufacturer_name|shipping_information|availablity|universal_product_code|class_id|currency|M1|pixel|attribute_1_misc|attribute_2_product_type|attribute_3_size|attribute_4_material|attribute_5_color|attribute_6_gender|attribute_7_style|attribute_8_age|attribute_9|attribute_10|attribute_11|merchant_id\n')
-    #             header = f.readline()
-    #             merchant_id = header.split('|')[1]
-    #             for line in f:
-    #                 line = line.strip('\n') 
-    #                 line += "|" + merchant_id
-    #                 # line = line.replace('|', ',') # data has commas?
-    #                 line += '\n'
-    #                 csv.write(line)
-    #     print('FINISHED')
-
-
-    # WRITE HELPER FOR processing individual merchant file?
-
     def clean_data(self):
         clean_ran(self._local_temp_dir)
 
+    def test(self):
+        fields = 'product_id,merchant_id,product_name,long_product_description,short_product_description,product_url,product_image_url,buy_url,manufacturer_name,manufacturer_part_number,SKU,product_type,discount,discount_type,sale_price,retail_price,shipping_price,color,gender,style,size,material,age,currency,availability,keywords,primary_category,secondary_category,brand,updated_at,merchant_name,is_best_seller,is_trending,allume_score,current_price,is_deleted'
+        fields = " (%s) " % (fields)
+        print(fields)
+        temp = self._fields
+        temp = " (%s) " % (temp)
+        print(temp)
+        return
 
+    # how to get filename of flat_file.csv
+    def test_load_cleaned_data(self):
+        print('running')
+        cursor = connection.cursor()
 
-# how to get filename of flat_file.csv
-def test_load_cleaned_data(self, file_name):
-    print('running')
-    cursor = connection.cursor()
-    fields = self._fields
-    fields = " (%s) " % (fields)
+        # filepath to pd_temp/ran/cleaned/flat_file.csv ?
+        file_list = os.listdir(self._local_temp_dir + '/cleaned')
+        f = file_list[0]
+        print(f)
+        f = os.path.join(os.getcwd(), self._local_temp_dir + '/cleaned', f)
 
-    # filepath to pd_temp/ran/cleaned/flat_file.csv ?
-    file_list = os.listdir(self._local_temp_dir + '/cleaned')
-    f = file_list[0]
-    f = os.path.join(os.getcwd(), self._local_temp_dir + '/cleaned', f)
+        # redefine table
+        table = 'test'
 
-    # LINES TERMINATED BY '\n'
-    statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' IGNORE 1 LINES %s;" % (f, self._table, fields)
-    cursor.execute(statement)
-    print('success')
+        fields = 'product_id,merchant_id,product_name,long_product_description,short_product_description,product_url,product_image_url,buy_url,manufacturer_name,manufacturer_part_number,SKU,product_type,discount,discount_type,sale_price,retail_price,shipping_price,color,gender,style,size,material,age,currency,availability,keywords,primary_category,secondary_category,brand,updated_at,merchant_name,is_best_seller,is_trending,allume_score,current_price,is_deleted'
+        fields = " (%s) " % (fields)
+
+        # LINES TERMINATED BY '\n'
+        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (f, table, fields)
+        cursor.execute(statement)
+        print('success')
 
 # def load_data_statement(self, file_name, table, fields):
 #     if fields:
