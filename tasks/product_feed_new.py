@@ -157,9 +157,7 @@ class ProductFeed(object):
                     attribute_9 = line[36]
                     attribute_10 = line[37]
                     modification = line[38].rstrip('\n') # account for other line endings?
-                    # modification 
 
-                    # potentially add enclosed by
                     # logic for constructing record for product_api_product
                     record = ''
                     record += product_id + '|'
@@ -220,9 +218,9 @@ class ProductFeed(object):
                     # end date
                     record += merchant_name + '|'
                     # how to indicate nulll or 0 as in ran.sql
-                    record += '|'
-                    record += '|'
-                    record += '|'
+                    record += '0|' # is_best_seller default
+                    record += '0|' # is_trending default
+                    record += '0|' # allume_score default
 
                     # need to comp as floats
                     # wrap in try?
@@ -234,8 +232,13 @@ class ProductFeed(object):
                     except:
                         record += '|' # ?
 
-                    record += '\n' # final column doesn't need a comma?
+                    # is_deleted logic
+                    if modification == 'D':
+                        record += '1\n' # is this okay given is_deleted is boolean data type
+                    else:
+                        record += '\n'
 
+                    # last record needs newline character instead of delimiter
 
                     # write the reconstructed line to the cleaned file
                     cleaned.write(record)
