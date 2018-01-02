@@ -18,10 +18,21 @@ def clean_ran(local_temp_dir):
         fields = 'product_id,merchant_id,product_name,long_product_description,short_product_description,product_url,product_image_url,buy_url,manufacturer_name,manufacturer_part_number,SKU,product_type,discount,discount_type,sale_price,retail_price,shipping_price,color,gender,style,size,material,age,currency,availability,keywords,primary_category,secondary_category,brand,updated_at,merchant_name,is_best_seller,is_trending,allume_score,current_price,is_deleted\n'
         cleaned.write(fields)
 
-        file_list = os.listdir(local_temp_dir)
-        file_list = file_list[:2]
+        file_list = []
+        file_directory = os.listdir(local_temp_dir)
+        EXTENSIONS = ('.txt')
+        for f in file_directory:
+            if f.endswith(EXTENSIONS):
+                file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
+
+
+
+        # file_list = file_list[:2] # comment out when logic is for whole directory
         print(file_list)
-        
+        print(len(file_list))
+
+        return # REMOVE
+
         # iterate only over the .txt files
         for f in file_list:
 
@@ -120,12 +131,6 @@ def clean_ran(local_temp_dir):
                         gender = gender.replace('MALE', 'MEN')
                         gender = gender.replace('MAN', 'MEN')
                         record += gender + '|'
-                        # if gender == "FEMALE":
-                        #     record += "WOMEN,"
-                        # elif gender == "MALE" or gender == "MAN":
-                        #     record += "MEN,"
-                        # else:
-                        #     record += gender + ','
                         record += attribute_7_style + '|'
                         attribute_3_size = attribute_3_size.upper()
                         attribute_3_size = attribute_3_size.replace('~', ',')
