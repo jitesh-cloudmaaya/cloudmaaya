@@ -38,18 +38,18 @@ fields:
 - attribute_8_age
 - attribute_9
 - attribute_10
-- attribute_11
-- attribute_12
-- attribute_13
-- attribute_14
-- attribute_15
-- attribute_16
-- attribute_17
-- attribute_18
-- attribute_19
-- attribute_20
-- attribute_21
-- attribute_22
+# - attribute_11
+# - attribute_12
+# - attribute_13
+# - attribute_14
+# - attribute_15
+# - attribute_16
+# - attribute_17
+# - attribute_18
+# - attribute_19
+# - attribute_20
+# - attribute_21
+# - attribute_22
 - modification
 - merchant_id
 file_pattern: .*_mp_delta\.txt\.gz

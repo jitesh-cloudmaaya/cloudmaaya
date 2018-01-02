@@ -156,7 +156,8 @@ class ProductFeed(object):
                     attribute_8_age = line[35]
                     attribute_9 = line[36]
                     attribute_10 = line[37]
-                    attribute_11 = line[38]
+                    modification = line[38].rstrip('\n') # account for other line endings?
+                    # modification 
 
                     # potentially add enclosed by
                     # logic for constructing record for product_api_product
