@@ -74,7 +74,6 @@ class Merchant(models.Model):
 class MerchantCategory(models.Model):
     external_merchant_id = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=128, blank=True, null=True)
-    allume_name = models.CharField(max_length=128, blank=True, null=True)
     network = models.ForeignKey(Network)
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
