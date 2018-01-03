@@ -9,7 +9,7 @@ def clean_ran(local_temp_dir):
     color_mapping = create_color_mapping()
     destination = local_temp_dir + '/cleaned/flat_file.csv'
     with open(destination, "w") as cleaned:
-        fields = 'product_id|merchant_id|product_name|long_product_description|short_product_description|product_url|product_image_url|buy_url|manufacturer_name|manufacturer_part_number|SKU|product_type|discount|discount_type|sale_price|retail_price|shipping_price|color|merchant_color|gender|style|size|material|age|currency|availability|keywords|primary_category|secondary_category|brand|updated_at|merchant_name|is_best_seller|is_trending|allume_score|current_price|is_deleted\n'
+        fields = 'product_id|merchant_id|product_name|long_product_description|short_product_description|product_url|product_image_url|buy_url|manufacturer_name|manufacturer_part_number|SKU|product_type|discount|discount_type|sale_price|retail_price|shipping_price|color|merchant_color|gender|style|size|material|age|currency|availability|keywords|primary_category|secondary_category|allume_category|brand|updated_at|merchant_name|is_best_seller|is_trending|allume_score|current_price|is_deleted\n'
         cleaned.write(fields)
 
         file_list = []
@@ -102,10 +102,10 @@ def clean_ran(local_temp_dir):
                         record += SKU + '|'
                         record += attribute_2_product_type + '|'
                         if discount_type != "amount" or discount_type != "percentage":
-                            record += '|' # how to indicate null or 0 as in sql?
+                            record += '0.0|' # how to indicate null or 0 as in sql?
                             record += 'amount|'
                         else:
-                            record += discount_type + '|'
+                            record += discount + '|'
                             record += discount_type + '|'
                         record += sale_price + '|'
                         record += retail_price + '|'
@@ -137,15 +137,20 @@ def clean_ran(local_temp_dir):
                             availability = 'out-of-stock'
                         record += availability + '|'
                         record += keywords + '|'
+
+                        # allume category information
                         record += primary_category + '|'
                         record += secondary_category + '|'
+                        record += '(' + primary_category + ', ' + secondary_category + ')' + '|'
+                        # record += 'ALLUME CATEGORY PLACEHOLDER' + '|'
+
                         record += brand + '|'
                         # double check date formatting
                         record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '|'
                         # record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f') + ',') ?
                         # end date
                         record += merchant_name + '|'
-                        # how to indicate nulll or 0 as in ran.sql
+                        # how to indicate null or 0 as in ran.sql
                         record += '0|' # is_best_seller default
                         record += '0|' # is_trending default
                         record += '0|' # allume_score default
@@ -197,3 +202,9 @@ def create_color_mapping():
 def create_category_mapping():
     cursor = connection.cursor()
     # cursor.execute("SELECT ")
+
+    category_mapping = {}
+    for tup in cursor.fetchall():
+        category_mapping[tup[0]] = tup[1]
+
+    return category_mapping

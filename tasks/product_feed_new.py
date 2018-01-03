@@ -57,7 +57,7 @@ class ProductFeed(object):
         # redefine table
         table = 'test' # should get replaced
 
-        fields = 'product_id,merchant_id,product_name,long_product_description,short_product_description,product_url,product_image_url,buy_url,manufacturer_name,manufacturer_part_number,SKU,product_type,discount,discount_type,sale_price,retail_price,shipping_price,color,merchant_color,gender,style,size,material,age,currency,availability,keywords,primary_category,secondary_category,brand,updated_at,merchant_name,is_best_seller,is_trending,allume_score,current_price,is_deleted'
+        fields = 'product_id,merchant_id,product_name,long_product_description,short_product_description,product_url,product_image_url,buy_url,manufacturer_name,manufacturer_part_number,SKU,product_type,discount,discount_type,sale_price,retail_price,shipping_price,color,merchant_color,gender,style,size,material,age,currency,availability,keywords,primary_category,secondary_category,allume_category,brand,updated_at,merchant_name,is_best_seller,is_trending,allume_score,current_price,is_deleted'
         fields = " (%s) " % (fields)
 
         # LINES TERMINATED BY '\n'
