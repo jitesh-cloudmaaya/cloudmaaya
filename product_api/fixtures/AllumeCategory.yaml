@@ -1,0 +1,57 @@
+-   model: product_api.allumecategory
+    pk: 1
+    fields: {name: Tops, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 2
+    fields: {name: Other, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 3
+    fields: {name: Pants, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 4
+    fields: {name: Shoes, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 5
+    fields: {name: Dresses, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 6
+    fields: {name: Jackets, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 7
+    fields: {name: Activewear, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 8
+    fields: {name: Lingerie, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 9
+    fields: {name: Accessories, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 10
+    fields: {name: Skirts, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 11
+    fields: {name: EXCLUDE, active: false, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 12
+    fields: {name: Shorts, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 13
+    fields: {name: Swimwear, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 14
+    fields: {name: Handbags, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 15
+    fields: {name: Jeans, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 16
+    fields: {name: Beauty, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 17
+    fields: {name: Suits, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 18
+    fields: {name: Jumpsuits, active: true, created_at: null, updated_at: null}
+-   model: product_api.allumecategory
+    pk: 19
+    fields: {name: Sweaters, active: true, created_at: null, updated_at: null}
