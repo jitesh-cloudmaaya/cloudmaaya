@@ -31,13 +31,10 @@ class ProductFeed(object):
 
 
         self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
-        self._code = config_dict['code']
+        self._clean_data_method = config_dict['clean_data_method']
 
 
     ### space for my additions
-
-    def test_exec(self):
-        exec(self._code)
 
     def make_cleaned_dir(self): # could combine with make_temp_dir?
         if not os.path.exists(self._local_temp_dir_cleaned):
@@ -45,11 +42,12 @@ class ProductFeed(object):
 
     def clean_data(self):
         self.make_cleaned_dir()
-        clean_ran.clean_ran(self._local_temp_dir)
+        exec(self._clean_data_method)
+        # exec self._clean_data_method
 
     # how to get filename of flat_file.csv
-    def test_load_cleaned_data(self): # eventually rename
-        print('running')
+    def load_cleaned_data(self): # eventually rename
+        # print('running')
         cursor = connection.cursor()
 
         # filepath to pd_temp/ran/cleaned/flat_file.csv ?
@@ -66,7 +64,7 @@ class ProductFeed(object):
         # LINES TERMINATED BY '\n'
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (f, table, fields)
         cursor.execute(statement)
-        print('success')
+        # print('success')
 
     ### end space for additions
 

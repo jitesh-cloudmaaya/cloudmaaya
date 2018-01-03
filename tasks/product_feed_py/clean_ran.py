@@ -4,8 +4,6 @@ from django.db import connection
 
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir):
-    # self.make_cleaned_dir()
-
     # instantiate color mapping and merchant mappings
     merchant_mapping = create_merchant_mapping()
     color_mapping = create_color_mapping()
