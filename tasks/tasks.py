@@ -33,3 +33,10 @@ def build_client_360():
 	etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360.sql'))
 	statement = etl_file.read()
 	cursor.execute(statement)
+
+@task(base=QueueOnce)
+def update_client_360():
+    cursor = connection.cursor()
+    etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/update_client_360.sql'))
+    statement = etl_file.read()
+    cursor.execute(statement)

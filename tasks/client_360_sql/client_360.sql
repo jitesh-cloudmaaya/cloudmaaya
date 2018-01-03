@@ -74,7 +74,9 @@ size_tops TEXT,
 size_shoe TEXT,
 ears_pierced TEXT,
 jewelry_style TEXT,
-jewelry_type TEXT);
+jewelry_type TEXT,
+last_updated TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW()
+);
 
 
 CREATE OR REPLACE VIEW order_list AS
