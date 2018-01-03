@@ -95,10 +95,22 @@ class ColorMap(models.Model):
     def __str__(self):
         return self.name
 
+class AllumeCategory(models.Model):
+    name = models.CharField(max_length=128, blank=True, null=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Allume Categories"
+
 class CategoryMap(models.Model):
     external_cat1 = models.CharField(max_length=250, blank=True, null=True)
     external_cat2 = models.CharField(max_length=250, blank=True, null=True)
-    allume_cat1 = models.CharField(max_length=128, blank=True, null=True)
+    allume_category = models.ForeignKey(AllumeCategory, blank=True, null=True)
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
