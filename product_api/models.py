@@ -43,7 +43,7 @@ class Product(models.Model):
     brand = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
-    availablity = models.CharField(max_length=50, blank=True, null=True)
+    availability = models.CharField(max_length=50, blank=True, null=True)
     is_deleted = models.BooleanField(default=0)
     current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     allume_size = models.CharField(max_length=255, blank=True, null=True)
