@@ -2,9 +2,6 @@ import os
 import datetime
 from django.db import connection
 
-def test():
-    return
-
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir):
     # self.make_cleaned_dir()
@@ -12,31 +9,25 @@ def clean_ran(local_temp_dir):
     # instantiate color mapping and merchant mappings
     merchant_mapping = create_merchant_mapping()
     color_mapping = create_color_mapping()
-
     destination = local_temp_dir + '/cleaned/flat_file.csv'
     with open(destination, "w") as cleaned:
-        fields = 'product_id,merchant_id,product_name,long_product_description,short_product_description,product_url,product_image_url,buy_url,manufacturer_name,manufacturer_part_number,SKU,product_type,discount,discount_type,sale_price,retail_price,shipping_price,color,gender,style,size,material,age,currency,availability,keywords,primary_category,secondary_category,brand,updated_at,merchant_name,is_best_seller,is_trending,allume_score,current_price,is_deleted\n'
+        fields = 'product_id|merchant_id|product_name|long_product_description|short_product_description|product_url|product_image_url|buy_url|manufacturer_name|manufacturer_part_number|SKU|product_type|discount|discount_type|sale_price|retail_price|shipping_price|color|gender|style|size|material|age|currency|availability|keywords|primary_category|secondary_category|brand|updated_at|merchant_name|is_best_seller|is_trending|allume_score|current_price|is_deleted\n'
         cleaned.write(fields)
 
         file_list = []
         file_directory = os.listdir(local_temp_dir)
-        EXTENSIONS = ('.txt')
+        EXTENSIONS = ('mp_delta.txt') # eventually change this to .txt only?
         for f in file_directory:
             if f.endswith(EXTENSIONS):
                 file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
 
-
-
         # file_list = file_list[:2] # comment out when logic is for whole directory
-        print(file_list)
-        print(len(file_list))
-
-        return # REMOVE
+        # print(file_list)
+        # print(len(file_list))
+        print(color_mapping)
 
         # iterate only over the .txt files
         for f in file_list:
-
-            f = os.path.join(os.getcwd(), local_temp_dir, f)
 
             with open(f, "r") as f:
                 header = f.readline()
@@ -48,10 +39,13 @@ def clean_ran(local_temp_dir):
                 lines = lines[:-1]
 
                 # handle if merchant_id not in merchant_table?
+                try:
+                    merchant_is_active = merchant_mapping[int(merchant_id)]
+                except:
+                    merchant_is_active = 0
                 # check that the merchant_id is active in the merchant mapping
-                if merchant_mapping[int(merchant_id)]: # set the merchant_table active column to 1 for a few companies when testing
-                    print('happens')
-                    for line in lines:
+                if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
+                    for line in lines[:100]:
                         # need to reconstruct line from merchant file
                         line = line.split('|')
                         # breaking down the data from the merchant files
@@ -87,16 +81,24 @@ def clean_ran(local_temp_dir):
                         attribute_2_product_type = line[29]
                         attribute_3_size = line[30]
                         attribute_4_material = line[31]
-                        attribute_5_color = line[32]
+                        attribute_5_color = line[32].lower()
                         attribute_6_gender = line[33]
                         attribute_7_style = line[34]
                         attribute_8_age = line[35]
                         attribute_9 = line[36]
-                        attribute_10 = line[37]
-                        modification = line[38].rstrip('\n') # account for other line endings?
+
+                        # in a delta file, there is 1 additional field for modification
+                        attribute_10 = line[37].rstrip('\n') # account for other line endings?
+                        try:
+                            modification = line[38].rstrip('\n') # account for other line endings?
+                        except:
+                            modification = ''
 
                         # sometimes color is a list of colors, sometimes it demarcates product ids
-                        # print(attribute_5_color)
+                        # special color handling?
+                        print(attribute_5_color)
+                        print(attribute_5_color in color_mapping)
+
 
                         # logic for constructing record for product_api_product
                         record = ''
@@ -122,8 +124,10 @@ def clean_ran(local_temp_dir):
                         record += retail_price + '|'
                         record += shipping + '|'
                         try:
+                            # print('happens')
                             record += color_mapping[attribute_5_color] + '|'
                         except: # where there is no analog
+                            # print('or is it always excepted')
                             record += "Other|"
                         # gender replacement
                         gender = attribute_6_gender.upper()
@@ -159,12 +163,13 @@ def clean_ran(local_temp_dir):
                         # need to comp as floats
                         # wrap in try?
                         try:
+                            # if there is a sale
                             if float(sale_price) > 0: # OR NOT NULL ??
                                 record += sale_price + '|'
                             else:
                                 record += retail_price + '|'
                         except:
-                            record += '|' # ?
+                            record += retail_price + '|'
 
                         # is_deleted logic
                         if modification == 'D':
@@ -177,8 +182,6 @@ def clean_ran(local_temp_dir):
                         # write the reconstructed line to the cleaned file
                         cleaned.write(record)
                         # break # remove when ready to test on larger dataset
-                else:
-                    print("doesn't happen")
 
 
 def create_merchant_mapping():
