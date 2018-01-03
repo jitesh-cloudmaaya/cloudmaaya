@@ -48,7 +48,7 @@ class Product(models.Model):
     current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     allume_size = models.CharField(max_length=255, blank=True, null=True)
     allume_category = models.CharField(max_length=255, blank=True, null=True)
-    merchant_color = models.TextField(max_length=255, blank=True, null=True)
+    merchant_color = models.CharField(max_length=255, blank=True, null=True)
 
 class Network(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
