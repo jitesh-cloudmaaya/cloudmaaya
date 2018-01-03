@@ -11,7 +11,7 @@ def clean_ran(local_temp_dir):
     color_mapping = create_color_mapping()
     destination = local_temp_dir + '/cleaned/flat_file.csv'
     with open(destination, "w") as cleaned:
-        fields = 'product_id|merchant_id|product_name|long_product_description|short_product_description|product_url|product_image_url|buy_url|manufacturer_name|manufacturer_part_number|SKU|product_type|discount|discount_type|sale_price|retail_price|shipping_price|color|gender|style|size|material|age|currency|availability|keywords|primary_category|secondary_category|brand|updated_at|merchant_name|is_best_seller|is_trending|allume_score|current_price|is_deleted\n'
+        fields = 'product_id|merchant_id|product_name|long_product_description|short_product_description|product_url|product_image_url|buy_url|manufacturer_name|manufacturer_part_number|SKU|product_type|discount|discount_type|sale_price|retail_price|shipping_price|color|merchant_color|gender|style|size|material|age|currency|availability|keywords|primary_category|secondary_category|brand|updated_at|merchant_name|is_best_seller|is_trending|allume_score|current_price|is_deleted\n'
         cleaned.write(fields)
 
         file_list = []
@@ -20,11 +20,6 @@ def clean_ran(local_temp_dir):
         for f in file_directory:
             if f.endswith(EXTENSIONS):
                 file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
-
-        # file_list = file_list[:2] # comment out when logic is for whole directory
-        # print(file_list)
-        # print(len(file_list))
-        print(color_mapping)
 
         # iterate only over the .txt files
         for f in file_list:
@@ -45,7 +40,7 @@ def clean_ran(local_temp_dir):
                     merchant_is_active = 0
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
-                    for line in lines[:100]:
+                    for line in lines:
                         # need to reconstruct line from merchant file
                         line = line.split('|')
                         # breaking down the data from the merchant files
@@ -81,7 +76,7 @@ def clean_ran(local_temp_dir):
                         attribute_2_product_type = line[29]
                         attribute_3_size = line[30]
                         attribute_4_material = line[31]
-                        attribute_5_color = line[32].lower()
+                        attribute_5_color = line[32]
                         attribute_6_gender = line[33]
                         attribute_7_style = line[34]
                         attribute_8_age = line[35]
@@ -93,12 +88,6 @@ def clean_ran(local_temp_dir):
                             modification = line[38].rstrip('\n') # account for other line endings?
                         except:
                             modification = ''
-
-                        # sometimes color is a list of colors, sometimes it demarcates product ids
-                        # special color handling?
-                        print(attribute_5_color)
-                        print(attribute_5_color in color_mapping)
-
 
                         # logic for constructing record for product_api_product
                         record = ''
@@ -123,12 +112,15 @@ def clean_ran(local_temp_dir):
                         record += sale_price + '|'
                         record += retail_price + '|'
                         record += shipping + '|'
+
+                        # current behavior is take the first and find its mapping if possible
+                        color = attribute_5_color.split(',')[0].lower()
                         try:
-                            # print('happens')
-                            record += color_mapping[attribute_5_color] + '|'
+                            record += color_mapping[color] + '|'
                         except: # where there is no analog
-                            # print('or is it always excepted')
                             record += "Other|"
+                        record += attribute_5_color + '|' # merchant color field
+
                         # gender replacement
                         gender = attribute_6_gender.upper()
                         gender = gender.replace('FEMALE', 'WOMEN')
@@ -160,8 +152,7 @@ def clean_ran(local_temp_dir):
                         record += '0|' # is_trending default
                         record += '0|' # allume_score default
 
-                        # need to comp as floats
-                        # wrap in try?
+                        # is_sale?
                         try:
                             # if there is a sale
                             if float(sale_price) > 0: # OR NOT NULL ??
