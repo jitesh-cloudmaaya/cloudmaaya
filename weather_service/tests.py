@@ -153,6 +153,7 @@ class UpdateOnStaleDataTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.CURRENT_YEAR = datetime.datetime.now().year
+        cls.CURRENT_TIME = datetime.datetime.now() # for use in stale vs fresh update checks
 
     fixtures = ['UpdateOnStaleDataTests']
 
@@ -198,6 +199,8 @@ class UpdateOnStaleDataTests(TestCase):
         Test that a Weather object that has fresh data is not updated.
         """
         w = Weather.objects.get(pk=6)
+        w.last_modified = self.CURRENT_TIME
+        w.save()
         weather = Weather.objects.retrieve_weather_object(city='Azusa', state='CA')
         self.assertEqual(w.last_modified, weather.last_modified)
 
@@ -208,6 +211,14 @@ class UpdateOnStaleDataTests(TestCase):
         w0 = Weather.objects.get(pk=6)
         w1 = Weather.objects.get(pk=7)
         w2 = Weather.objects.get(pk=8)
+
+        w0.last_modified = self.CURRENT_TIME
+        w1.last_modified = self.CURRENT_TIME
+        w2.last_modified = self.CURRENT_TIME
+
+        w0.save()
+        w1.save()
+        w2.save()
 
         last_modifieds = [w0.last_modified, w1.last_modified, w2.last_modified]
         locations = [('Azusa', 'CA'), ('Claremont', 'CA'), ('Fresno', 'CA')]
@@ -228,6 +239,12 @@ class UpdateOnStaleDataTests(TestCase):
 
         self.assertNotEqual(self.CURRENT_YEAR, w0.last_modified.year)
         self.assertNotEqual(self.CURRENT_YEAR, w1.last_modified.year)
+
+        w2.last_modified = self.CURRENT_TIME
+        w3.last_modified = self.CURRENT_TIME
+
+        w2.save()
+        w3.save()
 
         locations = [('Denver', 'CO'), ('Atlanta', 'GA'), ('Boston', 'MA'), ('Dallas', 'TX')]
         weathers = Weather.objects.retrieve_weather_objects(locations)
