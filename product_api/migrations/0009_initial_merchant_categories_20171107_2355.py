@@ -7,6 +7,7 @@ from django.db import migrations
 
 from product_api.models import Network, MerchantCategory
 
+
 def add_merchants_categories(apps, schema_editor):
     network = RAN = Network.objects.get(id = 1)
     MerchantCategory.objects.create(name = "Apparel & Accessories", active = True, network = RAN)
@@ -792,10 +793,16 @@ def add_merchants_categories(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
+    if 'test' in sys.argv:
+        run_migration = False
+    else:
+        run_migration = True
+
     dependencies = [
         ('product_api', '0006_initial_network_and_merchants_20171106_2355'),
     ]
 
-    operations = [
-        migrations.RunPython(add_merchants_categories)
-    ]
+    if run_migration: 
+        operations = [
+            migrations.RunPython(add_merchants_categories)
+        ]
