@@ -13,8 +13,8 @@ class MerchantAdmin(admin.ModelAdmin):
 class NetworkAdmin(admin.ModelAdmin):
     list_display = ('name', 'active')
 
-class MerchantCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'active', 'network')
+#class MerchantCategoryAdmin(admin.ModelAdmin):
+#    list_display = ('name', 'active', 'network')
 
 class MerchantInLine(admin.TabularInline):
 
@@ -25,12 +25,14 @@ class NetworkInLine(admin.TabularInline):
     model = Network
     extra = 0
 
-class MerchantCategoryInLine(admin.TabularInline):
-    model = MerchantCategory
-    extra = 0 
+#class MerchantCategoryInLine(admin.TabularInline):
+#    model = MerchantCategory
+#    extra = 0 
 
 admin.site.register(Merchant, MerchantAdmin)
 admin.site.register(Network, NetworkAdmin)
-admin.site.register(MerchantCategory, MerchantCategoryAdmin)
-
+#admin.site.register(MerchantCategory, MerchantCategoryAdmin)
+admin.site.register(CategoryMap)
+admin.site.register(AllumeCategory)
+admin.site.register(ColorMap)
 

@@ -92,7 +92,7 @@ class ColorMap(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.external_color
 
 class AllumeCategory(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
@@ -115,7 +115,7 @@ class CategoryMap(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.external_cat1 + ": " + self.external_cat2
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
