@@ -61,3 +61,4 @@ leave_temp_files: true
 local_temp_dir: pd_temp/ran
 remote_dir: /
 table: tasks_ranproducts
+code: print('testing exec statement')
