@@ -7,7 +7,8 @@ from django.db import connection, transaction
 import yaml
 import datetime
 # from .temp import test
-from .clean_ran import clean_ran # change from relative?
+# from .clean_ran import clean_ran # change from relative?
+from product_feed_py import *
 
 class ProductFeed(object):
 
@@ -44,7 +45,7 @@ class ProductFeed(object):
 
     def clean_data(self):
         self.make_cleaned_dir()
-        clean_ran(self._local_temp_dir)
+        clean_ran.clean_ran(self._local_temp_dir)
 
     # how to get filename of flat_file.csv
     def test_load_cleaned_data(self): # eventually rename
