@@ -193,3 +193,7 @@ def create_color_mapping():
         color_mapping[tup[0]] = tup[1]
 
     return color_mapping
+
+def create_category_mapping():
+    cursor = connection.cursor()
+    # cursor.execute("SELECT ")
