@@ -47,6 +47,8 @@ class Product(models.Model):
     availablity = models.CharField(max_length=50, blank=True, null=True)
     is_deleted = models.BooleanField(default=0)
     current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    allume_size = models.CharField(max_length=255, blank=True, null=True)
+    allume_category = models.CharField(max_length=255, blank=True, null=True)
 
 class Network(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
@@ -72,6 +74,7 @@ class Merchant(models.Model):
 class MerchantCategory(models.Model):
     external_merchant_id = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=128, blank=True, null=True)
+    allume_name = models.CharField(max_length=128, blank=True, null=True)
     network = models.ForeignKey(Network)
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -86,6 +89,17 @@ class MerchantCategory(models.Model):
 class ColorMap(models.Model):
     external_color = models.CharField(max_length=128, blank=True, null=True)
     allume_color = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class CategoryMap(models.Model):
+    external_cat1 = models.CharField(max_length=250, blank=True, null=True)
+    external_cat2 = models.CharField(max_length=250, blank=True, null=True)
+    allume_cat1 = models.CharField(max_length=128, blank=True, null=True)
+    active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
