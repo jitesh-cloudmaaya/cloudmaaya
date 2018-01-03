@@ -33,10 +33,6 @@ class ProductFeed(object):
         self._clean_data_method = config_dict['clean_data_method']
 
 
-        self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
-        self._clean_data_method = config_dict['clean_data_method']
-
-
     ### space for my additions
 
     def make_cleaned_dir(self): # could combine with make_temp_dir?
