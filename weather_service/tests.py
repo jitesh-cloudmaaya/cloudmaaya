@@ -197,8 +197,10 @@ class UpdateOnStaleDataTests(TestCase):
         Test that a Weather object that has fresh data is not updated.
         """
         w = Weather.objects.get(pk=6)
+
         w.last_modified = self.CURRENT_TIME
         w.save()
+
         weather = Weather.objects.retrieve_weather_object(city='Azusa', state='CA')
         self.assertEqual(w.last_modified, weather.last_modified)
 
