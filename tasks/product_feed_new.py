@@ -32,36 +32,35 @@ class ProductFeed(object):
         self._clean_data_method = config_dict['clean_data_method']
 
 
+        self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
+        self._code = config_dict['code']
+
+
     ### space for my additions
-    def make_cleaned_dir(self):
+
+    def test_exec(self):
+        exec(self._code)
+
+    def make_cleaned_dir(self): # could combine with make_temp_dir?
         if not os.path.exists(self._local_temp_dir_cleaned):
             os.makedirs(self._local_temp_dir_cleaned)
 
     def clean_data(self):
+        self.make_cleaned_dir()
         clean_ran(self._local_temp_dir)
 
-    def test(self):
-        fields = 'product_id,merchant_id,product_name,long_product_description,short_product_description,product_url,product_image_url,buy_url,manufacturer_name,manufacturer_part_number,SKU,product_type,discount,discount_type,sale_price,retail_price,shipping_price,color,gender,style,size,material,age,currency,availability,keywords,primary_category,secondary_category,brand,updated_at,merchant_name,is_best_seller,is_trending,allume_score,current_price,is_deleted'
-        fields = " (%s) " % (fields)
-        print(fields)
-        temp = self._fields
-        temp = " (%s) " % (temp)
-        print(temp)
-        return
-
     # how to get filename of flat_file.csv
-    def test_load_cleaned_data(self):
+    def test_load_cleaned_data(self): # eventually rename
         print('running')
         cursor = connection.cursor()
 
         # filepath to pd_temp/ran/cleaned/flat_file.csv ?
         file_list = os.listdir(self._local_temp_dir + '/cleaned')
-        f = file_list[0]
-        print(f)
+        f = file_list[0] # corresponds to flat_file.csv
         f = os.path.join(os.getcwd(), self._local_temp_dir + '/cleaned', f)
 
         # redefine table
-        table = 'test'
+        table = 'test' # should get replaced
 
         fields = 'product_id,merchant_id,product_name,long_product_description,short_product_description,product_url,product_image_url,buy_url,manufacturer_name,manufacturer_part_number,SKU,product_type,discount,discount_type,sale_price,retail_price,shipping_price,color,gender,style,size,material,age,currency,availability,keywords,primary_category,secondary_category,brand,updated_at,merchant_name,is_best_seller,is_trending,allume_score,current_price,is_deleted'
         fields = " (%s) " % (fields)
@@ -70,28 +69,6 @@ class ProductFeed(object):
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (f, table, fields)
         cursor.execute(statement)
         print('success')
-
-# def load_data_statement(self, file_name, table, fields):
-#     if fields:
-#         fields = " (%s) " % (fields)
-#     statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (file_name, table, fields)
-#     return statement
-
-    # def write_to_csv(self, local_file)
-    # def write_to_csv(self):
-    #     download_dir = self._local_temp_dir + 'flat_file.csv'
-    #     # self._fields is a string of fields, separated by commas
-    #     with open(download_dir, "w") as csv:
-    #         csv.write(self._fields + "\n") # writes the headers
-
-    #     print('occurs')
-
-
-
-        # LINES TERMINATED BY '\n'
-        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (f, table, fields)
-        cursor.execute(statement)
-        # print('success')
 
     ### end space for additions
 
