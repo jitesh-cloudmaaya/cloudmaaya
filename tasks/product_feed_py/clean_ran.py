@@ -204,12 +204,66 @@ def create_color_mapping():
 
     return color_mapping
 
+
+
+
+# new mappings for category map
+def create_allume_category_mapping():
+    """
+    Will return a dict of allume category names as keys mapped to whether or not that
+    allume category is active, 1 is active and 0 is not active.
+    """
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, name, active FROM product_api_allumecategory")
+
+    allume_category_mapping = {}
+    for tup in cursor.fetchall():
+        info = (tup[1], tup[2])
+        allume_category_mapping[tup[0]] = info
+
+    return allume_category_mapping
+
+
 def create_category_mapping():
     cursor = connection.cursor()
-    # cursor.execute("SELECT ")
+    cursor.execute("SELECT external_cat1, external_cat2, allume_category_id, active")
 
     category_mapping = {}
     for tup in cursor.fetchall():
-        category_mapping[tup[0]] = tup[1]
+        category_pair = (tup[0], tup[1])
+        info = (tup[2], tup[3])
+        category_mapping[category_pair] = info
 
     return category_mapping
+
+
+
+
+# we have all the data from the product_api_categorymap table
+# records give us the primary and secondary category, which corresoond to the external_cat1 and external_cat2 fields
+
+# SELECT allume_category_id from product_api_categorymap WHERE external_cat1 = primary_category and external_cat2 = secondary_category
+# need to form a dictionary that allows for this
+# {(external_cat1, external_cat2): (allume_category_id, active)}
+# for a record: active, allume_category_id = category_mapping[(primary_category, secondary_category)] 
+# handle key errors...
+
+# from there, we should have an allume_category_id, which we can use to find the allume_category by name, and whether or not it is active
+# allume_category mapping
+# {id: (name, active)}
+# allume_category, active = allume_category_mapping[allume_category_id]
+# if it is active, process and add the record, if not, continue
+# record += allume_category + '|'
+
+# repeat this process for every product record 
+
+
+# do we want to filter on active for both product_api_allumecategory and product_api_categorymap?
+
+
+
+
+
+
+
