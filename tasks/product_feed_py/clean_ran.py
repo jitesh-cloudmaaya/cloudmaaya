@@ -10,10 +10,6 @@ def clean_ran(local_temp_dir):
     category_mapping = create_category_mapping()
     allume_category_mapping = create_allume_category_mapping()
 
-    # print(category_mapping)
-    # print(allume_category_mapping)
-
-
     destination = local_temp_dir + '/cleaned/flat_file.csv'
     with open(destination, "w") as cleaned:
         fields = 'product_id|merchant_id|product_name|long_product_description|short_product_description|product_url|product_image_url|buy_url|manufacturer_name|manufacturer_part_number|SKU|product_type|discount|discount_type|sale_price|retail_price|shipping_price|color|merchant_color|gender|style|size|material|age|currency|availability|keywords|primary_category|secondary_category|allume_category|brand|updated_at|merchant_name|is_best_seller|is_trending|allume_score|current_price|is_deleted\n'
@@ -34,6 +30,7 @@ def clean_ran(local_temp_dir):
 
             with open(f, "r") as f:
                 header = f.readline()
+                header = header.decode('utf-8')
                 header = header.split('|')
                 merchant_id = header[1]
                 merchant_name = header[2]
@@ -48,11 +45,17 @@ def clean_ran(local_temp_dir):
                     merchant_is_active = 0
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
+                    # print('is active')
+                    # print(merchant_id)
                     for line in lines:
                         totalCount += 1
 
-                        # need to reconstruct line from merchant file
+                        # unicode sandwich
+                        line = line.decode('utf-8')
                         line = line.split('|')
+
+                        # need to reconstruct line from merchant file
+
                         # breaking down the data from the merchant files
                         product_id = line[0]
                         product_name = line[1]
@@ -134,63 +137,63 @@ def clean_ran(local_temp_dir):
 
                         # logic for constructing record for product_api_product
                         record = ''
-                        record += product_id + '|'
-                        record += merchant_id + '|'
-                        record += product_name + '|'
-                        record += long_product_description + '|'
-                        record += short_product_description + '|'
-                        record += product_url + '|'
-                        record += product_image_url + '|'
-                        record += buy_url + '|'
-                        record += manufacturer_name + '|'
-                        record += manufacturer_part_number + '|'
-                        record += SKU + '|'
-                        record += attribute_2_product_type + '|'
+                        record += product_id + u'|'
+                        record += merchant_id + u'|'
+                        record += product_name + u'|'
+                        record += long_product_description + u'|'
+                        record += short_product_description + u'|'
+                        record += product_url + u'|'
+                        record += product_image_url + u'|'
+                        record += buy_url + u'|'
+                        record += manufacturer_name + u'|'
+                        record += manufacturer_part_number + u'|'
+                        record += SKU + u'|'
+                        record += attribute_2_product_type + u'|'
                         if discount_type != "amount" or discount_type != "percentage":
                             record += '0.0|' # how to indicate null or 0 as in sql?
                             record += 'amount|'
                         else:
-                            record += discount + '|'
-                            record += discount_type + '|'
-                        record += sale_price + '|'
-                        record += retail_price + '|'
-                        record += shipping + '|'
+                            record += discount + u'|'
+                            record += discount_type + u'|'
+                        record += sale_price + u'|'
+                        record += retail_price + u'|'
+                        record += shipping + u'|'
 
                         # current behavior is take the first and find its mapping if possible
                         color = attribute_5_color.split(',')[0].lower()
                         try:
-                            record += color_mapping[color] + '|'
+                            record += color_mapping[color] + u'|'
                         except: # where there is no analog
                             record += "Other|"
-                        record += attribute_5_color + '|' # merchant color field
+                        record += attribute_5_color + u'|' # merchant color field
 
                         # gender
-                        record += gender + '|'
-                        record += attribute_7_style + '|'
+                        record += gender + u'|'
+                        record += attribute_7_style + u'|'
                         attribute_3_size = attribute_3_size.upper()
                         attribute_3_size = attribute_3_size.replace('~', ',')
-                        record += attribute_3_size + '|'
-                        record += attribute_4_material + '|'
+                        record += attribute_3_size + u'|'
+                        record += attribute_4_material + u'|'
                         attribute_8_age = attribute_8_age.upper()
-                        record += attribute_8_age + '|'
-                        record += currency + '|'
+                        record += attribute_8_age + u'|'
+                        record += currency + u'|'
                         if availability == '':
                             availability = 'out-of-stock'
-                        record += availability + '|'
-                        record += keywords + '|'
+                        record += availability + u'|'
+                        record += keywords + u'|'
 
                         # allume category information
-                        record += primary_category + '|'
-                        record += secondary_category + '|'
-                        record += allume_category + '|'
-                        # record += 'ALLUME CATEGORY PLACEHOLDER' + '|'
+                        record += primary_category + u'|'
+                        record += secondary_category + u'|'
 
-                        record += brand + '|'
+                        record += allume_category + u'|'
+
+                        record += brand + u'|'
                         # double check date formatting
-                        record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '|'
+                        record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + u'|'
                         # record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f') + ',') ?
                         # end date
-                        record += merchant_name + '|'
+                        record += merchant_name + u'|'
                         # how to indicate null or 0 as in ran.sql
                         record += '0|' # is_best_seller default
                         record += '0|' # is_trending default
@@ -200,24 +203,28 @@ def clean_ran(local_temp_dir):
                         try:
                             # if there is a sale
                             if float(sale_price) > 0: # OR NOT NULL ??
-                                record += sale_price + '|'
+                                record += sale_price + u'|'
                             else:
-                                record += retail_price + '|'
+                                record += retail_price + u'|'
                         except:
-                            record += retail_price + '|'
+                            record += retail_price + u'|'
 
                         # is_deleted logic
                         if modification == 'D':
                             record += '1\n' # is this okay given is_deleted is boolean data type
                         else:
                             record += '0\n'
-
                         # last record needs newline character instead of delimiter
+
+                        # unicode sandwich finish
+                        record = record.encode('utf-8')
 
                         # write the reconstructed line to the cleaned file
                         cleaned.write(record)
                         writtenCount += 1
-                        # break # remove when ready to test on larger dataset
+                else:
+                    # print("is not active")
+                    pass
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)

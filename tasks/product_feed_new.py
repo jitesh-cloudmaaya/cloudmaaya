@@ -56,6 +56,7 @@ class ProductFeed(object):
 
         # redefine table
         table = 'test' # should get replaced
+        # table = 'product_api_product'
 
         fields = 'product_id,merchant_id,product_name,long_product_description,short_product_description,product_url,product_image_url,buy_url,manufacturer_name,manufacturer_part_number,SKU,product_type,discount,discount_type,sale_price,retail_price,shipping_price,color,merchant_color,gender,style,size,material,age,currency,availability,keywords,primary_category,secondary_category,allume_category,brand,updated_at,merchant_name,is_best_seller,is_trending,allume_score,current_price,is_deleted'
         fields = " (%s) " % (fields)
@@ -64,6 +65,20 @@ class ProductFeed(object):
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (f, table, fields)
         cursor.execute(statement)
         # print('success')
+
+    def decompress_data(self):
+        file_list = os.listdir(self._local_temp_dir)
+
+        for remote_file in file_list:
+
+            local_file = os.path.join(os.getcwd(), self._local_temp_dir, remote_file)
+
+            if "zip" in local_file:
+                local_file = self.unzip(local_file)
+
+            if "gz" in local_file:
+                local_file = self.ungzip(local_file)
+
 
     ### end space for additions
 

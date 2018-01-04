@@ -40,3 +40,17 @@ def update_client_360():
     etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/update_client_360.sql'))
     statement = etl_file.read()
     cursor.execute(statement)
+
+
+# first guess at task
+@task(base=QueueOnce)
+def ran_delta_pull_new():
+    pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/ran_delta.yaml'))
+    print("Pulling delta files from FTP")
+    pf.get_files_ftp()
+    print("Decompressing files")
+    pf.decompress_data()
+    print("Cleaning files")
+    pf.clean_data()
+    print("Load data to API products table")
+    pf.load_cleaned_data()
