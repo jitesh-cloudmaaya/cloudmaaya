@@ -87,6 +87,15 @@ def clean_ran(local_temp_dir):
                         except:
                             modification = ''
 
+                        # moving gender logic to the top?
+                        gender = attribute_6_gender.upper()
+                        gender = gender.replace('FEMALE', 'WOMEN')
+                        gender = gender.replace('MALE', 'MEN')
+                        gender = gender.replace('MAN', 'MEN')
+                        # check if gender makes record 'inactive'
+                        if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS': # girls and boys?
+                            continue
+
                         # logic for constructing record for product_api_product
                         record = ''
                         record += product_id + '|'
@@ -119,11 +128,7 @@ def clean_ran(local_temp_dir):
                             record += "Other|"
                         record += attribute_5_color + '|' # merchant color field
 
-                        # gender replacement
-                        gender = attribute_6_gender.upper()
-                        gender = gender.replace('FEMALE', 'WOMEN')
-                        gender = gender.replace('MALE', 'MEN')
-                        gender = gender.replace('MAN', 'MEN')
+                        # gender
                         record += gender + '|'
                         record += attribute_7_style + '|'
                         attribute_3_size = attribute_3_size.upper()
