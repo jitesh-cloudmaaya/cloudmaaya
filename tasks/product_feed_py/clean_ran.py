@@ -4,9 +4,16 @@ from django.db import connection
 
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir):
-    # instantiate color mapping and merchant mappings
+    # instantiate relevant mappings
     merchant_mapping = create_merchant_mapping()
     color_mapping = create_color_mapping()
+    category_mapping = create_category_mapping()
+    allume_category_mapping = create_allume_category_mapping()
+
+    # print(category_mapping)
+    # print(allume_category_mapping)
+
+
     destination = local_temp_dir + '/cleaned/flat_file.csv'
     with open(destination, "w") as cleaned:
         fields = 'product_id|merchant_id|product_name|long_product_description|short_product_description|product_url|product_image_url|buy_url|manufacturer_name|manufacturer_part_number|SKU|product_type|discount|discount_type|sale_price|retail_price|shipping_price|color|merchant_color|gender|style|size|material|age|currency|availability|keywords|primary_category|secondary_category|allume_category|brand|updated_at|merchant_name|is_best_seller|is_trending|allume_score|current_price|is_deleted\n'
@@ -87,7 +94,8 @@ def clean_ran(local_temp_dir):
                         except:
                             modification = ''
 
-                        # moving gender logic to the top?
+                        # moving gender check above categories check
+                        # as all men categories have no entries in category tables
                         gender = attribute_6_gender.upper()
                         gender = gender.replace('FEMALE', 'WOMEN')
                         gender = gender.replace('MALE', 'MEN')
@@ -95,6 +103,29 @@ def clean_ran(local_temp_dir):
                         # check if gender makes record 'inactive'
                         if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS': # girls and boys?
                             continue
+
+
+                        try:
+                            identifier = (primary_category, secondary_category)
+                            allume_category_id, active = category_mapping[identifier]
+                            # activity check on the primary, secondary category pair
+                            if not active:
+                                continue
+                            # print(active)
+                            allume_category, active = allume_category_mapping[allume_category_id]
+                            # activity check on the allume_category
+                            if not active:
+                                continue
+                        except:
+                            # print('could not determine allume_category for record')
+                            # print(gender)
+                            # print(e)
+
+
+                            # there is no entry in the category tables for the provided categories
+                            # assume inactive?
+                            continue
+
 
                         # logic for constructing record for product_api_product
                         record = ''
@@ -146,7 +177,7 @@ def clean_ran(local_temp_dir):
                         # allume category information
                         record += primary_category + '|'
                         record += secondary_category + '|'
-                        record += '(' + primary_category + ', ' + secondary_category + ')' + '|'
+                        record += allume_category + '|'
                         # record += 'ALLUME CATEGORY PLACEHOLDER' + '|'
 
                         record += brand + '|'
@@ -205,9 +236,19 @@ def create_color_mapping():
     return color_mapping
 
 
+def create_category_mapping():
+    cursor = connection.cursor()
+    cursor.execute("SELECT external_cat1, external_cat2, allume_category_id, active FROM product_api_categorymap")
+
+    category_mapping = {}
+    for tup in cursor.fetchall():
+        category_pair = (tup[0], tup[1])
+        info = (tup[2], tup[3])
+        category_mapping[category_pair] = info
+
+    return category_mapping
 
 
-# new mappings for category map
 def create_allume_category_mapping():
     """
     Will return a dict of allume category names as keys mapped to whether or not that
@@ -223,19 +264,6 @@ def create_allume_category_mapping():
         allume_category_mapping[tup[0]] = info
 
     return allume_category_mapping
-
-
-def create_category_mapping():
-    cursor = connection.cursor()
-    cursor.execute("SELECT external_cat1, external_cat2, allume_category_id, active")
-
-    category_mapping = {}
-    for tup in cursor.fetchall():
-        category_pair = (tup[0], tup[1])
-        info = (tup[2], tup[3])
-        category_mapping[category_pair] = info
-
-    return category_mapping
 
 
 
@@ -260,7 +288,6 @@ def create_category_mapping():
 
 
 # do we want to filter on active for both product_api_allumecategory and product_api_categorymap?
-
 
 
 
