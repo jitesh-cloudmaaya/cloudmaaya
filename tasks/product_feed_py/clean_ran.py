@@ -26,6 +26,9 @@ def clean_ran(local_temp_dir):
             if f.endswith(EXTENSIONS):
                 file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
 
+        totalCount = 0
+        writtenCount = 0
+
         # iterate only over the .txt files
         for f in file_list:
 
@@ -46,6 +49,8 @@ def clean_ran(local_temp_dir):
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
                     for line in lines:
+                        totalCount += 1
+
                         # need to reconstruct line from merchant file
                         line = line.split('|')
                         # breaking down the data from the merchant files
@@ -211,7 +216,11 @@ def clean_ran(local_temp_dir):
 
                         # write the reconstructed line to the cleaned file
                         cleaned.write(record)
+                        writtenCount += 1
                         # break # remove when ready to test on larger dataset
+
+    print('Processed %s records' % totalCount)
+    print('Wrote %s records' % writtenCount)
 
 
 def create_merchant_mapping():
@@ -264,31 +273,6 @@ def create_allume_category_mapping():
         allume_category_mapping[tup[0]] = info
 
     return allume_category_mapping
-
-
-
-
-# we have all the data from the product_api_categorymap table
-# records give us the primary and secondary category, which corresoond to the external_cat1 and external_cat2 fields
-
-# SELECT allume_category_id from product_api_categorymap WHERE external_cat1 = primary_category and external_cat2 = secondary_category
-# need to form a dictionary that allows for this
-# {(external_cat1, external_cat2): (allume_category_id, active)}
-# for a record: active, allume_category_id = category_mapping[(primary_category, secondary_category)] 
-# handle key errors...
-
-# from there, we should have an allume_category_id, which we can use to find the allume_category by name, and whether or not it is active
-# allume_category mapping
-# {id: (name, active)}
-# allume_category, active = allume_category_mapping[allume_category_id]
-# if it is active, process and add the record, if not, continue
-# record += allume_category + '|'
-
-# repeat this process for every product record 
-
-
-# do we want to filter on active for both product_api_allumecategory and product_api_categorymap?
-
 
 
 
