@@ -403,10 +403,7 @@ class Rack(models.Model):
 class LookLayout(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     display_name = models.CharField(max_length=50, blank=True, null=True)
-    rows = models.IntegerField(default=1)
-    columns = models.IntegerField(default=1)
-    row_heights = models.CharField(max_length=50, blank=True, null=True)
-    column_widths = models.CharField(max_length=50, blank=True, null=True)          
+    layout_json = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
