@@ -1,23 +1,30 @@
 import os
 import datetime
 from django.db import connection
+from . import mappings
 
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir):
     # instantiate relevant mappings
-    merchant_mapping = create_merchant_mapping()
-    color_mapping = create_color_mapping()
-    category_mapping = create_category_mapping()
-    allume_category_mapping = create_allume_category_mapping()
+    merchant_mapping = mappings.create_merchant_mapping()
+    color_mapping = mappings.create_color_mapping()
+    category_mapping = mappings.create_category_mapping()
+    allume_category_mapping = mappings.create_allume_category_mapping()
 
-    destination = local_temp_dir + '/cleaned/flat_file.csv'
+    destination = local_temp_dir + '/cleaned/flat_file.txt'
     with open(destination, "w") as cleaned:
-        fields = 'product_id|merchant_id|product_name|long_product_description|short_product_description|product_url|product_image_url|buy_url|manufacturer_name|manufacturer_part_number|SKU|product_type|discount|discount_type|sale_price|retail_price|shipping_price|color|merchant_color|gender|style|size|material|age|currency|availability|keywords|primary_category|secondary_category|allume_category|brand|updated_at|merchant_name|is_best_seller|is_trending|allume_score|current_price|is_deleted\n'
-        cleaned.write(fields)
-
         file_list = []
         file_directory = os.listdir(local_temp_dir)
-        EXTENSIONS = ('mp_delta.txt') # eventually change this to .txt only?
+
+        # could this be moved to configuration file
+
+        # EXTENSIONS = ('.txt') # in the future?
+
+        # EXTENSIONS = ('mp_delta.txt') # eventually change this to .txt only?
+
+        EXTENSIONS = ('mp.txt') # for full files
+
+
         for f in file_directory:
             if f.endswith(EXTENSIONS):
                 file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
@@ -28,7 +35,7 @@ def clean_ran(local_temp_dir):
         # iterate only over the .txt files
         for f in file_list:
 
-            with open(f, "r") as f:
+            with open(f, "r") as f: #, open('temp.txt', 'r') as test:
                 header = f.readline()
                 header = header.decode('utf-8')
                 header = header.split('|')
@@ -45,16 +52,12 @@ def clean_ran(local_temp_dir):
                     merchant_is_active = 0
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
-                    # print('is active')
-                    # print(merchant_id)
                     for line in lines:
                         totalCount += 1
 
                         # unicode sandwich
                         line = line.decode('utf-8')
                         line = line.split('|')
-
-                        # need to reconstruct line from merchant file
 
                         # breaking down the data from the merchant files
                         product_id = line[0]
@@ -125,11 +128,6 @@ def clean_ran(local_temp_dir):
                             if not active:
                                 continue
                         except:
-                            # print('could not determine allume_category for record')
-                            # print(gender)
-                            # print(e)
-
-
                             # there is no entry in the category tables for the provided categories
                             # assume inactive?
                             continue
@@ -199,7 +197,6 @@ def clean_ran(local_temp_dir):
                         record += '0|' # is_trending default
                         record += '0|' # allume_score default
 
-                        # is_sale?
                         try:
                             # if there is a sale
                             if float(sale_price) > 0: # OR NOT NULL ??
@@ -228,60 +225,6 @@ def clean_ran(local_temp_dir):
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
-
-
-def create_merchant_mapping():
-    cursor = connection.cursor()
-    cursor.execute("SELECT external_merchant_id, active FROM product_api_merchant")
-
-    merchant_mapping = {}
-    for tup in cursor.fetchall():
-        merchant_mapping[tup[0]] = tup[1]
-
-    return merchant_mapping
-
-
-def create_color_mapping():
-    cursor = connection.cursor()
-    cursor.execute("SELECT external_color, allume_color FROM product_api_colormap")
-
-    color_mapping = {}
-    for tup in cursor.fetchall():
-        color_mapping[tup[0]] = tup[1]
-
-    return color_mapping
-
-
-def create_category_mapping():
-    cursor = connection.cursor()
-    cursor.execute("SELECT external_cat1, external_cat2, allume_category_id, active FROM product_api_categorymap")
-
-    category_mapping = {}
-    for tup in cursor.fetchall():
-        category_pair = (tup[0], tup[1])
-        info = (tup[2], tup[3])
-        category_mapping[category_pair] = info
-
-    return category_mapping
-
-
-def create_allume_category_mapping():
-    """
-    Will return a dict of allume category names as keys mapped to whether or not that
-    allume category is active, 1 is active and 0 is not active.
-    """
-
-    cursor = connection.cursor()
-    cursor.execute("SELECT id, name, active FROM product_api_allumecategory")
-
-    allume_category_mapping = {}
-    for tup in cursor.fetchall():
-        info = (tup[1], tup[2])
-        allume_category_mapping[tup[0]] = info
-
-    return allume_category_mapping
-
-
 
 
 

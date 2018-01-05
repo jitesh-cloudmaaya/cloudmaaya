@@ -6,8 +6,6 @@ import subprocess
 from django.db import connection, transaction
 import yaml
 import datetime
-# from .temp import test
-# from .clean_ran import clean_ran # change from relative?
 from product_feed_py import *
 
 class ProductFeed(object):
@@ -19,6 +17,7 @@ class ProductFeed(object):
         config_dict = yaml.load(config_file)
         self._table = config_dict['table']
         self._fields = ",".join(config_dict['fields'])
+        self._fields = " (%s) " % (self._fields)
         self._file_pattern = config_dict['file_pattern']
         self._ftp_host = config_dict['ftp_config']['host']
         self._ftp_user = config_dict['ftp_config']['user']
@@ -28,43 +27,66 @@ class ProductFeed(object):
         self._remote_files = []
         self._leave_temp_files = config_dict['leave_temp_files']
         self.etl_file_name = config_dict['etl_file_name']
-
         self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
         self._clean_data_method = config_dict['clean_data_method']
 
 
     ### space for my additions
 
-    def make_cleaned_dir(self): # could combine with make_temp_dir?
-        if not os.path.exists(self._local_temp_dir_cleaned):
-            os.makedirs(self._local_temp_dir_cleaned)
-
     def clean_data(self):
-        self.make_cleaned_dir()
-        exec(self._clean_data_method)
-        # exec self._clean_data_method
+        exec self._clean_data_method
 
     # how to get filename of flat_file.csv
     def load_cleaned_data(self): # eventually rename
-        # print('running')
         cursor = connection.cursor()
 
         # filepath to pd_temp/ran/cleaned/flat_file.csv ?
-        file_list = os.listdir(self._local_temp_dir + '/cleaned')
+        file_list = os.listdir(self._local_temp_dir_cleaned)
         f = file_list[0] # corresponds to flat_file.csv
-        f = os.path.join(os.getcwd(), self._local_temp_dir + '/cleaned', f)
+        f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
+        table = self._table
+        fields = self._fields
 
-        # redefine table
-        table = 'test' # should get replaced
-        # table = 'product_api_product'
-
-        fields = 'product_id,merchant_id,product_name,long_product_description,short_product_description,product_url,product_image_url,buy_url,manufacturer_name,manufacturer_part_number,SKU,product_type,discount,discount_type,sale_price,retail_price,shipping_price,color,merchant_color,gender,style,size,material,age,currency,availability,keywords,primary_category,secondary_category,allume_category,brand,updated_at,merchant_name,is_best_seller,is_trending,allume_score,current_price,is_deleted'
-        fields = " (%s) " % (fields)
-
-        # LINES TERMINATED BY '\n'
-        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (f, table, fields)
+        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s;" % (f, table, fields)
         cursor.execute(statement)
-        # print('success')
+
+    # function guess for delta files?
+    # def update_cleaned_data(self):
+    #     cursor = connection.cursor()
+
+    #     file_list = os.listdir(self._local_temp_dir + '/cleaned')
+    #     f = file_list[0]
+    #     f = os.path.join(os.getcwed(), self._local_temp_dir + '/cleaned', f)
+
+    #     table = self._table
+
+    #     fields = self._fields
+
+    #     get etl file for delete to insert?
+    #     # statement = 
+    #     cursor.execute(statement)
+
+    def update_cleaned_data(self):
+        # generate collection of product_ids to delete
+        destination = self._local_temp_dir_cleaned + '/flat_file.txt'
+
+        product_ids = []
+        with open(destination, 'r') as flat_file:
+            for line in flat_file.readlines():
+                line = line.split('|')
+                product_id = line[0]
+                product_ids.append(product_id)
+        print(product_ids)
+
+
+# -- select and delete the subset of relevant product_ids by reading the flat_file
+# -- generate collection of product_ids from the flat_file
+# -- we can open the flat_file and read it record by record to grab the product_ids
+# -- or we could write to a separate file in ran.py and read that slightly quicker?
+# -- e.g. statement = "DELETE * FROM product_api_product WHERE product_id IN %s" % product_ids ??
+# -- then re-insert these records using the same logic as in ran.py?
+# -- e.g. statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s;" % (f, table, fields)
+# -- where table = self._table, fields = self._fields, and f is the flat_file
 
     def decompress_data(self):
         file_list = os.listdir(self._local_temp_dir)
@@ -85,6 +107,9 @@ class ProductFeed(object):
     def make_temp_dir(self):
         if not os.path.exists(self._local_temp_dir):
             os.makedirs(self._local_temp_dir)
+        if not os.path.exists(self._local_temp_dir_cleaned):
+            os.makedirs(self._local_temp_dir_cleaned)
+
 
     def get_files_ftp(self):
 
@@ -117,12 +142,6 @@ class ProductFeed(object):
 
             if "gz" in local_file:
                 local_file = self.ungzip(local_file)
-
-
-
-            # my logic inserted here, process each text file?
-
-
 
             # Load the Data into MySQL with Load Data Infile
             self.load_data(local_file)
