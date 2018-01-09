@@ -1,7 +1,9 @@
 import os
 import datetime
+import yaml
 from django.db import connection
 from . import mappings
+from catalogue_service.settings import BASE_DIR
 
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir):
@@ -32,6 +34,10 @@ def clean_ran(local_temp_dir):
         totalCount = 0
         writtenCount = 0
 
+        genderSkipped = 0
+        allumecategorySkipped = 0
+        inactiveSkipped = 0
+
         # iterate only over the .txt files
         for f in file_list:
 
@@ -52,6 +58,25 @@ def clean_ran(local_temp_dir):
                     merchant_is_active = 0
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
+                    # check config files
+                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/'
+                    fd = os.listdir(config_path)
+
+                    default = 'default'
+                    extension = '.yaml'
+                    default_filename = default + extension
+                    merchant_id_filename = str(merchant_id) + extension
+                    if merchant_id_filename in fd:
+                        # use that specific config file for reading the merchant file
+                        print 'specific file used!'
+                        with open(config_path + merchant_id_filename, "r") as config:
+                            config_dict = yaml.load(config)
+                    else:
+                        # we shall use the default
+                        print 'default used'
+                        with open(config_path + default_filename, "r") as config:
+                            config_dict = yaml.load(config)
+
                     for line in lines:
                         totalCount += 1
 
@@ -60,48 +85,52 @@ def clean_ran(local_temp_dir):
                         line = line.split('|')
 
                         # breaking down the data from the merchant files
-                        product_id = line[0]
-                        product_name = line[1]
-                        SKU = line[2]
-                        primary_category = line[3]
-                        secondary_category = line[4]
-                        product_url = line[5]
-                        product_image_url = line[6]
-                        buy_url = line[7]
-                        short_product_description = line[8]
-                        long_product_description = line[9]
-                        discount = line[10]
-                        discount_type = line[11]
-                        sale_price = line[12]
-                        retail_price = line[13]
-                        begin_date = line[14]
-                        end_date = line[15]
-                        brand = line[16]
-                        shipping = line[17]
-                        keywords = line[18]
-                        manufacturer_part_number = line[19]
-                        manufacturer_name = line[20]
-                        shipping_information = line[21]
-                        availability = line[22]
-                        universal_product_code = line[23]
-                        class_ID = line[24]
-                        currency = line[25]
-                        M1 = line[26]
-                        pixel = line[27]
-                        attribute_1_misc = line[28]
-                        attribute_2_product_type = line[29]
-                        attribute_3_size = line[30]
-                        attribute_4_material = line[31]
-                        attribute_5_color = line[32]
-                        attribute_6_gender = line[33]
-                        attribute_7_style = line[34]
-                        attribute_8_age = line[35]
-                        attribute_9 = line[36]
+                        product_id = line[config_dict['product_id']]
+                        product_name = line[config_dict['product_name']]
+                        SKU = line[config_dict['SKU']]
+                        primary_category = line[config_dict['primary_category']]
+                        secondary_category = line[config_dict['secondary_category']]
+                        product_url = line[config_dict['product_url']]
+                        product_image_url = line[config_dict['product_image_url']]
+                        buy_url = line[config_dict['buy_url']]
+                        short_product_description = line[config_dict['short_product_description']]
+                        long_product_description = line[config_dict['long_product_description']]
+                        discount = line[config_dict['discount']]
+                        discount_type = line[config_dict['discount_type']]
+                        sale_price = line[config_dict['sale_price']]
+                        retail_price = line[config_dict['retail_price']]
+                        begin_date = line[config_dict['begin_date']]
+                        end_date = line[config_dict['end_date']]
+                        brand = line[config_dict['brand']]
+                        shipping = line[config_dict['shipping']]
+                        keywords = line[config_dict['keywords']]
+                        manufacturer_part_number = line[config_dict['manufacturer_part_number']]
+                        manufacturer_name = line[config_dict['manufacturer_name']]
+                        shipping_information = line[config_dict['shipping_information']]
+                        availability = line[config_dict['availability']]
+                        universal_product_code = line[config_dict['universal_product_code']]
+                        class_ID = line[config_dict['class_ID']]
+                        currency = line[config_dict['currency']]
+                        M1 = line[config_dict['M1']]
+                        pixel = line[config_dict['pixel']]
+
+                        # optional attributes begin here
+                        # can have different orders
+                        # modification must always be at the end (in deltas)
+                        attribute_1_misc = line[config_dict['attribute_1_misc']]
+                        attribute_2_product_type = line[config_dict['attribute_2_product_type']]
+                        attribute_3_size = line[config_dict['attribute_3_size']]
+                        attribute_4_material = line[config_dict['attribute_4_material']]
+                        attribute_5_color = line[config_dict['attribute_5_color']]
+                        attribute_6_gender = line[config_dict['attribute_6_gender']]
+                        attribute_7_style = line[config_dict['attribute_7_style']]
+                        attribute_8_age = line[config_dict['attribute_8_age']]
+                        attribute_9 = line[config_dict['attribute_9']]
 
                         # in a delta file, there is 1 additional field for modification
-                        attribute_10 = line[37].rstrip('\n') # account for other line endings?
+                        attribute_10 = line[config_dict['attribute_10']].rstrip('\n') # account for other line endings?
                         try:
-                            modification = line[38].rstrip('\n') # account for other line endings?
+                            modification = line[config_dict['modification']].rstrip('\n') # account for other line endings?
                         except:
                             modification = ''
 
@@ -112,7 +141,9 @@ def clean_ran(local_temp_dir):
                         gender = gender.replace('MALE', 'MEN')
                         gender = gender.replace('MAN', 'MEN')
                         # check if gender makes record 'inactive'
+
                         if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS': # girls and boys?
+                            genderSkipped += 1
                             continue
 
 
@@ -121,15 +152,19 @@ def clean_ran(local_temp_dir):
                             allume_category_id, active = category_mapping[identifier]
                             # activity check on the primary, secondary category pair
                             if not active:
+                                inactiveSkipped += 1
                                 continue
                             # print(active)
                             allume_category, active = allume_category_mapping[allume_category_id]
                             # activity check on the allume_category
                             if not active:
+                                inactiveSkipped += 1
                                 continue
                         except:
+                            # print identifier
                             # there is no entry in the category tables for the provided categories
                             # assume inactive?
+                            allumecategorySkipped += 1
                             continue
 
 
@@ -162,7 +197,7 @@ def clean_ran(local_temp_dir):
                         try:
                             record += color_mapping[color] + u'|'
                         except: # where there is no analog
-                            record += "Other|"
+                            record += "other|"
                         record += attribute_5_color + u'|' # merchant color field
 
                         # gender
@@ -225,6 +260,9 @@ def clean_ran(local_temp_dir):
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
+    print('Dropped %s records due to gender' % genderSkipped)
+    print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
+    print('Dropped %s records due to inactive categories' % inactiveSkipped)
 
 
 

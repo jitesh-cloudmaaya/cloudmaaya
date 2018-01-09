@@ -50,33 +50,21 @@ class ProductFeed(object):
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s;" % (f, table, fields)
         cursor.execute(statement)
 
-    # function guess for delta files?
+    # may not be necessary?
     # def update_cleaned_data(self):
-    #     cursor = connection.cursor()
+    #     # generate collection of product_ids to delete
+    #     destination = self._local_temp_dir_cleaned + '/flat_file.txt'
 
-    #     file_list = os.listdir(self._local_temp_dir + '/cleaned')
-    #     f = file_list[0]
-    #     f = os.path.join(os.getcwed(), self._local_temp_dir + '/cleaned', f)
-
-    #     table = self._table
-
-    #     fields = self._fields
-
-    #     get etl file for delete to insert?
-    #     # statement = 
-    #     cursor.execute(statement)
-
-    def update_cleaned_data(self):
-        # generate collection of product_ids to delete
-        destination = self._local_temp_dir_cleaned + '/flat_file.txt'
-
-        product_ids = []
-        with open(destination, 'r') as flat_file:
-            for line in flat_file.readlines():
-                line = line.split('|')
-                product_id = line[0]
-                product_ids.append(product_id)
-        print(product_ids)
+    #     product_ids = []
+    #     with open(destination, 'r') as flat_file:
+    #         for line in flat_file.readlines():
+    #             line = line.split('|')
+    #             product_id = line[0]
+    #             product_ids.append(product_id)
+    #     product_ids = ','.join(product_ids)
+    #     product_ids = " (%s) " % product_ids
+    #     # print(len(product_ids))
+    #     print(product_ids)
 
 
 # -- select and delete the subset of relevant product_ids by reading the flat_file
@@ -163,20 +151,20 @@ class ProductFeed(object):
         statement = "TRUNCATE TABLE %s" % (self._table)
         cursor.execute(statement)
 
-    def load_data(self, local_file):
-        cursor = connection.cursor()
-        statement = self.load_data_statement(local_file, self._table, self._fields)
-        print statement
-        cursor.execute(statement)
+    # def load_data(self, local_file):
+    #     cursor = connection.cursor()
+    #     statement = self.load_data_statement(local_file, self._table, self._fields)
+    #     print statement
+    #     cursor.execute(statement)
 
-    def load_data_post_process(self, remote_file):
+    # def load_data_post_process(self, remote_file):
 
-        merchant_id = remote_file.split("_")[0]
-        print "%s - %s" % (remote_file, merchant_id)
+    #     merchant_id = remote_file.split("_")[0]
+    #     print "%s - %s" % (remote_file, merchant_id)
 
-        cursor = connection.cursor()
-        statement = "UPDATE %s SET merchant_id = %s WHERE merchant_id IS NULL;" % (self._table, merchant_id)
-        cursor.execute(statement)       
+    #     cursor = connection.cursor()
+    #     statement = "UPDATE %s SET merchant_id = %s WHERE merchant_id IS NULL;" % (self._table, merchant_id)
+    #     cursor.execute(statement)
 
     def remove_temp_file(self, filename):
         try:
@@ -184,11 +172,11 @@ class ProductFeed(object):
         except OSError:
             pass
 
-    def load_data_statement(self, file_name, table, fields):
-        if fields:
-            fields = " (%s) " % (fields)
-        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (file_name, table, fields)
-        return statement
+    # def load_data_statement(self, file_name, table, fields):
+    #     if fields:
+    #         fields = " (%s) " % (fields)
+    #     statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (file_name, table, fields)
+    #     return statement
 
     def unzip(self, gz_file):
         zipfile.ZipFile(gz_file).extractall()
