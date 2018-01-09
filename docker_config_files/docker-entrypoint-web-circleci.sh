@@ -10,7 +10,7 @@ touch /srv/log/logfile
 tail -n 0 -f /srv/logs/*.log &
 
 #Start Chrome Headless
-chromedriver --url-base=/wd/hub
+##chromedriver --url-base=/wd/hub
 
 # Start UWSGI processes
 echo Starting uwsgi.
