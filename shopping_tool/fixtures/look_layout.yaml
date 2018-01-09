@@ -1,0 +1,105 @@
+-   model: shopping_tool.looklayout
+    pk: 5
+    fields: {name: one_item, display_name: 1 Item, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":415,\r\n\"width\":380,\r\n\"x\":190,\r\n\"y\":0\r\n}\r\n]",
+        created_at: ! '2018-01-08 14:17:03.584250+00:00', updated_at: ! '2018-01-08
+            14:17:03.584289+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 6
+    fields: {name: four_items_a, display_name: 4 Items A, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n}\r\n]",
+        created_at: ! '2018-01-08 14:20:13.207651+00:00', updated_at: ! '2018-01-08
+            14:38:25.933223+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 7
+    fields: {name: six_items_a, display_name: 6 Items A, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n}\r\n]",
+        created_at: ! '2018-01-08 14:26:37.307104+00:00', updated_at: ! '2018-01-08
+            15:07:33.503429+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 8
+    fields: {name: six_items_b, display_name: 6 Items B, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n}\r\n]",
+        created_at: ! '2018-01-08 14:33:20.005318+00:00', updated_at: ! '2018-01-08
+            15:07:52.620487+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 9
+    fields: {name: six_items_c, display_name: 6 Items C, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":207.5\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n}\r\n]",
+        created_at: ! '2018-01-08 14:36:54.000137+00:00', updated_at: ! '2018-01-08
+            15:08:14.203952+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 10
+    fields: {name: six_items_d, display_name: 6 Items D, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":276.7,\r\n\"width\":380,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":276.7\r\n}\r\n]",
+        created_at: ! '2018-01-08 15:07:00.153301+00:00', updated_at: ! '2018-01-09
+            18:12:55.484144+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 11
+    fields: {name: seven_items_a, display_name: 7 Items A, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":207.5\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":207.5\r\n}\r\n]",
+        created_at: ! '2018-01-08 15:18:35.958358+00:00', updated_at: ! '2018-01-08
+            16:25:48.129800+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 12
+    fields: {name: seven_items_b, display_name: 7 Items B, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":138.3\r\n}\r\n]",
+        created_at: ! '2018-01-08 15:23:42.763948+00:00', updated_at: ! '2018-01-08
+            16:25:36.850932+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 13
+    fields: {name: seven_items_c, display_name: 7 Items C, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":207.5\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":207.5\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":207.5\r\n}\r\n]",
+        created_at: ! '2018-01-08 15:24:04.749769+00:00', updated_at: ! '2018-01-08
+            16:25:18.295005+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 14
+    fields: {name: eight_items_a, display_name: 8 Items A, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":207.5\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":207.5\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":207.5\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":207.5\r\n}\r\n]",
+        created_at: ! '2018-01-08 16:25:05.833567+00:00', updated_at: ! '2018-01-08
+            16:28:07.806805+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 15
+    fields: {name: eight_items_b, display_name: 8 Items B, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":207.5\r\n}\r\n]",
+        created_at: ! '2018-01-08 16:32:56.660392+00:00', updated_at: ! '2018-01-08
+            16:45:22.992110+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 16
+    fields: {name: eight_items_c, display_name: 8 Items C, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":276.6\r\n}\r\n]",
+        created_at: ! '2018-01-08 16:44:53.169418+00:00', updated_at: ! '2018-01-08
+            16:44:53.169487+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 17
+    fields: {name: eight_items_e, display_name: 8 Items E, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":138.3\r\n}\r\n]",
+        created_at: ! '2018-01-08 16:45:53.828014+00:00', updated_at: ! '2018-01-09
+            18:11:08.263414+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 18
+    fields: {name: eight_items_d, display_name: 8 Items D, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":276.7\r\n}\r\n]",
+        created_at: ! '2018-01-08 16:53:49.201826+00:00', updated_at: ! '2018-01-09
+            18:14:54.898524+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 19
+    fields: {name: nine_items_a, display_name: 9 Items A, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":207.5\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":9,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":207.5\r\n}\r\n]",
+        created_at: ! '2018-01-08 16:58:51.070387+00:00', updated_at: ! '2018-01-09
+            18:16:38.708906+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 20
+    fields: {name: nine_items_b, display_name: 9 Items B, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":207.5\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":9,\r\n\"height\":207.5,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":207.5\r\n}\r\n]",
+        created_at: ! '2018-01-08 16:59:18.467763+00:00', updated_at: ! '2018-01-09
+            18:13:38.476173+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 21
+    fields: {name: nine_items_c, display_name: 9 Items C, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":9,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":276.6\r\n}\r\n]",
+        created_at: ! '2018-01-08 17:03:30.334023+00:00', updated_at: ! '2018-01-08
+            17:54:41.930419+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 22
+    fields: {name: nine_items_d, display_name: 9 Items D, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":9,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":276.7\r\n}\r\n]",
+        created_at: ! '2018-01-08 17:56:11.288087+00:00', updated_at: ! '2018-01-08
+            17:56:11.288122+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 23
+    fields: {name: ten_items_a, display_name: 10 Items A, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":276.7\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":276.7,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":9,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":10,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":276.6\r\n}\r\n]",
+        created_at: ! '2018-01-08 17:58:56.092224+00:00', updated_at: ! '2018-01-08
+            17:58:56.092323+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 24
+    fields: {name: ten_items_b, display_name: 10 Items B, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":9,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":10,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":276.6\r\n}\r\n]",
+        created_at: ! '2018-01-08 18:24:33.981622+00:00', updated_at: ! '2018-01-08
+            18:24:33.981686+00:00'}
+-   model: shopping_tool.looklayout
+    pk: 25
+    fields: {name: twelve_items_a, display_name: 12 Items A, layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":5,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":6,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":7,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":8,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":9,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":276.6\r\n},\r\n{\r\n\"position\":10,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":11,\r\n\"height\":138.3,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":138.3\r\n},\r\n{\r\n\"position\":12,\r\n\"height\":138.4,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":276.6\r\n}\r\n]",
+        created_at: ! '2018-01-08 18:29:34.543706+00:00', updated_at: ! '2018-01-08
+            18:29:34.543804+00:00'}
