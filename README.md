@@ -31,6 +31,9 @@ https://gist.github.com/nrollr/3f57fc15ded7dddddcc4e82fe137b58e
 ### Install VirtualEnv
 `brew install python`
 
+### Install wkhtmltopdf
+`brew install Caskroom/cask/wkhtmltopdf`
+
 ### Create a new Virtual Env for the project, the command below puts it in a folder in your home folder if you have another then use that:
 `virtualenv ~/VENV/catalogue_service`
 
