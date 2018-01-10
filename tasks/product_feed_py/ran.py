@@ -7,7 +7,6 @@ from catalogue_service.settings import BASE_DIR
 
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir, file_ending):
-# def clean_ran(local_temp_dir):
     # instantiate relevant mappings
     merchant_mapping = mappings.create_merchant_mapping()
     color_mapping = mappings.create_color_mapping()
@@ -18,15 +17,6 @@ def clean_ran(local_temp_dir, file_ending):
     with open(destination, "w") as cleaned:
         file_list = []
         file_directory = os.listdir(local_temp_dir)
-
-        # could this be moved to configuration file
-
-        # EXTENSIONS = ('.txt') # in the future?
-
-        # EXTENSIONS = ('mp_delta.txt') # eventually change this to .txt only?
-
-        # EXTENSIONS = ('mp.txt') # for full files
-
 
         for f in file_directory:
             if f.endswith(file_ending):
@@ -162,7 +152,6 @@ def clean_ran(local_temp_dir, file_ending):
                                 inactiveSkipped += 1
                                 continue
                         except:
-                            # print identifier
                             # there is no entry in the category tables for the provided categories
                             # assume inactive?
                             allumecategorySkipped += 1
@@ -255,9 +244,6 @@ def clean_ran(local_temp_dir, file_ending):
                         # write the reconstructed line to the cleaned file
                         cleaned.write(record)
                         writtenCount += 1
-                else:
-                    # print("is not active")
-                    pass
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)

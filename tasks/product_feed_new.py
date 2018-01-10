@@ -52,32 +52,6 @@ class ProductFeed(object):
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s;" % (f, table, fields)
         cursor.execute(statement)
 
-    # may not be necessary?
-    # def update_cleaned_data(self):
-    #     # generate collection of product_ids to delete
-    #     destination = self._local_temp_dir_cleaned + '/flat_file.txt'
-
-    #     product_ids = []
-    #     with open(destination, 'r') as flat_file:
-    #         for line in flat_file.readlines():
-    #             line = line.split('|')
-    #             product_id = line[0]
-    #             product_ids.append(product_id)
-    #     product_ids = ','.join(product_ids)
-    #     product_ids = " (%s) " % product_ids
-    #     # print(len(product_ids))
-    #     print(product_ids)
-
-
-# -- select and delete the subset of relevant product_ids by reading the flat_file
-# -- generate collection of product_ids from the flat_file
-# -- we can open the flat_file and read it record by record to grab the product_ids
-# -- or we could write to a separate file in ran.py and read that slightly quicker?
-# -- e.g. statement = "DELETE * FROM product_api_product WHERE product_id IN %s" % product_ids ??
-# -- then re-insert these records using the same logic as in ran.py?
-# -- e.g. statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s;" % (f, table, fields)
-# -- where table = self._table, fields = self._fields, and f is the flat_file
-
     def decompress_data(self):
         file_list = os.listdir(self._local_temp_dir)
 
