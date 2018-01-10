@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import json
+import yaml
 import re
 
 from django.db import models
@@ -413,6 +414,10 @@ class LookLayout(models.Model):
     @property
     def layout_json(self):
         return json.loads(self._layout_json)
+
+    @property
+    def layout_json_html(self):
+        return json.dumps(json.loads(self._layout_json))
 
 
 class Look(models.Model):

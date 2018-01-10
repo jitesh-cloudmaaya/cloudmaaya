@@ -6,7 +6,7 @@ var look_layouts = [
 {% for layout in layouts %}
   { "id": {{ layout.id }},
     "name": "{{layout.display_name}}",
-    "display": {{layout.layout_json | safe }}
+    "display": {{layout.layout_json_html | safe }}
   },
 {% endfor %} 
 ];
