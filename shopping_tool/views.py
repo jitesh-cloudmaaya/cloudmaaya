@@ -59,7 +59,7 @@ def index(request, styling_session_id=None):
 def explore(request, styling_session_id=None):
 
     user = request.user
-    layouts = LookLayout.objects.values()
+    layouts = LookLayout.objects.all()
 
     try:
         styling_session = AllumeStylingSessions.objects.get(id = styling_session_id) 
