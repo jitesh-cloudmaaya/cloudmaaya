@@ -1,10 +1,10 @@
 -   model: shopping_tool.looklayout
     pk: 1
-    fields: {name: 5 Item Outfit, display_name: 5 Item Outfit, layout_json: "TEST",
-        created_at: !!timestamp '2017-11-28
-            19:19:56.830627+00:00', updated_at: !!timestamp '2017-11-28 19:19:56.830673+00:00'}
+    fields: {name: one_item, display_name: 1 Item, _layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":415,\r\n\"width\":380,\r\n\"x\":190,\r\n\"y\":0\r\n}\r\n]",
+        created_at: ! '2018-01-08 14:17:03.584250+00:00', updated_at: ! '2018-01-08
+            14:17:03.584289+00:00'}
 -   model: shopping_tool.looklayout
     pk: 2
-    fields: {name: 3 Item Outfit, display_name: 3 Item Outfit, layout_json: "TEST",
-        created_at: !!timestamp '2017-11-28
-            19:19:56.832533+00:00', updated_at: !!timestamp '2017-11-28 19:19:56.832682+00:00'}
+    fields: {name: four_items_a, display_name: 4 Items A, _layout_json: "[\r\n{\r\n\"position\":1,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":0,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":2,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":190,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":3,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":380,\r\n\"y\":0\r\n},\r\n{\r\n\"position\":4,\r\n\"height\":415,\r\n\"width\":190,\r\n\"x\":570,\r\n\"y\":0\r\n}\r\n]",
+        created_at: ! '2018-01-08 14:20:13.207651+00:00', updated_at: ! '2018-01-08
+            14:38:25.933223+00:00'}

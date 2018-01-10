@@ -403,12 +403,16 @@ class Rack(models.Model):
 class LookLayout(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     display_name = models.CharField(max_length=50, blank=True, null=True)
-    layout_json = models.TextField(blank=True, null=True)
+    _layout_json = models.TextField(blank=True, null=True, db_column="layout_json")
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
         return self.name
+
+    @property
+    def layout_json(self):
+        return json.loads(self._layout_json)
 
 
 class Look(models.Model):

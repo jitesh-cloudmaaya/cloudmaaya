@@ -7,9 +7,11 @@ from shopping_tool.models import LookLayout, AllumeStylingSessions, Rack, LookPr
 ####################################################################################
 
 class LookLayoutSerializer(serializers.ModelSerializer):
+    #layout_json = serializers.JSONField()
+
     class Meta:
         model = LookLayout
-        fields = '__all__'
+        fields = ['id', 'layout_json', 'name', 'display_name', 'created_at', 'updated_at']#'__all__'
 
 class AllumeStylingSessionsSerializer(serializers.ModelSerializer):
     class Meta:

@@ -38,7 +38,7 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(201, response.status_code)
         self.assertEqual(Look.objects.count(), 4)
         self.assertEqual(Look.objects.get(id = response_data['id']).name, 'Api Test Look')
-        self.assertEqual(Look.objects.get(id = response_data['id']).look_layout.name, '5 Item Outfit')
+        self.assertEqual(Look.objects.get(id = response_data['id']).look_layout.name, 'one_item')
         
 
     def test_update_look(self):
