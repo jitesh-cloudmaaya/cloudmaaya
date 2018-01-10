@@ -57,16 +57,18 @@ def clean_ran(local_temp_dir, file_ending):
                     extension = '.yaml'
                     default_filename = default + extension
                     merchant_id_filename = str(merchant_id) + extension
+
+                    full_path = config_path + default_filename
+
                     if merchant_id_filename in fd:
                         # use that specific config file for reading the merchant file
-                        print 'specific file used!'
-                        with open(config_path + merchant_id_filename, "r") as config:
-                            config_dict = yaml.load(config)
-                    else:
+                        # print 'specific file used!'
+                        full_path = config_path + merchant_id_filename
+                        
+                    with open(full_path, "r") as config:
                         # we shall use the default
-                        print 'default used'
-                        with open(config_path + default_filename, "r") as config:
-                            config_dict = yaml.load(config)
+                        config_dict = yaml.load(config)
+                        config_dict = config_dict['fields'][0]
 
                     for line in lines:
                         totalCount += 1

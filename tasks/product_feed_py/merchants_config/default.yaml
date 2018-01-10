@@ -1,39 +1,41 @@
-product_id: 0
-product_name: 1
-SKU: 2
-primary_category: 3
-secondary_category: 4
-product_url: 5
-product_image_url: 6
-buy_url: 7
-short_product_description: 8
-long_product_description: 9
-discount: 10
-discount_type: 11
-sale_price: 12
-retail_price: 13
-begin_date: 14
-end_date: 15
-brand: 16
-shipping: 17
-keywords: 18
-manufacturer_part_number: 19
-manufacturer_name: 20
-shipping_information: 21
-availability: 22
-universal_product_code: 23
-class_ID: 24
-currency: 25
-M1: 26
-pixel: 27
-attribute_1_misc: 28
-attribute_2_product_type: 29
-attribute_3_size: 30
-attribute_4_material: 31
-attribute_5_color: 32
-attribute_6_gender: 33
-attribute_7_style: 34
-attribute_8_age: 35
-attribute_9: 36
-attribute_10: 37
-modification: 38
+fields:
+   -
+    product_id: 0
+    product_name: 1
+    SKU: 2
+    primary_category: 3
+    secondary_category: 4
+    product_url: 5
+    product_image_url: 6
+    buy_url: 7
+    short_product_description: 8
+    long_product_description: 9
+    discount: 10
+    discount_type: 11
+    sale_price: 12
+    retail_price: 13
+    begin_date: 14
+    end_date: 15
+    brand: 16
+    shipping: 17
+    keywords: 18
+    manufacturer_part_number: 19
+    manufacturer_name: 20
+    shipping_information: 21
+    availability: 22
+    universal_product_code: 23
+    class_ID: 24
+    currency: 25
+    M1: 26
+    pixel: 27
+    attribute_1_misc: 28
+    attribute_2_product_type: 29
+    attribute_3_size: 30
+    attribute_4_material: 31
+    attribute_5_color: 32
+    attribute_6_gender: 33
+    attribute_7_style: 34
+    attribute_8_age: 35
+    attribute_9: 36
+    attribute_10: 37
+    modification: 38
