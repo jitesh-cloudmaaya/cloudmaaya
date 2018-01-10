@@ -28,12 +28,12 @@ M1: 26
 pixel: 27
 attribute_1_misc: 28
 attribute_2_product_type: 29
-attribute_3_size: 30
+attribute_3_size: 32
 attribute_4_material: 31
-attribute_5_color: 32
-attribute_6_gender: 33
+attribute_5_color: 30
+attribute_6_gender: 35
 attribute_7_style: 34
-attribute_8_age: 35
+attribute_8_age: 33
 attribute_9: 36
 attribute_10: 37
 modification: 38
