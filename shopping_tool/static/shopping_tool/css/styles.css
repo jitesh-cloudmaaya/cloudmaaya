@@ -2025,12 +2025,28 @@ p#look-desc {
   width:272px;
 }
 #compare-looks div.comp-look div.compare-looks-layout {
+  background:#eee;
   height:415px;
   position:relative;
   transform:scale(0.353);
   transform-origin: 0,0;
   margin-top:-133px;
   margin-left:-246px;
+  width:760px;  
+}
+#all-looks-list div.look div.display div.explore-look-wrapper {
+  height:235px;
+  margin:5px 0 10px;
+  overflow:hidden;
+  width:435px;
+}
+#all-looks-list div.look div.display div.explore-look-layout {
+  background:#eee;
+  height:415px;
+  position:relative;
+  transform:scale(0.5657);
+  margin-top:-90px;
+  margin-left:-161px;
   width:760px;  
 }
 
@@ -2042,7 +2058,9 @@ p#look-desc {
   position:absolute;
   overflow:hidden;
 }
-#compare-looks div.comp-look div.compare-looks-layout div.layout-block {
+#compare-looks div.comp-look div.compare-looks-layout div.layout-block,
+#all-looks-list div.look div.display div.explore-look-layout div.layout-block {
+  background:#fff;
   margin:2px;
   position:absolute;
   overflow:hidden;

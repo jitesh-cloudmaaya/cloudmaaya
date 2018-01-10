@@ -178,46 +178,40 @@ var explore_page = {
       markup.push(
         '<div class="look"><div class="display">' + look_fave_link  +
         '<h3><em data-lookid="' + look.id + '">' + look.name + '</em><span>by ' + 
-        stylist_names[look.stylist] + '</span></h3><div class="items">' 
+        stylist_names[look.stylist] + '</span></h3><div class="items">' +
+        '<div class="explore-look-wrapper"><div class="explore-look-layout">'
       );
-      var col_width = 100/look.look_layout.columns ;
-      for(var k = 0; k<look.look_layout.columns; k++){
-        var col = ['<div class="column" style="width:calc(' + col_width + '% - 2px)">'];
-        var heights = look.look_layout.row_heights.split(',');
-        for(var j = 0; j<look.look_layout.rows; j++){
-          var h = heights[j];
-          var position = k > 0 ? ((j + 1) + (k * look.look_layout.rows)) : j + 1 ;
-          var product_markup = [];
-          /* check if a look product has the same position as the newlay added row */
-          for(var p = 0, prods = look.look_products.length; p<prods; p++){
-            var prod = look.look_products[p];
-            if(prod.layout_position == position){
-              var src = prod.product.product_image_url;
-              if(prod.cropped_dimensions != null){
-                var crop = {
-                  id: 'look-' + look.id + '-item-' + prod.id,
-                  src: look_proxy + '' + src,
-                  dims: prod.cropped_dimensions
-                }
-                cropped_images.push(crop);
+      for(var ix = 0, lx = look.look_layout.layout_json.length; ix<lx; ix++){
+        var block = look.look_layout.layout_json[ix];
+        var position = block.position;
+        var product_markup = [];
+        for(var p = 0, prods = look.look_products.length; p<prods; p++){
+          var prod = look.look_products[p];
+          if(prod.layout_position == position){
+            var src = prod.product.product_image_url;
+            if(prod.cropped_dimensions != null){
+              var crop = {
+                id: 'look-' + look.id + '-item-' + prod.id,
+                src: look_proxy + '' + src,
+                dims: prod.cropped_dimensions
               }
-              product_markup.push(
-                '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
-                'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
-                '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
-                '"><img style="height:' + ((h/100 * 300) - 6) + 'px" src="' + src + '"/></span></a></div>'
-              );
+              cropped_images.push(crop);
             }
+            product_markup.push(
+              '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
+              'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
+              '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
+              '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></a></div>'
+            );
           }
-          col.push(
-            '<div class="row" style="height:' + ((h/100 * 300) - 6) + 'px">' + 
-            product_markup.join('') + '</div>'
-          );
         }
-        col.push('</div>');
-        markup.push(col.join(''));
+        markup.push(
+          '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
+          'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
+          'px" data-position="' + position + '">' + product_markup.join() + '</div>'
+        );
       }
-      div.append(markup.join('') + '</div></div></div>')
+      div.append(markup.join('') + '</div></div></div></div></div>')
     }
     if(cropped_images.length > 0){
       for(var i = 0, l = cropped_images.length; i<l; i++){

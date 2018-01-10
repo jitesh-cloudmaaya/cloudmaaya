@@ -24,51 +24,7 @@ var look_builder = {
         for(var i = 0, l = response.looks.length; i<l; i++){
           var comp = response.looks[i];
           if(comp.id != look_id){
-            console.log(comp.id)
-            var look_products_markup = [];
-            /*var col_width = 100/comp.look_layout.columns ;
-            for(var k = 0; k<comp.look_layout.columns; k++){
-              var col = ['<div class="column" style="width:calc(' + col_width + '% - 2px)">'];
-              var heights = comp.look_layout.row_heights.split(',');
-              for(var j = 0; j<comp.look_layout.rows; j++){
-                var h = heights[j];
-                var position = k > 0 ? ((j + 1) + (k * comp.look_layout.rows)) : j + 1 ;
-                var product_markup = [];
-
-                for(var p = 0, prods = comp.look_products.length; p<prods; p++){
-                  var prod = comp.look_products[p];
-                  if(prod.layout_position == position){
-                    var src = prod.product.product_image_url;
-                    if(prod.cropped_dimensions != null){
-                      var crop = {
-                        id: 'complook-' + comp.id + '-item-' + prod.id,
-                        src: look_proxy + '' + src,
-                        dims: prod.cropped_dimensions
-                      }
-                      cropped_images.push(crop);
-                    }
-                    product_markup.push(
-                      '<div class="item"><a href="#" class="item-detail" ' + 
-                      'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
-                      '" data-productid="' + prod.product.id + '"><span id="complook-' + comp.id + '-item-' + prod.id + 
-                      '"><img style="height:' + ((h/100 * 300) - 6) + 'px" src="' + src + '"/></span></a></div>'
-                    );
-                  }
-                }
-                col.push(
-                  '<div class="row" style="height:' + ((h/100 * 300) - 6) + 'px">' + 
-                  product_markup.join('') + '</div>'
-                );
-              }
-              col.push('</div>');
-              look_products_markup.push(col.join(''));
-            }*/
-
-
-
-
-
-            look_products_markup.push('<div class="compare-look-wrapper"><div class="compare-looks-layout">')
+            var look_products_markup = ['<div class="compare-look-wrapper"><div class="compare-looks-layout">'];
             for(var ix = 0, lx = comp.look_layout.layout_json.length; ix<lx; ix++){
               var block = comp.look_layout.layout_json[ix];
               var position = block.position;
@@ -100,9 +56,6 @@ var look_builder = {
               );
             }
             look_products_markup.push('</div></div>');
-
-
-
             markup.push(
               '<div class="comp-look"><h3>' + comp.name + '</h3>' +
               '<span class="layout"><em>layout: </em>' + comp.look_layout.display_name + '</span>' +
