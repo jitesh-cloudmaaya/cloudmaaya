@@ -1778,10 +1778,40 @@ div.layout-option span.name {
 }
 
 #all-looks-list div.look {
-    display:block;
-    float:left;
-    margin:0 0 2px;
-    width:calc(100%/3);  
+  display:block;
+  float:left;
+  margin:0 0 2px;
+  position:relative;
+  width:calc(100%/3);  
+}
+#all-looks-list div.look p.desc{
+  background:rgba(0,0,0,0.75);
+  border-radius:3px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.8);
+  color:#fff;
+  display:block;
+  font-size:12px;
+  font-weight:100;
+  opacity:0;
+  padding:10px;
+  position:absolute;
+  top:80px;
+  left:10px;
+  width:calc(100% - 40px);
+  white-space:pre-wrap; 
+  z-index:1; 
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out; 
+}
+
+#all-looks-list div.look h3:hover + p.desc {
+  opacity:1;
+  z-index:3;
+}
+
+#all-looks-list div.look p.desc em {
+  display:block;
+  padding-bottom:3px;
 }
 #all-looks-list div.look div.display {
   background:#fff;
@@ -2055,8 +2085,6 @@ p#look-desc {
   margin-left:-161px;
   width:760px;  
 }
-
-
 #look-layout-grid div.layout-block {
   border:1px dashed #bbb;
   border-radius:3px;
@@ -2071,6 +2099,7 @@ p#look-desc {
   position:absolute;
   overflow:hidden;
 }
+#all-looks-list div.look div.display div.explore-look-layout div.layout-block  {z-index:2;}
 #look-drop p.look-drop-info {
   color: #777;
   font-size: 16px;

@@ -178,7 +178,8 @@ var explore_page = {
       markup.push(
         '<div class="look"><div class="display">' + look_fave_link  +
         '<h3><em data-lookid="' + look.id + '">' + look.name + '</em><span>by ' + 
-        stylist_names[look.stylist] + '</span></h3><div class="items">' +
+        stylist_names[look.stylist] + '</span></h3><p class="desc"><em>description:</em>' + 
+        look.description + '</p><div class="items">' +
         '<div class="explore-look-wrapper"><div class="explore-look-layout">'
       );
       for(var ix = 0, lx = look.look_layout.layout_json.length; ix<lx; ix++){
@@ -211,7 +212,8 @@ var explore_page = {
           'px" data-position="' + position + '">' + product_markup.join() + '</div>'
         );
       }
-      div.append(markup.join('') + '</div></div></div></div></div>')
+      div.append(
+        markup.join('') + '</div></div></div></div></div>')
     }
     if(cropped_images.length > 0){
       for(var i = 0, l = cropped_images.length; i<l; i++){
