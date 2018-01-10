@@ -55,6 +55,22 @@ def index(request, styling_session_id=None):
     return render(request, 'shopping_tool/index.html', context)
 
 
+
+@check_login
+def collage(request, look_id=None):
+    try:
+        look = Look.objects.get(id = look_id) 
+    except Look.DoesNotExist:
+        context = {}
+        return render(request, 'shopping_tool/no_look.html', context)
+
+    context = { 'look': look }
+
+    return render(request, 'shopping_tool/collage.html', context)
+
+
+
+
 @check_login
 def explore(request, styling_session_id=None):
 
