@@ -30,6 +30,8 @@ class ProductFeed(object):
         self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
         self._clean_data_method = config_dict['clean_data_method']
 
+        self._file_ending = config_dict['file_ending']
+
 
     ### space for my additions
 

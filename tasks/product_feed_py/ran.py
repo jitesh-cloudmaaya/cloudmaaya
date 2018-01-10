@@ -6,7 +6,8 @@ from . import mappings
 from catalogue_service.settings import BASE_DIR
 
 ### attempt at writing record with logic
-def clean_ran(local_temp_dir):
+def clean_ran(local_temp_dir, file_ending):
+# def clean_ran(local_temp_dir):
     # instantiate relevant mappings
     merchant_mapping = mappings.create_merchant_mapping()
     color_mapping = mappings.create_color_mapping()
@@ -24,11 +25,11 @@ def clean_ran(local_temp_dir):
 
         # EXTENSIONS = ('mp_delta.txt') # eventually change this to .txt only?
 
-        EXTENSIONS = ('mp.txt') # for full files
+        # EXTENSIONS = ('mp.txt') # for full files
 
 
         for f in file_directory:
-            if f.endswith(EXTENSIONS):
+            if f.endswith(file_ending):
                 file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
 
         totalCount = 0

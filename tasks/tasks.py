@@ -4,7 +4,8 @@ from django.db import connection, transaction
 import os
 from catalogue_service.settings import BASE_DIR
 from celery_once import QueueOnce
-from tasks.product_feed import ProductFeed
+# from tasks.product_feed import ProductFeed
+from tasks.product_feed_new import ProductFeed
 
 
 @task(base=QueueOnce)
@@ -41,8 +42,7 @@ def update_client_360():
     statement = etl_file.read()
     cursor.execute(statement)
 
-
-# first guess at task
+# new tasks
 @task(base=QueueOnce)
 def ran_delta_pull_new():
     pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/ran_delta.yaml'))
@@ -54,9 +54,7 @@ def ran_delta_pull_new():
     pf.clean_data()
     print("Load data to API products table")
     pf.load_cleaned_data()
-    # update data instead of pure load?
 
-# first guess for full... test
 @task(base=QueueOnce)
 def ran_full_pull_new():
     pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/ran.yaml'))
@@ -67,4 +65,4 @@ def ran_full_pull_new():
     print("Cleaning files")
     pf.clean_data()
     print("Load data to API products table")
-    pf.load_cleaned_data()
+    pf.load_cleaned_data
