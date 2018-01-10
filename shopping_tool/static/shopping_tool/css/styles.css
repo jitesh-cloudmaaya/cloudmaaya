@@ -1789,10 +1789,9 @@ div.layout-option span.name {
   border-radius:3px;
   box-shadow:0 1px 2px rgba(0,0,0,0.8);
   color:#fff;
-  display:block;
+  display:none;
   font-size:12px;
   font-weight:100;
-  opacity:0;
   padding:10px;
   position:absolute;
   top:80px;
@@ -1800,12 +1799,10 @@ div.layout-option span.name {
   width:calc(100% - 40px);
   white-space:pre-wrap; 
   z-index:1; 
-  -webkit-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out; 
 }
 
 #all-looks-list div.look h3:hover + p.desc {
-  opacity:1;
+  display:block;
   z-index:3;
 }
 
