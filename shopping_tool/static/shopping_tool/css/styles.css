@@ -209,6 +209,12 @@ input.search {
   margin:0 auto;
 }
 #results div.item div.image {position:relative;}
+#results div.item div.image a.item-detail{
+  display:block;
+  height:100%;
+  text-decoration: none;
+  width:100%;  
+}
 #results div.item div.image a.favorite {
   color:#EC407A;
   font-size:28px;
