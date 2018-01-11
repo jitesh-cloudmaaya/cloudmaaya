@@ -7,6 +7,15 @@
   <link href="{% static 'shopping_tool/css/collage.css' %}" media="all" rel="stylesheet"/>
 </head>
 <body>
+    <!-- look, related layout, and nested list of products belonging to the look -->
+    <div>{{ look }}</div>
+    <div>{{ look.look_layout }}</div>
+    <ul>
+    {% for product in look.look_products.all %}
+        <li>{{ product }}</li>
+    {% endfor %}
+    </ul>
+
 <div id="collage">
   {% for block in look.look_layout.layout_json %}
     <div class="display-block" style="height:{{block.height}}px;width:{{block.width}}px;top:{{block.y}}px;left:{{block.x}}px"></div>
