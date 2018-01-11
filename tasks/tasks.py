@@ -4,8 +4,7 @@ from django.db import connection, transaction
 import os
 from catalogue_service.settings import BASE_DIR
 from celery_once import QueueOnce
-# from tasks.product_feed import ProductFeed
-from tasks.product_feed_new import ProductFeed
+from tasks.product_feed import ProductFeed
 
 
 @task(base=QueueOnce)

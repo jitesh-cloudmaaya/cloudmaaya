@@ -133,8 +133,8 @@ def clean_ran(local_temp_dir, file_ending):
                         gender = gender.replace('FEMALE', 'WOMEN')
                         gender = gender.replace('MALE', 'MEN')
                         gender = gender.replace('MAN', 'MEN')
-                        # check if gender makes record 'inactive'
 
+                        # check if gender makes record 'inactive'
                         if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS': # girls and boys?
                             genderSkipped += 1
                             continue
