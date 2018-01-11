@@ -134,6 +134,16 @@ def clean_ran(local_temp_dir, file_ending):
                         gender = gender.replace('MALE', 'MEN')
                         gender = gender.replace('MAN', 'MEN')
 
+                        # set blanks to proper default?
+                        # if not discount:
+                        #     discount = '\N'
+                        # if not sale_price:
+                        #     sale_price = '\N'
+                        # if not retail_price:
+                        #     retail_price = '\N'
+                        # if not shipping:
+                        #     shipping = '\N'
+
                         # check if gender makes record 'inactive'
                         if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS': # girls and boys?
                             genderSkipped += 1
