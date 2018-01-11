@@ -374,10 +374,7 @@ user_id) social_actions
 ON wu.ID = social_actions.user_id;
 
 
-DROP TABLE IF EXISTS allume_client_360_old;
-
-
-RENAME TABLE allume_client_360 TO allume_client_360_old;
+DROP TABLE IF EXISTS allume_client_360;
 
 
 RENAME TABLE allume_client_360_temp TO allume_client_360;
