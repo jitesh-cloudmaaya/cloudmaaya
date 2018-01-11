@@ -126,20 +126,20 @@ class ProductFeed(object):
         statement = "TRUNCATE TABLE %s" % (self._table)
         cursor.execute(statement)
 
-    # def load_data(self, local_file):
-    #     cursor = connection.cursor()
-    #     statement = self.load_data_statement(local_file, self._table, self._fields)
-    #     print statement
-    #     cursor.execute(statement)
+    def load_data(self, local_file):
+        cursor = connection.cursor()
+        statement = self.load_data_statement(local_file, self._table, self._fields)
+        print statement
+        cursor.execute(statement)
 
-    # def load_data_post_process(self, remote_file):
+    def load_data_post_process(self, remote_file):
 
-    #     merchant_id = remote_file.split("_")[0]
-    #     print "%s - %s" % (remote_file, merchant_id)
+        merchant_id = remote_file.split("_")[0]
+        print "%s - %s" % (remote_file, merchant_id)
 
-    #     cursor = connection.cursor()
-    #     statement = "UPDATE %s SET merchant_id = %s WHERE merchant_id IS NULL;" % (self._table, merchant_id)
-    #     cursor.execute(statement)
+        cursor = connection.cursor()
+        statement = "UPDATE %s SET merchant_id = %s WHERE merchant_id IS NULL;" % (self._table, merchant_id)
+        cursor.execute(statement)
 
     def remove_temp_file(self, filename):
         try:
@@ -147,11 +147,11 @@ class ProductFeed(object):
         except OSError:
             pass
 
-    # def load_data_statement(self, file_name, table, fields):
-    #     if fields:
-    #         fields = " (%s) " % (fields)
-    #     statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (file_name, table, fields)
-    #     return statement
+    def load_data_statement(self, file_name, table, fields):
+        if fields:
+            fields = " (%s) " % (fields)
+        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (file_name, table, fields)
+        return statement
 
     def unzip(self, gz_file):
         zipfile.ZipFile(gz_file).extractall()
