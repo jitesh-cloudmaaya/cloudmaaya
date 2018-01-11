@@ -5,6 +5,8 @@ import zipfile
 import subprocess
 from django.db import connection, transaction
 import yaml
+import datetime
+from product_feed_py import *
 
 class ProductFeed(object):
 
@@ -15,6 +17,7 @@ class ProductFeed(object):
         config_dict = yaml.load(config_file)
         self._table = config_dict['table']
         self._fields = ",".join(config_dict['fields'])
+        self._fields = " (%s) " % (self._fields)
         self._file_pattern = config_dict['file_pattern']
         self._ftp_host = config_dict['ftp_config']['host']
         self._ftp_user = config_dict['ftp_config']['user']
@@ -24,10 +27,52 @@ class ProductFeed(object):
         self._remote_files = []
         self._leave_temp_files = config_dict['leave_temp_files']
         self.etl_file_name = config_dict['etl_file_name']
+        self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
+        self._clean_data_method = config_dict['clean_data_method']
+        self._file_ending = config_dict['file_ending']
+
+
+    ### space for my additions
+
+    def clean_data(self):
+        exec self._clean_data_method
+
+    # how to get filename of flat_file.csv
+    def load_cleaned_data(self): # eventually rename
+        cursor = connection.cursor()
+
+        # filepath to pd_temp/ran/cleaned/flat_file.csv ?
+        file_list = os.listdir(self._local_temp_dir_cleaned)
+        f = file_list[0] # corresponds to flat_file.csv
+        f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
+        table = self._table
+        fields = self._fields
+
+        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s;" % (f, table, fields)
+        cursor.execute(statement)
+
+    def decompress_data(self):
+        file_list = os.listdir(self._local_temp_dir)
+
+        for remote_file in file_list:
+
+            local_file = os.path.join(os.getcwd(), self._local_temp_dir, remote_file)
+
+            if "zip" in local_file:
+                local_file = self.unzip(local_file)
+
+            if "gz" in local_file:
+                local_file = self.ungzip(local_file)
+
+
+    ### end space for additions
 
     def make_temp_dir(self):
         if not os.path.exists(self._local_temp_dir):
             os.makedirs(self._local_temp_dir)
+        if not os.path.exists(self._local_temp_dir_cleaned):
+            os.makedirs(self._local_temp_dir_cleaned)
+
 
     def get_files_ftp(self):
 
@@ -94,7 +139,7 @@ class ProductFeed(object):
 
         cursor = connection.cursor()
         statement = "UPDATE %s SET merchant_id = %s WHERE merchant_id IS NULL;" % (self._table, merchant_id)
-        cursor.execute(statement)       
+        cursor.execute(statement)
 
     def remove_temp_file(self, filename):
         try:
@@ -103,10 +148,10 @@ class ProductFeed(object):
             pass
 
     def load_data_statement(self, file_name, table, fields):
-            if fields:
-                fields = " (%s) " % (fields)
-            statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (file_name, table, fields)
-            return statement
+        if fields:
+            fields = " (%s) " % (fields)
+        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' IGNORE 1 LINES %s;" % (file_name, table, fields)
+        return statement
 
     def unzip(self, gz_file):
         zipfile.ZipFile(gz_file).extractall()
@@ -127,7 +172,6 @@ pf.get_files_ftp()
 pf.process_data()
 
 """
-
 
 
 
