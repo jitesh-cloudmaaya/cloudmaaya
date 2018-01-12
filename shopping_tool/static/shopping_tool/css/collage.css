@@ -14,9 +14,9 @@ a,a:focus,div:focus,ul:focus,input:focus {outline:0px;}
 body {background:#fff; font-size:62.5%;}
 html {overflow-y:scroll;overflow-x:auto;}
 
-#collage { height:415px; position:relative; width:760px; background:#eee;}
-#collage div.display-block { background:#fff; position:absolute; }
-#collage div.display-block img{
+#collage { height:415px; position:relative; width:760px;}
+#collage div.layout-block { background:#fff; position:absolute; }
+#collage div.layout-block img{
   display:block; 
   height:100%; 
   margin: 0 auto; 
