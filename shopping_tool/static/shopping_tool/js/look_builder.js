@@ -467,6 +467,35 @@ var look_builder = {
       e.preventDefault();
       var link = $(this);
       look_builder.cropImage(link);
+    }).on('click','a.look-publish-status',function(e){
+      e.preventDefault();
+      var link = $(this);
+      var status = '';
+      var settings = $('#designing a').data();
+      if(link.hasClass('Draft')){
+        link.removeClass('Draft').addClass('Published');
+        status = 'Published';
+      }else{
+        link.removeClass('Published').addClass('Draft');
+        status = 'Draft';
+      }
+      var look_obj = {
+       "name": settings.lookname,
+       "look_layout": settings.looklayoutid,
+       "description": settings.lookdesc,
+       "allume_styling_session": look_builder.session_id,
+       "stylist": parseInt($('#stylist').data('stylistid')),
+       "status": status        
+      }
+      $.ajax({
+        contentType : 'application/json',
+        data: JSON.stringify(look_obj),
+        success:function(response){
+          console.log(response)
+        },
+        type: 'PUT',
+        url: '/shopping_tool_api/look/' + settings.lookid + '/'
+      })
     });
     $('#compare-looks').on('click','a.look-filter', function(e){
       e.preventDefault();
@@ -725,7 +754,9 @@ var look_builder = {
         'open spots within the look layout.</p><p class="look-drop-info">&bull; Dragging an item into an ' +
         'occupied spot will remove the old item from that position.</p><p class="look-drop-info">&bull; ' +
         'Drag items to trash to remove from the look.</p>' + markup.join('') + 
-        '<a href="#" class="look-more-details" data-look="' + id + '">' +
+        '<a href="#" class="look-publish-status ' + result.status + '" data-lookid="' + 
+        id + '"><span class="published">published</span><span class="draft">draft</span>' +
+        '<small></small></a><a href="#" class="look-more-details" data-look="' + id + '">' +
         '<i class="fa fa-search"></i>look details</a><div id="look-trash"></div>'
       );
       if(cropped_images.length > 0){
