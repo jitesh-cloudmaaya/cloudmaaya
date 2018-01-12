@@ -18,6 +18,9 @@ from django.core.exceptions import PermissionDenied
 from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUsers, UserProductFavorite
 from product_api.models import Product, MerchantCategory
 
+from shopping_tool_api.serializers import *
+from rest_framework.renderers import JSONRenderer
+
 import requests
 from PIL import Image
 from catalogue_service.settings_local import PRODUCT_IMAGE_PROXY
@@ -64,7 +67,10 @@ def collage(request, look_id=None):
         context = {}
         return render(request, 'shopping_tool/no_look.html', context)
 
-    context = { 'look': look }
+    serializer = LookSerializer(look)
+    json = JSONRenderer().render(serializer.data)
+
+    context = { 'look': look, 'look_json': json }
 
     return render(request, 'shopping_tool/collage.html', context)
 

@@ -8,18 +8,12 @@
 </head>
 <body>
     <!-- look, related layout, and nested list of products belonging to the look -->
-    <div>{{ look }}</div>
-    <div>{{ look.look_layout }}</div>
-    <ul>
-    {% for product in look.look_products.all %}
-        <li>{{ product }}</li>
-    {% endfor %}
-    </ul>
+    <div>{{ look_json | safe }}</div>
 
 <div id="collage">
   {% for block in look.look_layout.layout_json %}
     <div class="display-block" style="height:{{block.height}}px;width:{{block.width}}px;top:{{block.y}}px;left:{{block.x}}px"></div>
-  {% endfor %} 
+  {% endfor %}
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="{% static 'shopping_tool/js/utils.js' %}"></script>
