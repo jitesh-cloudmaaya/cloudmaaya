@@ -267,7 +267,7 @@ class ShoppingToolAPITestCase(APITestCase):
         response_favs = self.client.post(url, favs_filter_data)
         response_data_favs = json.loads(response_favs.content)
 
-        self.assertEqual(len(response_data_favs['looks']), 3)
+        self.assertEqual(len(response_data_favs['looks']), 2)
         self.assertEqual(200, response_favs.status_code)
 
 
