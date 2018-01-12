@@ -7,50 +7,49 @@ import sys
 
 class Migration(migrations.Migration):
 
-    if 'test' in sys.argv:
-        create_table = True
-    else:
-        create_table = False
-
     dependencies = [
         ('shopping_tool', '0018_auto_20171221_1747'),
     ]
 
-    operations = [
-        migrations.CreateModel(
-            name='AllumeLookProducts',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('allume_look_id', models.BigIntegerField()),
-                ('wp_product_id', models.BigIntegerField()),
-                ('sequence', models.IntegerField()),
-                ('date_created', models.DateTimeField()),
-                ('last_modified', models.DateTimeField()),
-                ('product_clipped_stylist_id', models.BigIntegerField()),
-            ],
-            options={
-                'db_table': 'allume_look_products',
-                'managed': create_table,
-            },
-        ),
-        migrations.CreateModel(
-            name='AllumeLooks',
-            fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('token', models.CharField(max_length=50, unique=True)),
-                ('allume_styling_session_id', models.BigIntegerField()),
-                ('wp_client_id', models.BigIntegerField()),
-                ('wp_stylist_id', models.BigIntegerField()),
-                ('name', models.CharField(blank=True, max_length=100, null=True)),
-                ('descrip', models.TextField(blank=True, null=True)),
-                ('collage', models.CharField(blank=True, max_length=200, null=True)),
-                ('status', models.CharField(max_length=9)),
-                ('date_created', models.DateTimeField()),
-                ('last_modified', models.DateTimeField()),
-            ],
-            options={
-                'db_table': 'allume_looks',
-                'managed': create_table,
-            },
-        ),
-    ]
+    if 'test' in sys.argv:
+        operations = [
+            migrations.CreateModel(
+                name='AllumeLookProducts',
+                fields=[
+                    ('id', models.BigAutoField(primary_key=True, serialize=False)),
+                    ('allume_look_id', models.BigIntegerField()),
+                    ('wp_product_id', models.BigIntegerField()),
+                    ('sequence', models.IntegerField()),
+                    ('date_created', models.DateTimeField()),
+                    ('last_modified', models.DateTimeField()),
+                    ('product_clipped_stylist_id', models.BigIntegerField()),
+                ],
+                options={
+                    'db_table': 'allume_look_products',
+                    'managed': False,
+                },
+            ),
+            migrations.CreateModel(
+                name='AllumeLooks',
+                fields=[
+                    ('id', models.BigAutoField(primary_key=True, serialize=False)),
+                    ('token', models.CharField(max_length=50, unique=True)),
+                    ('allume_styling_session_id', models.BigIntegerField()),
+                    ('wp_client_id', models.BigIntegerField()),
+                    ('wp_stylist_id', models.BigIntegerField()),
+                    ('name', models.CharField(blank=True, max_length=100, null=True)),
+                    ('descrip', models.TextField(blank=True, null=True)),
+                    ('collage', models.CharField(blank=True, max_length=200, null=True)),
+                    ('status', models.CharField(max_length=9)),
+                    ('date_created', models.DateTimeField()),
+                    ('last_modified', models.DateTimeField()),
+                ],
+                options={
+                    'db_table': 'allume_looks',
+                    'managed': False,
+                },
+            ),
+        ]
+    else:
+        operations = [
+        ]

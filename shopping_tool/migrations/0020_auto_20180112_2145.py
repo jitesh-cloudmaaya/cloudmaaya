@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-
+import sys
 
 class Migration(migrations.Migration):
 
@@ -11,39 +11,43 @@ class Migration(migrations.Migration):
         ('shopping_tool', '0019_allumelookproducts_allumelooks'),
     ]
 
-    operations = [
-        migrations.AddField(
-            model_name='allumelookproducts',
-            name='cropped_dimensions',
-            field=models.CharField(blank=True, max_length=200, null=True),
-        ),
-        migrations.AddField(
-            model_name='allumelookproducts',
-            name='layout_position',
-            field=models.IntegerField(default=0),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='allumelookproducts',
-            name='raw_product_id',
-            field=models.IntegerField(default=0),
-        ),
-        migrations.AddField(
-            model_name='allumelooks',
-            name='is_legacy',
-            field=models.BooleanField(default=0),
-        ),
-        migrations.AddField(
-            model_name='allumelooks',
-            name='layout_id',
-            field=models.IntegerField(default=0),
-        ),
-        migrations.AddIndex(
-            model_name='allumelooks',
-            index=models.Index(fields=['layout_id'], name='allume_look_layout__eed162_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='allumelookproducts',
-            index=models.Index(fields=['raw_product_id'], name='allume_look_raw_pro_9d6dbb_idx'),
-        ),
-    ]
+    if 'test' in sys.argv:
+        operations = [
+            migrations.AddField(
+                model_name='allumelookproducts',
+                name='cropped_dimensions',
+                field=models.CharField(blank=True, max_length=200, null=True),
+            ),
+            migrations.AddField(
+                model_name='allumelookproducts',
+                name='layout_position',
+                field=models.IntegerField(default=0),
+                preserve_default=False,
+            ),
+            migrations.AddField(
+                model_name='allumelookproducts',
+                name='raw_product_id',
+                field=models.IntegerField(default=0),
+            ),
+            migrations.AddField(
+                model_name='allumelooks',
+                name='is_legacy',
+                field=models.BooleanField(default=0),
+            ),
+            migrations.AddField(
+                model_name='allumelooks',
+                name='layout_id',
+                field=models.IntegerField(default=0),
+            ),
+            migrations.AddIndex(
+                model_name='allumelooks',
+                index=models.Index(fields=['layout_id'], name='allume_look_layout__eed162_idx'),
+            ),
+            migrations.AddIndex(
+                model_name='allumelookproducts',
+                index=models.Index(fields=['raw_product_id'], name='allume_look_raw_pro_9d6dbb_idx'),
+            ),
+        ]
+    else:
+        operations = [
+        ]
