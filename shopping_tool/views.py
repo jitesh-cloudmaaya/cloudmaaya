@@ -103,17 +103,17 @@ def image_proxy(request):
 # without Having Access to The WP Login Application
 ########################################################
 def set_cookie(request):
-    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-stage.allume.co']:
+    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-stage.allume.co', 'shopping-tool-web-stage.allume.co']:
         response_redirect = HttpResponseRedirect('/')
         #response_redirect.set_cookie('user_email', '1a80b36b569b69579b25ad4583b5c841allume.co')
-        response_redirect.set_cookie('user_email', '5bebaefa812e3ca46e70217a994c895fallume.co')
+        response_redirect.set_cookie('user_email', 'aaron@allume.co')
         #response_redirect.set_cookie('user_email', '3ab84d49688d3dd2c947cfce43194d54llume.co')
         return response_redirect
     else:
         raise PermissionDenied
 
 def delete_cookie(request):
-    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-stage.allume.co']:
+    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-stage.allume.co', 'shopping-tool-web-stage.allume.co']:
         response_redirect = HttpResponseRedirect('/')
         response_redirect.delete_cookie('user_email')
         return response_redirect
