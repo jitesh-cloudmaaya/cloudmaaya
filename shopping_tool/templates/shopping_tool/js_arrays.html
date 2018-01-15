@@ -6,10 +6,7 @@ var look_layouts = [
 {% for layout in layouts %}
   { "id": {{ layout.id }},
     "name": "{{layout.display_name}}",
-    "column_widths": "{{layout.column_widths}}",
-    "columns": {{layout.columns}},
-    "rows": {{layout.rows}},
-    "row_heights": "{{layout.row_heights}}"
+    "display": {{layout.layout_json_html | safe }}
   },
 {% endfor %} 
 ];

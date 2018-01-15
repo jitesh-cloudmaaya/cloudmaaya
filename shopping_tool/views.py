@@ -18,6 +18,9 @@ from django.core.exceptions import PermissionDenied
 from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUsers, UserProductFavorite
 from product_api.models import Product, MerchantCategory
 
+from shopping_tool_api.serializers import *
+from rest_framework.renderers import JSONRenderer
+
 import requests
 from PIL import Image
 from catalogue_service.settings_local import PRODUCT_IMAGE_PROXY
@@ -31,7 +34,7 @@ from weather_service.models import Weather
 def index(request, styling_session_id=None):
 
     user = request.user
-    layouts = LookLayout.objects.values()
+    layouts = LookLayout.objects.all()
     
     try:
         styling_session = AllumeStylingSessions.objects.get(id = styling_session_id) 
@@ -55,11 +58,30 @@ def index(request, styling_session_id=None):
     return render(request, 'shopping_tool/index.html', context)
 
 
+
+@check_login
+def collage(request, look_id=None):
+    try:
+        look = Look.objects.get(id = look_id) 
+    except Look.DoesNotExist:
+        context = {}
+        return render(request, 'shopping_tool/no_look.html', context)
+
+    serializer = LookSerializer(look)
+    json = JSONRenderer().render(serializer.data)
+
+    context = { 'look': look, 'look_json': json }
+
+    return render(request, 'shopping_tool/collage.html', context)
+
+
+
+
 @check_login
 def explore(request, styling_session_id=None):
 
     user = request.user
-    layouts = LookLayout.objects.values()
+    layouts = LookLayout.objects.all()
 
     try:
         styling_session = AllumeStylingSessions.objects.get(id = styling_session_id) 

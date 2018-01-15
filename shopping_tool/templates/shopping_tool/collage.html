@@ -1,0 +1,24 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Allume - Shopping Tool Collage Maker</title>
+  {% load static %}
+  <link href="{% static 'shopping_tool/css/collage.css' %}" media="all" rel="stylesheet"/>
+</head>
+<body>
+    <!-- look, related layout, and nested list of products belonging to the look -->
+    <div>{{ look_json | safe }}</div>
+
+<div id="collage">
+  {% for block in look.look_layout.layout_json %}
+    <div class="display-block" style="height:{{block.height}}px;width:{{block.width}}px;top:{{block.y}}px;left:{{block.x}}px"></div>
+  {% endfor %}
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="{% static 'shopping_tool/js/utils.js' %}"></script>
+<script>
+
+</script>
+</body>
+</html>

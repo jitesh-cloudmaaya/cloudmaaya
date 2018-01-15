@@ -24,48 +24,43 @@ var look_builder = {
         for(var i = 0, l = response.looks.length; i<l; i++){
           var comp = response.looks[i];
           if(comp.id != look_id){
-            var look_products_markup = [];
-            var col_width = 100/comp.look_layout.columns ;
-            for(var k = 0; k<comp.look_layout.columns; k++){
-              var col = ['<div class="column" style="width:calc(' + col_width + '% - 2px)">'];
-              var heights = comp.look_layout.row_heights.split(',');
-              for(var j = 0; j<comp.look_layout.rows; j++){
-                var h = heights[j];
-                var position = k > 0 ? ((j + 1) + (k * comp.look_layout.rows)) : j + 1 ;
-                var product_markup = [];
-                /* check if a look product has the same position as the newlay added row */
-                for(var p = 0, prods = comp.look_products.length; p<prods; p++){
-                  var prod = comp.look_products[p];
-                  if(prod.layout_position == position){
-                    var src = prod.product.product_image_url;
-                    if(prod.cropped_dimensions != null){
-                      var crop = {
-                        id: 'complook-' + comp.id + '-item-' + prod.id,
-                        src: look_proxy + '' + src,
-                        dims: prod.cropped_dimensions
-                      }
-                      cropped_images.push(crop);
+            var look_products_markup = ['<div class="compare-look-wrapper"><div class="compare-looks-layout">'];
+            for(var ix = 0, lx = comp.look_layout.layout_json.length; ix<lx; ix++){
+              var block = comp.look_layout.layout_json[ix];
+              var position = block.position;
+              var product_markup = [];
+              for(var p = 0, prods = comp.look_products.length; p<prods; p++){
+                var prod = comp.look_products[p];
+                if(prod.layout_position == position){
+                  var src = prod.product.product_image_url;
+                  if(prod.cropped_dimensions != null){
+                    var crop = {
+                      id: 'complook-' + comp.id + '-item-' + prod.id,
+                      src: look_proxy + '' + src,
+                      dims: prod.cropped_dimensions
                     }
-                    product_markup.push(
-                      '<div class="item"><a href="#" class="item-detail" ' + 
+                    cropped_images.push(crop);
+                  }
+                  product_markup.push(
+                    '<div class="item"><a href="#" class="item-detail" ' + 
                       'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
                       '" data-productid="' + prod.product.id + '"><span id="complook-' + comp.id + '-item-' + prod.id + 
-                      '"><img style="height:' + ((h/100 * 300) - 6) + 'px" src="' + src + '"/></span></a></div>'
-                    );
-                  }
+                      '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></a></div>'
+                  );
                 }
-                col.push(
-                  '<div class="row" style="height:' + ((h/100 * 300) - 6) + 'px">' + 
-                  product_markup.join('') + '</div>'
-                );
               }
-              col.push('</div>');
-              look_products_markup.push(col.join(''));
+              look_products_markup.push(
+                '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
+                'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
+                'px" data-position="' + position + '">' + product_markup.join() + '</div>'
+              );
             }
+            look_products_markup.push('</div></div>');
             markup.push(
               '<div class="comp-look"><h3>' + comp.name + '</h3>' +
               '<span class="layout"><em>layout: </em>' + comp.look_layout.display_name + '</span>' +
-              '<div class="comp-look-display">' + look_products_markup.join('') + '</div></div>'
+              '<div class="comp-look-display">' + look_products_markup.join('') + '</div>' +
+              '<span class="layout desc"><em>description: </em>' + comp.description + '</span></div>'
             );
           }
         }
@@ -214,25 +209,19 @@ var look_builder = {
       render: {
         option: function(item, escape) {
           /* create look option grid display */
-          var col_width = 100/item.columns;
-          var markup = [];
-          for(var i = 0; i<item.columns; i++){
-            var col = ['<div class="column" style="width:' + (col_width - 2) + 'px">'];
-            var heights = item.row_heights.split(',');
-            for(var j = 0; j<item.rows; j++){
-              var h = heights[j];
-              col.push(
-                '<div class="row" style="height:calc(' + h + '% - 6px)"></div>'
-              );
-            }
-            col.push('</div>');
-            markup.push(col.join(''));
+          var markup = ['<div class="grid-display-wrapper"><div class="grid-skew">'];
+          for(var i = 0, l = item.display.length; i<l; i++){
+            var block = item.display[i];
+            markup.push(
+              '<span class="layout-block" style="height:' + (block.height - 2) + 'px;' +
+              'width:' + (block.width - 2) + 'px;top:' + block.y + 'px;left:' + block.x + 
+              'px"></span>'
+            )
           }
+          markup.push('</div></div>');
           return '<div class="layout-option">' +
             '<div class="layout-grid">' + markup.join('')+ '</div>' +
             '<span class="name">' + escape(item.name) + '</span>' +
-            '<span class="columns">columns: ' + escape(item.columns) + '</span>' +
-            '<span class="rows">rows: ' + escape(item.rows) + '</span>' +
             '</div>';
         }
       }
@@ -691,70 +680,57 @@ var look_builder = {
   setUpBuilder: function(id){
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
-      //console.log(result)
       var look_drop = $('#look-drop');
       var cropped_images = [];
-      /* dynamically generate the width of look columns */
-      var available_space = (look_drop.width() * 0.75) - 20;
-      var col_width_margins = result.look_layout.columns * 5;
-      var col_width = (available_space - col_width_margins)/result.look_layout.columns;
       var markup = [];
-      for(var i = 0; i<result.look_layout.columns; i++){
-        var col = ['<div class="column" id="lookdropcol' + i + '" style="width:' + col_width + 'px">'];
-        var heights = result.look_layout.row_heights.split(',');
-        for(var j = 0; j<result.look_layout.rows; j++){
-          var h = heights[j];
-          var position = i > 0 ? ((j + 1) + (i * result.look_layout.rows)) : j + 1 ;
-          var product_markup = [];
-          /* check if a look product has the same position as the newlay added row */
-          for(var p = 0, prods = result.look_products.length; p<prods; p++){
-            var prod = result.look_products[p];
-            if(prod.layout_position == position){
-              var src = prod.product.product_image_url;
-              /* if product has been cropped for the look add crop object */
-              if(prod.cropped_dimensions != null){
-                var crop = {
-                  id: 'lookitem-' + prod.id,
-                  src: look_proxy + '' + src,
-                  dims: prod.cropped_dimensions
-                }
-                cropped_images.push(crop);
+      markup.push('<div id="look-layout-grid">')
+      for(var i = 0, l = result.look_layout.layout_json.length; i<l; i++){
+        var block = result.look_layout.layout_json[i];
+        var position = block.position;
+        var product_markup = [];
+        for(var p = 0, prods = result.look_products.length; p<prods; p++){
+          var prod = result.look_products[p];
+          if(prod.layout_position == position){
+            var src = prod.product.product_image_url;
+            if(prod.cropped_dimensions != null){
+              var crop = {
+                id: 'lookitem-' + prod.id,
+                src: look_proxy + '' + src,
+                dims: prod.cropped_dimensions
               }
-              product_markup.push(
-                '<div class="item" id="lookitem-' + prod.id + 
-                '" data-productid="' + prod.product.id + 
-                '" data-lookitemid="' + prod.id + '">' +
-                '<a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
-                '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
-                '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
-                '" data-crop="' + prod.cropped_dimensions + '"><i class="fa fa-crop"></i></a>' +
-                '<img class="handle" src="' + src + '"/></div>'
-              );
+              cropped_images.push(crop);
             }
+            product_markup.push(
+              '<div class="item" id="lookitem-' + prod.id + 
+              '" data-productid="' + prod.product.id + 
+              '" data-lookitemid="' + prod.id + '">' +
+              '<a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
+              '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
+              '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
+              '" data-crop="' + prod.cropped_dimensions + '"><i class="fa fa-crop"></i></a>' +
+              '<img class="handle" src="' + src + '"/></div>'
+            );
           }
-          col.push(
-            '<div class="row" style="height:calc(' + h + '% - 6px)">' + 
-            product_markup.join('') + '</div>'
-          );
         }
-        col.push('</div>');
-        markup.push(col.join(''));
+        markup.push(
+          '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
+          'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
+          'px" data-position="' + position + '">' + product_markup.join() + '</div>'
+        );
       }
+      markup.push('</div>');
       /* add the created look markup to the ui, including instructions and trash bin */
       look_drop.html(
-        '<div class="instructions"><div id="look-trash"></div>' +
-        'Drag rack items from the left into open spots within the look layout.' +
-        '<br/><br/>Dragging an item into an occupied spot will remove the old item ' +
-        'from that position.<br/><br/>Drag items to trash to remove from the look.<br/><br/>' + 
-        'Compare to other looks for the client to the right.<br/><br/>You can crop a product image ' +
-        'from within the look details view, link below:<br/><br/>' +
+        '<p class="look-drop-info">&bull; Drag rack items from the left into ' +
+        'open spots within the look layout.</p><p class="look-drop-info">&bull; Dragging an item into an ' +
+        'occupied spot will remove the old item from that position.</p><p class="look-drop-info">&bull; ' +
+        'Drag items to trash to remove from the look.</p>' + markup.join('') + 
         '<a href="#" class="look-more-details" data-look="' + id + '">' +
-        '<i class="fa fa-search"></i>look details</a>' + 
-        '</div><div class="drop-zone">' + markup.join('') + '</div>'
+        '<i class="fa fa-search"></i>look details</a><div id="look-trash"></div>'
       );
       if(cropped_images.length > 0){
         for(var i = 0, l = cropped_images.length; i<l; i++){
-          look_builder.getCroppedImage(cropped_images[i], '#look-drop div.drop-zone');
+          look_builder.getCroppedImage(cropped_images[i], '#look-layout-grid');
         }
       }
       /* add the trash functionality - simply accept objects and immediately remove from ui */
@@ -766,9 +742,9 @@ var look_builder = {
         }
       });
       /* add the drag/drop functionality to the newly created drop zones */
-      $.each(look_drop.find('div.column div.row'), function(idx){
-        var box = $(this)[0];
-        new Sortable(box, {
+      $.each(look_drop.find('#look-layout-grid div.layout-block'), function(idx){
+        var box = $(this);
+        new Sortable(box[0], {
           handle: ".handle",
           group: { name: "look", pull: true, put: true },
           sort: false,
@@ -776,18 +752,9 @@ var look_builder = {
           onAdd: function (evt) {
             var el = evt.item;
             var el_id = el.dataset.productid;
-            var list = el.parentNode; 
-            var parent_element = list.parentNode;
-            var position = Array.prototype.indexOf.call(parent_element.children, list) + 1;
-            var box = $(list);
-            var col = box.closest('div.column')
-            var col_idx = col.index();
-            if(col_idx != 0){
-              position += (col_idx * col.find('div.row').length);
-            }
             /* create REST object */
             var obj = {
-              layout_position: position,
+              layout_position: box.data('position'),
               look: id,
               product: parseInt(el_id),
               cropped_dimensions:  null         
@@ -796,13 +763,12 @@ var look_builder = {
             if(dims != null){
               obj.cropped_dimensions = dims;
             }
-            /* create new look item in db */
+            console.log(obj)
             $.ajax({
               contentType : 'application/json',
               data: JSON.stringify(obj),
               success:function(response){
                 var elem = $(el);
-                /* assign item number and add crop link if it needs it */
                 elem.data('lookitemid', response.id)
                 elem.data('isnew', 'yes');
                 elem.siblings('div.item').data('isnew','no')

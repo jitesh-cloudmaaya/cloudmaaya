@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^set_cookie/$', views.set_cookie, name='set_cookie'),
     url(r'^delete_cookie/$', views.delete_cookie, name='delete_cookie'),
     url(r'^image_proxy/$', views.image_proxy, name='image_proxy'),
+    url(r'^collage/(?P<look_id>[0-9]+)/$', views.collage, name='collage'),
 ]

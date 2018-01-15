@@ -417,5 +417,7 @@ def layouts(request):
     get:
         List of available look layouts
     """
-    layouts = LookLayout.objects.values()
-    return Response(layouts) 
+    layouts = LookLayout.objects.all()
+
+    serializer = LookLayoutSerializer(layouts, many=True)
+    return JsonResponse(serializer.data, safe=False)
