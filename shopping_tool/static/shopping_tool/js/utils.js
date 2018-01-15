@@ -39,6 +39,15 @@ var utils = {
     if((bra_size != undefined)&&(typeof bra_size == 'object')){
       bra.html('<em>bra:</em>' + bra_size.band + '' + bra_size.cup);
     }
+    /* correctly display birthday */
+    var bd = $('#client-birthday');
+    var bday = bd.data('bd');
+    if((bday != undefined)&&(typeof bday == 'object')){
+      var proc_bday = moment(bday.month +'/' + bday.day +'/' + bday.year, 'M/D/YYYY');
+      var now = moment();
+      var diff = now.diff(proc_bday, 'years')
+      bd.html('<em>age:</em>' + diff + ' years old &nbsp;&nbsp;(' + proc_bday.format('MMMM Do, YYYY') + ')')
+    }
     /* check to see if the social links are valid, if not hide, if they are valid up the link index count */
     var social = $('#client-social');
     var social_link_index = 0;
