@@ -69,8 +69,8 @@ def collage(request, look_id=None):
 
     serializer = LookSerializer(look)
     json = JSONRenderer().render(serializer.data)
-
-    context = { 'look': look, 'look_json': json }
+    product_image_proxy = PRODUCT_IMAGE_PROXY
+    context = { 'look': look, 'look_json': json, 'product_image_proxy': product_image_proxy }
 
     return render(request, 'shopping_tool/collage.html', context)
 
