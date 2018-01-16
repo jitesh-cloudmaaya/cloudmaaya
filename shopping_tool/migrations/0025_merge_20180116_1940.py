@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shopping_tool', '0021_merge_20180116_1935'),
+        ('shopping_tool', '0021_merge_20180116_1824'),
         ('shopping_tool', '0024_auto_20180116_1925'),
     ]
 
