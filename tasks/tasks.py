@@ -64,4 +64,4 @@ def ran_full_pull_new():
     print("Cleaning files")
     pf.clean_data()
     print("Load data to API products table")
-    pf.load_cleaned_data
+    pf.load_cleaned_data()

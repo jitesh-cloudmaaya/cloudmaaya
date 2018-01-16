@@ -16,7 +16,7 @@ from rest_framework import serializers
 from decorators import check_login
 from django.core.exceptions import PermissionDenied
 from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUsers, UserProductFavorite
-from product_api.models import Product, MerchantCategory
+from product_api.models import Product, MerchantCategory, AllumeCategory
 
 from shopping_tool_api.serializers import *
 from rest_framework.renderers import JSONRenderer
@@ -46,7 +46,7 @@ def index(request, styling_session_id=None):
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
-    categories = MerchantCategory.objects.filter(active = True)
+    categories = AllumeCategory.objects.filter(active = True)
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
@@ -128,7 +128,7 @@ def set_cookie(request):
     if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-stage.allume.co', 'shopping-tool-web-stage.allume.co']:
         response_redirect = HttpResponseRedirect('/')
         #response_redirect.set_cookie('user_email', '1a80b36b569b69579b25ad4583b5c841allume.co')
-        response_redirect.set_cookie('user_email', 'aaron@allume.co')
+        response_redirect.set_cookie('user_email', 'allume-sharonmbell92@aol.com')
         #response_redirect.set_cookie('user_email', '3ab84d49688d3dd2c947cfce43194d54llume.co')
         return response_redirect
     else:

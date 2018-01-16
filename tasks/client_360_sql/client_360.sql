@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS allume_client_360_temp;
+
 CREATE TABLE IF NOT EXISTS allume_client_360_temp (
 ID INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (ID),
 wp_user_id INT, 
@@ -76,7 +78,7 @@ ears_pierced TEXT,
 jewelry_style TEXT,
 jewelry_type TEXT,
 last_updated TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW()
-);
+) ENGINE=INNODB ROW_FORMAT=COMPRESSED;
 
 
 CREATE OR REPLACE VIEW order_list AS
