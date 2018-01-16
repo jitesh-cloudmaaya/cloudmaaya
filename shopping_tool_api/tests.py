@@ -13,7 +13,7 @@ from django.http.cookie import SimpleCookie
 
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'user_look_favorite', 'allume_client_360_test']
+    fixtures = ['wpusers', 'allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite']
     shopper = ''
     client = ''
 
@@ -214,10 +214,10 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(200, response_client.status_code)
 
         #Test Getting Stylist Filtered List
-        stylist_filter_data = {"stylist": 117}
+        stylist_filter_data = {"stylist": 9}
         response_stylist = self.client.post(url, stylist_filter_data)
         response_data_stylist = json.loads(response_stylist.content)
-        self.assertEqual(len(response_data_stylist['looks']), 1)
+        self.assertEqual(len(response_data_stylist['looks']), 3)
         self.assertEqual(200, response_stylist.status_code)
 
         #Test Getting allume_styling_session Filtered List
