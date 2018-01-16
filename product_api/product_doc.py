@@ -83,7 +83,7 @@ class EProductSearch(FacetedSearch):
         ('age', TermsFacet(field='age.keyword', size=100)),
         ('brand', TermsFacet(field='brand.keyword', size=100)),
         ('material', TermsFacet(field='material.keyword')),
-        ('primary_category', TermsFacet(field='primary_category.keyword', size=100)),
+        ('primary_category', TermsFacet(field='allume_category.keyword', size=100)),
         ('allume_score', TermsFacet(field='allume_score')), #HistogramFacet
         ('is_trending', TermsFacet(field='is_trending')),
         ('is_best_seller', TermsFacet(field='is_best_seller')),

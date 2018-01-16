@@ -1,10 +1,10 @@
-from fabric.api import local, run, env, put, abort, run, cd, sudo
+from fabric.api import local, run, env, put, abort, run, cd, sudo, roles, execute
 from fabric.contrib.console import confirm
 import os, time, datetime
 
 
 # remote ssh credentials
-env.hosts = ['shopping-tool-stage.allume.co']
+#env.hosts = ['shopping-tool-stage.allume.co']
 env.path = '/home/ec2-user'
 env.user = 'ec2-user'
 
@@ -43,44 +43,58 @@ env.deploy_current_dir = 'current'
 def qa(docker_tag=''):
   env.user = 'ec2-user'
   env.environment = 'qa'
-  env.hosts = ['ec2-52-8-79-129.us-west-1.compute.amazonaws.com']
+  #env.hosts = ['ec2-52-8-79-129.us-west-1.compute.amazonaws.com']
+
+
+  env.roledefs = {
+      'web': ['ec2-13-56-37-140.us-west-1.compute.amazonaws.com'],
+      'worker': ['ec2-52-8-79-129.us-west-1.compute.amazonaws.com'],
+  }
 
   if docker_tag == '':
     env.docker_tag = 'develop'
   else:
     env.docker_tag = docker_tag
 
-
+@roles(['web', 'worker'])
 def df():
   run('df -h')
 
+@roles(['web', 'worker'])
 def free():
   run('free -m')
 
+@roles(['web', 'worker'])
 def docker_ps():
   run('docker ps')
 
+@roles(['web', 'worker'])
 def docker_images():
   run('docker images')
 
+@roles('web')
 def restart_nginx():
     run('docker restart $(docker ps -a -q --filter name=shopping_tool_nginx)')
 
+@roles('web')
 def restart_web():
     run('docker restart $(docker ps -a -q --filter name=shopping_tool_web)')
 
+@roles('web')
 def restart():
     print('Restarting UWSGI/Web')
     restart_web()
     print('Restarting Nginx')
     restart_nginx()
 
+@roles(['web', 'worker'])
 def clean_up_docker():
     env.warn_only = True#Allows process to proceed if there is no current container
     run('docker rm -v $(docker ps -a -q -f status=exited)')
     image_clean_result = run('docker rmi $(docker images -f "dangling=true" -q)')
     env.warn_only = False
 
+@roles('web')
 def deploy_nginx():
     #Restart Nginx
     run("docker pull raybeam/nginx:latest")
@@ -90,6 +104,7 @@ def deploy_nginx():
 #    run("docker run --restart=on-failure -d -p 80:80 -p 443:443 --name=%s_nginx --link %s_flower:flower --link %s_clio_web:clio_web -v ~/.ssl:/etc/ssl/certs/ --volumes-from %s_clio_web intermix/nginx" % (env.environment, env.environment, env.environment, env.environment))
     run("docker run --restart=on-failure -d -v /etc/nginx:/etc/nginx -v /etc/pki/nginx:/etc/pki/nginx -p 80:80 -p 443:443 --link %s_shopping_tool_web:%s_shopping_tool_web --volumes-from %s_shopping_tool_web --name %s_shopping_tool_nginx raybeam/nginx" % (env.environment, env.environment, env.environment, env.environment))
 
+@roles('web')
 def deploy_web_container():
     #Restart UWSGI - Web Server
     run("docker pull allumestyle/catalogue-service:%s" % (env.docker_tag))  # Add Tag
@@ -100,6 +115,7 @@ def deploy_web_container():
 
     run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v ~/static:/srv/catalogue_service/static -p 8000:8000 --name %s_shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service:%s" % (env.environment, env.docker_tag))
 
+@roles('worker')
 def deploy_celery_container():
 
     #Restart Celery
@@ -117,12 +133,11 @@ def deploy_celery_container():
     run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py --name=%s_shopping_tool_celery_beat --entrypoint=\"/docker-entrypoint-celery-beat.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery_beat.log 2>&1" % (env.environment, env.docker_tag))
     
 
-
+@roles(['web', 'worker'])
 def deploy():
-    deploy_web_container()
-    deploy_celery_container()
-    deploy_nginx()
-    clean_up_docker()
+    execute(deploy_web_container)
+    execute(deploy_celery_container)
+    execute(deploy_nginx)
+    execute(clean_up_docker)
     #deploy_udfs()
-
     print('deploy complete!')

@@ -1,0 +1,55 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Allume - Shopping Tool Collage Maker</title>
+  {% load static %}
+  <link href="{% static 'shopping_tool/css/collage.css' %}" media="all" rel="stylesheet"/>
+</head>
+<body>
+<div id="collage"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="{% static 'shopping_tool/js/utils.js' %}"></script>
+<script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
+<script>
+var look_proxy = '{{ product_image_proxy | safe }}';
+var look = {{ look_json | safe }};
+var collage_markup = [];
+var collage_cropped_images = [];
+for(var i = 0, l = look.look_layout.layout_json.length; i<l; i++){
+  var block = look.look_layout.layout_json[i];
+  var position = block.position;
+  var product_markup = [];
+  for(var p = 0, prods = look.look_products.length; p<prods; p++){
+    var prod = look.look_products[p];
+    if(prod.layout_position == position){
+      var src = prod.product.product_image_url;
+      if(prod.cropped_dimensions != null){
+        var crop = {
+          id: 'complook-' + look.id + '-item-' + prod.id,
+          src: look_proxy + '' + src,
+          dims: prod.cropped_dimensions
+        }
+        collage_cropped_images.push(crop);
+      }
+      product_markup.push(
+        '<div class="item"><span id="complook-' + look.id + '-item-' + prod.id + 
+        '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></div>'
+      );
+    }
+  }
+  collage_markup.push(
+    '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
+    'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
+    'px" data-position="' + position + '">' + product_markup.join() + '</div>'
+  );
+}
+$('#collage').html(collage_markup.join(''));
+if(collage_cropped_images.length > 0){
+  for(var i = 0, l = collage_cropped_images.length; i<l; i++){
+    look_builder.getCroppedImage(collage_cropped_images[i], '#collage');
+  }
+}
+</script>
+</body>
+</html>
