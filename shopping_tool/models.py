@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import json
+import yaml
 import re
 
 from django.db import models
@@ -444,15 +445,20 @@ class AllumeLookProducts(models.Model):
 class LookLayout(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     display_name = models.CharField(max_length=50, blank=True, null=True)
-    rows = models.IntegerField(default=1)
-    columns = models.IntegerField(default=1)
-    row_heights = models.CharField(max_length=50, blank=True, null=True)
-    column_widths = models.CharField(max_length=50, blank=True, null=True)          
+    _layout_json = models.TextField(blank=True, null=True, db_column="layout_json")
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
         return self.name
+
+    @property
+    def layout_json(self):
+        return json.loads(self._layout_json)
+
+    @property
+    def layout_json_html(self):
+        return json.dumps(json.loads(self._layout_json))
 
 
 class Look(models.Model):
@@ -462,7 +468,7 @@ class Look(models.Model):
     look_layout = models.ForeignKey(LookLayout)
     look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
-    status = models.CharField(max_length=11, default='Active')
+    status = models.CharField(max_length=11, default='Draft')
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 

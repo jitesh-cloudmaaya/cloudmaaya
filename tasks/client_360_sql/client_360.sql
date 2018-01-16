@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS allume_client_360_temp;
+
 CREATE TABLE IF NOT EXISTS allume_client_360_temp (
 ID INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (ID),
 wp_user_id INT, 
@@ -76,7 +78,7 @@ ears_pierced TEXT,
 jewelry_style TEXT,
 jewelry_type TEXT,
 last_updated TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW()
-);
+) ENGINE=INNODB ROW_FORMAT=COMPRESSED;
 
 
 CREATE OR REPLACE VIEW order_list AS
@@ -374,10 +376,7 @@ user_id) social_actions
 ON wu.ID = social_actions.user_id;
 
 
-DROP TABLE IF EXISTS allume_client_360_old;
-
-
-RENAME TABLE allume_client_360 TO allume_client_360_old;
+DROP TABLE IF EXISTS allume_client_360;
 
 
 RENAME TABLE allume_client_360_temp TO allume_client_360;

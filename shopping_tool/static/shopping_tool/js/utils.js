@@ -21,7 +21,7 @@ var utils = {
     });
   },
   /**
-  * @descriptionclient details functionality
+  * @description client details and presentation checks
   */  
   client: function(){
     $('#user-clip').delay(750)
@@ -33,6 +33,34 @@ var utils = {
       e.preventDefault();
       $('#user-card').toggleClass('show')
     });
+    /* correctly display bra size */
+    var bra = $('#bra-size');
+    var bra_size = bra.data('sizes');
+    if((bra_size != undefined)&&(typeof bra_size == 'object')){
+      bra.html('<em>bra:</em>' + bra_size.band + '' + bra_size.cup);
+    }
+    /* correctly display birthday */
+    var bd = $('#client-birthday');
+    var bday = bd.data('bd');
+    if((bday != undefined)&&(typeof bday == 'object')){
+      var proc_bday = moment(bday.month +'/' + bday.day +'/' + bday.year, 'M/D/YYYY');
+      var now = moment();
+      var diff = now.diff(proc_bday, 'years')
+      bd.html('<em>age:</em>' + diff + ' years old &nbsp;&nbsp;(' + proc_bday.format('MMMM Do, YYYY') + ')')
+    }
+    /* check to see if the social links are valid, if not hide, if they are valid up the link index count */
+    var social = $('#client-social');
+    var social_link_index = 0;
+    $.each(social.find('a'), function(idx){
+      var link = $(this);
+      if(link.attr('href') == 'None'){
+        link.hide();
+      }else{
+        social_link_index++;
+      }
+    });
+    /* if link idex is 0, no social links are valid thus hide the whole social div */
+    if(social_link_index == 0){ social.hide(); }
   },
   /**
   * @description make a groups of DOM objects all the same height
