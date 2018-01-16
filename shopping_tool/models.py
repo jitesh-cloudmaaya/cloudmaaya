@@ -400,6 +400,46 @@ class Rack(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+class AllumeLooks(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    token = models.CharField(unique=True, max_length=50)
+    allume_styling_session_id = models.BigIntegerField()
+    wp_client_id = models.BigIntegerField()
+    wp_stylist_id = models.BigIntegerField()
+    name = models.CharField(max_length=100, blank=True, null=True)
+    descrip = models.TextField(blank=True, null=True)
+    collage = models.CharField(max_length=200, blank=True, null=True)
+    status = models.CharField(max_length=9)
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+    is_legacy = models.IntegerField()
+    layout_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_looks'
+        indexes = [
+            models.Index(fields=['layout_id'])
+        ]
+
+class AllumeLookProducts(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    allume_look_id = models.BigIntegerField()
+    wp_product_id = models.BigIntegerField()
+    sequence = models.IntegerField()
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+    product_clipped_stylist_id = models.BigIntegerField()
+    cropped_dimensions = models.CharField(max_length=200, blank=True, null=True)
+    layout_position = models.IntegerField()
+    raw_product_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_look_products'
+        indexes = [
+            models.Index(fields=['raw_product_id'])
+        ]
 
 class LookLayout(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)

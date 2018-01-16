@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ],
                 options={
                     'db_table': 'allume_look_products',
-                    'managed': False,
+                    'managed': True,
                 },
             ),
             migrations.CreateModel(
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                 ],
                 options={
                     'db_table': 'allume_looks',
-                    'managed': False,
+                    'managed': True,
                 },
             ),
         ]
