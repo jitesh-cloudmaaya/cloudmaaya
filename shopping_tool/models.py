@@ -7,6 +7,8 @@ import re
 
 from django.db import models
 from product_api.models import Product
+import uuid
+
 
 # Create your models here.
 class StylistManager(models.Manager):
@@ -423,6 +425,8 @@ class AllumeLooks(models.Model):
             models.Index(fields=['layout_id'])
         ]
 
+
+
 class AllumeLookProducts(models.Model):
     id = models.BigAutoField(primary_key=True)
     allume_look_id = models.BigIntegerField()
@@ -460,7 +464,32 @@ class LookLayout(models.Model):
     def layout_json_html(self):
         return json.dumps(json.loads(self._layout_json))
 
+class Look(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    token = models.CharField(unique=True, max_length=50, default=uuid.uuid4)
+    allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
+    wp_client_id = models.BigIntegerField(blank=True, null=True, default =1 )
+    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000, blank=True, null=True, db_column='descrip')
+    collage = models.CharField(max_length=200, blank=True, null=True, db_column='collage')
+    status = models.CharField(max_length=11, default='Draft')
+    created_at = models.DateTimeField(auto_now_add=True, null=True, db_column='date_created')
+    updated_at = models.DateTimeField(auto_now=True, null=True, db_column='last_modified')
+    is_legacy = models.IntegerField(blank=True, null=True, default = 0)
+    look_layout = models.ForeignKey(LookLayout, db_column='layout_id')
+    look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
 
+    class Meta:
+        ordering = ['-updated_at']
+        managed = False
+        db_table = 'allume_looks'
+        
+    def __str__(self):
+        return self.name
+
+
+"""
 class Look(models.Model):
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=100)
@@ -477,6 +506,24 @@ class Look(models.Model):
         
     def __str__(self):
         return self.name
+
+mysql> describe allume_looks;
++---------------------------+---------------------------+------+-----+---------+-----------------------------+
+| Field                     | Type                      | Null | Key | Default | Extra                       |
++---------------------------+---------------------------+------+-----+---------+-----------------------------+
+| id                        | bigint(20) unsigned       | NO   | PRI | NULL    | auto_increment              |
+| token                     | varchar(50)               | NO   | UNI |         |                             |
+| allume_styling_session_id | bigint(20)                | NO   | MUL | NULL    |                             |
+| wp_client_id              | bigint(20)                | NO   | MUL | NULL    |                             |
+| wp_stylist_id             | bigint(20)                | NO   |     | NULL    |                             |
+| name                      | varchar(100)              | YES  |     | NULL    |                             |
+| descrip                   | text                      | YES  |     | NULL    |                             |
+| collage                   | varchar(200)              | YES  |     | NULL    |                             |
+| status                    | enum('draft','published') | NO   |     | draft   |                             |
+| date_created              | datetime                  | NO   |     | NULL    |                             |
+| last_modified             | datetime                  | NO   |     | NULL    | on update CURRENT_TIMESTAMP |
++---------------------------+---------------------------+------+-----+---------+-----------------------------+
+"""
 
 class LookProduct(models.Model):
     look = models.ForeignKey(Look, related_name='product_set')
