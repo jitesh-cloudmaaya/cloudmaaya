@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import sys
+from catalogue_service.settings import DEBUG
 
 class Migration(migrations.Migration):
 
@@ -11,7 +12,7 @@ class Migration(migrations.Migration):
         ('shopping_tool', '0019_allumelookproducts_allumelooks'),
     ]
 
-    if 'test' in sys.argv:
+    if 'test' in sys.argv or DEBUG:
         operations = [
             migrations.AddField(
                 model_name='allumelookproducts',
