@@ -324,8 +324,23 @@ def look_list(request):
 
     if 'favorites_only' in request.data:
         if request.data['favorites_only'] == "True":
+            print '==================================== BEGIN ========================================='
+
+            print 'these are all the user look favorites: '
+            print UserLookFavorite.objects.count()
+            # print UserLookFavorite.objects.all()
+
             favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('look_id', flat=True)
+
+            print 'these are the favs:'
+            print favs 
+
             looks = looks.filter(id__in = favs)
+
+            print 'these are the looks'
+            print looks
+
+            print '==================================== END ========================================='
 
     paginator = Paginator(looks, per_page)
 
