@@ -459,6 +459,3 @@ class UserLookFavorite(models.Model):
     look = models.ForeignKey(Look)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
-    
-    def __str__(self):
-        return "(" + str(self.stylist) + ", " + str(self.look) + ")"
