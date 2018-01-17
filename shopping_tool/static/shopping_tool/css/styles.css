@@ -1369,30 +1369,37 @@ div.layout-option span.name {
   text-align:center;
   text-shadow:0 1px #fff;  
 }
-#compare-looks div.comp-look {
+#compare-looks div.comp-look, 
+#looks-list div.rack-look {
   background:#fff;
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   border-radius:3px;
   margin:10px 15px;
   padding:10px 5px;
 }
-#compare-looks div.comp-look h3 {
+#looks-list div.rack-look {margin-bottom:20px;}
+#compare-looks div.comp-look h3,
+#looks-list div.rack-look h3 {
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;
   margin:-10px -5px 0;
   padding:10px;
 }
-#compare-looks div.comp-look span.layout {
+#compare-looks div.comp-look span.layout,
+#looks-list div.rack-look span.layout {
   color:#777;
   display:block;
   font-size:12px;
   font-weight:100;
   padding:10px 5px;
 }
-#compare-looks div.comp-look span.layout.desc {white-space: pre-wrap;}
-#compare-looks div.comp-look span.layout em {font-weight:400;}
-#compare-looks div.comp-look span.layout.desc em {display:block;}
+#compare-looks div.comp-look span.layout.desc,
+#looks-list div.rack-look span.layout.desc {white-space: pre-wrap;}
+#compare-looks div.comp-look span.layout em ,
+#looks-list div.rack-look span.layout em{font-weight:400;}
+#compare-looks div.comp-look span.layout.desc em,
+#looks-list div.rack-look span.layout.desc em {display:block;}
 /*#compare-looks div.comp-look div.item {
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   margin:5px;
@@ -1483,7 +1490,8 @@ div.layout-option span.name {
   transition: border 0.3s ease-in-out;   
 }
 #rack-tabs a.tab.on {border-color:#ed8365;}
-#add-look-btn {
+#add-look-btn,
+div.rack-look a.look-link {
   background:#f2987e;
   border-radius:5px;
   color:#fff;
@@ -1498,8 +1506,11 @@ div.layout-option span.name {
   text-decoration:none;
   z-index:4;
 }
-#add-look-btn:hover {background:#ed8365;}
-#add-look-btn:active{  
+div.rack-look a.look-link {margin:0 7px 0 0;}
+#add-look-btn:hover,
+div.rack-look a.look-link:hover {background:#ed8365;}
+#add-look-btn:active,
+div.rack-look a.look-link:active{  
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
   color:#474747;
@@ -2102,13 +2113,16 @@ p#look-desc {
   position:relative;
   width:760px;
 }
-#compare-looks div.comp-look div.compare-look-wrapper {
+#compare-looks div.comp-look div.compare-look-wrapper,
+#looks-list div.rack-look div.rack-look-wrapper {
   height:150px;
   overflow:hidden;
   margin-left:6px;
   width:272px;
 }
-#compare-looks div.comp-look div.compare-looks-layout {
+#looks-list div.rack-look div.rack-look-wrapper {height:275px; width:502px;}
+#compare-looks div.comp-look div.compare-looks-layout,
+#looks-list div.rack-look div.rack-looks-layout {
   background:#eee;
   height:415px;
   position:relative;
@@ -2118,6 +2132,7 @@ p#look-desc {
   margin-left:-246px;
   width:760px;  
 }
+#looks-list div.rack-look div.rack-looks-layout {  transform:scale(0.66); margin-left:-129px;margin-top:-70px;}
 #all-looks-list div.look div.display div.explore-look-wrapper {
   height:235px;
   margin:5px 0 10px;
@@ -2141,6 +2156,7 @@ p#look-desc {
   overflow:hidden;
 }
 #compare-looks div.comp-look div.compare-looks-layout div.layout-block,
+#looks-list div.rack-look div.rack-looks-layout div.layout-block,
 #all-looks-list div.look div.display div.explore-look-layout div.layout-block {
   background:#fff;
   margin:2px;
@@ -2158,7 +2174,8 @@ p#look-desc {
 
 #look-drop div.drop-zone { float:left; height:100%; width:calc(75% - 20px); }
 #look-layout-grid div.layout-block div.item,
-#compare-looks div.comp-look div.compare-looks-layout div.layout-block div.item { height:100%; position:relative; width:100%; }
+#compare-looks div.comp-look div.compare-looks-layout div.layout-block div.item,
+#looks-list div.rack-look div.rack-looks-layout div.layout-block div.item { height:100%; position:relative; width:100%; }
 #look-layout-grid div.layout-block div.item span.fave {display:none;}
 #look-layout-grid div.layout-block div.item img {
   cursor: move;
@@ -2171,13 +2188,15 @@ p#look-desc {
   overflow:hidden; 
   max-width:100%;
 }
-#compare-looks div.comp-look div.item a.item-details {
+#compare-looks div.comp-look div.item a.item-details,
+#looks-list div.rack-look div.item a.item-details {
   display:block;
   height:100%;
   text-decoration: none;
   width:100%;
 }
-#compare-looks div.comp-look div.compare-looks-layout div.layout-block div.item img {
+#compare-looks div.comp-look div.compare-looks-layout div.layout-block div.item img,
+#looks-list div.rack-look div.rack-looks-layout div.layout-block div.item img {
   display:block; 
   height:100%; 
   margin: 0 auto; 

@@ -98,12 +98,14 @@ def explore(request, styling_session_id=None):
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     stylists = WpUsers.objects.stylists()
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
-    favorite_looks = UserProductFavorite.objects.filter(stylist = user.id)
+    favorite_looks = UserLookFavorite.objects.filter(stylist = user.id)
+    serializer = UserLookFavoriteDetailSerializer(favorite_looks, many=True)
+    json = JSONRenderer().render(serializer.data)
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
     context = {'favorites': favorites, 'user': user, 'stylists': stylists, 
                'styling_session': styling_session, 'rack_items': rack_items, 
-               'client': client, 'layouts': layouts, 'looks': looks,
+               'client': client, 'layouts': layouts, 'looks': looks, 'favorite_looks': json,
                'product_image_proxy': product_image_proxy, 'weather_info': weather_info}
 
     return render(request, 'shopping_tool/explore.html', context)

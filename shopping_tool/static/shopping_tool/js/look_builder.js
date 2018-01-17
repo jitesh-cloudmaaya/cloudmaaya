@@ -171,7 +171,6 @@ var look_builder = {
       var data = link.data();
       look_builder.setUpBuilder(data.lookid);
       setTimeout(function(){
-        $('#look-list').removeClass('show');
         $('#rack').removeClass('show');
       },1000);
       $('#designing').html(
@@ -233,6 +232,7 @@ var look_builder = {
     $('#cancel-edit-look').click(function(e){
       e.preventDefault()
       $('#edit-look').fadeOut();
+      rack_builder.getRackLooks();
     });    
     $('#create-new-look').click(function(e){
       $('#new-look-error').html('');
@@ -263,7 +263,7 @@ var look_builder = {
           contentType : 'application/json',
           data: JSON.stringify(look_obj),
           success:function(response){
-            look_builder.newLookLink(response);
+            rack_builder.getRackLooks();
             $('#create-look').fadeOut();
           },
           type: 'PUT',
@@ -402,6 +402,28 @@ var look_builder = {
         look_builder.orderedRack();
       }
     });
+    $('#looks-list').on('click', 'a.item-detail', function(e){
+      e.preventDefault();
+      var link = $(this);
+      rack_builder.inspectItem(link, 'compare');
+    }).on('click', 'a.look-link', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var data = link.data();
+      look_builder.setUpBuilder(data.lookid);
+      setTimeout(function(){
+        $('#rack').removeClass('show');
+      },1000);
+      $('#designing').html(
+        data.lookname + '<a href="#" class="edit-look" data-lookname="' + data.lookname + 
+        '" data-lookid="' + data.lookid + '" data-lookdesc="' + data.lookdesc + 
+        '" data-looklayoutid="' + data.looklayoutid + '"><i class="fa fa-pencil"></i> edit</a>'
+      ).after(
+        '<p id="look-desc">' + data.lookdesc + '</p>'
+      );
+      $('#design-look').attr('class','').addClass('show');
+    });
+
     $('#look-drop').on('click','a.look-more-details', function(e){
       e.preventDefault();
       var link = $(this);
@@ -625,33 +647,6 @@ var look_builder = {
     var img_data = tnCanvas.toDataURL();
     $('canvas').remove();
     return img_data
-  },
-  /**
-  * @description build new look link for drawer in rack
-  * @param {object} data - the newly created look object
-  */
-  newLookLink: function(data){
-    var layout_name = ''
-    for(var i = 0, l = look_layouts.length; i<l; i++){
-      var layout = look_layouts[i];
-      if(layout.id == data.look_layout){
-        layout_name = layout.name;
-        break;
-      }
-    }
-    var links = $('#look-links');
-    links.append(
-      '<a href="#" class="look-link" data-lookid="' + data.id + 
-      '" data-lookname="' + data.name + '" data-lookdesc="' + data.description + 
-      '" data-looklayoutid="' + data.look_layout + '">' +
-      '<table><tr><td class="icon"><i class="fa fa-shopping-bag"></i></td>' +
-      '<td><span class="name">' + data.name + '</span>' +
-      '<span class="layout"><em>layout:</em> ' + layout_name + 
-      '</span></td></tr></table></a>' 
-    );
-    var look_count = links.find('a.look-link').length;
-    var plural = look_count == 1 ? '' : 's';
-    $('#look-list h2').html(look_count + ' Look' + plural);
   },
   /**
   * @description the ordered look and feel for look builder rack

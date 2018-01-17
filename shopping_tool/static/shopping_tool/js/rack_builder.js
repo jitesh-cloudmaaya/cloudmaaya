@@ -182,6 +182,81 @@ var rack_builder = {
     return itm;
   },
   /**
+  * @description build out the rack looks panel
+  */
+  getRackLooks: function(){
+    $.ajax({
+      contentType : 'application/json',
+      data: JSON.stringify({
+        "client": parseInt($('#user-clip').data('userid')),
+        "allume_styling_session": rack_builder.session_id,
+        "stylist": parseInt($('#stylist').data('stylistid')),
+        "page": 1
+      }),
+      success:function(response){
+        console.log(response)
+        var markup = [];
+        var cropped_images = [];
+        for(var i = 0, l = response.looks.length; i<l; i++){
+          var comp = response.looks[i];
+          var look_products_markup = ['<div class="rack-look-wrapper"><div class="rack-looks-layout">'];
+          for(var ix = 0, lx = comp.look_layout.layout_json.length; ix<lx; ix++){
+            var block = comp.look_layout.layout_json[ix];
+            var position = block.position;
+            var product_markup = [];
+            for(var p = 0, prods = comp.look_products.length; p<prods; p++){
+              var prod = comp.look_products[p];
+              if(prod.layout_position == position){
+                var src = prod.product.product_image_url;
+                if(prod.cropped_dimensions != null){
+                  var crop = {
+                    id: 'racklook-' + comp.id + '-item-' + prod.id,
+                    src: look_proxy + '' + src,
+                    dims: prod.cropped_dimensions
+                  }
+                  cropped_images.push(crop);
+                }
+                product_markup.push(
+                  '<div class="item"><a href="#" class="item-detail" ' + 
+                    'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
+                    '" data-productid="' + prod.product.id + '"><span id="racklook-' + comp.id + '-item-' + prod.id + 
+                    '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></a></div>'
+                );
+              }
+            }
+            look_products_markup.push(
+              '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
+              'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
+              'px" data-position="' + position + '">' + product_markup.join() + '</div>'
+            );
+          }
+          look_products_markup.push('</div></div>');
+          markup.push(
+            '<div class="rack-look"><a href="#" class="look-link" data-lookid="' + comp.id + '" data-lookname="' +
+            comp.name + '" data-lookdesc="' + comp.description + '" data-looklayoutid="' + comp.look_layout.id + 
+            '">edit look</a><h3>' + comp.name + '</h3><span class="layout"><em>layout: </em>' + 
+            comp.look_layout.display_name + '</span><div class="rack-look-display">' + 
+            look_products_markup.join('') + '</div><span class="layout desc"><em>description: </em>' + 
+            comp.description + '</span></div>'
+          );
+        }
+        if(markup.length == 0){ 
+          $('#looks-list').html('<span>no looks</span>')
+        }else if(markup.length > 0){
+          $('#looks-list').html(markup.join(''));
+          /* afix cropped images if present */
+          if(cropped_images.length > 0){
+            for(var i = 0, l = cropped_images.length; i<l; i++){
+              look_builder.getCroppedImage(cropped_images[i], '#looks-list');
+            }
+          }
+        }
+      },
+      type: 'POST',
+      url: '/shopping_tool_api/look_list/'
+    });
+  },
+  /**
   * @description init function of rack builder, created functionality and markup
   */
   init: function(){
@@ -279,29 +354,17 @@ var rack_builder = {
     $('#rack-toggle').click(function(e){
       e.preventDefault();
       $('#rack').toggleClass('show');
-      $('#look-list').toggleClass('show');
     });
     $('#close-rack').click(function(e){
       e.preventDefault();
-      $('#look-list').removeClass('show');
-      $('#rack').delay(400)
-      .queue(function (next) { 
-        $(this).removeClass('show');
-        next(); 
-      });
+      $('#rack').removeClass('show');
     });
     Mousetrap.bind('shift+z+x', function(e) {
       var rack = $('#rack');
       if(rack.hasClass('show')){
-        $('#look-list').removeClass('show');
-        rack.delay(400)
-        .queue(function (next) { 
-          $(this).removeClass('show');
-          next(); 
-        });
+        rack.removeClass('show');
       }else{
         rack.addClass('show');
-        $('#look-list').addClass('show');
       }
       return false;
     });
@@ -401,33 +464,7 @@ var rack_builder = {
       rack_builder.addToRack(link, 'inspect', from_compare);
     });
     /* get all looks */
-    $.ajax({
-      contentType : 'application/json',
-      data: JSON.stringify({
-        "client": parseInt($('#user-clip').data('userid')),
-        "allume_styling_session": rack_builder.session_id,
-        "stylist": parseInt($('#stylist').data('stylistid')),
-        "page": 1
-      }),
-      success:function(response){
-        console.log(response)
-        var markup = [];
-        var cropped_images = [];
-      },
-      type: 'POST',
-      url: '/shopping_tool_api/look_list/'
-    });
-
-
-
-
-
-
-
-
-
-
-
+    rack_builder.getRackLooks();
   },
   /**
   * @description inpect item functionality allows for clicking favorites or look items to view fuller details 

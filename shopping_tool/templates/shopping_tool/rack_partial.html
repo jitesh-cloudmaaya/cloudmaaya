@@ -18,23 +18,4 @@
   <div id="favorites-list" class="rack-section"></div>
   <div id="looks-list" class="rack-section"></div>
 </div>
-<div id="look-list">
-  <h2>{{ looks|length }} Look{{ looks|length|pluralize }}</h2>
-  <div id="look-links">
-    {% for look in looks %}
-      <a href="#" class="look-link" data-lookid="{{ look.id }}" 
-        data-lookname="{{ look.name }}" data-lookdesc="{{ look.description }}" data-looklayoutid="{{ look.look_layout.id }}">
-        <table>
-          <tr>
-            <td class="icon"><i class="fa fa-shopping-bag"></i></td>
-            <td>
-              <span class="name">{{ look.name }}</span>
-              <span class="layout"><em>layout:</em> {{ look.look_layout.name }}</span>
-            </td>
-          </tr>
-        </table>
-      </a> 
-    {% endfor %}
-  </div>
-</div>
 <div id="inspect-item"></div>
