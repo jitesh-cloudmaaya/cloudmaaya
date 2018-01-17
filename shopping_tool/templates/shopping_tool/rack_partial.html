@@ -2,19 +2,21 @@
 <div id="rack">
   <a href="#" id="close-rack"><i class="fa fa-times"></i></a>
   <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
-  <div id="rack-list">
+  <div id="rack-tabs">
+    <a href="#" id="add-look-btn">create look</a>
+    <a href="#rack-list" class="tab on">Products</a>
+    <a href="#favorites-list" class="tab">Favorites</a>
+    <a href="#looks-list" class="tab">Looks</a>
+  </div>
+  <div id="rack-list" class="rack-section show">
     {% for item in rack_items %}
 
     {% empty %}
       <div class="empty">Add items to your rack...</div>
     {% endfor %}
   </div>
-  <div id="favorites-list"></div>
-  <div id="rack-btns">
-    <span id="rack-number">{{ rack_items|length }} item{{ rack_items|length|pluralize }}</span>
-    <a href="#" id="add-look-btn">add look</a>
-    <a href="#" id="favorites-toggle">show my favorites</a>
-  </div>
+  <div id="favorites-list" class="rack-section"></div>
+  <div id="looks-list" class="rack-section"></div>
 </div>
 <div id="look-list">
   <h2>{{ looks|length }} Look{{ looks|length|pluralize }}</h2>

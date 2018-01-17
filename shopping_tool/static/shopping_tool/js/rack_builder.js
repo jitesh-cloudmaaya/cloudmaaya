@@ -195,7 +195,11 @@ var rack_builder = {
       return 0;
     });
     if(initial_rack.length > 0){
-      rack_list.append('<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>')
+      var plural = initial_rack.length == 1 ? 'item' : 'items' ;
+      rack_list.append(
+        '<span id="rack-number">' + initial_rack.length + ' ' + plural + '</span>' +
+        '<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>'
+      )
     }
     for(var i = 0, l = initial_rack.length; i<l; i++){
       var obj = initial_rack[i];
@@ -223,16 +227,17 @@ var rack_builder = {
       var itm = rack_builder.favoriteTemplate(obj);
       fave_list.append(itm);
     }    
-    $('#favorites-toggle').click(function(e){
+
+    $('#rack-tabs a.tab').click(function(e){
       e.preventDefault();
       var link = $(this);
-      if(link.hasClass('open')){
-        link.removeClass('open').html('show my favorites')
-      }else{
-        link.addClass('open').html('hide my favorites')
+      var div = $(link.attr('href'));
+      if(link.hasClass('on') == false){
+        link.addClass('on').siblings('a').removeClass('on');
+        div.addClass('show').siblings('div.rack-section').removeClass('show')
       }
-      fave_list.toggleClass('show');
     });
+
     fave_list.on('click', 'a', function(e){
       e.preventDefault();
       var target = $(e.target);
@@ -395,6 +400,34 @@ var rack_builder = {
       var from_compare = link.hasClass('compare') ? true : false;
       rack_builder.addToRack(link, 'inspect', from_compare);
     });
+    /* get all looks */
+    $.ajax({
+      contentType : 'application/json',
+      data: JSON.stringify({
+        "client": parseInt($('#user-clip').data('userid')),
+        "allume_styling_session": rack_builder.session_id,
+        "stylist": parseInt($('#stylist').data('stylistid')),
+        "page": 1
+      }),
+      success:function(response){
+        console.log(response)
+        var markup = [];
+        var cropped_images = [];
+      },
+      type: 'POST',
+      url: '/shopping_tool_api/look_list/'
+    });
+
+
+
+
+
+
+
+
+
+
+
   },
   /**
   * @description inpect item functionality allows for clicking favorites or look items to view fuller details 

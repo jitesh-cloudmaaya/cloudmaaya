@@ -48,12 +48,15 @@ def index(request, styling_session_id=None):
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     categories = MerchantCategory.objects.filter(active = True)
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    favorite_looks = UserLookFavorite.objects.filter(stylist = user.id)
+    serializer = UserLookFavoriteSerializer(favorite_looks, many=True)
+    json = JSONRenderer().render(serializer.data)
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
-               'looks': looks, 'weather_info': weather_info}
+               'looks': looks, 'weather_info': weather_info, 'favorite_looks': json}
                
     return render(request, 'shopping_tool/index.html', context)
 
@@ -95,6 +98,7 @@ def explore(request, styling_session_id=None):
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     stylists = WpUsers.objects.stylists()
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    favorite_looks = UserProductFavorite.objects.filter(stylist = user.id)
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
     context = {'favorites': favorites, 'user': user, 'stylists': stylists, 
