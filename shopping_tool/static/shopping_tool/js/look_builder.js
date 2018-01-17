@@ -232,7 +232,6 @@ var look_builder = {
     $('#cancel-edit-look').click(function(e){
       e.preventDefault()
       $('#edit-look').fadeOut();
-      rack_builder.getRackLooks();
     });    
     $('#create-new-look').click(function(e){
       $('#new-look-error').html('');
@@ -263,7 +262,7 @@ var look_builder = {
           contentType : 'application/json',
           data: JSON.stringify(look_obj),
           success:function(response){
-            rack_builder.getRackLooks();
+            rack_builder.getRackLooks('regular', '#looks-list');
             $('#create-look').fadeOut();
           },
           type: 'PUT',
@@ -342,6 +341,7 @@ var look_builder = {
       $('#new-look-layout')[0].selectize.setValue('',true);  
       $('#new-look-description').val('');    
       $('#create-look').fadeToggle();
+      rack_builder.getRackLooks('regular', '#looks-list');
       return false;
     });       
     $('#close-design-look').click(function(e){
@@ -350,6 +350,7 @@ var look_builder = {
       $('#rack-draggable').html('');
       $('#look-drop').html('');
       $('#compare-looks').html('');
+      rack_builder.getRackLooks('regular', '#looks-list');
     });
     $('#rack-draggable').on('click','a.close-all-rack-sections', function(e){
       e.preventDefault();
@@ -402,6 +403,11 @@ var look_builder = {
         look_builder.orderedRack();
       }
     });
+    $('#fave-looks').on('click', 'a.item-detail', function(e){
+      e.preventDefault();
+      var link = $(this);
+      rack_builder.inspectItem(link, 'compare');
+    })
     $('#looks-list').on('click', 'a.item-detail', function(e){
       e.preventDefault();
       var link = $(this);

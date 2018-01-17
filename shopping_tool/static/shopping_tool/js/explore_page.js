@@ -64,6 +64,7 @@ var explore_page = {
           success:function(response){
             //console.log(response);
             link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+            rack_builder.getRackLooks('favorites', '#fave-looks');
           },
           type: 'DELETE',
           url: '/shopping_tool_api/user_look_favorite/' + fave + '/'
@@ -84,6 +85,7 @@ var explore_page = {
             explore_page.favorite_looks.push(response);
             explore_page.favorite_look_ids.push(response.look);
             link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+            rack_builder.getRackLooks('favorites', '#fave-looks');
           },
           type: 'PUT',
           url: '/shopping_tool_api/user_look_favorite/0/'
@@ -145,6 +147,7 @@ var explore_page = {
     */
     function getLooks(lookup){
       $('#looks-header').html('');
+      console.log(lookup)
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(lookup),

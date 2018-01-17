@@ -48,15 +48,12 @@ def index(request, styling_session_id=None):
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     categories = MerchantCategory.objects.filter(active = True)
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
-    favorite_looks = UserLookFavorite.objects.filter(stylist = user.id)
-    serializer = UserLookFavoriteDetailSerializer(favorite_looks, many=True)
-    json = JSONRenderer().render(serializer.data)
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
-               'looks': looks, 'weather_info': weather_info, 'favorite_looks': json}
+               'looks': looks, 'weather_info': weather_info}
                
     return render(request, 'shopping_tool/index.html', context)
 
@@ -98,14 +95,11 @@ def explore(request, styling_session_id=None):
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     stylists = WpUsers.objects.stylists()
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
-    favorite_looks = UserLookFavorite.objects.filter(stylist = user.id)
-    serializer = UserLookFavoriteDetailSerializer(favorite_looks, many=True)
-    json = JSONRenderer().render(serializer.data)
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
     context = {'favorites': favorites, 'user': user, 'stylists': stylists, 
                'styling_session': styling_session, 'rack_items': rack_items, 
-               'client': client, 'layouts': layouts, 'looks': looks, 'favorite_looks': json,
+               'client': client, 'layouts': layouts, 'looks': looks,
                'product_image_proxy': product_image_proxy, 'weather_info': weather_info}
 
     return render(request, 'shopping_tool/explore.html', context)
@@ -134,7 +128,7 @@ def set_cookie(request):
     if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-stage.allume.co', 'shopping-tool-web-stage.allume.co']:
         response_redirect = HttpResponseRedirect('/')
         #response_redirect.set_cookie('user_email', '1a80b36b569b69579b25ad4583b5c841allume.co')
-        response_redirect.set_cookie('user_email', 'aaron@allume.co')
+        response_redirect.set_cookie('user_email', 'cmihm@allume.co')
         #response_redirect.set_cookie('user_email', '3ab84d49688d3dd2c947cfce43194d54llume.co')
         return response_redirect
     else:
