@@ -30,6 +30,7 @@ RUN apt-get install -y python-setuptools
 RUN apt-get install -y python3-setuptools
 RUN apt-get install -y nano
 RUN apt-get install -y wkhtmltopdf
+RUN apt-get install -y xvfb
 
 ###################################
 ##### Install Headless Chrome #####
