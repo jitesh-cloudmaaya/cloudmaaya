@@ -11,6 +11,22 @@ DATABASES = {
     }
 }
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': '127.0.0.1',
+        'PORT': '3307',
+        'NAME': 'allume_style',
+        'USER': 'allume',
+        'PASSWORD': 'fb8fWEj$!]MNju',
+        'OPTIONS': {
+            'local_infile': 1,
+        }
+    }
+ }
+
+
+
 # Elastic Search Connection
 from elasticsearch_dsl.connections import connections
 connections.create_connection(hosts=['http://localhost:9200'], timeout=20, http_auth=('elastic:changeme'))
