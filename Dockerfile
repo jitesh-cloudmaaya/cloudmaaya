@@ -4,7 +4,7 @@
 ############################################################
 
 # Set the base image to use to Ubuntu
-FROM ubuntu:16.04.3
+FROM ubuntu:16.04
 
 # Set the file maintainer (your name - the file's author)
 MAINTAINER Wes Duenow
@@ -18,7 +18,7 @@ ENV DOCKYARD_SRVHOME=/srv
 ENV DOCKYARD_SRVPROJ=/srv/catalogue_service
 
 # Update the default application repository sources list
-RUN apt-get --ignore-missing update && apt-get -y upgrade
+RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y python python-pip
 RUN apt-get install -y libpq-dev python-dev
 RUN apt-get install -y libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk
