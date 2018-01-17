@@ -8,6 +8,7 @@ from rest_framework.test import APITestCase
 
 from shopping_tool.models import *
 from django.http.cookie import SimpleCookie
+from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY
 
 #http://www.django-rest-framework.org/api-guide/testing/
 
@@ -19,7 +20,7 @@ class ShoppingToolAPITestCase(APITestCase):
 
     def setUp(self):        
         client = WpUsers.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
-        self.client.cookies = SimpleCookie({'allume-stylist-email-stage': 'client@allume.co'})
+        self.client.cookies = SimpleCookie({AUTH_EMAIL_KEY: 'client@allume.co'})
 
 
     def test_create_look(self):

@@ -29,6 +29,7 @@ from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY
 from weather_service.models import Weather
 import imgkit
 
+
 # Create your views here. 
 
 @check_login
@@ -86,9 +87,11 @@ def collage_image(request, look_id=None):
     'width': '760'
     }
 
+    domain = request.get_host()
+
     try:
         look = Look.objects.get(id = look_id) 
-        img_src = imgkit.from_url('http://localhost:8000/collage/%s' % (look_id), False, options = options)
+        img_src = imgkit.from_url('http://%s/collage/%s' % (domain, look_id), False, options = options)
         response = HttpResponse(img_src, content_type="image/jpeg")
         return response
     except Look.DoesNotExist:
@@ -145,8 +148,8 @@ def set_cookie(request):
     if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
         response_redirect = HttpResponseRedirect('/')
         #response_redirect.set_cookie(AUTH_EMAIL_KEY, '1a80b36b569b69579b25ad4583b5c841allume.co')
-        response_redirect.set_cookie('user_email', 'wduenow@allume.co')
-        #response_redirect.set_cookie('user_email', '3ab84d49688d3dd2c947cfce43194d54llume.co')
+        #response_redirect.set_cookie('user_email', 'wduenow@allume.co')
+        response_redirect.set_cookie('user_email', '3ab84d49688d3dd2c947cfce43194d54llume.co')
         return response_redirect
     else:
         raise PermissionDenied
