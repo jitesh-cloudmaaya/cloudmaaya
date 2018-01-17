@@ -49,7 +49,7 @@ def index(request, styling_session_id=None):
     categories = MerchantCategory.objects.filter(active = True)
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
     favorite_looks = UserLookFavorite.objects.filter(stylist = user.id)
-    serializer = UserLookFavoriteSerializer(favorite_looks, many=True)
+    serializer = UserLookFavoriteDetailSerializer(favorite_looks, many=True)
     json = JSONRenderer().render(serializer.data)
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
