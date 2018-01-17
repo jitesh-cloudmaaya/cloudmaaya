@@ -31,7 +31,6 @@ var rack_builder = {
           console.log(response);
         },
         success:function(response){
-          //console.log(response);
           $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
           link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
         },
@@ -50,7 +49,6 @@ var rack_builder = {
           console.log(response);
         },
         success:function(response){
-          //console.log(response);
           rack_builder.favorites.push(response);
           rack_builder.favorites_product_ids.push(response.product);
           link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
@@ -199,12 +197,10 @@ var rack_builder = {
       delete lookup.allume_styling_session;
       delete lookup.stylist;
     }
-    console.log(lookup)
     $.ajax({
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
-        console.log(response)
         var markup = [];
         var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
@@ -353,7 +349,6 @@ var rack_builder = {
             console.log(response);
           },
           success:function(response){
-            //console.log(response);
             var result_links = $('#results a.favorited');
             if(result_links.length > 0){
               $.each(result_links, function(idx){
@@ -514,7 +509,6 @@ var rack_builder = {
       type: "GET",
       url: '/product_api/get_product/' + id,
       success: function(results){
-        //console.log(results)
         var sizes_list = [];
         var markup = [];
         results.data.sort(function(a,b){

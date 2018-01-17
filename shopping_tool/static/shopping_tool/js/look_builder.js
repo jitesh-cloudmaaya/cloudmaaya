@@ -18,7 +18,6 @@ var look_builder = {
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
-        console.log(response)
         var markup = [];
         var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
@@ -90,8 +89,7 @@ var look_builder = {
             var div = $(this);
             var st = div.scrollTop();
             var ih = div.innerHeight();
-            var sh = div[0].scrollHeight
-            //console.log(st + " " + ih + " " + sh)
+            var sh = div[0].scrollHeight;
             if(st + ih >= sh) {
               var next_page = parseInt(comp_looks.data('page'));
               var total = parseInt(comp_looks.data('total'));
@@ -143,7 +141,6 @@ var look_builder = {
             data.lookitemid + '" data-position="' + data.position + '" data-crop="' + 
             value.width + ',' + value.height + ',' +  value.x + ',' + value.y + '">save crop</a>'
           );
-          //console.log(value.x, value.y, value.width, value.height);
         },
       });
       if(crop_dim[0] != undefined){
@@ -587,7 +584,6 @@ var look_builder = {
         contentType : 'application/json',
         data: JSON.stringify(update_json),
         success:function(response){
-          //console.log(response)
           $('#look-indepth').fadeOut();
           $('#cropper').fadeOut();
           /* redraw look builder do we pick up the new crop */
@@ -795,7 +791,6 @@ var look_builder = {
             if(dims != null){
               obj.cropped_dimensions = dims;
             }
-            console.log(obj)
             $.ajax({
               contentType : 'application/json',
               data: JSON.stringify(obj),

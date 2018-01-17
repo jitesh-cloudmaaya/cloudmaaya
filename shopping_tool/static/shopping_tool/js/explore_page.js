@@ -147,7 +147,6 @@ var explore_page = {
     */
     function getLooks(lookup){
       $('#looks-header').html('');
-      console.log(lookup)
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(lookup),
