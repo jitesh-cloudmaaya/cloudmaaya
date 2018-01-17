@@ -24,7 +24,7 @@ from rest_framework.renderers import JSONRenderer
 import requests
 from PIL import Image
 from catalogue_service.settings_local import PRODUCT_IMAGE_PROXY
-
+from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY
 
 from weather_service.models import Weather
 
@@ -127,7 +127,7 @@ def image_proxy(request):
 def set_cookie(request):
     if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
         response_redirect = HttpResponseRedirect('/')
-        response_redirect.set_cookie('allume-stylist-email-stage', '1a80b36b569b69579b25ad4583b5c841allume.co')
+        response_redirect.set_cookie(AUTH_EMAIL_KEY, '1a80b36b569b69579b25ad4583b5c841allume.co')
         #response_redirect.set_cookie('user_email', 'allume-sharonmbell92@aol.com')
         #response_redirect.set_cookie('user_email', '3ab84d49688d3dd2c947cfce43194d54llume.co')
         return response_redirect
@@ -137,7 +137,7 @@ def set_cookie(request):
 def delete_cookie(request):
     if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
         response_redirect = HttpResponseRedirect('/')
-        response_redirect.delete_cookie('allume-stylist-email-stage')
+        response_redirect.delete_cookie(AUTH_EMAIL_KEY)
         return response_redirect
     else:
         raise PermissionDenied

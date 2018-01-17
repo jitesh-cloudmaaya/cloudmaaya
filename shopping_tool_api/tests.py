@@ -19,7 +19,7 @@ class ShoppingToolAPITestCase(APITestCase):
 
     def setUp(self):        
         client = WpUsers.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
-        self.client.cookies = SimpleCookie({'user_email': 'client@allume.co'})
+        self.client.cookies = SimpleCookie({'allume-stylist-email-stage': 'client@allume.co'})
 
 
     def test_create_look(self):
