@@ -41,3 +41,6 @@ ONCE = {
 
 
 NOAA_TOKEN = 'YdgPMhahlBcRshMkgsmDaoFlvAFcjwnr'
+
+AUTH_LOGIN_URL = 'https://social-services-stage.allume.co/auth/oauth/login/google-oauth2/'
+AUTH_EMAIL_KEY = 'allume-stylist-email-stage'
