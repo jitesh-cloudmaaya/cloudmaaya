@@ -4,7 +4,7 @@
 ############################################################
 
 # Set the base image to use to Ubuntu
-FROM ubuntu:17.04
+FROM ubuntu:16.04.3
 
 # Set the file maintainer (your name - the file's author)
 MAINTAINER Wes Duenow
