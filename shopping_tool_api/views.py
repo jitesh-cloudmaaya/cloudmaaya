@@ -295,7 +295,7 @@ def look_list(request):
          "favorites_only": True
         }
     """
-    looks = Look.objects.filter(layout_id > 0)
+    looks = Look.objects.all()#filter(look_layout > None)
 
     page = 1
     if 'page' in request.data:
