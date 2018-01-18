@@ -25,6 +25,7 @@ import requests
 from PIL import Image
 from catalogue_service.settings_local import PRODUCT_IMAGE_PROXY
 from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY
+from catalogue_service.settings_local import IMGKIT_URL, IMGKIT_OPTIONS
 
 from weather_service.models import Weather
 import imgkit
@@ -81,18 +82,9 @@ def collage(request, look_id=None):
 # http://madalgo.au.dk/~jakobt/wkhtmltoxdoc/wkhtmltoimage_0.10.0_rc2-doc.html
 def collage_image(request, look_id=None):
 
-    options = {
-    'format': 'jpg',
-    'height': '415',
-    'width': '760',
-    'window-status':'ready'
-    }
-
-    domain = 'localhost:8000'#request.get_host()
-
     try:
         look = Look.objects.get(id = look_id) 
-        img_src = imgkit.from_url('http://%s/collage/%s' % (domain, look_id), False, options = options)
+        img_src = imgkit.from_url('%s/collage/%s' % (IMGKIT_URL, look_id), False, options = IMGKIT_OPTIONS)
         response = HttpResponse(img_src, content_type="image/jpeg")
         return response
     except Look.DoesNotExist:

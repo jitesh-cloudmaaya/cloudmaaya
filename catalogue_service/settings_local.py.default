@@ -44,3 +44,17 @@ NOAA_TOKEN = 'YdgPMhahlBcRshMkgsmDaoFlvAFcjwnr'
 
 AUTH_LOGIN_URL = 'https://social-services-stage.allume.co/auth/oauth/login/google-oauth2/'
 AUTH_EMAIL_KEY = 'allume-stylist-email-stage'
+
+IMGKIT_URL = 'https://shopping-tool-web-stage.allume.co'
+
+IMGKIT_OPTIONS = {
+    'format': 'jpg',
+    'height': '415',
+    'width': '760',
+    'password': 'Ycbjd1:Zao#cs2f',
+    'username': 'wes',
+#    'no-stop-slow-scripts': None,
+    'javascript-delay': '300',
+#     'window-status':'ready'
+    }
+    
