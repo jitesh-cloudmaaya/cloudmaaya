@@ -518,13 +518,13 @@ class UserLookFavorite(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
-# class LookMetrics(models.Model):
-#     look = models.ForeignKey(Look, related_name='metric_set', db_constraint=False, db_column='allume_look_id')
-#     average_item_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-#     total_look_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-#     total_favorites = models.IntegerField()
-#     total_item_sales = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Blank for now
-#     store_rank = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Blank for now    
+class LookMetrics(models.Model):
+    look = models.ForeignKey(Look, related_name='metric_set', db_constraint=False, db_column='allume_look_id')
+    average_item_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_look_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_favorites = models.IntegerField()
+    total_item_sales = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Blank for now
+    store_rank = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Blank for now    
 
 @receiver(pre_save, sender=Look)
 def set_look_client_id(sender, instance, *args, **kwargs):
