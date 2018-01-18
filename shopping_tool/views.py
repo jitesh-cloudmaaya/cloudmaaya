@@ -87,7 +87,7 @@ def collage_image(request, look_id=None):
     'width': '760'
     }
 
-    domain = 'localost:8000'#request.get_host()
+    domain = 'localhost:8000'#request.get_host()
 
     try:
         look = Look.objects.get(id = look_id) 
