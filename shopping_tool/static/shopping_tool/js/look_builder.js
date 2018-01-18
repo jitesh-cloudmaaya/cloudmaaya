@@ -807,6 +807,12 @@ var look_builder = {
                     '" data-crop="' + response.cropped_dimensions + '"><i class="fa fa-crop"></i></a>'
                   );
                 }
+                /** ecom API addition */
+                $.ajax({
+                  data: 'look_product_id=' + obj.product,
+                  type: 'POST',
+                  url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/'
+                });
                 var list_items = box.find('div.item');
                 if(list_items.length > 1){
                   $.each(list_items, function(e){
