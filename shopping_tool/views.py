@@ -84,7 +84,8 @@ def collage_image(request, look_id=None):
     options = {
     'format': 'jpg',
     'height': '415',
-    'width': '760'
+    'width': '760',
+    'window-status':'collage ready'
     }
 
     domain = 'localhost:8000'#request.get_host()

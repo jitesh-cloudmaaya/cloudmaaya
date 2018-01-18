@@ -50,6 +50,32 @@ if(collage_cropped_images.length > 0){
     look_builder.getCroppedImage(collage_cropped_images[i], '#collage');
   }
 }
+
+/** use number of images as counter for loading */
+var loading = look.look_products.length;
+for(var i = 0, l = look.look_products.length; i<l; i++){
+  var img = imgs_to_load[i];
+  var loadTimer;
+  var imgObject = new Image();
+  imgObject.src = img;          
+  imgObject.onLoad = onImgLoaded();
+  function onImgLoaded() {
+    if (loadTimer != null){ clearTimeout(loadTimer); };
+    if (!imgObject.complete) {
+      loadTimer = setTimeout(function() {
+        onImgLoaded();
+      }, 3);
+    } else {
+      loading--;
+      if(loading == 0){
+        /* when all images are loaded set page_ready flag to true */
+        page_ready = true;
+        window.status = 'collage ready'
+      }
+    }
+  }
+}
+
 </script>
 </body>
 </html>
