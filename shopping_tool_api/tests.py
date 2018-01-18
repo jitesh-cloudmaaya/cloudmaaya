@@ -13,7 +13,7 @@ from django.http.cookie import SimpleCookie
 
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product', 'user_look_favorite', 'user_product_favorite', 'allume_client_360_test']
+    fixtures = ['allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'user_look_favorite', 'allume_client_360_test']
     shopper = ''
     client = ''
 
@@ -26,7 +26,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify creating a look
         """
-
         url = reverse("shopping_tool_api:look", kwargs={'pk':0})
         
         shopper = WpUsers.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
@@ -46,7 +45,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify updating a look
         """
-
         url = reverse("shopping_tool_api:look", kwargs={'pk':2})
 
         look_layout_instance = LookLayout.objects.get(id=1)
@@ -70,7 +68,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting a look
         """
-
         url = reverse("shopping_tool_api:look", kwargs={'pk':1})
 
         response = self.client.get(url)
@@ -83,7 +80,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify adding a product to a rack
         """
-
         url = reverse("shopping_tool_api:rack_item", kwargs={'pk':0})
 
         data = {"product": 1, "allume_styling_session": 3}
@@ -97,7 +93,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify deleting a product from a rack
         """
-
         session_instance = AllumeStylingSessions.objects.get(id =3)
         product_instance = Product.objects.get(id=1)
 
@@ -114,7 +109,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting a product from a rack
         """
-
         session_instance = AllumeStylingSessions.objects.get(id =3)
         product_instance = Product.objects.get(id=1)
 
@@ -146,7 +140,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify updating a product to a look
         """
-
          # Have to create an object in order to update it
         product_instance = Product.objects.get(id=1)
         look_instance = Look.objects.get(id=1)
@@ -185,7 +178,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify deleting a product from a look
         """
-
         # Have to create an object in order to delete it
         product_instance = Product.objects.get(id=1)
         look_instance = Look.objects.get(id=1)
@@ -201,7 +193,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting looks list
         """
-
         url = reverse("shopping_tool_api:look_list")
         
 
@@ -238,7 +229,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting looks list with Paging
         """
-
         url = reverse("shopping_tool_api:look_list")
 
         #Test Paging
@@ -293,7 +283,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting a look
         """
-
         url = reverse("shopping_tool_api:layouts")
 
         response = self.client.get(url)
@@ -308,7 +297,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting a user favorite look
         """
-
         url = reverse("shopping_tool_api:user_product_favorite", kwargs={'pk':1})
 
         response = self.client.get(url)
@@ -319,7 +307,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting a user favorite look
         """
-
         url = reverse("shopping_tool_api:user_product_favorite", kwargs={'pk':1})
         data = {"product": 1,"stylist": 1}
 
@@ -330,7 +317,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting a user favorite look
         """
-
         url = reverse("shopping_tool_api:user_product_favorite", kwargs={'pk':1})
 
         response = self.client.get(url)
@@ -340,7 +326,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting a list of user favorite looks
         """
-
         url = reverse("shopping_tool_api:user_product_favorites", kwargs={'pk':1})
 
         response = self.client.get(url)
@@ -353,7 +338,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting a user favorite look
         """
-
         url = reverse("shopping_tool_api:user_look_favorite", kwargs={'pk':1})
 
         response = self.client.get(url)
@@ -364,7 +348,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify adding a user favorite look
         """
-
         url = reverse("shopping_tool_api:user_look_favorite", kwargs={'pk':1})
         data = {"look": 1,"stylist": 2}
 
@@ -375,7 +358,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify deleting a user favorite look
         """
-
         url = reverse("shopping_tool_api:user_look_favorite", kwargs={'pk':1})
 
         response = self.client.get(url)
@@ -385,7 +367,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting a list of user favorite looks
         """
-
         url = reverse("shopping_tool_api:user_look_favorites", kwargs={'pk':1})
 
         response = self.client.get(url)
@@ -397,7 +378,6 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting a user favorite look
         """
-
         url = reverse("shopping_tool_api:client_360", kwargs={'pk':1})
 
         response = self.client.get(url)
