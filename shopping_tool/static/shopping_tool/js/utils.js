@@ -24,15 +24,20 @@ var utils = {
   * @description client details and presentation checks
   */  
   client: function(){
-    $('#user-clip').delay(750)
+    var clip = $('#user-clip');
+    clip.delay(750)
       .queue(function (next) { 
         $(this).addClass('ready').width($('#user-clip span.name').width()); 
         next(); 
       });
-    $('#user-clip').click(function(e){
+    clip.click(function(e){
       e.preventDefault();
-      $('#user-card').toggleClass('show')
+      $('#user-card').toggleClass('show').removeClass('looker');
     });
+    $('#design-look-user-toggle').click(function(e){
+      e.preventDefault();
+      $('#user-card').addClass('show').addClass('looker');
+    }).html('View ' + clip.data('username'))
     /* correctly display bra size */
     var bra = $('#bra-size');
     var bra_size = bra.data('sizes');
@@ -59,8 +64,44 @@ var utils = {
         social_link_index++;
       }
     });
+    /** correctly display where the client lives */
+    var locale = $('#client-locale');
+    var city_state = locale.data('cs');
+    console.log(city_state)
+    if((city_state != undefined)&&(typeof city_state == 'object')){
+      var cs_display = city_state.city + ', ' + city_state.state;
+      locale.html(cs_display);
+      $('#client-weather-locale').html('Seasonal norms for ' + cs_display + ':');
+    }    
     /* if link idex is 0, no social links are valid thus hide the whole social div */
     if(social_link_index == 0){ social.hide(); }
+    /* client card tabs */
+    $('#client-tabs a').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      var div = $(link.attr('href'));
+      if(link.hasClass('on') == false){
+        link.addClass('on').siblings('a').removeClass('on');
+        div.addClass('show').siblings('div.client-section').removeClass('show');
+      }
+    });
+
+    /** get the notes for the client 
+    
+    $.ajax({
+      data: JSON.stringify({user_id: clip.data('userid') }),
+      success:function(response){
+        console.log(response)
+      },
+      dataType: 'jsonp',
+      type: 'POST',
+      url: 'https://styling-service-stage.allume.co/view_user_styling_notes/'
+    })
+    
+    */
+    
+
+
   },
   /**
   * @description make a groups of DOM objects all the same height

@@ -18,7 +18,6 @@ var look_builder = {
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
-        console.log(response)
         var markup = [];
         var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
@@ -90,8 +89,7 @@ var look_builder = {
             var div = $(this);
             var st = div.scrollTop();
             var ih = div.innerHeight();
-            var sh = div[0].scrollHeight
-            //console.log(st + " " + ih + " " + sh)
+            var sh = div[0].scrollHeight;
             if(st + ih >= sh) {
               var next_page = parseInt(comp_looks.data('page'));
               var total = parseInt(comp_looks.data('total'));
@@ -143,7 +141,6 @@ var look_builder = {
             data.lookitemid + '" data-position="' + data.position + '" data-crop="' + 
             value.width + ',' + value.height + ',' +  value.x + ',' + value.y + '">save crop</a>'
           );
-          //console.log(value.x, value.y, value.width, value.height);
         },
       });
       if(crop_dim[0] != undefined){
@@ -171,7 +168,6 @@ var look_builder = {
       var data = link.data();
       look_builder.setUpBuilder(data.lookid);
       setTimeout(function(){
-        $('#look-list').removeClass('show');
         $('#rack').removeClass('show');
       },1000);
       $('#designing').html(
@@ -263,7 +259,7 @@ var look_builder = {
           contentType : 'application/json',
           data: JSON.stringify(look_obj),
           success:function(response){
-            look_builder.newLookLink(response);
+            rack_builder.getRackLooks('regular', '#looks-list');
             $('#create-look').fadeOut();
           },
           type: 'PUT',
@@ -342,6 +338,7 @@ var look_builder = {
       $('#new-look-layout')[0].selectize.setValue('',true);  
       $('#new-look-description').val('');    
       $('#create-look').fadeToggle();
+      rack_builder.getRackLooks('regular', '#looks-list');
       return false;
     });       
     $('#close-design-look').click(function(e){
@@ -350,6 +347,7 @@ var look_builder = {
       $('#rack-draggable').html('');
       $('#look-drop').html('');
       $('#compare-looks').html('');
+      rack_builder.getRackLooks('regular', '#looks-list');
     });
     $('#rack-draggable').on('click','a.close-all-rack-sections', function(e){
       e.preventDefault();
@@ -402,6 +400,33 @@ var look_builder = {
         look_builder.orderedRack();
       }
     });
+    $('#fave-looks').on('click', 'a.item-detail', function(e){
+      e.preventDefault();
+      var link = $(this);
+      rack_builder.inspectItem(link, 'compare');
+    })
+    $('#looks-list').on('click', 'a.item-detail', function(e){
+      e.preventDefault();
+      var link = $(this);
+      rack_builder.inspectItem(link, 'compare');
+    }).on('click', 'a.look-link', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var data = link.data();
+      look_builder.setUpBuilder(data.lookid);
+      setTimeout(function(){
+        $('#rack').removeClass('show');
+      },1000);
+      $('#designing').html(
+        data.lookname + '<a href="#" class="edit-look" data-lookname="' + data.lookname + 
+        '" data-lookid="' + data.lookid + '" data-lookdesc="' + data.lookdesc + 
+        '" data-looklayoutid="' + data.looklayoutid + '"><i class="fa fa-pencil"></i> edit</a>'
+      ).after(
+        '<p id="look-desc">' + data.lookdesc + '</p>'
+      );
+      $('#design-look').attr('class','').addClass('show');
+    });
+
     $('#look-drop').on('click','a.look-more-details', function(e){
       e.preventDefault();
       var link = $(this);
@@ -559,7 +584,6 @@ var look_builder = {
         contentType : 'application/json',
         data: JSON.stringify(update_json),
         success:function(response){
-          //console.log(response)
           $('#look-indepth').fadeOut();
           $('#cropper').fadeOut();
           /* redraw look builder do we pick up the new crop */
@@ -625,33 +649,6 @@ var look_builder = {
     var img_data = tnCanvas.toDataURL();
     $('canvas').remove();
     return img_data
-  },
-  /**
-  * @description build new look link for drawer in rack
-  * @param {object} data - the newly created look object
-  */
-  newLookLink: function(data){
-    var layout_name = ''
-    for(var i = 0, l = look_layouts.length; i<l; i++){
-      var layout = look_layouts[i];
-      if(layout.id == data.look_layout){
-        layout_name = layout.name;
-        break;
-      }
-    }
-    var links = $('#look-links');
-    links.append(
-      '<a href="#" class="look-link" data-lookid="' + data.id + 
-      '" data-lookname="' + data.name + '" data-lookdesc="' + data.description + 
-      '" data-looklayoutid="' + data.look_layout + '">' +
-      '<table><tr><td class="icon"><i class="fa fa-shopping-bag"></i></td>' +
-      '<td><span class="name">' + data.name + '</span>' +
-      '<span class="layout"><em>layout:</em> ' + layout_name + 
-      '</span></td></tr></table></a>' 
-    );
-    var look_count = links.find('a.look-link').length;
-    var plural = look_count == 1 ? '' : 's';
-    $('#look-list h2').html(look_count + ' Look' + plural);
   },
   /**
   * @description the ordered look and feel for look builder rack
@@ -794,7 +791,6 @@ var look_builder = {
             if(dims != null){
               obj.cropped_dimensions = dims;
             }
-            console.log(obj)
             $.ajax({
               contentType : 'application/json',
               data: JSON.stringify(obj),
@@ -811,6 +807,12 @@ var look_builder = {
                     '" data-crop="' + response.cropped_dimensions + '"><i class="fa fa-crop"></i></a>'
                   );
                 }
+                /** ecom API addition */
+                $.ajax({
+                  data: 'look_product_id=' + obj.product,
+                  type: 'POST',
+                  url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/'
+                });
                 var list_items = box.find('div.item');
                 if(list_items.length > 1){
                   $.each(list_items, function(e){

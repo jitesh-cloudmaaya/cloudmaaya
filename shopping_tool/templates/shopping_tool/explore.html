@@ -27,13 +27,19 @@
   <span class="label fave">and 
     <a href="#" id="look-favorite-status" class="any">
       <span class="any">any look</span>
-      <span class="faves">only favorite looks</span>
+      <span class="faves">only my favorite looks</span>
       <i class="fa fa-sort"></i>
     </a>
   </span>
   <a href="#" id="looks-filter">show me</a>
 </div>
-<div id="looks-header"></div>
+<div id="looks-header">
+  <label class="toggle pricey">
+    <input id="explore-looks-prices" name="explore_prices" type="checkbox"/><span><small></small></span>
+    <em>show prices</em>
+  </label>  
+  <h2>loading looks...</h2>
+</div>
 <div id="explore-wrapper">
   <div id="all-looks-list"></div>
   <div id="loader" class="active" data-page="1">loading...</div>
