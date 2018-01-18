@@ -51,10 +51,9 @@ IMGKIT_OPTIONS = {
     'format': 'jpg',
     'height': '415',
     'width': '760',
-    'password': 'Ycbjd1:Zao#cs2f',
+    'password': '',
     'username': 'wes',
 #    'no-stop-slow-scripts': None,
     'javascript-delay': '300',
 #     'window-status':'ready'
     }
-    
