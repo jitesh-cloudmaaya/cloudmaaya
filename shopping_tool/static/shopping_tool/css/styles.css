@@ -1747,9 +1747,17 @@ div.rack-look a.look-link:active,
   display:block;
   margin:0 10px 10px; 
 }
+#looks-header label.toggle {
+  cursor:pointer;
+  display:none;
+  float:right;
+  margin:0 11px;
+}
+#looks-header.ready label.toggle {display:block;}
 #search label.toggle.faves {margin:15px 0 0 ;}
 #look-filter-options label.toggle em,
-#search label.toggle em{
+#search label.toggle em,
+#looks-header label.toggle em{
   color:#000;
   display:inline-block;
   font-size:14px;
@@ -1760,7 +1768,8 @@ div.rack-look a.look-link:active,
   white-space: nowrap;
 }
 #look-filter-options label.toggle span,
-#search label.toggle span {
+#search label.toggle span,
+#looks-header label.toggle span {
   background-color: #fff;
   border: 1px solid #dfdfdf;
   border-radius: 12px;
@@ -1775,7 +1784,8 @@ div.rack-look a.look-link:active,
   width: 30px;
 }
 #look-filter-options label.toggle span small,
-#search label.toggle span small {
+#search label.toggle span small,
+#looks-header label.toggle span small {
   background: #fff;
   border-radius: 100%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -1788,10 +1798,13 @@ div.rack-look a.look-link:active,
   width: 15px;
 }
 #look-filter-options label.toggle input,
-#search label.toggle input {display:none;}
+#search label.toggle input,
+#looks-header label.toggle input {display:none;}
 #look-filter-options label.toggle input:checked + span,
 #search label.toggle input:checked + span { box-shadow: 0px 0px 0px 16px rgb(81,81,81) inset; border-color:#515151; }
+#looks-header label.toggle input:checked + span {box-shadow: 0px 0px 0px 16px rgb(242,152,126) inset; border-color:#f2987e;}
 #look-filter-options label.toggle input:checked + span > small,
+#looks-header label.toggle input:checked + span > small,
 #search label.toggle input:checked + span > small { left:15px; }
 #look-filter-options input[type="text"] {
   background:#fff;
@@ -1987,6 +2000,7 @@ div.rack-look a.look-link:active,
   height:100%;
   text-decoration: none;
   width:100%;
+  position:relative;
 }
 #all-looks-list div.look div.display div.item img {
   display:block;
@@ -1994,6 +2008,29 @@ div.rack-look a.look-link:active,
   height:100%; 
   max-width:100%;
 }
+/* styles for price look in explore looks */
+#all-looks-list div.look div.item a.item-detail span.price {
+  background:rgba(0,0,0,0.6);
+  border-radius:3px;
+  bottom:10px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.8);
+  color:#fff;
+  display:none;
+  font-size:18px;
+  font-weight:300;
+  padding:6px 10px 8px;
+  position:absolute;
+  right:5px;
+  z-index:10;
+}
+#all-looks-list.priceme div.look div.item a.item-detail span.price { display:block; }
+#all-looks-list div.look div.item a.item-detail span.price em {
+  color:#F48FB1; 
+  display:inline-block; 
+  text-decoration: 
+  line-through; margin-right:8px;
+}
+
 #explore-wrapper {}
 #explore-wrapper #loader {
   height:100px; 

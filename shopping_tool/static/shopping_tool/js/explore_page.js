@@ -113,6 +113,11 @@ var explore_page = {
       $('#all-looks-list').html('');
       getLooks(lookup);
     });
+    /* toggle price display in looks */
+    $('#explore-looks-prices').prop('checked',false).click(function(e){
+      var box = $(this);
+      $('#all-looks-list').toggleClass('priceme');
+    });
     /* infinte scroll/paging listen for when user scrolls within 100 px of bnottom of page */
     $(window).scroll(function(){
       var st = $(window).scrollTop();
@@ -146,7 +151,7 @@ var explore_page = {
     * @param {object} lookup - json representation of fields to pass to API
     */
     function getLooks(lookup){
-      $('#looks-header').html('');
+      $('#looks-header h2').html('loading looks...');
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(lookup),
@@ -165,6 +170,7 @@ var explore_page = {
   */
   looksDisplay: function(list_object){
     var div = $('#all-looks-list');
+    console.log(list_object.looks)
     var cropped_images = [];
     for(var i = 0, l = list_object.looks.length; i<l; i++){
       var look = list_object.looks[i];
@@ -200,11 +206,24 @@ var explore_page = {
               }
               cropped_images.push(crop);
             }
+
+            var retail = prod.product.retail_price;
+            var sale = prod.product.sale_price;
+            var price_display = '';
+            if((sale >= retail)||(sale == 0)){
+              price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
+            }else{
+              price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
+                ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
+            }
+
+
+
             product_markup.push(
               '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
               'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
               '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
-              '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></a></div>'
+              '"><img style="height:' + block.height + 'px" src="' + src + '"/></span>' + price_display + '</a></div>'
             );
           }
         }
@@ -231,7 +250,8 @@ var explore_page = {
     }else if(num == 1){
       now_showing_text = 'Showing 1 Look'
     }
-    $('#looks-header').html('<h2>' + now_showing_text + '</h2>');
+    $('#looks-header').addClass('ready');
+    $('#looks-header h2').html(now_showing_text);
     if((list_object.page + 1) <= list_object.num_pages){
       $('#loader').removeClass('active').data('page', list_object.page + 1);
     }
