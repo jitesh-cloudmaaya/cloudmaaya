@@ -1,0 +1,10 @@
+shopping_tool/__init__.py
+shopping_tool/admin.py
+/Users/wesd/Sites/catalogue_service/shopping_tool/models.py
+shopping_tool/migrations
+shopping_tool_api/admin.py
+shopping_tool_api/__init__.py
+weather_service/__init__.py
+weather_service/admin.py
+weather_service/migrations
+

@@ -316,7 +316,10 @@ def look_list(request):
 
     if 'stylist' in request.data:
         stylist = request.data['stylist']
+        print stylist
         looks = looks.filter(stylist = stylist)
+
+        print looks.count()
 
     if 'name' in request.data:
         name = request.data['name']

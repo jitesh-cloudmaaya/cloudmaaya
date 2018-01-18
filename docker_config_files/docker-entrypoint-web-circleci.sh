@@ -9,6 +9,9 @@ touch /srv/logs/access.log
 touch /srv/log/logfile
 tail -n 0 -f /srv/logs/*.log &
 
+#Start Chrome Headless
+##chromedriver --url-base=/wd/hub
+
 # Start UWSGI processes
 echo Starting uwsgi.
 uwsgi --ini /srv/catalogue_service/docker_config_files/uwsgi.ini

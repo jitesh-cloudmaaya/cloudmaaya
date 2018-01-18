@@ -4,7 +4,7 @@
 ############################################################
 
 # Set the base image to use to Ubuntu
-FROM ubuntu:17.04
+FROM ubuntu:16.04
 
 # Set the file maintainer (your name - the file's author)
 MAINTAINER Wes Duenow
@@ -23,13 +23,61 @@ RUN apt-get install -y python python-pip
 RUN apt-get install -y libpq-dev python-dev
 RUN apt-get install -y libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk
 RUN apt-get install -y socat
-RUN apt-get install  -y libmysqlclient-dev
+RUN apt-get install -y libmysqlclient-dev
 RUN apt-get install -y python-cffi
 RUN apt-get install -y libffi6 libffi-dev
 RUN apt-get install -y python-setuptools
 RUN apt-get install -y python3-setuptools
-RUN apt-get install nano
-#RUN apt-get install lynx
+RUN apt-get install -y nano
+#RUN apt-get install -y wkhtmltopdf
+RUN apt-get install -y wget
+
+RUN cd ~
+RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz
+RUN tar vxf wkhtmltox-0.12.3_linux-generic-amd64.tar.xz 
+RUN cp wkhtmltox/bin/wk* /usr/local/bin/
+
+###################################
+##### Install Headless Chrome #####
+## https://gist.github.com/ziadoz/3e8ab7e944d02fe872c3454d17af31a5
+
+# Versions
+#ENV CHROME_DRIVER_VERSION='curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE'
+#ENV SELENIUM_STANDALONE_VERSION="3.4.0"
+#ENV SELENIUM_SUBDIR="3.4"
+
+# Remove existing downloads and binaries so we can start from scratch.
+#RUN apt-get remove google-chrome-stable
+##RUN rm ~/chromedriver_linux64.zip
+##RUN sudo rm /usr/local/bin/chromedriver
+
+# Install dependencies.
+#RUN apt-get update
+#RUN apt-get install -y unzip openjdk-8-jre-headless xvfb libxi6 libgconf-2-4
+#RUN apt-get install -y curl
+
+# Install Chrome.
+#RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add
+#RUN echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+#RUN apt-get -y update
+#RUN apt-get -y install google-chrome-stable
+
+# Install ChromeDriver
+#RUN wget -N http://chromedriver.storage.googleapis.com/2.34/chromedriver_linux64.zip -P ~/
+#RUN unzip ~/chromedriver_linux64.zip -d ~/
+#RUN rm ~/chromedriver_linux64.zip
+#RUN mv -f ~/chromedriver /usr/local/bin/chromedriver
+#RUN chown root:root /usr/local/bin/chromedriver
+#RUN chmod 0755 /usr/local/bin/chromedriver
+
+# Install Selenium.
+#RUN wget -N http://selenium-release.storage.googleapis.com/$SELENIUM_SUBDIR/selenium-server-standalone-$SELENIUM_STANDALONE_VERSION.jar -P ~/
+#RUN mv -f ~/selenium-server-standalone-$SELENIUM_STANDALONE_VERSION.jar /usr/local/bin/selenium-server-standalone.jar
+#RUN chown root:root /usr/local/bin/selenium-server-standalone.jar
+#RUN chmod 0755 /usr/local/bin/selenium-server-standalone.jar
+
+
+###################################
 
 # Create application subdirectories
 WORKDIR $DOCKYARD_SRVHOME
