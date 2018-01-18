@@ -18,10 +18,16 @@
     	<a href="#client-bio" class="on">Sizing</a>
     	<a href="#client-spend">Spending</a>
     	<a href="#client-pref">Style</a>
-      <a href="#client-weather">Weather</a>
       <a href="#client-extras">Extras</a>
+      <a href="#client-notes">Notes</a>
+      <a href="#client-weather">Weather</a>
     </div>
     <div class="client-sections">
+      <div id="client-notes" class="client-section">
+        <br/><br/><br/><br/>
+        NOTES UI WILL GO HERE
+        <br/><br/><br/><br/>
+      </div>
     	<div id="client-bio" class="client-section show">
     		<span class="client-details"><em>height:</em>{{ client.client_360.height }}</span>
         <span class="client-details"><em>weight:</em>{{ client.client_360.weight }}</span>
@@ -34,17 +40,19 @@
         <span class="client-details"><em>shoe:</em>{{ client.client_360.size_shoe }}</span>
     	</div>
     	<div id="client-pref" class="client-section">
+        <span class="client-details"><em>celebrity style:</em>{{ client.client_360.style_celebs }}</span>
+        <br/><br/>
+        <span class="client-details"><em>brands:</em>{{ client.client_360.brands  }}</span>
+        <span class="client-details"><em>stores:</em>{{ client.client_360.stores }}</span>
         <span class="client-details"><em>colors:</em>{{ client.client_360.colors_preference }}</span>
         <span class="client-details"><em>outfits:</em>{{ client.client_360.outfits_preference }} </span>
-        <span class="client-details"><em>jewelry (style):</em>{{ client.client_360.jewelry_style }}</span>
-        <span class="client-details"><em>jewelry (type):</em>{{ client.client_360.jewelry_type }}</span>
-        <span class="client-details"><em>dress:</em>{{ client.client_360.style_dress }}</span>
-        <span class="client-details"><em>jacket:</em>{{ client.client_360.style_jacket }}</span>
         <span class="client-details"><em>tops:</em>{{ client.client_360.style_tops }}</span>
         <span class="client-details"><em>jeans:</em>{{ client.client_360.style_jeans }}</span>
+        <span class="client-details"><em>jacket:</em>{{ client.client_360.style_jacket }}</span> 
+        <span class="client-details"><em>dress:</em>{{ client.client_360.style_dress }}</span>       
         <span class="client-details"><em>shoe:</em>{{ client.client_360.style_shoe }}</span>
-        <span class="client-details"><em>stores:</em>{{ client.client_360.stores }}</span>
-        <span class="client-details"><em>brands:</em>{{ client.client_360.brands  }}</span>
+        <span class="client-details"><em>jewelry (style):</em>{{ client.client_360.jewelry_style }}</span>
+        <span class="client-details"><em>jewelry (type):</em>{{ client.client_360.jewelry_type }}</span>        
     	</div>
     	<div id="client-spend" class="client-section">
     		<span class="client-details"><em>tops:</em>{{ client.client_360.spending_tops }}</span>
