@@ -1,16 +1,17 @@
 {% load staticfiles %}
+{% load sstatic %}
 <!DOCTYPE html>
 <html>
 <head>
   <title>Allume - Shopping Tool Collage Maker</title>
   {% load static %}
-  <link href="{% static 'shopping_tool/css/collage.css' %}" media="all" rel="stylesheet"/>
+  <link href="{% sstatic 'shopping_tool/css/collage.css' %}" media="all" rel="stylesheet"/>
 </head>
 <body>
 <div id="collage"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="{% static 'shopping_tool/js/utils.js' %}"></script>
-<script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
+<script src="{% sstatic 'shopping_tool/js/utils.js' %}"></script>
+<script src="{% sstatic 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
 var look_proxy = '{{ product_image_proxy | safe }}';
 var look = {{ look_json | safe }};
