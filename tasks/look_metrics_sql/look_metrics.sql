@@ -24,10 +24,12 @@ INSERT INTO shopping_tool_lookmetrics_temp (
 SELECT
     0 as average_item_price,
     0 as total_look_price,
-    0 as total_favorites,
-    0 as stotal_item_sales,
-    0 as store_rank,
-    al.id FROM allume_looks al;
+    COUNT(ulf.look_id) as total_favorites,
+    0 as total_item_sales, # Blank for now
+    0 as store_rank, # Blank for now
+    al.id FROM allume_looks al
+    LEFT JOIN shopping_tool_userlookfavorite ulf
+    ON al.id = ulf.look_id GROUP BY al.id;
 
 
 CREATE INDEX shopping_tool_lookmetrics_allume_look_id_d50ba475 ON shopping_tool_lookmetrics_temp (allume_look_id);
