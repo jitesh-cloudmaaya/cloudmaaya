@@ -38,11 +38,20 @@ CREATE TABLE shopping_tool_lookmetrics_temp (
 -- create temporary aggregation view for average_Item_price and total_look_price?
 CREATE OR REPLACE VIEW aggregation_metrics AS
 (SELECT
-    alp.allume_look_id as look_id,
-    SUM(pap.current_price) as total_look_price,
-    SUM(pap.current_price) / COUNT(allume_look_id) as average_item_price
+    alp.allume_look_id AS look_id,
+    SUM(pap.current_price) AS total_look_price,
+    SUM(pap.current_price) / COUNT(allume_look_id) AS average_item_price
     FROM allume_looks al LEFT JOIN allume_look_products alp ON al.id = alp.allume_look_id
     LEFT JOIN product_api_product pap ON alp.wp_product_id = pap.product_id GROUP BY al.id # join on wp_product_id?
+);
+
+CREATE OR REPLACE VIEW look_favorites AS
+(SELECT
+    al.id AS look_id,
+    COUNT(ulf.look_id) AS total_favorites
+    FROM allume_looks al
+    LEFT JOIN shopping_tool_userlookfavorite ulf
+    ON al.id = ulf.look_id GROUP BY al.id
 );
 
 -- SUM(pap.current_price) / COUNT(allume_look_id) as average_item_price
@@ -60,23 +69,25 @@ INSERT INTO shopping_tool_lookmetrics_temp (
     store_rank,
     allume_look_id)
 SELECT
-    0 as average_item_price,
-    0 as total_look_price,
-    COUNT(ulf.look_id) as total_favorites,
-    0 as total_item_sales, # Blank for now
-    0 as store_rank, # Blank for now
+    am.average_item_price AS average_item_price,
+    am.total_look_price AS total_look_price,
+    lf.total_favorites AS total_favorites,
+    0 AS total_item_sales, # Blank for now
+    0 AS store_rank, # Blank for now
     al.id FROM allume_looks al
     LEFT JOIN aggregation_metrics am
     ON al.id = am.look_id
-    LEFT JOIN shopping_tool_userlookfavorite ulf
-    ON al.id = ulf.look_id GROUP BY al.id;
+    LEFT JOIN look_favorites lf
+    ON al.id = lf.look_id;
 
-UPDATE shopping_tool_lookmetrics_temp stlmtt
-LEFT JOIN aggregation_metrics am
-ON am.look_id = stlmtt.allume_look_id
-SET stlmtt.average_item_price = am.average_item_price,
-    stlmtt.total_look_price = am.total_look_price
-WHERE am.look_id = stlmtt.allume_look_id;
+# can we do this without update
+
+-- UPDATE shopping_tool_lookmetrics_temp stlmtt
+-- LEFT JOIN aggregation_metrics am
+-- ON am.look_id = stlmtt.allume_look_id
+-- SET stlmtt.average_item_price = am.average_item_price,
+--     stlmtt.total_look_price = am.total_look_price
+-- WHERE am.look_id = stlmtt.allume_look_id;
 
  -- SELECT alp.allume_look_id, SUM(pap.current_price) FROM
  -- allume_looks al LEFT JOIN allume_look_products alp ON
