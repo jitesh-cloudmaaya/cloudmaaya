@@ -6,11 +6,39 @@ from django.core.urlresolvers import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
+from shopping_tool_api.serializers import LookMetricsSerializer
+
 from shopping_tool.models import *
 from django.http.cookie import SimpleCookie
 from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY
 
 #http://www.django-rest-framework.org/api-guide/testing/
+
+class TempLookMetricsTestCase(APITestCase):
+
+    # added look_metrics to end of fixtures
+    fixtures = ['wpusers', 'allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite', 'lookmetrics']
+
+    def setUp(self):
+        client = WpUsers.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+        self.client.cookies = SimpleCookie({AUTH_EMAIL_KEY: 'client@allume.co'})
+
+    def test_lookmetrics_serializer(self):
+        lm = LookMetrics.objects.get(pk=1)
+        serializer = LookMetricsSerializer(lm)
+        # ascertain serializer data
+        self.assertIsNotNone(serializer)
+        json = serializer.data
+        self.assertEqual(u'64.00', json['total_look_price'])
+        self.assertEqual(1, json['look'])
+        self.assertEqual(u'32.00', json['average_item_price'])
+        self.assertEqual(3, json['total_favorites'])
+        self.assertEqual(u'0.00', json['store_rank'])
+        self.assertEqual(u'0.00', json['total_item_sales'])
+
+    def test_access_lookmetrics(self):
+        # Look = Look.objects.create()
+        pass
 
 class ShoppingToolAPITestCase(APITestCase):
     

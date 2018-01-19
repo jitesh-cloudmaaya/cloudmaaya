@@ -330,6 +330,9 @@ def look_list(request):
             favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('look_id', flat=True)
             looks = looks.filter(id__in = favs)
 
+    # filter by average_item_price
+    # filter by total_look_price
+
     paginator = Paginator(looks, per_page)
 
     try:
