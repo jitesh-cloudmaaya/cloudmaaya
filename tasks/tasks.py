@@ -65,3 +65,11 @@ def ran_full_pull_new():
     pf.clean_data()
     print("Load data to API products table")
     pf.load_cleaned_data()
+
+# first guess at task
+@task(base=QueueOnce)
+def build_lookmetrics():
+    cursor = connection.cursor()
+    etl_file = open(os.path.join(BASE_DIR, 'tasks/look_metrics_sql/look_metrics.sql'))
+    statement = etl_file.read()
+    cursor.execute(statement)
