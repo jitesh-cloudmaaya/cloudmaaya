@@ -61,6 +61,26 @@ CREATE OR REPLACE VIEW look_favorites AS
 -- LookMetrics are based off the Look they are foreign key'd to
 -- Using the allume_looks table, I should construct some of these fields here
 
+-- INSERT INTO shopping_tool_lookmetrics_temp (
+--     average_item_price,
+--     total_look_price,
+--     total_favorites,
+--     total_item_sales,
+--     store_rank,
+--     allume_look_id)
+-- SELECT
+--     am.average_item_price AS average_item_price,
+--     am.total_look_price AS total_look_price,
+--     lf.total_favorites AS total_favorites,
+--     0 AS total_item_sales, # Blank for now
+--     0 AS store_rank, # Blank for now
+--     al.id FROM allume_looks al
+--     LEFT JOIN aggregation_metrics am
+--     ON al.id = am.look_id
+--     LEFT JOIN look_favorites lf
+--     ON al.id = lf.look_id;
+
+-- attempt to write SQL without VIEWS
 INSERT INTO shopping_tool_lookmetrics_temp (
     average_item_price,
     total_look_price,
@@ -69,17 +89,20 @@ INSERT INTO shopping_tool_lookmetrics_temp (
     store_rank,
     allume_look_id)
 SELECT
-    am.average_item_price AS average_item_price,
-    am.total_look_price AS total_look_price,
-    lf.total_favorites AS total_favorites,
-    0 AS total_item_sales, # Blank for now
-    0 AS store_rank, # Blank for now
-    al.id FROM allume_looks al
-    LEFT JOIN aggregation_metrics am
-    ON al.id = am.look_id
-    LEFT JOIN look_favorites lf
-    ON al.id = lf.look_id;
-
+    SUM(pap.current_price) / COUNT(alp.allume_look_id) AS average_item_price,
+    SUM(pap.current_price) AS total_look_price,
+    COUNT(ulf.look_id) AS total_favorites,
+    0 as total_item_sales, # blank for now
+    0 as store_rank, # blank for now
+    al.id
+    FROM allume_looks al
+    LEFT JOIN allume_look_products alp
+    ON al.id = alp.allume_look_id
+    LEFT JOIN product_api_product pap
+    ON alp.wp_product_id = pap.product_id
+    LEFT JOIN shopping_tool_userlookfavorite ulf
+    ON al.id = ulf.look_id
+    GROUP BY al.id;
 # can we do this without update
 
 -- UPDATE shopping_tool_lookmetrics_temp stlmtt
