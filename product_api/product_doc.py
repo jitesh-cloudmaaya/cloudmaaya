@@ -69,7 +69,7 @@ class EProductSearch(FacetedSearch):
     # fields that should be searched
     index = PRODUCT_INDEX
 
-    fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category']
+    fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category', 'color']
     price_ranges=[("$0-$25", (None, 25)), ("$25-$50", (25, 50)), ("$50-$100", (50, 100)), ("$100-$250", (100, 250)), ("$250-$500", (250, 500)), ("$500 And Up", (500, None))]
     
     facets = collections.OrderedDict((
