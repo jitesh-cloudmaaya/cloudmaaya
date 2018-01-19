@@ -1548,7 +1548,8 @@ div.layout-option span.name {
 #rack-tabs a.tab.on {border-color:#ed8365;}
 #add-look-btn,
 div.rack-look a.look-link,
-#design-look-user-toggle {
+#design-look-user-toggle,
+#collage-preview {
   background:#f2987e;
   border-radius:5px;
   color:#fff;
@@ -1563,20 +1564,24 @@ div.rack-look a.look-link,
   text-decoration:none;
   z-index:4;
 }
-#design-look-user-toggle {
+#design-look-user-toggle,
+#collage-preview {
   font-size:12px;
   margin:11px 45px 0 10px;
   padding:5px 15px 7px;
   text-transform: uppercase;
 }
+#collage-preview {margin:-5px 0 0 0;}
 #fave-looks div.rack-look a.look-link {display:none;}
 div.rack-look a.look-link {margin:0 7px 0 0;}
 #add-look-btn:hover,
 div.rack-look a.look-link:hover,
-#design-look-user-toggle:hover {background:#ed8365;}
+#design-look-user-toggle:hover,
+#collage-preview:hover {background:#ed8365;}
 #add-look-btn:active,
 div.rack-look a.look-link:active,
-#design-look-user-toggle:active{  
+#design-look-user-toggle:active,
+#collage-preview:active{  
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
   color:#474747;

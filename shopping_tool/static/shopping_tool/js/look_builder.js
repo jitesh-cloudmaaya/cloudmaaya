@@ -479,7 +479,10 @@ var look_builder = {
         markup.push('</table>');
         $('#look-indepth').html(
           '<div class="stage"><a href="#" class="close-indepth"><i class="fa fa-times"></i></a>' +
-          '<h2>' + result.name + '</h2><p class="layout"><em>layout: </em>' + result.look_layout.display_name + 
+          '<h2>' + result.name + '</h2><p class="layout">' +
+          '<a href="https://shopping-tool-web-stage.allume.co/collage_image/' + result.id + 
+          '.jpg" id="collage-preview" target="_blank">preview collage</a>' +
+          '<em>layout: </em>' + result.look_layout.display_name + 
           '</p><div class="products">' + markup.join('') + '</div></div>'
         );
         if(cropped_images.length > 0){
