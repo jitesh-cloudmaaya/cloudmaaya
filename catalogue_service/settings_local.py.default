@@ -11,21 +11,6 @@ DATABASES = {
     }
 }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',
-        'PORT': '3307',
-        'NAME': 'allume_style',
-        'USER': 'allume',
-        'PASSWORD': 'fb8fWEj$!]MNju',
-        'OPTIONS': {
-            'local_infile': 1,
-        }
-    }
- }
-
-
 
 # Elastic Search Connection
 from elasticsearch_dsl.connections import connections
@@ -59,7 +44,7 @@ ONCE = {
 NOAA_TOKEN = 'YdgPMhahlBcRshMkgsmDaoFlvAFcjwnr'
 
 AUTH_LOGIN_URL = 'https://social-services-stage.allume.co/auth/oauth/login/google-oauth2/'
-AUTH_EMAIL_KEY = 'allume-stylist-email-stage'
+AUTH_EMAIL_KEY = 'user_email' #'allume-stylist-email-stage'
 
 IMGKIT_URL = 'https://shopping-tool-web-stage.allume.co'
 
