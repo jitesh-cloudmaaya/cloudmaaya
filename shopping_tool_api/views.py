@@ -297,6 +297,7 @@ def look_list(request):
     """
     looks = Look.objects.all()#
     looks = looks.filter(look_layout__isnull=False)
+    looks = looks.exclude(look_layout = 0)
 
     page = 1
     if 'page' in request.data:
