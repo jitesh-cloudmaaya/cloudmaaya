@@ -331,6 +331,33 @@ def look_list(request):
             looks = looks.filter(id__in = favs)
 
 
+    lookmetrics = LookMetrics.objects.all()
+
+    if 'total_look_price' and 'total_look_price_comparison' in request.data:
+        comparison = request.data['total_look_price_comparison']
+        threshold = request.data['total_look_price']
+        if comparison == 'lt':
+            lookmetrics = LookMetrics.objects.filter(total_look_price__lt = threshold)
+        elif comparison == 'lte':
+            lookmetrics = LookMetrics.objects.filter(total_look_price__lte = threshold)
+        elif comparison == 'e':
+            lookmetrics = LookMetrics.objects.filter(total_look_price = threshold)
+            # print lookmetrics.values_list('id', 'total_look_price')
+        elif comparison == 'gte':
+            lookmetrics = LookMetrics.objects.filter(total_look_price__gte = threshold)
+        elif comparison == 'gt':
+            lookmetrics = LookMetrics.objects.filter(total_look_price__gt = threshold)
+
+    if 'average_item_price' and 'average_item_price_comparison' in request.data:
+        pass
+
+    # do this step after filtering on potentially both total look price and average item price
+    lookmetrics = lookmetrics.values_list('look', flat=True)
+    # print lookmetrics
+
+    looks = looks.filter(id__in = lookmetrics)
+
+
 # we can traverse LookMetrics to get the Look that it is foreign key'd to
 # e.g. LookMetrics.objects.filter(look__id__lte=2)
 # but the opposite call yields an error
