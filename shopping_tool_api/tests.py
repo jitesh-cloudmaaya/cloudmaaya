@@ -50,7 +50,6 @@ class LookMetricsTestCase(APITestCase):
         self.assertEqual(200, response.status_code)
         data = json.loads(response.content)
         # check length of looks returned
-        # print data
         self.assertEqual(13, len(data['looks']))
         # as well as the thresholds set in the filter?
 
@@ -346,8 +345,6 @@ class ShoppingToolAPITestCase(APITestCase):
         Test to verify getting looks list
         """
 
-        print LookMetrics.objects.count()
-        print Look.objects.count()
 
         url = reverse("shopping_tool_api:look_list")
         
@@ -362,7 +359,6 @@ class ShoppingToolAPITestCase(APITestCase):
         client_filter_data = {"client": 8}
         response_client = self.client.post(url, client_filter_data)
         response_data_client = json.loads(response_client.content)
-        print response_data_client
         self.assertEqual(len(response_data_client['looks']), 2)
         self.assertEqual(200, response_client.status_code)
 
@@ -370,7 +366,6 @@ class ShoppingToolAPITestCase(APITestCase):
         stylist_filter_data = {"stylist": 9}
         response_stylist = self.client.post(url, stylist_filter_data)
         response_data_stylist = json.loads(response_stylist.content)
-        print response_data_stylist
         self.assertEqual(len(response_data_stylist['looks']), 3)
         self.assertEqual(200, response_stylist.status_code)
 
