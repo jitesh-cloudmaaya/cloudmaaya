@@ -330,8 +330,60 @@ def look_list(request):
             favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('look_id', flat=True)
             looks = looks.filter(id__in = favs)
 
-    # filter by average_item_price
+
+# we can traverse LookMetrics to get the Look that it is foreign key'd to
+# e.g. LookMetrics.objects.filter(look__id__lte=2)
+# but the opposite call yields an error
+# e.g. Look.objects.filter(lookmetrics__id=1)
+
+# django allows the traversal of foreign key relationships backwards but only for a given object instance
+# aka, Look.lookmetrics_set
+
+# use LookMetrics.objects.all() to build a query set of looks and use that query set as the filter
+# that will be used in the filter chaining looks = looks.filter?
+
+# Entry.objects.filter(id__gt=4)
+    
+    # lookmetrics = LookMetrics.objects.all() # refer to the 'client' case and 'favorites_only'
+
+    # # LookMetrics.objects.filter(average_item_price__gte=3000)
+
+    # # filter by average_item_price
+    # if 'average_item_price' and 'comparison' in request.data:
+    #     print 'this happens!!'
+    #     if comparison == 'lt':
+    #         print 'check'
+    #     elif comparison == 'lte':
+    #         print 'checkers'
+    #     elif comparison == 'e':
+    #         print 'cawfe'
+    #     elif comparison == 'gte':
+    #         print 'gween'
+    #     elif comparison == 'gt':
+    #         print 'tea'
+    
+    # if 'aip_filter' in request.data:
+    #     aip_data = request.data['aip_filter']
+    #     if 'average_item_price' in aip_data and 'comparison' in aip_data:
+    #         threshold = aip_data['average_item_price']
+    #         comparison = aip_data['comparison']
+    #         # comparison case statements
+    #         if comparison == 'lt':
+    #             lookmetrics = LookMetrics.objects.filter(average_item_price__lt = threshold)
+    #         elif comparison == 'lte':
+    #             lookmetrics = LookMetrics.objects.filter(average_item_price__lte = threshold)
+    #         elif comparison == 'e':
+    #             lookmetrics = LookMetrics.objects.filter(average_item_price = threshold)
+    #         elif comparison == 'gte':
+    #             lookmetrics = LookMetrics.objects.filter(average_item_price__gte = threshold)
+    #         elif comparison == 'gt':
+    #             lookmetrics = LookMetrics.objects.filter(average_item_price__gte = threshold)
+
     # filter by total_look_price
+
+
+    # after both the filter by total_look_price and average_item_price
+    # looks = looks.filter(id__in = lookmetrics) # probably need to change?
 
     paginator = Paginator(looks, per_page)
 
