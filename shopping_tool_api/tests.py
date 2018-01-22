@@ -16,7 +16,7 @@ from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY
 
 class LookMetricsTestCase(APITestCase):
 
-    fixtures = ['lookmetrics']
+    fixtures = ['LookMetricsTestCase']
 
     def setUp(self):
         client = WpUsers.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
@@ -161,75 +161,15 @@ class LookMetricsTestCase(APITestCase):
         self.assertEqual(9, len(data['looks']))
         # as well as the thresholds set in the filter
 
-    # def test_get_look_list(self):
-    #     """
-    #     Test to verify getting looks list
-    #     """
-
-    #     url = reverse("shopping_tool_api:look_list")
-        
-
-    #     #Test Getting UnFiltered List
-    #     response_all = self.client.post(url)
-    #     response_data_all = json.loads(response_all.content)
-    #     self.assertEqual(len(response_data_all['looks']), 3)
-    #     self.assertEqual(200, response_all.status_code)
-
-    #     #Test Getting Client Filtered List
-    #     client_filter_data = {"client": 8}
-    #     response_client = self.client.post(url, client_filter_data)
-    #     response_data_client = json.loads(response_client.content)
-    #     self.assertEqual(len(response_data_client['looks']), 2)
-    #     self.assertEqual(200, response_client.status_code)
-
-    #     #Test Getting Stylist Filtered List
-    #     stylist_filter_data = {"stylist": 9}
-    #     response_stylist = self.client.post(url, stylist_filter_data)
-    #     response_data_stylist = json.loads(response_stylist.content)
-    #     self.assertEqual(len(response_data_stylist['looks']), 3)
-    #     self.assertEqual(200, response_stylist.status_code)
-
-    #     #Test Getting allume_styling_session Filtered List
-    #     styling_session_filter_data = {"allume_styling_session": 3}
-    #     response_styling_session = self.client.post(url, styling_session_filter_data)
-    #     response_data_styling_session = json.loads(response_styling_session.content)
-    #     self.assertEqual(len(response_data_styling_session['looks']), 2)
-    #     self.assertEqual(200, response_styling_session.status_code)
-
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['wpusers', 'allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite']
+    fixtures = ['wpusers', 'allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite', 'lookmetrics']
     shopper = ''
     client = ''
 
     def setUp(self):        
         client = WpUsers.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
         self.client.cookies = SimpleCookie({AUTH_EMAIL_KEY: 'client@allume.co'})
-
-
-    #     #Test Getting Client Filtered List
-    #     client_filter_data = {"client": 8}
-    #     response_client = self.client.post(url, client_filter_data)
-    #     response_data_client = json.loads(response_client.content)
-    #     self.assertEqual(len(response_data_client['looks']), 2)
-    #     self.assertEqual(200, response_client.status_code)
-
-
-    # def test_other(self):
-    #     """
-    #     use already working to see where going wrong
-    #     """
-    #     url = reverse("shopping_tool_api:look_list")
-
-    #     client_filter_data = {"client": 8}
-    #     response_client = self.client.post(url, client_filter_data)
-    #     print('checking status code')
-    #     self.assertEqual(200, response_client.status_code)
-    #     print(response_client.status_code)
-    #     response_data_client = json.loads(response_client.content)
-    #     print('checking response data')
-    #     self.assertEqual(2, len(response_data_client['looks']))
-    #     print(response_data_client)
 
     def test_create_look(self):
         """
@@ -405,6 +345,9 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting looks list
         """
+
+        print LookMetrics.objects.count()
+        print Look.objects.count()
 
         url = reverse("shopping_tool_api:look_list")
         
