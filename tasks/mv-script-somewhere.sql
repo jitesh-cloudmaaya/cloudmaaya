@@ -1,9 +1,4 @@
-# table = temporary/intermediate table
-# statement = "DELETE FROM product_api_product WHERE temp_table.product_id = product_api.product_id"
-# statement = "INSERT INTO"
-
 DROP TABLE IF EXISTS product_api_product_temp;
-
 CREATE TABLE IF NOT EXISTS product_api_product_temp (
     id integer AUTO_INCREMENT NOT NULL PRIMARY KEY, 
     product_id bigint(20) NULL, 
@@ -49,6 +44,3 @@ CREATE TABLE IF NOT EXISTS product_api_product_temp (
     allume_size varchar(255) NULL,
     allume_category varchar(255) NULL
     );
-
-# LOAD DATA for temp table would go here
--- LOAD DATA;

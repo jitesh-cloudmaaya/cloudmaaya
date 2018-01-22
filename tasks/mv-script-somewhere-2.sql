@@ -1,24 +1,4 @@
--- update via delete/insert
--- DELETE FROM product_api_product WHERE product_id IN (SELECT product_id FROM product_api_product_temp);
-
--- DELETE FROM product_api_product pap
--- LEFT JOIN product_api_product_temp papt
--- ON pap.product_id = papt.product_id
--- AND pap.merchant_id = papt.merchant_id
--- WHERE pap.product_id = papt.product_id
--- AND pap.merchant_id = papt.merchant_id;
-
-
--- delete logic from allume_client_360
--- DELETE FROM allume_client_360
--- WHERE wp_user_id IN (SELECT wp_user_id from update_subset);
-
-
--- DELETE FROM product_api_product pap WHERE pap.product_id = product_api_product_temp.product_id;
-
--- DELETE try # 4
 DELETE pap.* FROM product_api_product pap INNER JOIN product_api_product_temp papt ON pap.product_id = papt.product_id and pap.merchant_id = papt.merchant_id;
-
 INSERT INTO product_api_product (
     product_id,
     merchant_id,
@@ -107,9 +87,4 @@ SELECT
     papt.allume_size,
     papt.allume_category
 FROM product_api_product_temp papt;
-
--- update logic from update_client_360
--- DELETE FROM allume_client_360
--- WHERE wp_user_id IN (SELECT wp_user_id from update_subset);
-
 DROP TABLE product_api_product_temp;

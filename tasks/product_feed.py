@@ -61,33 +61,32 @@ class ProductFeed(object):
         # statement = "DELETE FROM product_api_product WHERE temp_table.product_id = product_api.product_id"
         # statement = "INSERT INTO"
 
+        # attempt to rewrite compound sql statements to separate statements via statements and split
+        full_script = []
+
         # separate current temp sql thingy into two files
         sql_script = open(os.path.join(BASE_DIR, 'tasks/mv-script-somewhere.sql'))
         statement = sql_script.read()
-        print 'creating temp table'
-        cursor.execute(statement)
-        cursor.close()
+        statements = statement.split(';')
+        for i in range(0, len(statements) - 1):
+            full_script.append(statements[i])
 
-        cursor = connection.cursor()
-
-        print 'loading cleaned data to temp table'
         table = 'product_api_product_temp'
-        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s;" % (f, table, fields)
-        cursor.execute(statement)
+        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s" % (f, table, fields)
+        full_script.append(statement)
 
-        cursor.close()
-
-        cursor = connection.cursor()
-
-        # hopefully two parts works with .execute for now
         sql_script = open(os.path.join(BASE_DIR, 'tasks/mv-script-somewhere-2.sql'))
         statement = sql_script.read()
-        print 'delete and insert for update'
-        cursor.execute(statement)
+        statements = statement.split(';')
 
+        for i in range(0, len(statements) - 1):
+            full_script.append(statements[i])
+
+        for statement in full_script:
+            cursor.execute(statement)
         cursor.close()
 
-        print 'finished'
+        return
 
     def decompress_data(self):
         file_list = os.listdir(self._local_temp_dir)
