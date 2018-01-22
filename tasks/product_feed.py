@@ -65,7 +65,7 @@ class ProductFeed(object):
         full_script = []
 
         # separate current temp sql thingy into two files
-        sql_script = open(os.path.join(BASE_DIR, 'tasks/mv-script-somewhere.sql'))
+        sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
         statement = sql_script.read()
         statements = statement.split(';')
         for i in range(0, len(statements) - 1):
@@ -75,7 +75,7 @@ class ProductFeed(object):
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s" % (f, table, fields)
         full_script.append(statement)
 
-        sql_script = open(os.path.join(BASE_DIR, 'tasks/mv-script-somewhere-2.sql'))
+        sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
         statement = sql_script.read()
         statements = statement.split(';')
 
