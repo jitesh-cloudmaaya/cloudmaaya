@@ -8,6 +8,8 @@ import yaml
 import datetime
 from product_feed_py import *
 
+from catalogue_service.settings import BASE_DIR
+
 class ProductFeed(object):
 
 
@@ -37,6 +39,13 @@ class ProductFeed(object):
     def clean_data(self):
         exec self._clean_data_method
 
+
+    # cursor = connection.cursor()
+    # etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360.sql'))
+    # statement = etl_file.read()
+    # cursor.execute(statement)
+
+
     # how to get filename of flat_file.csv
     def load_cleaned_data(self): # eventually rename
         cursor = connection.cursor()
@@ -48,8 +57,37 @@ class ProductFeed(object):
         table = self._table
         fields = self._fields
 
+        # table = temporary/intermediate table
+        # statement = "DELETE FROM product_api_product WHERE temp_table.product_id = product_api.product_id"
+        # statement = "INSERT INTO"
+
+        # separate current temp sql thingy into two files
+        sql_script = open(os.path.join(BASE_DIR, 'tasks/mv-script-somewhere.sql'))
+        statement = sql_script.read()
+        print 'creating temp table'
+        cursor.execute(statement)
+        cursor.close()
+
+        cursor = connection.cursor()
+
+        print 'loading cleaned data to temp table'
+        table = 'product_api_product_temp'
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s;" % (f, table, fields)
         cursor.execute(statement)
+
+        cursor.close()
+
+        cursor = connection.cursor()
+
+        # hopefully two parts works with .execute for now
+        sql_script = open(os.path.join(BASE_DIR, 'tasks/mv-script-somewhere-2.sql'))
+        statement = sql_script.read()
+        print 'delete and insert for update'
+        cursor.execute(statement)
+
+        cursor.close()
+
+        print 'finished'
 
     def decompress_data(self):
         file_list = os.listdir(self._local_temp_dir)
