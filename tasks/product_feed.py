@@ -86,8 +86,6 @@ class ProductFeed(object):
             cursor.execute(statement)
         cursor.close()
 
-        return
-
     def decompress_data(self):
         file_list = os.listdir(self._local_temp_dir)
 
