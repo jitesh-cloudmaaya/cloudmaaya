@@ -284,7 +284,9 @@ def look_list(request):
     post:
         Get a list of looks filtered by shopper, client or styling_session and its products, layouts, etc
        
-        Sample JSON Object, all filters below are optional.
+        Sample JSON Object, all filters below are optional, though both total_look_price and average_item_price
+        expect to occur with a respective minimum and maximum.
+
         {
          "client": 1,
          "allume_styling_session":3,

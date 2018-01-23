@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from shopping_tool_api.serializers import LookMetricsSerializer
+from shopping_tool_api.serializers import LookMetricsSerializer, LookSerializer
 
 from shopping_tool.models import *
 from django.http.cookie import SimpleCookie
@@ -39,6 +39,21 @@ class LookMetricsTestCase(APITestCase):
         self.assertEqual(u'0.00', json['total_item_sales'])
 
     # test the lookmetrics serializer in the look serializer?
+    def test_look_serializer(self):
+        """
+        Test that look_metrics field of a Look is setup correctly.
+        """
+        l = Look.objects.get(pk=1)
+        serializer = LookSerializer(l)
+        self.assertIsNotNone(serializer)
+        json = serializer.data
+        lookmetrics = json['look_metrics'][0]
+        self.assertEqual(1, lookmetrics['look'])
+        self.assertEqual(u'32.00', lookmetrics['average_item_price'])
+        self.assertEqual(u'64.00', lookmetrics['total_look_price'])
+        self.assertEqual(3, lookmetrics['total_favorites'])
+        self.assertEqual(u'0.00', lookmetrics['total_item_sales'])
+        self.assertEqual(u'0.00', lookmetrics['store_rank'])
 
     def test_get_look_list_total_look_price(self):
         """
