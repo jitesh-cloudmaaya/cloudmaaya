@@ -293,10 +293,10 @@ def look_list(request):
          "page": 1,
          "per_page": 20,
          "favorites_only": True,
-         "total_look_price": 1000.00,
-         "total_look_price_comparison": "lte",
-         "average_item_price": 45.00,
-         "average_item_price_comparison": "gt",
+         "total_look_price_minimum": 500.00,
+         "total_look_price_maximum": 1000.00,
+         "average_item_price_minimum": 20.00,
+         "average_item_price_maximum": 45.00,
         }
     """
     looks = Look.objects.all()#
@@ -334,36 +334,18 @@ def look_list(request):
             looks = looks.filter(id__in = favs)
 
     lookmetrics = LookMetrics.objects.all()
-    if 'total_look_price' and 'total_look_price_comparison' in request.data:
-        comparison = request.data['total_look_price_comparison']
-        threshold = request.data['total_look_price']
-        if comparison == 'lt':
-            lookmetrics = LookMetrics.objects.filter(total_look_price__lt = threshold)
-        elif comparison == 'lte':
-            lookmetrics = LookMetrics.objects.filter(total_look_price__lte = threshold)
-        elif comparison == 'e':
-            lookmetrics = LookMetrics.objects.filter(total_look_price = threshold)
-        elif comparison == 'gte':
-            lookmetrics = LookMetrics.objects.filter(total_look_price__gte = threshold)
-        elif comparison == 'gt':
-            lookmetrics = LookMetrics.objects.filter(total_look_price__gt = threshold)
+    if 'total_look_price_minimum' and 'total_look_price_maximum' in request.data:
+        minimum = request.data['total_look_price_minimum']
+        maximum = request.data['total_look_price_maximum']
+        lookmetrics = LookMetrics.objects.filter(total_look_price__gte = minimum, total_look_price__lte = maximum)
 
-    if 'average_item_price' and 'average_item_price_comparison' in request.data:
-        comparison = request.data['average_item_price_comparison']
-        threshold = request.data['average_item_price']
-        if comparison == 'lt':
-            lookmetrics = lookmetrics.filter(average_item_price__lt = threshold)
-        elif comparison == 'lte':
-            lookmetrics = lookmetrics.filter(average_item_price__lte = threshold)
-        elif comparison == 'e':
-            lookmetrics = lookmetrics.filter(average_item_price = threshold)
-        elif comparison == 'gte':
-            lookmetrics = lookmetrics.filter(average_item_price__gte = threshold)
-        elif comparison == 'gt':
-            lookmetrics = lookmetrics.filter(average_item_price__gt = threshold)
+    if 'average_item_price_minimum' and 'average_item_price_maximum' in request.data:
+        minimum = request.data['average_item_price_minimum']
+        maximum = request.data['average_item_price_maximum']
+        lookmetrics = lookmetrics.filter(average_item_price__gte = minimum, average_item_price__lte = maximum)
 
     # do this step after filtering on potentially both total look price and average item price
-    if 'total_look_price' or 'average_item_price' in request.data:
+    if 'total_look_price_minimum' or 'average_item_price_minimum' in request.data:
         lookmetrics = lookmetrics.values_list('look', flat=True)
         looks = looks.filter(id__in = lookmetrics)
 
