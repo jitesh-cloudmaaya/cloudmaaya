@@ -1,0 +1,9 @@
+-   model: shopping_tool.lookmetrics
+    pk: 1
+    fields: {look: 1, average_item_price: 32.00, total_look_price: 64.00, total_favorites: 3, total_item_sales: 0, store_rank: 0}
+-   model: shopping_tool.lookmetrics
+    pk: 2
+    fields: {look: 2, average_item_price: 32.00, total_look_price: 64.00, total_favorites: 3, total_item_sales: 0, store_rank: 0}
+-   model: shopping_tool.lookmetrics
+    pk: 3
+    fields: {look: 3, average_item_price: 32.00, total_look_price: 64.00, total_favorites: 3, total_item_sales: 0, store_rank: 0}
