@@ -49,7 +49,9 @@ SELECT
 
 CREATE INDEX shopping_tool_lookmetrics_allume_look_id_d50ba475 ON shopping_tool_lookmetrics_temp (allume_look_id);
 
--- also drop the views?
+-- also drop the views
+DROP VIEW IF EXISTS aggregation_metrics;
+DROP VIEW IF EXISTS look_favorites;
 
 DROP TABLE IF EXISTS shopping_tool_lookmetrics;
 
