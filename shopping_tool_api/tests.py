@@ -104,8 +104,6 @@ class LookMetricsTestCase(APITestCase):
         """
         url = reverse("shopping_tool_api:look_list")
 
-        # all total_look_prices are placeholders until more interesting data is defined in fixture
-
         # test on strictly less than
         average_item_price_filter_data = {'average_item_price': 40.00, 'average_item_price_comparison': 'lt'}
         response = self.client.post(url, average_item_price_filter_data)
@@ -159,6 +157,29 @@ class LookMetricsTestCase(APITestCase):
         # check length of looks returned
         self.assertEqual(9, len(data['looks']))
         # as well as the thresholds set in the filter
+
+    def test_both_lookmetrics_filters(self):
+        """
+        Tests the ability to filter on both of the filters used via LookMetrics
+        """
+        url = reverse("shopping_tool_api:look_list")
+
+        filter_data = {'total_look_price': 1000.00, 'total_look_price_comparison': 'gt',
+                        'average_item_price': 100.00, 'average_item_price_comparison': 'gte'}
+        response = self.client.post(url, filter_data)
+        data = json.loads(response.content)
+        # check lengths of looks returned
+        self.assertEqual(3, len(data['looks']))
+
+        filter_data = {'total_look_price': 400.00, 'total_look_price_comparison': 'lte',
+                        'average_item_price': 40.00, 'average_item_price_comparison': 'lt'}
+
+        response = self.client.post(url, filter_data)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(9, len(data['looks']))
+
+
 
 class ShoppingToolAPITestCase(APITestCase):
     

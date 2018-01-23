@@ -347,15 +347,15 @@ def look_list(request):
         comparison = request.data['average_item_price_comparison']
         threshold = request.data['average_item_price']
         if comparison == 'lt':
-            lookmetrics = LookMetrics.objects.filter(average_item_price__lt = threshold)
+            lookmetrics = lookmetrics.filter(average_item_price__lt = threshold)
         elif comparison == 'lte':
-            lookmetrics = LookMetrics.objects.filter(average_item_price__lte = threshold)
+            lookmetrics = lookmetrics.filter(average_item_price__lte = threshold)
         elif comparison == 'e':
-            lookmetrics = LookMetrics.objects.filter(average_item_price = threshold)
+            lookmetrics = lookmetrics.filter(average_item_price = threshold)
         elif comparison == 'gte':
-            lookmetrics = LookMetrics.objects.filter(average_item_price__gte = threshold)
+            lookmetrics = lookmetrics.filter(average_item_price__gte = threshold)
         elif comparison == 'gt':
-            lookmetrics = LookMetrics.objects.filter(average_item_price__gt = threshold)
+            lookmetrics = lookmetrics.filter(average_item_price__gt = threshold)
 
     # do this step after filtering on potentially both total look price and average item price
     if 'total_look_price' or 'average_item_price' in request.data:
