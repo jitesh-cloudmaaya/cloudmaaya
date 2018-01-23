@@ -7,7 +7,6 @@ from django.db import connection, transaction
 import yaml
 import datetime
 from product_feed_py import *
-
 from catalogue_service.settings import BASE_DIR
 
 class ProductFeed(object):
@@ -82,9 +81,12 @@ class ProductFeed(object):
         for i in range(0, len(statements) - 1):
             full_script.append(statements[i])
 
-        for statement in full_script:
-            cursor.execute(statement)
-        cursor.close()
+        try:
+            with transaction.atomic():
+                for statement in full_script:
+                    cursor.execute(statement)
+        finally:
+            cursor.close()
 
     def decompress_data(self):
         file_list = os.listdir(self._local_temp_dir)
