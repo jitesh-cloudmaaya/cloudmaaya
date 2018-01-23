@@ -16,7 +16,7 @@ CREATE OR REPLACE VIEW aggregation_metrics AS
     SUM(pap.current_price) AS total_look_price,
     SUM(pap.current_price) / COUNT(allume_look_id) AS average_item_price
     FROM allume_looks al LEFT JOIN allume_look_products alp ON al.id = alp.allume_look_id
-    LEFT JOIN product_api_product pap ON alp.product = pap.id GROUP BY al.id
+    LEFT JOIN product_api_product pap ON alp.raw_product_id = pap.id GROUP BY al.id
 );
 
 CREATE OR REPLACE VIEW look_favorites AS
