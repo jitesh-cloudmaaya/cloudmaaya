@@ -22,7 +22,6 @@ var look_builder = {
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
-        console.log(response)
         var markup = [];
         var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
@@ -163,13 +162,19 @@ var look_builder = {
         msg.push('select a look layout'); 
       }
       if(pre == 0){
+        $('#creating-look').show();
+        $('#create-look').hide();
         $.ajax({
           contentType : 'application/json',
           data: JSON.stringify(look_obj),
           success:function(response){
             look_builder.setUpBuilder(response.id);
-            $('#creating-look').show();
-            $('#create-look').hide();
+            $.get('/shopping_tool_api/look/' + response.id + '/', function(result){
+              var content = look_builder.lookMarkupGenerator(result, 'comp', null);
+              $('#compare-looks div.other-looks').prepend(content[0]);
+              var new_div = $('#compare-looks div.other-looks div.comp-look:nth-child(1)');
+              new_div.addClass('editing').siblings('div.comp-look').removeClass('editing off').addClass('off')
+            });
           },
           type: 'PUT',
           url: '/shopping_tool_api/look/0/'
@@ -338,7 +343,6 @@ var look_builder = {
         var content = look_builder.lookMarkupGenerator(result, 'comp', null);
         div.before(content[0]);
         div.remove();
-        console.log(content[1])
         if(content[1].length > 0){
           for(var i = 0, l = content[1].length; i<l; i++){
             look_builder.getCroppedImage(content[1][i], '#compare-looks');
@@ -418,8 +422,6 @@ var look_builder = {
         var dims = crop.dims.split(',')
         var new_src = look_builder.getImagePortion(imgObject, dims[0],dims[1],dims[2], dims[3], 1);
         var dom = $(selector + ' #' + crop.id);
-        console.log(selector + " " + crop.id)
-        console.log(dom)
         var img_h = dom.find('img').height()
         dom.find('img').attr('src', new_src );
       }
@@ -695,7 +697,7 @@ var look_builder = {
                   }
                   /** ecom API addition */
                   $.ajax({
-                    data: 'look_product_id=' + obj.product,
+                    data: 'look_product_id=' + response.id,
                     type: 'POST',
                     url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/'
                   });
