@@ -327,7 +327,6 @@ def look_list(request):
             favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('look_id', flat=True)
             looks = looks.filter(id__in = favs)
 
-
     lookmetrics = LookMetrics.objects.all()
     if 'total_look_price' and 'total_look_price_comparison' in request.data:
         comparison = request.data['total_look_price_comparison']
