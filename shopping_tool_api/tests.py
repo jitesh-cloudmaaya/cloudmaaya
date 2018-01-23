@@ -180,7 +180,6 @@ class LookMetricsTestCase(APITestCase):
         self.assertEqual(9, len(data['looks']))
 
 
-
 class ShoppingToolAPITestCase(APITestCase):
     
     fixtures = ['wpusers', 'allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite', 'lookmetrics']
