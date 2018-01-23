@@ -292,7 +292,11 @@ def look_list(request):
          "name": "Body Suit",
          "page": 1,
          "per_page": 20,
-         "favorites_only": True
+         "favorites_only": True,
+         "total_look_price": 1000.00,
+         "total_look_price_comparison": "lte",
+         "average_item_price": 45.00,
+         "average_item_price_comparison": "gt",
         }
     """
     looks = Look.objects.all()#
