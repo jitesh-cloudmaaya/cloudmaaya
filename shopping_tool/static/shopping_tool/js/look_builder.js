@@ -401,6 +401,15 @@ var look_builder = {
       e.preventDefault();
       $('#cropper').fadeOut();
     });
+    $('#publish-lookbook').click(function(e){
+      e.preventDefault();
+      $('#publish-lookbook-overlay').fadeIn();
+      /* the setting looks categories go here */
+    });
+    $('#close-lb').click(function(e){
+      e.preventDefault();
+      $('#publish-lookbook-overlay').fadeOut();
+    });    
   },
   /**
   * @description to handle invalid states we use a recursive loading check for images before we crop them

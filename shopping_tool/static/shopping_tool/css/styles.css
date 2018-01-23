@@ -772,6 +772,7 @@ div#rack-btns span {
 #cancel-edit-look,
 #close-design-look,
 #close-cropper,
+#close-lb,
 #look-indepth a.close-indepth,
 #inspect-item a.close-inspect {
   color:#bbb;
@@ -791,11 +792,13 @@ div#rack-btns span {
 #cancel-edit-look:hover,
 #look-indepth a.close-indepth:hover,
 #inspect-item a.close-inspect:hover,
+#close-lb:hover,
 #close-cropper:hover {color:#474747;}
 #close-rack:active,
 #cancel-new-look:active,
 #close-design-look:active,
 #cancel-edit-look:active,
+#close-lb:active,
 #look-indepth a.close-indepth:active,
 #inspect-item a.close-inspect:active,
 #close-cropper:active {color:#0090D9;}
@@ -1247,7 +1250,8 @@ div.layout-option span.name {
 
 
 #create-look,
-#creating-look {
+#creating-look,
+#publish-lookbook-overlay {
   background:rgba(0,0,0,0.7);
   display:none;
   height:100%;
@@ -1259,6 +1263,7 @@ div.layout-option span.name {
 }
 #create-look div.stage,
 #creating-look div.stage,
+#publish-lookbook-overlay div.stage,
 div.indepth-loading {
   background:#fff;
   border-radius:5px;
@@ -1270,6 +1275,12 @@ div.indepth-loading {
   width:600px;
   z-index:201;
 }
+#publish-lookbook-overlay div.stage {
+  height:calc(100% - 40px);
+  left:20px;
+  top:20px;
+  width:calc(100% - 40px);
+}
 #create-look div.stage {height:320px; top:calc(50% - 160px);}
 #creating-look div.stage,
 div.indepth-loading {
@@ -1280,9 +1291,8 @@ div.indepth-loading {
 }
 #creating-look div.stage span.pulse_loader,
 div.indepth-loading span.pulse_loader {margin:45px 0 0 75px;}
-
-
-#create-look div.stage h2 {
+#create-look div.stage h2,
+#publish-lookbook-overlay h2{
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;
