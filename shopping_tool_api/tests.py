@@ -6,22 +6,189 @@ from django.core.urlresolvers import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
+from shopping_tool_api.serializers import LookMetricsSerializer
+
 from shopping_tool.models import *
 from django.http.cookie import SimpleCookie
 from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY
 
 #http://www.django-rest-framework.org/api-guide/testing/
 
+class LookMetricsTestCase(APITestCase):
+
+    fixtures = ['LookMetricsTestCase']
+
+    def setUp(self):
+        client = WpUsers.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+        self.client.cookies = SimpleCookie({AUTH_EMAIL_KEY: 'client@allume.co'})
+
+    def test_lookmetrics_serializer(self):
+        """
+        Tests that the serializer is set up correctly.
+        """
+        lm = LookMetrics.objects.get(pk=1)
+        serializer = LookMetricsSerializer(lm)
+        # ascertain serializer data
+        self.assertIsNotNone(serializer)
+        json = serializer.data
+        self.assertEqual(u'64.00', json['total_look_price'])
+        self.assertEqual(1, json['look'])
+        self.assertEqual(u'32.00', json['average_item_price'])
+        self.assertEqual(3, json['total_favorites'])
+        self.assertEqual(u'0.00', json['store_rank'])
+        self.assertEqual(u'0.00', json['total_item_sales'])
+
+    def test_get_look_list_total_look_price(self):
+        """
+        Tests the ability to get a look list and filter on total look price.
+        """
+        url = reverse("shopping_tool_api:look_list")
+
+        # test on strictly less than
+        total_look_price_filter_data = {'total_look_price': 400.00, 'total_look_price_comparison': 'lt'}
+        response = self.client.post(url, total_look_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(13, len(data['looks']))
+        # as well as the thresholds set in the filter?
+
+        # test on less than or equal to
+        total_look_price_filter_data = {'total_look_price': 36.20, 'total_look_price_comparison': 'lte'}
+        response = self.client.post(url, total_look_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(2, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on equal to exists
+        total_look_price_filter_data = {'total_look_price': 1.00, 'total_look_price_comparison': 'e'}
+        response = self.client.post(url, total_look_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(1, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on equal to does not exist
+        total_look_price_filter_data = {'total_look_price': 13.13, 'total_look_price_comparison': 'e'}
+        response = self.client.post(url, total_look_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check lengths of looks returned
+        self.assertEqual(0, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on greater than or equal to
+        total_look_price_filter_data = {'total_look_price': 1840.00, 'total_look_price_comparison': 'gte'}
+        response = self.client.post(url, total_look_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(2, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on strictly greater than
+        total_look_price_filter_data = {'total_look_price': 3000.00, 'total_look_price_comparison': 'gt'}
+        response = self.client.post(url, total_look_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(1, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+    def test_get_look_list_average_item_price(self):
+        """
+        Tests the ability to get a look list and filter on average item price.
+        """
+        url = reverse("shopping_tool_api:look_list")
+
+        # test on strictly less than
+        average_item_price_filter_data = {'average_item_price': 40.00, 'average_item_price_comparison': 'lt'}
+        response = self.client.post(url, average_item_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(9, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on less than or equal to
+        average_item_price_filter_data = {'average_item_price': 40.00, 'average_item_price_comparison': 'lte'}
+        response = self.client.post(url, average_item_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(10, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on equal to exists
+        average_item_price_filter_data = {'average_item_price': 18.10, 'average_item_price_comparison': 'e'}
+        response = self.client.post(url, average_item_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(1, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on equal to does not exist
+        average_item_price_filter_data = {'average_item_price': 10.18, 'average_item_price_comparison': 'e'} 
+        response = self.client.post(url, average_item_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(0, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on greater than or equal to
+        average_item_price_filter_data = {'average_item_price': 300.03, 'average_item_price_comparison': 'gte'}
+        response = self.client.post(url, average_item_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(5, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on strictly greater than
+        average_item_price_filter_data = {'average_item_price': 100.00, 'average_item_price_comparison': 'gt'}
+        response = self.client.post(url, average_item_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(9, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+    def test_both_lookmetrics_filters(self):
+        """
+        Tests the ability to filter on both of the filters used via LookMetrics
+        """
+        url = reverse("shopping_tool_api:look_list")
+
+        filter_data = {'total_look_price': 1000.00, 'total_look_price_comparison': 'gt',
+                        'average_item_price': 100.00, 'average_item_price_comparison': 'gte'}
+        response = self.client.post(url, filter_data)
+        data = json.loads(response.content)
+        # check lengths of looks returned
+        self.assertEqual(3, len(data['looks']))
+
+        filter_data = {'total_look_price': 400.00, 'total_look_price_comparison': 'lte',
+                        'average_item_price': 40.00, 'average_item_price_comparison': 'lt'}
+
+        response = self.client.post(url, filter_data)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(9, len(data['looks']))
+
+
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['wpusers', 'allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite']
+    fixtures = ['wpusers', 'allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite', 'lookmetrics']
     shopper = ''
     client = ''
 
     def setUp(self):        
         client = WpUsers.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
         self.client.cookies = SimpleCookie({AUTH_EMAIL_KEY: 'client@allume.co'})
-
 
     def test_create_look(self):
         """
@@ -197,6 +364,7 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         Test to verify getting looks list
         """
+
 
         url = reverse("shopping_tool_api:look_list")
         

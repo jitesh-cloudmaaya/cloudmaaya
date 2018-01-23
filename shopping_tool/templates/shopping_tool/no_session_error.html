@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load sstatic %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,7 +9,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css" rel="stylesheet"/>
   {% load static %}
-  <link href="{% static 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
+  <link href="{% sstatic 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
 </head>
 <body class="search-page" data-stylesession="{{ styling_session.id }}">
 <div id="header">
