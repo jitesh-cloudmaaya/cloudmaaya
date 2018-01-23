@@ -65,3 +65,17 @@ def ran_full_pull_new():
     pf.clean_data()
     print("Load data to API products table")
     pf.load_cleaned_data()
+
+# build attempt to change celery task to non-compound sql statement execution from lookmetrics.sql
+@task(base=QueueOnce)
+def build_lookmetrics():
+    cursor = connection.cursor()
+    etl_file = open(os.path.join(BASE_DIR, 'tasks/look_metrics_sql/look_metrics.sql'))
+    statement = etl_file.read()
+    statements = statement.split(';')
+    try:
+        with transaction.atomic():
+            for i in range(0, len(statements) - 1):
+                cursor.execute(statements[i])
+    finally:
+        cursor.close()

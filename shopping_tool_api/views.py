@@ -318,10 +318,7 @@ def look_list(request):
 
     if 'stylist' in request.data:
         stylist = request.data['stylist']
-        print stylist
         looks = looks.filter(stylist = stylist)
-
-        print looks.count()
 
     if 'name' in request.data:
         name = request.data['name']
@@ -331,6 +328,40 @@ def look_list(request):
         if request.data['favorites_only'] == "True":
             favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('look_id', flat=True)
             looks = looks.filter(id__in = favs)
+
+    lookmetrics = LookMetrics.objects.all()
+    if 'total_look_price' and 'total_look_price_comparison' in request.data:
+        comparison = request.data['total_look_price_comparison']
+        threshold = request.data['total_look_price']
+        if comparison == 'lt':
+            lookmetrics = LookMetrics.objects.filter(total_look_price__lt = threshold)
+        elif comparison == 'lte':
+            lookmetrics = LookMetrics.objects.filter(total_look_price__lte = threshold)
+        elif comparison == 'e':
+            lookmetrics = LookMetrics.objects.filter(total_look_price = threshold)
+        elif comparison == 'gte':
+            lookmetrics = LookMetrics.objects.filter(total_look_price__gte = threshold)
+        elif comparison == 'gt':
+            lookmetrics = LookMetrics.objects.filter(total_look_price__gt = threshold)
+
+    if 'average_item_price' and 'average_item_price_comparison' in request.data:
+        comparison = request.data['average_item_price_comparison']
+        threshold = request.data['average_item_price']
+        if comparison == 'lt':
+            lookmetrics = lookmetrics.filter(average_item_price__lt = threshold)
+        elif comparison == 'lte':
+            lookmetrics = lookmetrics.filter(average_item_price__lte = threshold)
+        elif comparison == 'e':
+            lookmetrics = lookmetrics.filter(average_item_price = threshold)
+        elif comparison == 'gte':
+            lookmetrics = lookmetrics.filter(average_item_price__gte = threshold)
+        elif comparison == 'gt':
+            lookmetrics = lookmetrics.filter(average_item_price__gt = threshold)
+
+    # do this step after filtering on potentially both total look price and average item price
+    if 'total_look_price' or 'average_item_price' in request.data:
+        lookmetrics = lookmetrics.values_list('look', flat=True)
+        looks = looks.filter(id__in = lookmetrics)
 
     paginator = Paginator(looks, per_page)
 
