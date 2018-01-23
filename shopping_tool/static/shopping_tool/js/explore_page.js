@@ -25,13 +25,11 @@ var explore_page = {
     utils.menu();
     utils.client();
     rack_builder.init();
-    look_builder.functionality();
     /* cache the session id */
     explore_page.session_id = $('body').data('stylesession');
     /* explore page functionality */
     var looks_header = $('#looks-header');
     var at_load_stylist = utils.readURLParams('set_stylist');
-    $('#stylist-select').val(' ').selectize({ create: false, sortField: 'text'});
     if(at_load_stylist == null){
       /* get the initial page of looks */
       $('#loader').data('filter', {});
@@ -42,7 +40,8 @@ var explore_page = {
       $('#loader').data('filter', {stylist: at_load_stylist});
       getLooks({stylist: at_load_stylist});      
     }
-    $('#look-name').val('');
+    $('#search-terms').val('');
+    $('#explore-only-faves').prop('checked', false);
     $('#all-looks-list').on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
@@ -56,6 +55,7 @@ var explore_page = {
         var index = explore_page.favorite_look_ids.indexOf(look_id);
         explore_page.favorite_look_ids.splice(index, 1);
         explore_page.favorite_looks.splice(index, 1);
+        link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
         $.ajax({
           contentType : 'application/json',
           error: function(response){
@@ -63,7 +63,6 @@ var explore_page = {
           },
           success:function(response){
             //console.log(response);
-            link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
             rack_builder.getRackLooks('favorites', '#fave-looks');
           },
           type: 'DELETE',
@@ -74,6 +73,7 @@ var explore_page = {
           "stylist": parseInt($('#stylist').data('stylistid')) ,
           "look": parseInt(link.data('lookid'))     
         }
+        link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
         $.ajax({
           contentType : 'application/json',
           data: JSON.stringify(fave),
@@ -84,7 +84,7 @@ var explore_page = {
             //console.log(response);
             explore_page.favorite_looks.push(response);
             explore_page.favorite_look_ids.push(response.look);
-            link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+            
             rack_builder.getRackLooks('favorites', '#fave-looks');
           },
           type: 'PUT',
@@ -103,7 +103,7 @@ var explore_page = {
       e.preventDefault();
       var lookup = {};
       var stylist = $('#stylist-select').val();
-      var name = $('#look-name').val();
+      var name = $('#search-terms').val();
       var faves = $('#look-favorite-status').hasClass('fave');
       lookup.page = 1
       if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
@@ -188,8 +188,7 @@ var explore_page = {
       markup.push(
         '<div class="look"><div class="display">' + look_fave_link  +
         '<h3><em data-lookid="' + look.id + '">' + look.name + '</em><span>by ' + 
-        stylist_names[look.stylist] + '</span></h3><p class="desc"><em>description:</em>' + 
-        look.description + '</p><div class="items">' +
+        stylist_names[look.stylist] + '</span></h3><div class="items">' +
         '<div class="explore-look-wrapper"><div class="explore-look-layout">'
       );
       for(var ix = 0, lx = look.look_layout.layout_json.length; ix<lx; ix++){
@@ -239,6 +238,7 @@ var explore_page = {
       }
       var stores = '';
       var price_info ='';
+      var desc = look.description != '' ? '<p class="desc"><em>Description:</em>' + look.description + '</p>' : '';
       if(merchants.length > 0){
         merchants = [...new Set(merchants)];
         var last_class = prices.length == 0 ? 'last' : '' ;
@@ -249,11 +249,10 @@ var explore_page = {
           return accumulator + currentValue;
         });
         price_info = '<p class="extras"><em>Total price:</em> ' + numeral(tp).format('$0,0.00') + 
-          '</p><p class="extras last"><em>Average item price:</em> ' + numeral(tp/prices.length).format('$0,0.00') +
+          '</p><p class="extras"><em>Average item price:</em> ' + numeral(tp/prices.length).format('$0,0.00') +
           '</p>';
       }
-      div.append(
-        markup.join('') + '</div></div>' + stores + '' + price_info + '</div></div>')
+      div.append(markup.join('') + '</div></div>' + stores + '' + price_info + '' + desc + '</div></div>');
     }
     if(cropped_images.length > 0){
       for(var i = 0, l = cropped_images.length; i<l; i++){

@@ -1431,6 +1431,7 @@ div.indepth-loading span.pulse_loader {margin:45px 0 0 75px;}
 #compare-looks div.comp-look span.layout.desc,
 #looks-list div.rack-look span.layout.desc,
 #fave-looks div.rack-look span.layout.desc {white-space: pre-wrap;}
+#looks-list div.rack-look span.layout.desc,
 #compare-looks div.comp-look span.layout em ,
 #looks-list div.rack-look span.layout em,
 #fave-looks div.rack-look span.layout em{font-weight:400;}
@@ -1752,7 +1753,8 @@ div.lookbook-btns a:active,
 }
 #look-filter-options.show {top:50px;}
 #look-filter-options label.toggle,
-#search label.toggle { 
+#search label.toggle,
+#explore-form label.toggle { 
   cursor: pointer; 
   display:block;
   margin:0 10px 10px; 
@@ -1765,9 +1767,11 @@ div.lookbook-btns a:active,
 }
 #looks-header.ready label.toggle {display:block;}
 #search label.toggle.faves {margin:15px 0 0 ;}
+#explore-form label.toggle.faves {margin:15px 0 0 12px ;}
 #look-filter-options label.toggle em,
 #search label.toggle em,
-#looks-header label.toggle em{
+#looks-header label.toggle em,
+#explore-form label.toggle em{
   color:#000;
   display:inline-block;
   font-size:14px;
@@ -1779,7 +1783,8 @@ div.lookbook-btns a:active,
 }
 #look-filter-options label.toggle span,
 #search label.toggle span,
-#looks-header label.toggle span {
+#looks-header label.toggle span,
+#explore-form label.toggle span {
   background-color: #fff;
   border: 1px solid #dfdfdf;
   border-radius: 12px;
@@ -1795,7 +1800,8 @@ div.lookbook-btns a:active,
 }
 #look-filter-options label.toggle span small,
 #search label.toggle span small,
-#looks-header label.toggle span small {
+#looks-header label.toggle span small,
+#explore-form label.toggle span small {
   background: #fff;
   border-radius: 100%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -1809,12 +1815,15 @@ div.lookbook-btns a:active,
 }
 #look-filter-options label.toggle input,
 #search label.toggle input,
+#explore-form label.toggle input,
 #looks-header label.toggle input {display:none;}
 #look-filter-options label.toggle input:checked + span,
+#explore-form label.toggle input:checked + span,
 #search label.toggle input:checked + span { box-shadow: 0px 0px 0px 16px rgb(81,81,81) inset; border-color:#515151; }
 #looks-header label.toggle input:checked + span {box-shadow: 0px 0px 0px 16px rgb(242,152,126) inset; border-color:#f2987e;}
 #look-filter-options label.toggle input:checked + span > small,
 #looks-header label.toggle input:checked + span > small,
+#explore-form label.toggle input:checked + span > small,
 #search label.toggle input:checked + span > small { left:15px; }
 #look-filter-options input[type="text"] {
   background:#fff;
@@ -1856,34 +1865,30 @@ div.lookbook-btns a:active,
 }
 /* explore look page styles */
 #explore-form {
-  border-bottom:1px solid #ddd;
-  margin-bottom:15px;
-  padding:15px;
+  float:left;
+  padding:10px 0 80px;
+  width:25%;
 }
-#explore-form .selectize-control {display:inline-block; vertical-align:top; width:300px;}
-#explore-form span.label {
-  color:#000;
-  display:inline-block;
+#explore-form .selectize-control { margin:0 15px 10px 10px; }
+#explore-form label {
+  display:block;
   font-size:13px;
   font-weight:300;
-  padding:10px 8px 0 0;
-  vertical-align: top;
+  margin:0 10px 5px;
 }
-#explore-form span.label.middle {padding-left:10px;}
-#explore-form span.label.fave {padding:4px 0 0 10px;}
 #explore-form input[type="text"] {
   background:#fff;
   border:1px solid #d0d0d0;
   border-radius:3px;
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.1);
   color:#303030;
-  display:inline-block;
+  display:block;
   font-size:13px;
   font-weight:200;
   line-height:18px;
-  margin:0;
+  margin:0 15px 10px 10px; 
   padding:8px;
-  width:234px;
+  width:calc(100% - 43px);
 }
 #explore-form a#looks-filter  {
   background:#f2987e;
@@ -1906,10 +1911,16 @@ div.lookbook-btns a:active,
   color:#474747;
 }
 #stylist-select {display:none;}
+#looks-header {
+  margin-left:25%;
+  width:75%;
+  padding:10px 0 0;
+}
 #looks-header.sticky {
   background:rgba(255,255,255,0.9);
   box-shadow:0 0 3px rgba(0,0,0,0.3);
   left:0;
+  margin:0;
   padding:15px 0 10px;
   position:fixed;
   top:0;
@@ -1919,8 +1930,9 @@ div.lookbook-btns a:active,
 #looks-header h2 {
   font-size:18px;
   font-weight:300;
-  padding:0 15px 7.5px;
+  padding:0 10px 7.5px 8px;
 }
+#looks-header.sticky h2 {padding:0 15px 7.5;}
 #looks-header h2 em {font-weight:500;}
 
 #all-looks-list { /* Masonry container */
@@ -1948,22 +1960,7 @@ div.lookbook-btns a:active,
   position:relative;
   width:calc(100%/3);  
 }*/
-#all-looks-list div.look p.desc{
-  background:rgba(0,0,0,0.75);
-  border-radius:3px;
-  box-shadow:0 1px 2px rgba(0,0,0,0.8);
-  color:#fff;
-  display:none;
-  font-size:12px;
-  font-weight:100;
-  padding:10px;
-  position:absolute;
-  top:80px;
-  left:10px;
-  width:calc(100% - 40px);
-  white-space:pre-wrap; 
-  z-index:1; 
-}
+#all-looks-list div.look p.desc,
 #all-looks-list div.look p.extras {
   color:#777;
   font-size:12px;
@@ -1971,23 +1968,18 @@ div.lookbook-btns a:active,
   line-height:18px;
   padding:0 3px;
 }
-#all-looks-list div.look p.extras.last {padding-bottom:10px;}
 #all-looks-list div.look p.extras em {font-weight:400; padding-right:3px;}
 
-#all-looks-list div.look h3:hover + p.desc {
-  display:block;
-  z-index:3;
-}
-
 #all-looks-list div.look p.desc em {
+  font-weight:400; 
   display:block;
-  padding-bottom:3px;
 }
 #all-looks-list div.look div.display {
   background:#fff;
   border-radius:3px;
   box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4);
   margin:5px;
+  padding-bottom:10px;
   position:relative;
 }
 #all-looks-list div.look div.display a.favorite-look {
@@ -2276,18 +2268,18 @@ p#look-desc {
 #looks-list div.rack-look div.rack-looks-layout,
 #fave-looks div.rack-look div.rack-looks-layout {  transform:scale(0.66); margin-left:-129px;margin-top:-70px;}
 #all-looks-list div.look div.display div.explore-look-wrapper {
-  height:235px;
+  height:175px;
   margin:5px 0 10px;
   overflow:hidden;
-  width:435px;
+  width:324px;
 }
 #all-looks-list div.look div.display div.explore-look-layout {
   background:#eee;
   height:415px;
   position:relative;
-  transform:scale(0.5657);
-  margin-top:-90px;
-  margin-left:-161px;
+  transform:scale(0.42);
+  margin-top:-120px;
+  margin-left:-217px;
   width:760px;  
 }
 #look-layout-grid div.layout-block {

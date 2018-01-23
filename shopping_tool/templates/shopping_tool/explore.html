@@ -15,23 +15,19 @@
 {% include "shopping_tool/header_partial.html" %}
 {% include "shopping_tool/client_partial.html" %}
 <div id="explore-form">
-  <span class="label">Show me looks by: </span>
+  <label>Stylist:</label>
   <select id="stylist-select" placeholder="Please select a stylist...">
     <option value=" ">All stylists</option>
   {% for stylist in stylists %}
     <option value="{{stylist.id}}">{{stylist.first_name}} {{stylist.last_name}}</option>
   {% endfor %}
   </select>
-  <span class="label middle">with look names including</span>
-  <input type="text" id="look-name" value="" placeholder=""/>
-  <span class="label fave">and 
-    <a href="#" id="look-favorite-status" class="any">
-      <span class="any">any look</span>
-      <span class="faves">only my favorite looks</span>
-      <i class="fa fa-sort"></i>
-    </a>
-  </span>
-  <a href="#" id="looks-filter">show me</a>
+  <label>Search terms:</label>
+  <input type="text" id="search-terms" value="" placeholder="Enter search terms..."/>
+  <label class="toggle faves">
+    <input id="explore-only-faves" name="show-faves" type="checkbox"><span><small></small></span>
+    <em>show only my favorites</em>
+  </label>
 </div>
 <div id="looks-header">
   <label class="toggle pricey">
@@ -64,6 +60,7 @@ var stylist_names = {
     {{stylist.id}}: "{{stylist.first_name}} {{stylist.last_name}}",
   {% endfor %}
 };
+$('#stylist-select').val(' ').selectize({ create: false, sortField: 'text'});
 /* before initializing page get stylist's favorites */
 $.when(
   $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/'),
