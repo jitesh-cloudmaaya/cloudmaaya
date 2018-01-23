@@ -175,6 +175,8 @@ var explore_page = {
     for(var i = 0, l = list_object.looks.length; i<l; i++){
       var look = list_object.looks[i];
       var markup = [];
+      var merchants = [];
+      var prices = [];
       var look_fave_link = '<a href="#" class="favorite-look" data-lookid="' + 
         look.id + '"><i class="fa fa-heart-o"></i></a>';
       var look_fave_idx = explore_page.favorite_look_ids.indexOf(look.id);
@@ -197,34 +199,36 @@ var explore_page = {
         for(var p = 0, prods = look.look_products.length; p<prods; p++){
           var prod = look.look_products[p];
           if(prod.layout_position == position){
-            var src = prod.product.product_image_url;
-            if(prod.cropped_dimensions != null){
-              var crop = {
-                id: 'look-' + look.id + '-item-' + prod.id,
-                src: look_proxy + '' + src,
-                dims: prod.cropped_dimensions
+            if(prod.product != null){
+              var src = prod.product.product_image_url;
+              if(prod.cropped_dimensions != null){
+                var crop = {
+                  id: 'look-' + look.id + '-item-' + prod.id,
+                  src: look_proxy + '' + src,
+                  dims: prod.cropped_dimensions
+                }
+                cropped_images.push(crop);
               }
-              cropped_images.push(crop);
+
+              var retail = prod.product.retail_price;
+              var sale = prod.product.sale_price;
+              var price_display = '';
+              if((sale >= retail)||(sale == 0)){
+                price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
+                prices.push(parseFloat(retail));
+              }else{
+                price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
+                  ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
+                prices.push(parseFloat(sale));
+              }
+              merchants.push(prod.product.merchant_name);
+              product_markup.push(
+                '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
+                'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
+                '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
+                '"><img style="height:' + block.height + 'px" src="' + src + '"/></span>' + price_display + '</a></div>'
+              );
             }
-
-            var retail = prod.product.retail_price;
-            var sale = prod.product.sale_price;
-            var price_display = '';
-            if((sale >= retail)||(sale == 0)){
-              price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-            }else{
-              price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-                ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-            }
-
-
-
-            product_markup.push(
-              '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
-              'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
-              '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
-              '"><img style="height:' + block.height + 'px" src="' + src + '"/></span>' + price_display + '</a></div>'
-            );
           }
         }
         markup.push(
@@ -233,8 +237,23 @@ var explore_page = {
           'px" data-position="' + position + '">' + product_markup.join() + '</div>'
         );
       }
+      var stores = '';
+      var price_info ='';
+      if(merchants.length > 0){
+        merchants = [...new Set(merchants)];
+        var last_class = prices.length == 0 ? 'last' : '' ;
+        stores = '<p class="extras ' + last_class + '"><em>Stores:</em> ' + merchants.join(', ') + '</p>';
+      }
+      if(prices.length > 0){
+        var tp = prices.reduce(function(accumulator, currentValue, currentIndex, array){
+          return accumulator + currentValue;
+        });
+        price_info = '<p class="extras"><em>Total price:</em> ' + numeral(tp).format('$0,0.00') + 
+          '</p><p class="extras last"><em>Average item price:</em> ' + numeral(tp/prices.length).format('$0,0.00') +
+          '</p>';
+      }
       div.append(
-        markup.join('') + '</div></div></div></div></div>')
+        markup.join('') + '</div></div>' + stores + '' + price_info + '</div></div>')
     }
     if(cropped_images.length > 0){
       for(var i = 0, l = cropped_images.length; i<l; i++){

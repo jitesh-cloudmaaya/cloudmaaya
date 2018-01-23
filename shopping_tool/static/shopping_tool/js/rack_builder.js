@@ -238,9 +238,8 @@ var rack_builder = {
           }
           look_products_markup.push('</div></div>');
           markup.push(
-            '<div class="rack-look"><a href="#" class="look-link" data-lookid="' + comp.id + '" data-lookname="' +
-            comp.name + '" data-lookdesc="' + comp.description + '" data-looklayoutid="' + comp.look_layout.id + 
-            '">edit look</a><h3>' + comp.name + '</h3><span class="layout"><em>layout: </em>' + 
+            '<div class="rack-look"><a href="/look_builder/' + rack_builder.session_id + 
+            '/?look=' + comp.id  + '" class="look-link">edit look</a><h3>' + comp.name + '</h3><span class="layout"><em>layout: </em>' + 
             comp.look_layout.display_name + '</span><div class="rack-look-display">' + 
             look_products_markup.join('') + '</div><span class="layout desc"><em>description: </em>' + 
             comp.description + '</span></div>'
@@ -556,8 +555,7 @@ var rack_builder = {
               '<span class="general"><em>sku:</em>' + product.sku + '</span>' +
               '<span class="general"><em>color:</em>' + product.color + '</span>' +              
               '<span class="general"><em>category:</em>' + product.primary_category + 
-              '</span></td></tr><tr><td id="inspect-sizes"><span class="general header"><em>other sizes:</em>' +
-              '</span></td></table></div></div>'
+              '</span></td></tr><tr><td id="inspect-sizes"></td></table></div></div>'
             );
           }else{
             sizes_list.push(

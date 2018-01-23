@@ -24,6 +24,11 @@ var utils = {
   * @description client details and presentation checks
   */  
   client: function(){
+    /* add keyboard shortcuts for client open/close */
+    Mousetrap.bind('shift+a+s', function(e) {
+      $('#user-card').toggleClass('show')
+      return false;
+    });    
     var clip = $('#user-clip');
     clip.delay(750)
       .queue(function (next) { 
@@ -67,7 +72,6 @@ var utils = {
     /** correctly display where the client lives */
     var locale = $('#client-locale');
     var city_state = locale.data('cs');
-    console.log(city_state)
     if((city_state != undefined)&&(typeof city_state == 'object')){
       var cs_display = city_state.city + ', ' + city_state.state;
       locale.html(cs_display);

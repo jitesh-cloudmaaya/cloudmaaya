@@ -16,11 +16,6 @@ var search_page = {
     look_builder.functionality();
     /* cache the session id */
     search_page.session_id = $('body').data('stylesession');
-    /* add keyboard shortcuts for client open/close */
-    Mousetrap.bind('shift+a+s', function(e) {
-      $('#user-card').toggleClass('show')
-      return false;
-    }); 
     /* search functionality */
     $('#search-btn').click(function(e){
       e.preventDefault();
