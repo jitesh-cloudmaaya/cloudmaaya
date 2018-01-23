@@ -16,7 +16,7 @@ CREATE OR REPLACE VIEW aggregation_metrics AS
     SUM(pap.current_price) AS total_look_price,
     SUM(pap.current_price) / COUNT(allume_look_id) AS average_item_price
     FROM allume_looks al LEFT JOIN allume_look_products alp ON al.id = alp.allume_look_id
-    LEFT JOIN product_api_product pap ON alp.wp_product_id = pap.product_id GROUP BY al.id # join on wp_product_id?
+    LEFT JOIN product_api_product pap ON alp.product = pap.id GROUP BY al.id
 );
 
 CREATE OR REPLACE VIEW look_favorites AS
@@ -48,6 +48,8 @@ SELECT
     ON al.id = lf.look_id;
 
 CREATE INDEX shopping_tool_lookmetrics_allume_look_id_d50ba475 ON shopping_tool_lookmetrics_temp (allume_look_id);
+
+-- also drop the views?
 
 DROP TABLE IF EXISTS shopping_tool_lookmetrics;
 
