@@ -13,6 +13,9 @@ class MerchantAdmin(admin.ModelAdmin):
 class NetworkAdmin(admin.ModelAdmin):
     list_display = ('name', 'active')
 
+class CategoryMapAdmin(admin.ModelAdmin):
+    list_display = ('id', 'external_cat1', 'external_cat2', 'allume_category', 'active', 'pending_review')
+
 #class MerchantCategoryAdmin(admin.ModelAdmin):
 #    list_display = ('name', 'active', 'network')
 
@@ -32,7 +35,7 @@ class NetworkInLine(admin.TabularInline):
 admin.site.register(Merchant, MerchantAdmin)
 admin.site.register(Network, NetworkAdmin)
 #admin.site.register(MerchantCategory, MerchantCategoryAdmin)
-admin.site.register(CategoryMap)
+admin.site.register(CategoryMap, CategoryMapAdmin)
 admin.site.register(AllumeCategory)
 admin.site.register(ColorMap)
 

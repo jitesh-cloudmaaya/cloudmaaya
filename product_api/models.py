@@ -111,6 +111,7 @@ class CategoryMap(models.Model):
     external_cat2 = models.CharField(max_length=250, blank=True, null=True)
     allume_category = models.ForeignKey(AllumeCategory, blank=True, null=True)
     active = models.BooleanField(default=False)
+    pending_review = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 

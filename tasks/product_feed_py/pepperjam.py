@@ -7,27 +7,65 @@ from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
 
+# Set Up PepeprJam URL
+PEPPER_JAM_API_BASE_URL = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_API_VERSION)
+
+def get_merchants(status='joined'):
+
+    # Set Up PepperJam URL
+    pepper_jam_api_merchant_url = PEPPER_JAM_API_BASE_URL + "publisher/advertiser?apiKey=%s&status=%s&format=json" % (PEPPERJAM_API_KEY, status)
+
+    # Look Up Existing DB Meta Data
+    merchant_mapping = mappings.create_merchant_mapping()
+    network = mappings.get_network('PepperJam')
+
+    # Get Merchants
+    merchants = json.load(urllib2.urlopen(pepper_jam_api_merchant_url))
+    
+    # Create some variables to count process metrics
+    new_merchants = 0
+
+    for merchant in merchants['data']:
+        merchant_id = int(merchant['id'])
+        merchant_name = merchant['name']
+
+        try:
+            merchant_is_active = merchant_mapping[merchant_id]
+        except:
+            mappings.add_new_merchant(merchant_id, merchant_name, network, False)
+            merchant_mapping = mappings.create_merchant_mapping() #Reload Merchant Mapping
+            new_merchants += 1
+
+    print('Added %s new merchants' % new_merchants)
 
 def get_data(local_temp_dir):
 
+     # Set Up PepperJam URL
+    pepper_jam_api_product_url = PEPPER_JAM_API_BASE_URL + "publisher/creative/product?apiKey=%s&format=json" % (PEPPERJAM_API_KEY)
+    #pepper_jam_api_product_url = "https://api.pepperjamnetwork.com/20120402/publisher/creative/product?apiKey=48db78a072444a019989822d21aa513a5f0f67bb2363d6370b9e59b23bd4b29d&format=json&page=26"
+
+
+    # Get Mapping Data
     merchant_mapping = mappings.create_merchant_mapping()
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+    network = mappings.get_network('PepperJam')
 
-
+    # Set Up PepeprJam URL
     pepper_jam_api_base_url = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_API_VERSION)
     pepper_jam_api_product_url = pepper_jam_api_base_url + "publisher/creative/product?apiKey=%s&format=json" % (PEPPERJAM_API_KEY)
-    print pepper_jam_api_product_url
 
+    # Set output Destination
     destination = local_temp_dir + '/ppj_flat_file.txt'
 
+    # Create some variables to count process metrics
     totalCount = 0
     writtenCount = 0
-
     genderSkipped = 0
     allumecategorySkipped = 0
     inactiveSkipped = 0
+    new_merchants = 0
 
 
     with open(destination, "w") as cleaned:
@@ -37,24 +75,68 @@ def get_data(local_temp_dir):
         while more_pages:
 
             ## Prod & Staging Only
-            #product_feed = json.load(urllib2.urlopen(pepper_jam_api_product_url))
+            print("Getting Data")
+            print(pepper_jam_api_product_url)
+            product_feed = json.load(urllib2.urlopen(pepper_jam_api_product_url))
 
             ## Dev Only
-            json_data = open('tasks/product_feed_py/sample_data/pepperjam.json')  
-            product_feed = json.load(json_data)
-            json_data.close()
+            #json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')  
+            #product_feed = json.load(json_data)
+            #json_data.close()
 
             if 'next' in  product_feed['meta']['pagination']:
-                pepper_jam_api_product_url = product_feed['meta']['pagination']['next']
+                pepper_jam_api_product_url = product_feed['meta']['pagination']['next']['href']
             else:
                 more_pages = False
 
 
             for product in product_feed['data']:
 
+                merchant_id = product['program_id']
+                merchant_name = product['program_name']
+
+                # Test if Mechant Is Active
+                try:
+                    merchant_is_active = merchant_mapping[int(merchant_id)]
+                except:
+                    mappings.add_new_merchant(merchant_id, merchant_name, network, False)
+                    merchant_mapping = mappings.create_merchant_mapping() #Reload Merchant Mapping
+                    new_merchants += 1
+                    merchant_is_active = 0
+                # check that the merchant_id is active in the merchant mapping
+                if merchant_is_active == False:
+                    continue
+
+                primary_category = product['category_program']
+                secondary_category = product['category_network']
+
+                # Test if Category is Active
+                try:
+                    identifier = (primary_category, secondary_category)
+                    allume_category_id, active = category_mapping[identifier]
+                    # activity check on the primary, secondary category pair
+                    if not active:
+                        inactiveSkipped += 1
+                        continue
+                    # print(active)
+                    allume_category, active = allume_category_mapping[allume_category_id]
+                    # activity check on the allume_category
+                    if not active:
+                        inactiveSkipped += 1
+                        continue
+                except:
+                    # there is no entry in the category tables for the provided categories
+                    # assume inactive?
+                    allumecategorySkipped += 1
+                    mappings.add_category_map(primary_category, secondary_category, None, False, True)
+                    allume_category_mapping = mappings.create_allume_category_mapping()
+                    category_mapping = mappings.create_category_mapping()
+                    continue
+
+                ## Build Record for Insertion
                 record = ''
                 record += "-99" + u'|' #product_id
-                record += product['program_id'] + u'|' #merchant_id
+                record += merchant_id + u'|'
                 record += product['name'] + u'|' #product_name
                 record += product['description_long'] + u'|' #long_product_description
                 record += product['description_short'] + u'|' #short_product_description
@@ -76,7 +158,10 @@ def get_data(local_temp_dir):
                     record += discount_type + u'|'
 
                 sale_price = product['price_sale'] #float(product['price_sale'].decode('utf-8'))
-                record += sale_price + u'|' #sale_price
+                if sale_price != None:
+                    record += sale_price + u'|' #retail_price
+                else:
+                    record += "" + u'|' #retail_price
 
                 retail_price = product['price'] #float(product['price_retail'].decode('utf-8'))
                 if retail_price != None:
@@ -125,8 +210,8 @@ def get_data(local_temp_dir):
                 record += product['keywords'] + u'|' #keywords
 
                 # allume category information
-                record += 'primary_category' + u'|' #primary_category
-                record += 'secondary_category' + u'|' #secondary_category
+                record += primary_category + u'|'
+                record += secondary_category + u'|'
 
                 record += 'allume_category' + u'|' #allume_category
 
@@ -135,7 +220,7 @@ def get_data(local_temp_dir):
                 record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + u'|'
                 # record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f') + ',') ?
                 # end date
-                record += product['program_name'] + u'|' #merchant_name
+                record += merchant_name + u'|'
                 # how to indicate null or 0 as in ran.sql
                 record += '0|' # is_best_seller default
                 record += '0|' # is_trending default
@@ -157,8 +242,7 @@ def get_data(local_temp_dir):
                 else:
                     record += '0\n'
 
-
-                cleaned.write(record)
+                cleaned.write(record.encode('UTF-8'))
                 writtenCount += 1
 
     print('Processed %s records' % totalCount)
@@ -166,6 +250,8 @@ def get_data(local_temp_dir):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
     print('Dropped %s records due to inactive categories' % inactiveSkipped)
+    print('Added %s new merchants' % new_merchants)
+    new_merchants
 		
 
 """
