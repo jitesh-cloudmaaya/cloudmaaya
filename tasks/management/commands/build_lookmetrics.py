@@ -20,7 +20,7 @@ class Command(BaseCommand):
                             cursor.execute(statements[i])
             finally:
                 cursor.close()
-                self.stdout.write(self.style.WARNING("Successfully built shopping_tool_lookmetrics table"))
+                self.stdout.write(self.style.SUCCESS("Successfully built shopping_tool_lookmetrics table"))
         except Exception as e:
             self.stdout.write(self.style.ERROR("Failed"))
             self.stdout.write(self.style.ERROR(e))

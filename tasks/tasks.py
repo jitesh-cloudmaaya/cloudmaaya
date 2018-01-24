@@ -15,8 +15,9 @@ def ran_delta_pull():
     pf.decompress_data()
     print("Cleaning files")
     pf.clean_data()
-    print("Load data to API products table")
+    print("Update API products table")
     pf.load_cleaned_data()
+    print("Successfully updated API products table")
 
 @task(base=QueueOnce)
 def ran_full_pull():
@@ -27,8 +28,9 @@ def ran_full_pull():
     pf.decompress_data()
     print("Cleaning files")
     pf.clean_data()
-    print("Load data to API products table")
+    print("Update API products table")
     pf.load_cleaned_data()
+    print("Successfully updated API products table")
 
 @task(base=QueueOnce)
 def build_client_360():
