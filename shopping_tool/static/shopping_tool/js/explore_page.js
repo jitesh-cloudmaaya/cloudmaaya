@@ -13,7 +13,8 @@ var explore_page = {
   /**
   * @description cache array of favorited look ids, used to set correct favorite link 
   */
-  favorite_look_ids: [],  
+  favorite_look_ids: [],
+  masonry : '',
   /** 
   * @description cache of styling session
   */
@@ -29,19 +30,18 @@ var explore_page = {
     explore_page.session_id = $('body').data('stylesession');
     /* explore page functionality */
     var looks_header = $('#looks-header');
+    var explore_form = $('#explore-form');
     var at_load_stylist = utils.readURLParams('set_stylist');
     if(at_load_stylist == null){
       /* get the initial page of looks */
       $('#loader').data('filter', {});
-      getLooks({});
+      explore_page.getLooks({});
     }else{
-      $('#stylist-select')[0].selectize.setValue(at_load_stylist, false);
+      $('#stylist-select')[0].selectize.setValue(at_load_stylist, true);
       /* get the initial page of looks for specified stylist */
       $('#loader').data('filter', {stylist: at_load_stylist});
-      getLooks({stylist: at_load_stylist});      
+      explore_page.getLooks({stylist: at_load_stylist});      
     }
-    $('#search-terms').val('');
-    $('#explore-only-faves').prop('checked', false);
     $('#all-looks-list').on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
@@ -92,65 +92,81 @@ var explore_page = {
         }); 
       }
     });
-    /* set look favorite filter inclusion */
-    $('#look-favorite-status').click(function(e){
-      e.preventDefault();
-      var link = $(this);
-      link.toggleClass('any').toggleClass('fave');
-    });
-    /* get new filtered list of looks */
-    $('#looks-filter').click(function(e){
-      e.preventDefault();
-      var lookup = {};
-      var stylist = $('#stylist-select').val();
-      var name = $('#search-terms').val();
-      var faves = $('#look-favorite-status').hasClass('fave');
-      lookup.page = 1
-      if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
-      if(name != ''){ lookup.name = name; }
-      if(faves == true){ lookup.favorites_only = "True"};
-      $('#loader').data('filter',lookup);
-      $('#all-looks-list').html('');
-      getLooks(lookup);
-    });
     /* toggle price display in looks */
     $('#explore-looks-prices').prop('checked',false).click(function(e){
       var box = $(this);
       $('#all-looks-list').toggleClass('priceme');
     });
     /* infinte scroll/paging listen for when user scrolls within 100 px of bnottom of page */
-    $(window).scroll(function(){
+    document.addEventListener('scroll', function(evt){
       var st = $(window).scrollTop();
       var dh = $(document).height();
       var wh = $(window).height(); 
       var tot = st + wh;
       /* sticky header checks */
       if(looks_header.hasClass('sticky') == false){
-        if(st > 148){
+        if(st > 80){
           looks_header.addClass('sticky')
+          explore_form.addClass('sticky')
         }
       }else{
-        if(st < 148){
+        if(st < 80){
           looks_header.removeClass('sticky')
+          explore_form.removeClass('sticky')
         }
       }
       /* load more looks check */
-      if( (dh - 100) < tot ){
+      if( (dh - 80) < tot ){
         var loader = $('#loader');
         if(loader.hasClass('active') == false){
           loader.addClass('active');
           var fields = loader.data();
           var lookup = fields.filter;
           lookup.page = fields.page;
-          getLooks(lookup);
+          explore_page.getLooks(lookup);
         }
       }
+    }, {
+      capture: true,
+      passive: true
     });
-    /**
-    * @description private function to fetch additional looks for the explore list
-    * @param {object} lookup - json representation of fields to pass to API
-    */
-    function getLooks(lookup){
+  },
+  /**
+  * @description process search form into json for API and submit
+  */
+  generateSearch: function(){
+    var lookup = {};
+    var stylist = $('#stylist-select').val();
+    var name = $('#search-terms').val();
+    var faves = $('#explore-only-faves').prop('checked');
+    var totals = $('#total-price-range')[0].noUiSlider.get();
+    var avgs = $('#avg-price-range')[0].noUiSlider.get();
+    var total_minimum = parseFloat(totals[0]);
+    var total_maximum = parseFloat(totals[1]);
+    var avg_minimum = parseFloat(avgs[0]);
+    var avg_maximum = parseFloat(avgs[1]);
+    lookup.page = 1
+    if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
+    if(name != ''){ lookup.name = name; }
+    if(faves == true){ lookup.favorites_only = "True"};
+    if((total_minimum != 0)||(total_maximum != 10000)){
+      lookup.total_look_price_minimum = total_minimum;
+      lookup.total_look_price_maximum = total_maximum;
+    }
+    if((avg_minimum != 0)||(avg_maximum != 2000)){
+      lookup.avgerage_item_price_minimum = avg_minimum;
+      lookup.avgerage_item_price_maximum = avg_maximum; 
+    }
+    console.log(lookup);
+    $('#loader').data('filter',lookup);
+    $('#all-looks-list').html('');
+    explore_page.getLooks(lookup);
+  },
+  /**
+  * @description function to fetch looks for the explore list
+  * @param {object} lookup - json representation of fields to pass to API
+  */  
+  getLooks: function(lookup){
       $('#looks-header h2').html('loading looks...');
       $.ajax({
         contentType : 'application/json',
@@ -161,9 +177,8 @@ var explore_page = {
         },
         type: 'POST',
         url: '/shopping_tool_api/look_list/'
-      });
-    }
-  },
+      });    
+    },
   /**
   * @description add looks to the DOM/UI
   * @param {object} list_object look_list object
@@ -254,6 +269,21 @@ var explore_page = {
       }
       div.append(markup.join('') + '</div></div>' + stores + '' + price_info + '' + desc + '</div></div>');
     }
+    if(list_object.page == 1){
+      if(typeof explore_page.masonry == 'object'){
+        explore_page.masonry.remove();
+      }
+      explore_page.masonry = Macy({
+          container: '#all-looks-list',
+          trueOrder: true,
+          waitForImages: false,
+          margin: 8,
+          columns: 3
+      });
+    }else{
+      console.log(typeof explore_page.masonry)
+      explore_page.masonry.recalculate();
+    }
     if(cropped_images.length > 0){
       for(var i = 0, l = cropped_images.length; i<l; i++){
         look_builder.getCroppedImage(cropped_images[i], '#all-looks-list');
@@ -273,5 +303,80 @@ var explore_page = {
     if((list_object.page + 1) <= list_object.num_pages){
       $('#loader').removeClass('active').data('page', list_object.page + 1);
     }
+  },
+  /**
+  * @description search widget functionality
+  */
+  searchSetUp: function(){    
+    $('#stylist-select').val(' ').selectize({ create: false, sortField: 'text'}).change(function(e){
+      var dd = $(this);
+      if(dd.val() != ''){
+        explore_page.generateSearch();
+      }
+    });
+    $('#search-terms').val('').blur(function(){
+      explore_page.generateSearch();
+    });
+    $('#explore-only-faves').prop('checked', false).click(function(){
+      explore_page.generateSearch();
+    });
+    var total_slider = $('#total-price-range')[0];
+    var total_slider_min = $('#total-price-min')[0];
+    var total_slider_max = $('#total-price-max')[0];
+    var total_slider_inputs = [total_slider_min, total_slider_max];
+    noUiSlider.create(total_slider, {
+      start: [0, 10000],
+      behaviour: 'drag',
+      connect: true,
+      range: {
+        'min': [0],
+        'max': [10000]
+      }
+    });
+    var avg_slider = $('#avg-price-range')[0];
+    var avg_slider_min = $('#avg-price-min')[0];
+    var avg_slider_max = $('#avg-price-max')[0];
+    var avg_slider_inputs = [avg_slider_min, avg_slider_max];
+    noUiSlider.create(avg_slider, {
+      start: [0, 2000],
+      behaviour: 'drag',
+      connect: true,
+      range: {
+        'min': [0],
+        'max': [2000]
+      }
+    });
+    total_slider.noUiSlider.on('update', function( values, handle ) {
+      total_slider_inputs[handle].value = values[handle];
+    });
+    total_slider_inputs.forEach(function(input, handle) {
+      input.addEventListener('change', function(){
+        var r = [null,null];
+        r[handle] = this.value;
+        total_slider.noUiSlider.set(r);
+      });
+    });
+    avg_slider.noUiSlider.on('update', function( values, handle ) {
+      avg_slider_inputs[handle].value = values[handle];
+    });
+    avg_slider_inputs.forEach(function(input, handle) {
+      input.addEventListener('change', function(){
+        var r = [null,null];
+        r[handle] = this.value;
+        avg_slider.noUiSlider.set(r);
+      });
+    });
+    $("#explore-form input.ranger").keydown(function(event) {
+      console.log(event.keyCode)
+      // Allowing backspace, delete, enter
+      if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 13 ) {
+        
+      }else {
+        // Ensure that it is a number and stop the keypress
+        if (event.keyCode < 48 || event.keyCode > 57 ) {
+          event.preventDefault(); 
+        } 
+      }
+    });
   }
 }

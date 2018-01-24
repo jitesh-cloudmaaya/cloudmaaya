@@ -10,6 +10,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css" rel="stylesheet"/>
   {% load static %}
   <link href="{% sstatic 'shopping_tool/css/croppr.min.css' %}" media="all" rel="stylesheet"/>
+  <link href="{% sstatic 'shopping_tool/css/nouislider.css' %}" media="all" rel="stylesheet"/>
   <link href="{% sstatic 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
 </head>
 <body class="explore-page" data-stylesession="{{ styling_session.id }}">
@@ -25,6 +26,34 @@
   </select>
   <label>Search terms:</label>
   <input type="text" id="search-terms" value="" placeholder="Enter search terms..."/>
+  <label class="range">Total price range:</label>
+  <div id="total-price-range"></div>
+  <table class="range-inputs">
+    <tr>
+      <td>
+        <input type="text" class="ranger" id="total-price-min"/>
+        <em>total price minimum</em>
+      </td>
+      <td>
+        <input type="text" class="ranger" id="total-price-max"/>
+        <em>total price maximum</em>
+      </td>
+    </tr>
+  </table>
+  <label class="range">Average price range:</label>
+  <div id="avg-price-range"></div>
+  <table class="range-inputs">
+    <tr>
+      <td>
+        <input type="text" class="ranger" id="avg-price-min"/>
+        <em>average price minimum</em>
+      </td>
+      <td>
+        <input type="text" class="ranger" id="avg-price-max"/>
+        <em>average price maximum</em>
+      </td>
+    </tr>
+  </table>
   <label class="toggle faves">
     <input id="explore-only-faves" name="show-faves" type="checkbox"><span><small></small></span>
     <em>show only my favorites</em>
@@ -49,7 +78,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
 <script src="{% sstatic 'shopping_tool/js/Sortable.min.js' %}"></script>
+<script src="{% sstatic 'shopping_tool/js/nouislider.min.js' %}"></script>
 <script src="{% sstatic 'shopping_tool/js/croppr.min.js' %}"></script>
+<script src="{% sstatic 'shopping_tool/js/macy.min.js' %}"></script>
 <script src="{% sstatic 'shopping_tool/js/utils.js' %}"></script>
 <script src="{% sstatic 'shopping_tool/js/explore_page.js' %}"></script>
 <script src="{% sstatic 'shopping_tool/js/rack_builder.js' %}"></script>
@@ -61,7 +92,7 @@ var stylist_names = {
     {{stylist.id}}: "{{stylist.first_name}} {{stylist.last_name}}",
   {% endfor %}
 };
-$('#stylist-select').val(' ').selectize({ create: false, sortField: 'text'});
+explore_page.searchSetUp();
 /* before initializing page get stylist's favorites */
 $.when(
   $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/'),
