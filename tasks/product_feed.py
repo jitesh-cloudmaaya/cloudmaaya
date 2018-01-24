@@ -67,7 +67,7 @@ class ProductFeed(object):
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
         statement = sql_script.read()
         statements = statement.split(';')
-        for i in range(0, len(statements) - 1):
+        for i in range(0, len(statements)):
             full_script.append(statements[i])
 
         table = 'product_api_product_temp'
@@ -78,13 +78,15 @@ class ProductFeed(object):
         statement = sql_script.read()
         statements = statement.split(';')
 
-        for i in range(0, len(statements) - 1):
+        for i in range(0, len(statements)):
             full_script.append(statements[i])
 
         try:
             with transaction.atomic():
-                for statement in full_script:
-                    cursor.execute(statement)
+                for i in range(0, len(full_script)):
+                    statement = full_script[i]
+                    if statement.strip(): # avoid 'query was empty' operational error
+                        cursor.execute(statement)
         finally:
             cursor.close()
 

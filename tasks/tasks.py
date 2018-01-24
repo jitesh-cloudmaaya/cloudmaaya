@@ -37,7 +37,7 @@ def build_client_360():
         with transaction.atomic():
             for i in range(0, len(statements)):
                 statement = statements[i]
-                if not statement.isspace(): # avoid 'query was empty' operational error
+                if statement.strip(): # avoid 'query was empty' operational error
                     cursor.execute(statement)
     finally:
         cursor.close()
@@ -53,7 +53,7 @@ def update_client_360():
         with transaction.atomic():
             for i in range(0, len(statements)):
                 statement = statements[i]
-                if not statement.isspace(): # avoid 'query was empty' operational error
+                if statement.strip(): # avoid 'query was empty' operational error
                     cursor.execute(statement)
     finally:
         cursor.close()
@@ -92,7 +92,9 @@ def build_lookmetrics():
     statements = statement.split(';')
     try:
         with transaction.atomic():
-            for i in range(0, len(statements) - 1):
-                cursor.execute(statements[i])
+            for i in range(0, len(statements)):
+                statement = statements[i]
+                if statement.strip(): # avoid 'query was empty' operational error
+                    cursor.execute(statements[i])
     finally:
         cursor.close()
