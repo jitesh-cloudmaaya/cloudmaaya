@@ -29,17 +29,34 @@ def ran_full_pull():
 
 @task(base=QueueOnce)
 def build_client_360():
-	cursor = connection.cursor()
-	etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360.sql'))
-	statement = etl_file.read()
-	cursor.execute(statement)
+    cursor = connection.cursor()
+    etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360.sql'))
+    statement = etl_file.read()
+    statements = statement.split(';')
+    try:
+        with transaction.atomic():
+            for i in range(0, len(statements)):
+                statement = statements[i]
+                if not statement.isspace(): # avoid 'query was empty' operational error
+                    cursor.execute(statement)
+    finally:
+        cursor.close()
 
 @task(base=QueueOnce)
 def update_client_360():
     cursor = connection.cursor()
     etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/update_client_360.sql'))
     statement = etl_file.read()
-    cursor.execute(statement)
+    statements = statement.split(';')
+
+    try:
+        with transaction.atomic():
+            for i in range(0, len(statements)):
+                statement = statements[i]
+                if not statement.isspace(): # avoid 'query was empty' operational error
+                    cursor.execute(statement)
+    finally:
+        cursor.close()
 
 # new tasks
 @task(base=QueueOnce)
