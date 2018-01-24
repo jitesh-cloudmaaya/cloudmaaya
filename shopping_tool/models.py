@@ -490,44 +490,6 @@ class Look(models.Model):
     def __str__(self):
         return self.name
 
-
-"""
-class Look(models.Model):
-    allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=1000, blank=True, null=True)
-    look_layout = models.ForeignKey(LookLayout)
-    look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
-    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
-    status = models.CharField(max_length=11, default='Draft')
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
-
-    class Meta:
-        ordering = ['-updated_at']
-        
-    def __str__(self):
-        return self.name
-
-mysql> describe allume_looks;
-+---------------------------+---------------------------+------+-----+---------+-----------------------------+
-| Field                     | Type                      | Null | Key | Default | Extra                       |
-+---------------------------+---------------------------+------+-----+---------+-----------------------------+
-| id                        | bigint(20) unsigned       | NO   | PRI | NULL    | auto_increment              |
-| token                     | varchar(50)               | NO   | UNI |         |                             |
-| allume_styling_session_id | bigint(20)                | NO   | MUL | NULL    |                             |
-| wp_client_id              | bigint(20)                | NO   | MUL | NULL    |                             |
-| wp_stylist_id             | bigint(20)                | NO   |     | NULL    |                             |
-| name                      | varchar(100)              | YES  |     | NULL    |                             |
-| descrip                   | text                      | YES  |     | NULL    |                             |
-| collage                   | varchar(200)              | YES  |     | NULL    |                             |
-| status                    | enum('draft','published') | NO   |     | draft   |                             |
-| date_created              | datetime                  | NO   |     | NULL    |                             |
-| last_modified             | datetime                  | NO   |     | NULL    | on update CURRENT_TIMESTAMP |
-+---------------------------+---------------------------+------+-----+---------+-----------------------------+
-"""
-
-
 class LookProduct(models.Model):
     look = models.ForeignKey(Look, related_name='product_set', db_constraint=False, db_column='allume_look_id')
     wp_product_id = models.BigIntegerField(blank=True, null=True, default=-1, db_column='wp_product_id')
@@ -543,28 +505,6 @@ class LookProduct(models.Model):
         managed = False
         db_table = 'allume_look_products'
 
-"""
-class LookProduct(models.Model):
-    look = models.ForeignKey(Look, related_name='product_set', db_constraint=False)
-    product = models.ForeignKey(Product)
-    layout_position = models.IntegerField()
-    cropped_dimensions = models.CharField(max_length=200, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
-
-
-class AllumeLookProducts(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    allume_look_id = models.BigIntegerField()
-    wp_product_id = models.BigIntegerField()
-    sequence = models.IntegerField()
-    date_created = models.DateTimeField()
-    last_modified = models.DateTimeField()
-    product_clipped_stylist_id = models.BigIntegerField()
-    cropped_dimensions = models.CharField(max_length=200, blank=True, null=True)
-    layout_position = models.IntegerField()
-    raw_product_id = models.IntegerField()
-"""
 class UserProductFavorite(models.Model):
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     product = models.ForeignKey(Product)
@@ -578,6 +518,13 @@ class UserLookFavorite(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+class LookMetrics(models.Model):
+    look = models.ForeignKey(Look, related_name='metric_set', db_constraint=False, db_column='allume_look_id')
+    average_item_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_look_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_favorites = models.IntegerField()
+    total_item_sales = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Blank for now
+    store_rank = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Blank for now  
 
 class AllumeUserStylistNotes(models.Model):
     id = models.BigAutoField(primary_key=True)
