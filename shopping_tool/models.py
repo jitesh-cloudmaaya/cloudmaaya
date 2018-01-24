@@ -6,7 +6,11 @@ import yaml
 import re
 
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from product_api.models import Product
+import uuid
+
 
 # Create your models here.
 class StylistManager(models.Manager):
@@ -401,6 +405,48 @@ class Rack(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+class AllumeLooks(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    token = models.CharField(unique=True, max_length=50)
+    allume_styling_session_id = models.BigIntegerField()
+    wp_client_id = models.BigIntegerField()
+    wp_stylist_id = models.BigIntegerField()
+    name = models.CharField(max_length=100, blank=True, null=True)
+    descrip = models.TextField(blank=True, null=True)
+    collage = models.CharField(max_length=200, blank=True, null=True)
+    status = models.CharField(max_length=9)
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+    is_legacy = models.IntegerField()
+    layout_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_looks'
+        indexes = [
+            models.Index(fields=['layout_id'])
+        ]
+
+
+
+class AllumeLookProducts(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    allume_look_id = models.BigIntegerField()
+    wp_product_id = models.BigIntegerField()
+    sequence = models.IntegerField()
+    date_created = models.DateTimeField()
+    last_modified = models.DateTimeField()
+    product_clipped_stylist_id = models.BigIntegerField()
+    cropped_dimensions = models.CharField(max_length=200, blank=True, null=True)
+    layout_position = models.IntegerField()
+    raw_product_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'allume_look_products'
+        indexes = [
+            models.Index(fields=['raw_product_id'])
+        ]
 
 class LookLayout(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
@@ -420,32 +466,44 @@ class LookLayout(models.Model):
     def layout_json_html(self):
         return json.dumps(json.loads(self._layout_json))
 
-
 class Look(models.Model):
+    #id = models.BigAutoField(primary_key=True)
+    token = models.CharField(unique=True, max_length=50, default=uuid.uuid4)
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
+    wp_client_id = models.BigIntegerField(blank=True, null=True, default =1 )
+    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=1000, blank=True, null=True)
-    look_layout = models.ForeignKey(LookLayout)
-    look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
-    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
+    description = models.CharField(max_length=1000, blank=True, null=True, db_column='descrip')
+    collage = models.CharField(max_length=200, blank=True, null=True, db_column='collage')
     status = models.CharField(max_length=11, default='Draft')
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, db_column='date_created')
+    updated_at = models.DateTimeField(auto_now=True, null=True, db_column='last_modified')
+    is_legacy = models.IntegerField(blank=True, null=True, default = 0)
+    look_layout = models.ForeignKey(LookLayout, db_column='layout_id')
+    look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
 
     class Meta:
         ordering = ['-updated_at']
+        managed = False
+        db_table = 'allume_looks'
         
     def __str__(self):
         return self.name
 
 class LookProduct(models.Model):
-    look = models.ForeignKey(Look, related_name='product_set')
-    product = models.ForeignKey(Product)
-    layout_position = models.IntegerField()
+    look = models.ForeignKey(Look, related_name='product_set', db_constraint=False, db_column='allume_look_id')
+    wp_product_id = models.BigIntegerField(blank=True, null=True, default=-1, db_column='wp_product_id')
+    sequence = models.IntegerField(blank=True, null=True, default=-1)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, db_column='date_created')
+    updated_at = models.DateTimeField(auto_now=True, null=True, db_column='last_modified')
+    product_clipped_stylist_id = models.BigIntegerField(blank=True, null=True, default=-1)
     cropped_dimensions = models.CharField(max_length=200, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
+    layout_position = models.IntegerField()
+    product = models.ForeignKey(Product, db_column='raw_product_id')
 
+    class Meta:
+        managed = False
+        db_table = 'allume_look_products'
 
 class UserProductFavorite(models.Model):
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
@@ -456,7 +514,22 @@ class UserProductFavorite(models.Model):
 
 class UserLookFavorite(models.Model):
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
-    look = models.ForeignKey(Look)
+    look = models.ForeignKey(Look, db_constraint=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+class LookMetrics(models.Model):
+    look = models.ForeignKey(Look, related_name='metric_set', db_constraint=False, db_column='allume_look_id')
+    average_item_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_look_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total_favorites = models.IntegerField()
+    total_item_sales = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Blank for now
+    store_rank = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Blank for now  
+
+@receiver(pre_save, sender=Look)
+def set_look_client_id(sender, instance, *args, **kwargs):
+    instance.wp_client_id = instance.allume_styling_session.client.id
+
+@receiver(pre_save, sender=LookProduct)
+def set_product_clipped_stylist_id(sender, instance, *args, **kwargs):
+    instance.product_clipped_stylist_id = instance.look.stylist.id

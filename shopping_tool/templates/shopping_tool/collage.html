@@ -1,27 +1,32 @@
 {% load staticfiles %}
+{% load sstatic %}
 <!DOCTYPE html>
 <html>
 <head>
   <title>Allume - Shopping Tool Collage Maker</title>
   {% load static %}
-  <link href="{% static 'shopping_tool/css/collage.css' %}" media="all" rel="stylesheet"/>
+  <link href="{% sstatic 'shopping_tool/css/collage.css' %}" media="all" rel="stylesheet"/>
 </head>
 <body>
 <div id="collage"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="{% static 'shopping_tool/js/utils.js' %}"></script>
-<script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
+<script src="{% sstatic 'shopping_tool/js/utils.js' %}"></script>
+<script src="{% sstatic 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
 var look_proxy = '{{ product_image_proxy | safe }}';
 var look = {{ look_json | safe }};
 var collage_markup = [];
 var collage_cropped_images = [];
+var imgs_to_load = [];
+var page_ready = false;
 for(var i = 0, l = look.look_layout.layout_json.length; i<l; i++){
   var block = look.look_layout.layout_json[i];
   var position = block.position;
   var product_markup = [];
   for(var p = 0, prods = look.look_products.length; p<prods; p++){
     var prod = look.look_products[p];
+    /** first loop through layout push all image srcs into array for load checking */
+    if(i == 0){ imgs_to_load.push(prod.product.product_image_url); }
     if(prod.layout_position == position){
       var src = prod.product.product_image_url;
       if(prod.cropped_dimensions != null){
@@ -50,6 +55,34 @@ if(collage_cropped_images.length > 0){
     look_builder.getCroppedImage(collage_cropped_images[i], '#collage');
   }
 }
+
+/** use number of images as counter for loading */
+window.status = 'waiting'
+var loading = look.look_products.length;
+for(var i = 0, l = look.look_products.length; i<l; i++){
+  var img = imgs_to_load[i];
+  var loadTimer;
+  var imgObject = new Image();
+  imgObject.src = img;          
+  imgObject.onLoad = onImgLoaded();
+  function onImgLoaded() {
+    if (loadTimer != null){ clearTimeout(loadTimer); };
+    if (!imgObject.complete) {
+      loadTimer = setTimeout(function() {
+        onImgLoaded();
+      }, 3);
+    } else {
+      loading--;
+      if(loading == 0){
+        /* when all images are loaded set page_ready flag to true */
+        page_ready = true;
+        window.status = 'ready'
+
+      }
+    }
+  }
+}
+
 </script>
 </body>
 </html>

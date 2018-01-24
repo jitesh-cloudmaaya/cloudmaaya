@@ -24,9 +24,12 @@ from rest_framework.renderers import JSONRenderer
 import requests
 from PIL import Image
 from catalogue_service.settings_local import PRODUCT_IMAGE_PROXY
-
+from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY
+from catalogue_service.settings_local import IMGKIT_URL, IMGKIT_OPTIONS
 
 from weather_service.models import Weather
+import imgkit
+
 
 # Create your views here. 
 
@@ -59,7 +62,7 @@ def index(request, styling_session_id=None):
 
 
 
-@check_login
+#@check_login
 def collage(request, look_id=None):
     try:
         look = Look.objects.get(id = look_id) 
@@ -75,7 +78,17 @@ def collage(request, look_id=None):
     return render(request, 'shopping_tool/collage.html', context)
 
 
+# https://github.com/jarrekk/imgkit
+# http://madalgo.au.dk/~jakobt/wkhtmltoxdoc/wkhtmltoimage_0.10.0_rc2-doc.html
+def collage_image(request, look_id=None):
 
+    try:
+        look = Look.objects.get(id = look_id) 
+        img_src = imgkit.from_url('%s/collage/%s' % (IMGKIT_URL, look_id), False, options = IMGKIT_OPTIONS)
+        response = HttpResponse(img_src, content_type="image/jpeg")
+        return response
+    except Look.DoesNotExist:
+        return HttpResponse(status=404)
 
 @check_login
 def explore(request, styling_session_id=None):
@@ -125,19 +138,21 @@ def image_proxy(request):
 # without Having Access to The WP Login Application
 ########################################################
 def set_cookie(request):
-    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-stage.allume.co', 'shopping-tool-web-stage.allume.co']:
+    if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
         response_redirect = HttpResponseRedirect('/')
-        #response_redirect.set_cookie('user_email', '1a80b36b569b69579b25ad4583b5c841allume.co')
-        response_redirect.set_cookie('user_email', 'allume-sharonmbell92@aol.com')
-        #response_redirect.set_cookie('user_email', '3ab84d49688d3dd2c947cfce43194d54llume.co')
+        #response_redirect.set_cookie(AUTH_EMAIL_KEY, '1a80b36b569b69579b25ad4583b5c841allume.co')
+        #response_redirect.set_cookie(AUTH_EMAIL_KEY, 'wduenow@allume.co')
+        #response_redirect.set_cookie(AUTH_EMAIL_KEY, '3ab84d49688d3dd2c947cfce43194d54llume.co')
+        #response_redirect.set_cookie(AUTH_EMAIL_KEY, '1a80b36b569b69579b25ad4583b5c841allume.co')
+        response_redirect.set_cookie(AUTH_EMAIL_KEY, 'cmihm@allume.co')
         return response_redirect
     else:
         raise PermissionDenied
 
 def delete_cookie(request):
-    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-stage.allume.co', 'shopping-tool-web-stage.allume.co']:
+    if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
         response_redirect = HttpResponseRedirect('/')
-        response_redirect.delete_cookie('user_email')
+        response_redirect.delete_cookie(AUTH_EMAIL_KEY)
         return response_redirect
     else:
         raise PermissionDenied

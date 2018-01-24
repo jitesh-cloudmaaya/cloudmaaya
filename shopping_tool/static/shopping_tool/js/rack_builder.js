@@ -31,8 +31,7 @@ var rack_builder = {
           console.log(response);
         },
         success:function(response){
-          //console.log(response);
-          $('#favorites-list').find('div.item[data-fave="' + fave + '"]').remove();
+          $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
           link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
         },
         type: 'DELETE',
@@ -50,11 +49,10 @@ var rack_builder = {
           console.log(response);
         },
         success:function(response){
-          //console.log(response);
           rack_builder.favorites.push(response);
           rack_builder.favorites_product_ids.push(response.product);
           link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
-          $('#favorites-list').append(rack_builder.favoriteTemplate(link.data('details')))
+          $('#fave-prods').append(rack_builder.favoriteTemplate(link.data('details')))
         },
         type: 'PUT',
         url: '/shopping_tool_api/user_product_favorite/0/'
@@ -177,9 +175,92 @@ var rack_builder = {
     var itm = '<div class="item" data-productid="' + obj.id + '" title="' + obj.merchant_name + ' by ' + 
     obj.manufacturer_name + '" data-fave="' + favorite_object.id  + '"><a href="#" ' +
     'data-productid="' + obj.id + '" data-name="' + obj.product_name + '" data-brand="' + 
-    obj.manufacturer_name + '">' + fave_link + '<div class="image"><img src="' + obj.product_image_url + 
+    obj.manufacturer_name + '" class="fave-object">' + fave_link + '<div class="image"><img src="' + obj.product_image_url + 
     '"/></div><div class="details">' + price_display + '</div></a></div>';
     return itm;
+  },
+  /**
+  * @description build out the rack looks panel
+  * @param {string} type - query type
+  * @param {string} id - DOM id string
+  */
+  getRackLooks: function(type, id){
+    var lookup = {
+        "client": parseInt($('#user-clip').data('userid')),
+        "allume_styling_session": rack_builder.session_id,
+        "stylist": parseInt($('#stylist').data('stylistid')),
+        "page": 1
+      }
+    if(type == 'favorites'){
+      lookup.favorites_only = "True";
+      delete lookup.client;
+      delete lookup.allume_styling_session;
+      delete lookup.stylist;
+    }
+    $.ajax({
+      contentType : 'application/json',
+      data: JSON.stringify(lookup),
+      success:function(response){
+        var markup = [];
+        var cropped_images = [];
+        for(var i = 0, l = response.looks.length; i<l; i++){
+          var comp = response.looks[i];
+          var look_products_markup = ['<div class="rack-look-wrapper"><div class="rack-looks-layout">'];
+          for(var ix = 0, lx = comp.look_layout.layout_json.length; ix<lx; ix++){
+            var block = comp.look_layout.layout_json[ix];
+            var position = block.position;
+            var product_markup = [];
+            for(var p = 0, prods = comp.look_products.length; p<prods; p++){
+              var prod = comp.look_products[p];
+              if(prod.layout_position == position){
+                var src = prod.product.product_image_url;
+                if(prod.cropped_dimensions != null){
+                  var crop = {
+                    id: type + 'racklook-' + comp.id + '-item-' + prod.id,
+                    src: look_proxy + '' + src,
+                    dims: prod.cropped_dimensions
+                  }
+                  cropped_images.push(crop);
+                }
+                product_markup.push(
+                  '<div class="item"><a href="#" class="item-detail" ' + 
+                    'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
+                    '" data-productid="' + prod.product.id + '"><span id="' + type + 'racklook-' + comp.id + '-item-' + prod.id + 
+                    '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></a></div>'
+                );
+              }
+            }
+            look_products_markup.push(
+              '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
+              'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
+              'px" data-position="' + position + '">' + product_markup.join() + '</div>'
+            );
+          }
+          look_products_markup.push('</div></div>');
+          markup.push(
+            '<div class="rack-look"><a href="#" class="look-link" data-lookid="' + comp.id + '" data-lookname="' +
+            comp.name + '" data-lookdesc="' + comp.description + '" data-looklayoutid="' + comp.look_layout.id + 
+            '">edit look</a><h3>' + comp.name + '</h3><span class="layout"><em>layout: </em>' + 
+            comp.look_layout.display_name + '</span><div class="rack-look-display">' + 
+            look_products_markup.join('') + '</div><span class="layout desc"><em>description: </em>' + 
+            comp.description + '</span></div>'
+          );
+        }
+        if(markup.length == 0){ 
+          $(id).html('<div class="empty">Add looks to your rack...</div>')
+        }else if(markup.length > 0){
+          $(id).html(markup.join(''));
+          /* afix cropped images if present */
+          if(cropped_images.length > 0){
+            for(var i = 0, l = cropped_images.length; i<l; i++){
+              look_builder.getCroppedImage(cropped_images[i], id);
+            }
+          }
+        }
+      },
+      type: 'POST',
+      url: '/shopping_tool_api/look_list/'
+    });
   },
   /**
   * @description init function of rack builder, created functionality and markup
@@ -195,7 +276,11 @@ var rack_builder = {
       return 0;
     });
     if(initial_rack.length > 0){
-      rack_list.append('<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>')
+      var plural = initial_rack.length == 1 ? 'item' : 'items' ;
+      rack_list.append(
+        '<span id="rack-number">' + initial_rack.length + ' ' + plural + '</span>' +
+        '<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>'
+      )
     }
     for(var i = 0, l = initial_rack.length; i<l; i++){
       var obj = initial_rack[i];
@@ -217,23 +302,38 @@ var rack_builder = {
     });
     rack_list.data('skus', existing_items.join(','));
     /* create favorites section and add functionality */
-    var fave_list = $('#favorites-list');
-    for(var i = 0, l = stylist_favorites.length; i<l; i++){
-      var obj = stylist_favorites[i];
-      var itm = rack_builder.favoriteTemplate(obj);
-      fave_list.append(itm);
-    }    
-    $('#favorites-toggle').click(function(e){
+    if(stylist_favorites.length > 0){
+      var fave_prods = $('#fave-prods');
+      for(var i = 0, l = stylist_favorites.length; i<l; i++){
+        var obj = stylist_favorites[i];
+        var itm = rack_builder.favoriteTemplate(obj);
+        fave_prods.append(itm);
+      }
+    }
+    $('#rack-tabs a.tab').click(function(e){
       e.preventDefault();
       var link = $(this);
-      if(link.hasClass('open')){
-        link.removeClass('open').html('show my favorites')
-      }else{
-        link.addClass('open').html('hide my favorites')
+      var div = $(link.attr('href'));
+      if(link.hasClass('on') == false){
+        link.addClass('on').siblings('a').removeClass('on');
+        div.addClass('show').siblings('div.rack-section').removeClass('show')
       }
-      fave_list.toggleClass('show');
     });
-    fave_list.on('click', 'a', function(e){
+    $('#favorites-list').on('click','a.rack-section-toggle', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var i = link.find('i')
+      var div = link.next('div.block')
+      if(link.hasClass('closed')){
+        link.removeClass('closed');
+        i.removeClass('fa-angle-right').addClass('fa-angle-down');
+        div.slideDown();
+      }else{
+        link.addClass('closed');
+        i.removeClass('fa-angle-down').addClass('fa-angle-right');
+        div.slideUp();       
+      }
+    }).on('click', 'a.fave-object', function(e){
       e.preventDefault();
       var target = $(e.target);
       var link = $(this);
@@ -249,7 +349,6 @@ var rack_builder = {
             console.log(response);
           },
           success:function(response){
-            //console.log(response);
             var result_links = $('#results a.favorited');
             if(result_links.length > 0){
               $.each(result_links, function(idx){
@@ -274,29 +373,17 @@ var rack_builder = {
     $('#rack-toggle').click(function(e){
       e.preventDefault();
       $('#rack').toggleClass('show');
-      $('#look-list').toggleClass('show');
     });
     $('#close-rack').click(function(e){
       e.preventDefault();
-      $('#look-list').removeClass('show');
-      $('#rack').delay(400)
-      .queue(function (next) { 
-        $(this).removeClass('show');
-        next(); 
-      });
+      $('#rack').removeClass('show');
     });
     Mousetrap.bind('shift+z+x', function(e) {
       var rack = $('#rack');
       if(rack.hasClass('show')){
-        $('#look-list').removeClass('show');
-        rack.delay(400)
-        .queue(function (next) { 
-          $(this).removeClass('show');
-          next(); 
-        });
+        rack.removeClass('show');
       }else{
         rack.addClass('show');
-        $('#look-list').addClass('show');
       }
       return false;
     });
@@ -395,6 +482,10 @@ var rack_builder = {
       var from_compare = link.hasClass('compare') ? true : false;
       rack_builder.addToRack(link, 'inspect', from_compare);
     });
+    /* get all looks */
+    rack_builder.getRackLooks('regular', '#looks-list');
+    rack_builder.getRackLooks('favorites', '#fave-looks');
+
   },
   /**
   * @description inpect item functionality allows for clicking favorites or look items to view fuller details 
@@ -418,7 +509,6 @@ var rack_builder = {
       type: "GET",
       url: '/product_api/get_product/' + id,
       success: function(results){
-        //console.log(results)
         var sizes_list = [];
         var markup = [];
         results.data.sort(function(a,b){

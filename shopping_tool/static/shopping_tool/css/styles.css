@@ -651,33 +651,35 @@ div#rack h2 i {
   position:relative;
   top:10px;  
 }
-div#rack-list {
-  height:calc(100% - 125px);
-  padding:7.5px;
-  overflow:auto;
-}
-div#favorites-list {
+
+div#favorites-list,
+div#rack-list,
+div#looks-list {
   background:#fff;
-  height:calc(100% - 125px);
+  height:calc(100% - 105px);
   left:-580px;
   padding:7.5px;
   position:absolute;
   overflow:auto;
-  top:50px;
+  top:90px;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;   
   width:555px;
   z-index:2;
 }
-div#favorites-list.show {left:0;}
-div#rack-list div.empty {
+div#favorites-list.show,
+div#rack-list.show,
+div#looks-list.show {left:0;}
+div#rack-list div.empty,
+div#looks-list div.empty,
+div#favorites-list div.empty {
   color:#777;
   font-size:18px;
   font-weight:300;
   padding:15px;
 }
 div#rack-list div.item,
-div#favorites-list div.item {
+div#favorites-list #fave-prods div.item {
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   margin:7.5px;
   float:left;
@@ -686,9 +688,9 @@ div#favorites-list div.item {
   position:relative;
 }
 div#rack-list div.item div.image,
-div#favorites-list div.item div.image { height:150px; width:150px; }
+div#favorites-list #fave-prods div.item div.image { height:150px; width:150px; }
 div#rack-list div.item div.image img,
-div#favorites-list div.item div.image img {display:block;margin:0 auto; height:150px; max-width:100%;}
+div#favorites-list #fave-prods div.item div.image img {display:block;margin:0 auto; height:150px; max-width:100%;}
 div#rack-list div.item div.details { }
 div#rack-list div.item span.price,
 div#favorites-list div.item span.price{
@@ -704,7 +706,11 @@ div#rack-list div.item span.price em,
 div#favorites-list div.item span.price em {color:#D32F2F; display:inline-block; text-decoration: line-through; margin-right:8px;}
 div#rack-btns {
   border-top:1px solid #ddd;
+  bottom:0;
+  left:0;
   padding:10px 15px;
+  position:absolute;
+  width:525px;
 }
 
 div#favorites-list div.item span.favorited {
@@ -872,6 +878,7 @@ div.already-in-rack span.tail {
   width:inherit;
   z-index:6;  
 }
+#user-card.looker {right:11px; top:9px; z-index:21;}
 body.explore-page #user-card{position:absolute;}
 #user-card.show {border-radius:5px; width:500px; }
 #user-card #user-clip {
@@ -995,33 +1002,20 @@ body.explore-page #user-card{position:absolute;}
   transition: border-radius 1s ease-in-out,width 1s ease-in-out,top 1s ease-in-out,box-shadow 1s ease-in-out,height 0.5s ease-in-out 0.75s; 
   width:500px;
 }
-#user-card div.weather,
-#user-card div.demo,
 #user-card div.social {
   border-bottom:1px solid #ddd;
   overflow:auto;
   width:500px;
 }
+#user-card div.weather { overflow:auto; width:500px;}
 #user-card div.notes { width:500px; }
 #user-card div.notes div.notes-wrapper { height:290px; overflow:auto; }
-#user-card div.demo { padding:10px 0 ; }
 #user-card div.weather span {
   border-right:1px solid #eee; 
   float:left; 
   margin:5px 0;
   width:calc(25% - 1px);
 }
-#user-card div.demo div.left { border-right:1px solid #eee; float:left; width:calc(50% - 1px); }
-#user-card div.demo div.right{ float:left;  width:50%; }
-#user-card div.demo span{
-  display:block;
-  font-size:14px;
-  font-weight:200;
-  line-height:18px;
-  padding:0 10px;
-  text-align: right;
-}
-#user-card div.demo span em {float:left; font-weight:200; padding-right:15px; text-align:left;}
 #user-card div.weather span:nth-of-type(4) {border:0;}
 #user-card div.weather span em {
   color:#999;
@@ -1035,6 +1029,7 @@ body.explore-page #user-card{position:absolute;}
 #user-card div.weather span em.desc{
   color:#777;
   font-size:10px;
+  padding-top:5px;
 }
 #user-card div.weather span i {
   color:#666;
@@ -1096,6 +1091,60 @@ body.explore-page #user-card{position:absolute;}
 #user-card div.social a.pinterest{color:#BD081C}
 #user-card div.social a.instagram{color:#A82BB5}
 #user-card div.social a.linkedin{color:#006699}
+
+#client-tabs {border-bottom:1px solid #eee; padding:5px 10px 0; }
+#client-tabs a {
+  border-bottom:2px solid #fff;
+  color:#000;
+  display:inline-block;
+  font-size:14px;
+  font-weight: 100;
+  margin-right:10px;
+  padding:5px 0 10px;
+  text-decoration: none;
+  -webkit-transition: border 0.3s ease-in-out;
+  transition: border 0.3s ease-in-out;   
+}
+#client-tabs a.on {border-color:#ed8365;}
+#user-card div.client-sections {border-bottom:1px solid #ddd;}
+#user-card div.client-section {display:none;max-height:540px; overflow: auto}
+#user-card div.client-section.show {display:block;padding:5px 0 0;}
+
+#user-card div.client-section span.client-breaker,
+#user-card #client-weather-locale {
+  background:#fff;
+  border-top:1px solid #eee;
+  display:block;
+  font-size:14px;
+  font-style: italic; 
+  font-weight:400;
+  line-height:18px;
+  margin:0 1px;
+  padding:10px 9px;
+}
+#user-card #client-weather-locale {border:0; color:#999; font-weight:300; padding-bottom:15px;}
+#user-card div.client-section span.client-details{
+  border-top:1px solid #eee;
+  display:block;
+  font-size:14px;
+  font-weight:200;
+  line-height:18px;
+  margin:0 1px;
+  overflow:auto;
+  padding:5px 9px;
+  text-align: right;
+}
+#user-card div.client-section span.client-details.non {border:0;}
+#user-card div.client-section span.client-details:nth-child(even) {background:#fafafa;}
+#user-card div.client-section span.client-details:nth-of-type(1) {border:0;}
+#user-card div.client-section span.client-breaker.one {border: 0; padding-top:5px; } 
+#user-card div.client-section  span.client-details em {
+  float:left; 
+  font-weight:300; 
+  padding-right:15px; 
+  text-align:left;
+}
+
 #facet-bar {
   background:#fafafa;
   border:1px solid #ddd;
@@ -1365,30 +1414,44 @@ div.layout-option span.name {
   text-align:center;
   text-shadow:0 1px #fff;  
 }
-#compare-looks div.comp-look {
+#compare-looks div.comp-look, 
+#looks-list div.rack-look,
+#fave-looks div.rack-look  {
   background:#fff;
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   border-radius:3px;
   margin:10px 15px;
   padding:10px 5px;
 }
-#compare-looks div.comp-look h3 {
+#looks-list div.rack-look,
+#fave-looks div.rack-look {margin-bottom:20px;}
+#compare-looks div.comp-look h3,
+#looks-list div.rack-look h3,
+#fave-looks div.rack-look h3 {
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;
   margin:-10px -5px 0;
   padding:10px;
 }
-#compare-looks div.comp-look span.layout {
+#compare-looks div.comp-look span.layout,
+#looks-list div.rack-look span.layout,
+#fave-looks div.rack-look span.layout {
   color:#777;
   display:block;
   font-size:12px;
   font-weight:100;
   padding:10px 5px;
 }
-#compare-looks div.comp-look span.layout.desc {white-space: pre-wrap;}
-#compare-looks div.comp-look span.layout em {font-weight:400;}
-#compare-looks div.comp-look span.layout.desc em {display:block;}
+#compare-looks div.comp-look span.layout.desc,
+#looks-list div.rack-look span.layout.desc,
+#fave-looks div.rack-look span.layout.desc {white-space: pre-wrap;}
+#compare-looks div.comp-look span.layout em ,
+#looks-list div.rack-look span.layout em,
+#fave-looks div.rack-look span.layout em{font-weight:400;}
+#compare-looks div.comp-look span.layout.desc em,
+#looks-list div.rack-look span.layout.desc em,
+#fave-looks div.rack-look span.layout.desc em {display:block;}
 /*#compare-looks div.comp-look div.item {
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   margin:5px;
@@ -1425,9 +1488,16 @@ div.layout-option span.name {
   max-width:100%;
 }*/
 
-
+#rack-number {
+  color: #474747;
+  display: block;
+  float:right;
+  font-size: 16px;
+  padding: 10px 7.5px;
+}
 
 #rack-list a.rack-section-toggle,
+#favorites-list a.rack-section-toggle,
 #rack-list a.close-all-rack-sections {
   color:#474747;
   display:block;
@@ -1449,12 +1519,75 @@ div.layout-option span.name {
 #rack-draggable a.rack-section-toggle i,
 #rack-list a.close-all-rack-sections i,
 #rack-draggable a.close-all-rack-sections i,
+#favorites-list a.rack-section-toggle i,
 #rack-draggable a.sort-link i {margin-right:5px;}
 #rack-list a.close-all-rack-sections:active,
 #rack-draggable a.close-all-rack-sections:active,
+#favorites-list a.rack-section-toggle:active
 #rack-draggable a.sort-link:active {color:#f2987e;}
 #rack-list div.block,
-#rack-draggable div.block {overflow:hidden;}
+#rack-draggable div.block,
+#favorites-list div.block {overflow:hidden;}
+
+#rack-tabs {
+  border-bottom:1px solid #eee;
+  padding:5px 15px 0;
+}
+#rack-tabs a.tab {
+  border-bottom:2px solid #fff;
+  color:#000;
+  display:inline-block;
+  font-size:14px;
+  font-weight: 300;
+  margin-right:10px;
+  padding:5px 0 10px;
+  text-decoration: none;
+  -webkit-transition: border 0.3s ease-in-out;
+  transition: border 0.3s ease-in-out;   
+}
+#rack-tabs a.tab.on {border-color:#ed8365;}
+#add-look-btn,
+div.rack-look a.look-link,
+#design-look-user-toggle,
+#collage-preview {
+  background:#f2987e;
+  border-radius:5px;
+  color:#fff;
+  display:inline-block;
+  float:right;
+  font-size:14px;
+  font-variant: small-caps;
+  font-weight:500;
+  margin-top:3px;
+  padding:2px 10px 4px;
+  text-align: center;
+  text-decoration:none;
+  z-index:4;
+}
+#design-look-user-toggle,
+#collage-preview {
+  font-size:12px;
+  margin:11px 45px 0 10px;
+  padding:5px 15px 7px;
+  text-transform: uppercase;
+}
+#collage-preview {margin:-5px 0 0 0;}
+#fave-looks div.rack-look a.look-link {display:none;}
+div.rack-look a.look-link {margin:0 7px 0 0;}
+#add-look-btn:hover,
+div.rack-look a.look-link:hover,
+#design-look-user-toggle:hover,
+#collage-preview:hover {background:#ed8365;}
+#add-look-btn:active,
+div.rack-look a.look-link:active,
+#design-look-user-toggle:active,
+#collage-preview:active{  
+  background:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+  color:#474747;
+}
+
+
 #look-indepth,
 #cropper,
 #inspect-item {
@@ -1619,9 +1752,17 @@ div.layout-option span.name {
   display:block;
   margin:0 10px 10px; 
 }
+#looks-header label.toggle {
+  cursor:pointer;
+  display:none;
+  float:right;
+  margin:0 11px;
+}
+#looks-header.ready label.toggle {display:block;}
 #search label.toggle.faves {margin:15px 0 0 ;}
 #look-filter-options label.toggle em,
-#search label.toggle em{
+#search label.toggle em,
+#looks-header label.toggle em{
   color:#000;
   display:inline-block;
   font-size:14px;
@@ -1632,7 +1773,8 @@ div.layout-option span.name {
   white-space: nowrap;
 }
 #look-filter-options label.toggle span,
-#search label.toggle span {
+#search label.toggle span,
+#looks-header label.toggle span {
   background-color: #fff;
   border: 1px solid #dfdfdf;
   border-radius: 12px;
@@ -1647,7 +1789,8 @@ div.layout-option span.name {
   width: 30px;
 }
 #look-filter-options label.toggle span small,
-#search label.toggle span small {
+#search label.toggle span small,
+#looks-header label.toggle span small {
   background: #fff;
   border-radius: 100%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -1660,10 +1803,13 @@ div.layout-option span.name {
   width: 15px;
 }
 #look-filter-options label.toggle input,
-#search label.toggle input {display:none;}
+#search label.toggle input,
+#looks-header label.toggle input {display:none;}
 #look-filter-options label.toggle input:checked + span,
 #search label.toggle input:checked + span { box-shadow: 0px 0px 0px 16px rgb(81,81,81) inset; border-color:#515151; }
+#looks-header label.toggle input:checked + span {box-shadow: 0px 0px 0px 16px rgb(242,152,126) inset; border-color:#f2987e;}
 #look-filter-options label.toggle input:checked + span > small,
+#looks-header label.toggle input:checked + span > small,
 #search label.toggle input:checked + span > small { left:15px; }
 #look-filter-options input[type="text"] {
   background:#fff;
@@ -1859,6 +2005,7 @@ div.layout-option span.name {
   height:100%;
   text-decoration: none;
   width:100%;
+  position:relative;
 }
 #all-looks-list div.look div.display div.item img {
   display:block;
@@ -1866,6 +2013,32 @@ div.layout-option span.name {
   height:100%; 
   max-width:100%;
 }
+/* styles for price look in explore looks */
+#all-looks-list div.look div.item a.item-detail span.price {
+  background:rgba(0,0,0,0.6);
+  border-radius:3px;
+  bottom:10px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.8);
+  color:#fff;
+  display:block;
+  font-size:18px;
+  font-weight:300;
+  opacity:0;
+  padding:6px 10px 8px;
+  position:absolute;
+  right:5px;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;   
+  z-index:10;
+}
+#all-looks-list.priceme div.look div.item a.item-detail span.price { opacity: 1;}
+#all-looks-list div.look div.item a.item-detail span.price em {
+  color:#F48FB1; 
+  display:inline-block; 
+  text-decoration: 
+  line-through; margin-right:8px;
+}
+
 #explore-wrapper {}
 #explore-wrapper #loader {
   height:100px; 
@@ -2051,13 +2224,19 @@ p#look-desc {
   position:relative;
   width:760px;
 }
-#compare-looks div.comp-look div.compare-look-wrapper {
+#compare-looks div.comp-look div.compare-look-wrapper,
+#looks-list div.rack-look div.rack-look-wrapper,
+#fave-looks div.rack-look div.rack-look-wrapper {
   height:150px;
   overflow:hidden;
   margin-left:6px;
   width:272px;
 }
-#compare-looks div.comp-look div.compare-looks-layout {
+#looks-list div.rack-look div.rack-look-wrapper,
+#fave-looks div.rack-look div.rack-look-wrapper{height:275px; width:502px;}
+#compare-looks div.comp-look div.compare-looks-layout,
+#looks-list div.rack-look div.rack-looks-layout,
+#fave-looks div.rack-look div.rack-looks-layout {
   background:#eee;
   height:415px;
   position:relative;
@@ -2067,6 +2246,8 @@ p#look-desc {
   margin-left:-246px;
   width:760px;  
 }
+#looks-list div.rack-look div.rack-looks-layout,
+#fave-looks div.rack-look div.rack-looks-layout {  transform:scale(0.66); margin-left:-129px;margin-top:-70px;}
 #all-looks-list div.look div.display div.explore-look-wrapper {
   height:235px;
   margin:5px 0 10px;
@@ -2090,6 +2271,8 @@ p#look-desc {
   overflow:hidden;
 }
 #compare-looks div.comp-look div.compare-looks-layout div.layout-block,
+#looks-list div.rack-look div.rack-looks-layout div.layout-block,
+#fave-looks div.rack-look div.rack-looks-layout div.layout-block,
 #all-looks-list div.look div.display div.explore-look-layout div.layout-block {
   background:#fff;
   margin:2px;
@@ -2107,7 +2290,9 @@ p#look-desc {
 
 #look-drop div.drop-zone { float:left; height:100%; width:calc(75% - 20px); }
 #look-layout-grid div.layout-block div.item,
-#compare-looks div.comp-look div.compare-looks-layout div.layout-block div.item { height:100%; position:relative; width:100%; }
+#compare-looks div.comp-look div.compare-looks-layout div.layout-block div.item,
+#looks-list div.rack-look div.rack-looks-layout div.layout-block div.item,
+#fave-looks div.rack-look div.rack-looks-layout div.layout-block div.item { height:100%; position:relative; width:100%; }
 #look-layout-grid div.layout-block div.item span.fave {display:none;}
 #look-layout-grid div.layout-block div.item img {
   cursor: move;
@@ -2120,13 +2305,17 @@ p#look-desc {
   overflow:hidden; 
   max-width:100%;
 }
-#compare-looks div.comp-look div.item a.item-details {
+#compare-looks div.comp-look div.item a.item-details,
+#looks-list div.rack-look div.item a.item-details,
+#fave-looks div.rack-look div.item a.item-details {
   display:block;
   height:100%;
   text-decoration: none;
   width:100%;
 }
-#compare-looks div.comp-look div.compare-looks-layout div.layout-block div.item img {
+#compare-looks div.comp-look div.compare-looks-layout div.layout-block div.item img,
+#looks-list div.rack-look div.rack-looks-layout div.layout-block div.item img,
+#fave-looks div.rack-look div.rack-looks-layout div.layout-block div.item img {
   display:block; 
   height:100%; 
   margin: 0 auto; 
