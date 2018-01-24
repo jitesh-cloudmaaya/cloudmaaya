@@ -25,3 +25,4 @@ celery-once==1.2.0
 imgkit==0.1.8
 django-extensions==1.9.9
 ipython==5.5.0
+django-mass-edit==3.1
