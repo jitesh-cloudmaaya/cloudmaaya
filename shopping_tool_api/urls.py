@@ -14,5 +14,7 @@ urlpatterns = [
     url(r'^user_look_favorites/(?P<pk>[0-9]+)/$', views.user_look_favorites, name='user_look_favorites'),  
     url(r'^user_look_favorite/(?P<pk>[0-9]+)/$', views.user_look_favorite, name='user_look_favorite'),
     url(r'^client_360/(?P<pk>[0-9]+)/$', views.client_360, name='client_360'),
+    url(r'^styling_session_note/(?P<pk>[0-9]+)/$', views.styling_session_note, name='styling_session_note'),
+    url(r'^styling_session_notes/(?P<pk>[0-9]+)/$', views.styling_session_notes, name='styling_session_notes'),
 ]
 
