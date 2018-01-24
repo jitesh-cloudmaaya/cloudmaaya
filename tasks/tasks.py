@@ -6,26 +6,29 @@ from catalogue_service.settings import BASE_DIR
 from celery_once import QueueOnce
 from tasks.product_feed import ProductFeed
 
-
 @task(base=QueueOnce)
 def ran_delta_pull():
     pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/ran_delta.yaml'))
-    print("Pulling Files from FTP")
+    print("Pulling delta files from FTP")
     pf.get_files_ftp()
-    print("Loading Data to DB and Updating Products")
-    pf.process_data()
-    print("Updating the API Products Table")
-    pf.update_products_api()
+    print("Decompressing files")
+    pf.decompress_data()
+    print("Cleaning files")
+    pf.clean_data()
+    print("Load data to API products table")
+    pf.load_cleaned_data()
 
 @task(base=QueueOnce)
 def ran_full_pull():
     pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/ran.yaml'))
-    print("Pulling Files from FTP")
+    print("Pulling full files from FTP")
     pf.get_files_ftp()
-    print("Loading Data to DB and Updating Products")
-    pf.process_data()
-    print("Updating the API Products Table")
-    pf.update_products_api()
+    print("Decompressing files")
+    pf.decompress_data()
+    print("Cleaning files")
+    pf.clean_data()
+    print("Load data to API products table")
+    pf.load_cleaned_data()
 
 @task(base=QueueOnce)
 def build_client_360():
@@ -58,32 +61,6 @@ def update_client_360():
     finally:
         cursor.close()
 
-# new tasks
-@task(base=QueueOnce)
-def ran_delta_pull_new():
-    pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/ran_delta.yaml'))
-    print("Pulling delta files from FTP")
-    pf.get_files_ftp()
-    print("Decompressing files")
-    pf.decompress_data()
-    print("Cleaning files")
-    pf.clean_data()
-    print("Load data to API products table")
-    pf.load_cleaned_data()
-
-@task(base=QueueOnce)
-def ran_full_pull_new():
-    pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/ran.yaml'))
-    print("Pulling full files from FTP")
-    pf.get_files_ftp()
-    print("Decompressing files")
-    pf.decompress_data()
-    print("Cleaning files")
-    pf.clean_data()
-    print("Load data to API products table")
-    pf.load_cleaned_data()
-
-# build attempt to change celery task to non-compound sql statement execution from lookmetrics.sql
 @task(base=QueueOnce)
 def build_lookmetrics():
     cursor = connection.cursor()
