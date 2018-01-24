@@ -582,12 +582,12 @@ class UserLookFavorite(models.Model):
 class AllumeUserStylistNotes(models.Model):
     id = models.BigAutoField(primary_key=True)
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='last_author_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
-    client = models.ForeignKey(WpUsers, related_name='user_id', db_constraint=False, db_column='wp_initiator_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Client
+    client = models.ForeignKey(WpUsers, related_name='user_id', db_constraint=False, db_column='user_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Client
     notes = models.TextField()
-    allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_column='allume_styling_session', db_constraint=False, null=True, on_delete=models.DO_NOTHING)
+    styling_session = models.ForeignKey(AllumeStylingSessions, db_column='styling_session_id', db_constraint=False, null=True, on_delete=models.DO_NOTHING)
     visible = models.IntegerField()
-    date_created = models.DateTimeField()
-    last_modified = models.DateTimeField()
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    last_modified = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
         managed = False

@@ -14,7 +14,7 @@ from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY
 
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['wpusers', 'allumestylingsessions', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite']
+    fixtures = ['wpusers', 'allumestylingsessions', 'styling_session_notes', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite']
     shopper = ''
     client = ''
 
@@ -40,7 +40,74 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(Look.objects.count(), 4)
         self.assertEqual(Look.objects.get(id = response_data['id']).name, 'Api Test Look')
         self.assertEqual(Look.objects.get(id = response_data['id']).look_layout.name, 'one_item')
+
+
+    def test_create_note(self):
+        """
+        Test to verify creating a styling session note
+        """
+        url = reverse("shopping_tool_api:styling_session_note", kwargs={'pk':0})
         
+        stylist = WpUsers.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+        data = {"notes": "Api Test Note", "styling_session": 1, "client": 5, "stylist": stylist.id, "visible": 1}
+
+        response = self.client.put(url, data)
+        response_data = json.loads(response.content)
+
+        self.assertEqual(201, response.status_code)
+        self.assertEqual(AllumeUserStylistNotes.objects.count(), 3)
+        self.assertEqual(AllumeUserStylistNotes.objects.get(id = response_data['id']).notes, 'Api Test Note')
+        
+
+    def test_get_note(self):
+        """
+        Test to verify getting a styling session note
+        """
+        url = reverse("shopping_tool_api:styling_session_note", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        response_data = json.loads(response.content)
+
+        self.assertEqual(AllumeUserStylistNotes.objects.get(id = 1).notes, response_data['notes'])
+        self.assertEqual(200, response.status_code)
+
+    def test_get_session_notes(self):
+        """
+        Test to verify getting a styling session note
+        """
+        url = reverse("shopping_tool_api:styling_session_notes", kwargs={'pk':1})
+
+        response = self.client.get(url)
+        response_data = json.loads(response.content)
+
+        #self.assertEqual(AllumeUserStylistNotes.objects.get(id = 1).notes, response_data['notes'])
+        self.assertEqual(200, response.status_code)
+
+
+    def test_update_note(self):
+        """
+        Test to verify updating a a styling session note
+        """
+
+        note_instance = AllumeUserStylistNotes.objects.get(id=2)
+
+        url = reverse("shopping_tool_api:styling_session_note", kwargs={'pk':note_instance.id})
+
+        data = {"id": note_instance.id, "notes": "Api Test Update Note", "styling_session": note_instance.styling_session.id, "client": note_instance.client.id, "stylist": note_instance.stylist.id, "visible": note_instance.visible}
+
+        #Verify the Original Look Name is in Place
+        self.assertEqual(note_instance.notes, 'this is my second note')
+
+        response = self.client.put(url, data)
+        response_data = json.loads(response.content)
+
+        #print response
+
+
+        self.assertEqual(201, response.status_code)
+        self.assertEqual(AllumeUserStylistNotes.objects.count(), 2)
+        self.assertEqual(AllumeUserStylistNotes.objects.get(id = note_instance.id).notes, 'Api Test Update Note')
+
 
     def test_update_look(self):
         """
