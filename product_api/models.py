@@ -51,6 +51,9 @@ class Product(models.Model):
     allume_category = models.CharField(max_length=255, blank=True, null=True)
     merchant_color = models.CharField(max_length=255, blank=True, null=True)
 
+    class Meta:
+        unique_together = (('product_id', 'merchant_id'))
+
 class Network(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
     active = models.BooleanField(default=False)

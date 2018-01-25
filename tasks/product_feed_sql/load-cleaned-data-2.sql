@@ -1,5 +1,5 @@
 ALTER TABLE product_api_product CONVERT TO CHARACTER SET utf8;
-CREATE UNIQUE INDEX products ON product_api_product (product_id, merchant_id);
+
 INSERT INTO product_api_product (
     product_id,
     merchant_id,
@@ -135,5 +135,5 @@ ON DUPLICATE KEY UPDATE
     allume_size = VALUES(allume_size),
     allume_category = VALUES(allume_category);
 
-DROP INDEX products ON product_api_product;
+
 DROP TABLE product_api_product_temp;
