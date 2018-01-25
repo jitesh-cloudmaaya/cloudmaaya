@@ -61,6 +61,34 @@ def index(request, styling_session_id=None):
     return render(request, 'shopping_tool/index.html', context)
 
 
+@check_login
+def look_builder(request, styling_session_id=None):
+
+    user = request.user
+    layouts = LookLayout.objects.all()
+    
+    try:
+        styling_session = AllumeStylingSessions.objects.get(id = styling_session_id) 
+    except AllumeStylingSessions.DoesNotExist:
+        context = {}
+        return render(request, 'shopping_tool/no_session_error.html', context)
+
+    rack_items = Rack.objects.filter(allume_styling_session = styling_session)
+    looks = Look.objects.filter(allume_styling_session = styling_session)
+    client = styling_session.client
+    weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
+    categories = AllumeCategory.objects.filter(active = True)
+    favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    product_image_proxy = PRODUCT_IMAGE_PROXY
+
+    context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
+               'categories': categories, 'user': user, 'styling_session': styling_session, 
+               'rack_items': rack_items, 'client': client, 'layouts': layouts,
+               'looks': looks, 'weather_info': weather_info}
+               
+    return render(request, 'shopping_tool/look_builder.html', context)
+
+
 
 #@check_login
 def collage(request, look_id=None):

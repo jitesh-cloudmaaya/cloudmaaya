@@ -13,7 +13,15 @@ var explore_page = {
   /**
   * @description cache array of favorited look ids, used to set correct favorite link 
   */
-  favorite_look_ids: [],  
+  favorite_look_ids: [],
+  /**
+  * @description cache of getLooks xhr object
+  */
+  fetch: '',  
+  /**
+  * @description cache of masonry object for explore layout
+  */
+  masonry : '',
   /** 
   * @description cache of styling session
   */
@@ -25,24 +33,11 @@ var explore_page = {
     utils.menu();
     utils.client();
     rack_builder.init();
-    look_builder.functionality();
     /* cache the session id */
     explore_page.session_id = $('body').data('stylesession');
     /* explore page functionality */
     var looks_header = $('#looks-header');
-    var at_load_stylist = utils.readURLParams('set_stylist');
-    $('#stylist-select').val(' ').selectize({ create: false, sortField: 'text'});
-    if(at_load_stylist == null){
-      /* get the initial page of looks */
-      $('#loader').data('filter', {});
-      getLooks({});
-    }else{
-      $('#stylist-select')[0].selectize.setValue(at_load_stylist, false);
-      /* get the initial page of looks for specified stylist */
-      $('#loader').data('filter', {stylist: at_load_stylist});
-      getLooks({stylist: at_load_stylist});      
-    }
-    $('#look-name').val('');
+    var explore_form = $('#explore-form');
     $('#all-looks-list').on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
@@ -56,6 +51,7 @@ var explore_page = {
         var index = explore_page.favorite_look_ids.indexOf(look_id);
         explore_page.favorite_look_ids.splice(index, 1);
         explore_page.favorite_looks.splice(index, 1);
+        link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
         $.ajax({
           contentType : 'application/json',
           error: function(response){
@@ -63,7 +59,6 @@ var explore_page = {
           },
           success:function(response){
             //console.log(response);
-            link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
             rack_builder.getRackLooks('favorites', '#fave-looks');
           },
           type: 'DELETE',
@@ -74,6 +69,7 @@ var explore_page = {
           "stylist": parseInt($('#stylist').data('stylistid')) ,
           "look": parseInt(link.data('lookid'))     
         }
+        link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
         $.ajax({
           contentType : 'application/json',
           data: JSON.stringify(fave),
@@ -84,7 +80,7 @@ var explore_page = {
             //console.log(response);
             explore_page.favorite_looks.push(response);
             explore_page.favorite_look_ids.push(response.look);
-            link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+            
             rack_builder.getRackLooks('favorites', '#fave-looks');
           },
           type: 'PUT',
@@ -92,77 +88,99 @@ var explore_page = {
         }); 
       }
     });
-    /* set look favorite filter inclusion */
-    $('#look-favorite-status').click(function(e){
-      e.preventDefault();
-      var link = $(this);
-      link.toggleClass('any').toggleClass('fave');
-    });
-    /* get new filtered list of looks */
-    $('#looks-filter').click(function(e){
-      e.preventDefault();
-      var lookup = {};
-      var stylist = $('#stylist-select').val();
-      var name = $('#look-name').val();
-      var faves = $('#look-favorite-status').hasClass('fave');
-      lookup.page = 1
-      if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
-      if(name != ''){ lookup.name = name; }
-      if(faves == true){ lookup.favorites_only = "True"};
-      $('#loader').data('filter',lookup);
-      $('#all-looks-list').html('');
-      getLooks(lookup);
-    });
     /* toggle price display in looks */
     $('#explore-looks-prices').prop('checked',false).click(function(e){
       var box = $(this);
       $('#all-looks-list').toggleClass('priceme');
     });
     /* infinte scroll/paging listen for when user scrolls within 100 px of bnottom of page */
-    $(window).scroll(function(){
+    document.addEventListener('scroll', function(evt){
       var st = $(window).scrollTop();
       var dh = $(document).height();
       var wh = $(window).height(); 
       var tot = st + wh;
       /* sticky header checks */
       if(looks_header.hasClass('sticky') == false){
-        if(st > 148){
+        if(st > 80){
           looks_header.addClass('sticky')
+          explore_form.addClass('sticky')
         }
       }else{
-        if(st < 148){
+        if(st < 80){
           looks_header.removeClass('sticky')
+          explore_form.removeClass('sticky')
         }
       }
       /* load more looks check */
-      if( (dh - 100) < tot ){
+      if( (dh - 80) < tot ){
         var loader = $('#loader');
         if(loader.hasClass('active') == false){
           loader.addClass('active');
           var fields = loader.data();
           var lookup = fields.filter;
           lookup.page = fields.page;
-          getLooks(lookup);
+          explore_page.getLooks(lookup);
         }
       }
+    }, {
+      capture: true,
+      passive: true
     });
-    /**
-    * @description private function to fetch additional looks for the explore list
-    * @param {object} lookup - json representation of fields to pass to API
-    */
-    function getLooks(lookup){
-      $('#looks-header h2').html('loading looks...');
-      $.ajax({
-        contentType : 'application/json',
-        data: JSON.stringify(lookup),
-        success:function(response){
-          //console.log(response)
-          explore_page.looksDisplay(response);
-        },
-        type: 'POST',
-        url: '/shopping_tool_api/look_list/'
-      });
+  },
+  /**
+  * @description process search form into json for API and submit
+  */
+  generateSearch: function(){
+    var lookup = {};
+    var stylist = $('#stylist-select').val();
+    var name = $('#search-terms').val();
+    var faves = $('#explore-only-faves').prop('checked');
+    var totals = $('#total-price-range')[0].noUiSlider.get();
+    var avgs = $('#avg-price-range')[0].noUiSlider.get();
+    var total_minimum = parseFloat(totals[0]);
+    var total_maximum = parseFloat(totals[1]);
+    var avg_minimum = parseFloat(avgs[0]);
+    var avg_maximum = parseFloat(avgs[1]);
+    lookup.page = 1
+    if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
+    if(name != ''){ lookup.name = name; }
+    if(faves == true){ lookup.favorites_only = "True"};
+    if((total_minimum != 0)||(total_maximum != 10000)){
+      lookup.total_look_price_minimum = total_minimum;
+      lookup.total_look_price_maximum = total_maximum;
     }
+    if((avg_minimum != 0)||(avg_maximum != 2000)){
+      lookup.avgerage_item_price_minimum = avg_minimum;
+      lookup.avgerage_item_price_maximum = avg_maximum; 
+    }
+    console.log(lookup);
+    $('#loader').data('filter',lookup);
+    $('#all-looks-list').html('');
+    explore_page.getLooks(lookup);
+  },
+  /**
+  * @description function to fetch looks for the explore list
+  * @param {object} lookup - json representation of fields to pass to API
+  */  
+  getLooks: function(lookup){
+    /**
+    * @description logic to make sure only one looks_list call happends at a time
+    */
+    if((typeof explore_page.fetch == 'object')&&(explore_page.fetch.readyState != 4)){
+      explore_page.fetch.abort();
+    }
+    $('#looks-header h2').html('loading looks...');
+    console.log(lookup)
+    explore_page.fetch = $.ajax({
+      contentType : 'application/json',
+      data: JSON.stringify(lookup),
+      success:function(response){
+        //console.log(response)
+        explore_page.looksDisplay(response);
+      },
+      type: 'POST',
+      url: '/shopping_tool_api/look_list/'
+    });    
   },
   /**
   * @description add looks to the DOM/UI
@@ -170,11 +188,13 @@ var explore_page = {
   */
   looksDisplay: function(list_object){
     var div = $('#all-looks-list');
-    console.log(list_object.looks)
+    //console.log(list_object.looks)
     var cropped_images = [];
     for(var i = 0, l = list_object.looks.length; i<l; i++){
       var look = list_object.looks[i];
       var markup = [];
+      var merchants = [];
+      var prices = [];
       var look_fave_link = '<a href="#" class="favorite-look" data-lookid="' + 
         look.id + '"><i class="fa fa-heart-o"></i></a>';
       var look_fave_idx = explore_page.favorite_look_ids.indexOf(look.id);
@@ -186,8 +206,7 @@ var explore_page = {
       markup.push(
         '<div class="look"><div class="display">' + look_fave_link  +
         '<h3><em data-lookid="' + look.id + '">' + look.name + '</em><span>by ' + 
-        stylist_names[look.stylist] + '</span></h3><p class="desc"><em>description:</em>' + 
-        look.description + '</p><div class="items">' +
+        stylist_names[look.stylist] + '</span></h3><div class="items">' +
         '<div class="explore-look-wrapper"><div class="explore-look-layout">'
       );
       for(var ix = 0, lx = look.look_layout.layout_json.length; ix<lx; ix++){
@@ -197,34 +216,34 @@ var explore_page = {
         for(var p = 0, prods = look.look_products.length; p<prods; p++){
           var prod = look.look_products[p];
           if(prod.layout_position == position){
-            var src = prod.product.product_image_url;
-            if(prod.cropped_dimensions != null){
-              var crop = {
-                id: 'look-' + look.id + '-item-' + prod.id,
-                src: look_proxy + '' + src,
-                dims: prod.cropped_dimensions
+            if(prod.product != null){
+              var src = prod.product.product_image_url;
+              if(prod.cropped_dimensions != null){
+                var crop = {
+                  id: 'look-' + look.id + '-item-' + prod.id,
+                  src: look_proxy + '' + src,
+                  dims: prod.cropped_dimensions
+                }
+                cropped_images.push(crop);
               }
-              cropped_images.push(crop);
+
+              var retail = prod.product.retail_price;
+              var sale = prod.product.sale_price;
+              var price_display = '';
+              if((sale >= retail)||(sale == 0)){
+                price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
+              }else{
+                price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
+                  ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
+              }
+              merchants.push(prod.product.merchant_name);
+              product_markup.push(
+                '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
+                'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
+                '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
+                '"><img style="height:' + block.height + 'px" src="' + src + '"/></span>' + price_display + '</a></div>'
+              );
             }
-
-            var retail = prod.product.retail_price;
-            var sale = prod.product.sale_price;
-            var price_display = '';
-            if((sale >= retail)||(sale == 0)){
-              price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-            }else{
-              price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-                ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-            }
-
-
-
-            product_markup.push(
-              '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
-              'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
-              '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
-              '"><img style="height:' + block.height + 'px" src="' + src + '"/></span>' + price_display + '</a></div>'
-            );
           }
         }
         markup.push(
@@ -233,8 +252,35 @@ var explore_page = {
           'px" data-position="' + position + '">' + product_markup.join() + '</div>'
         );
       }
+      var stores = '';
+      var desc = look.description != '' ? '<p class="desc"><em>Description:</em>' + look.description + '</p>' : '';
+      if(merchants.length > 0){
+        merchants = [...new Set(merchants)];
+        var last_class = prices.length == 0 ? 'last' : '' ;
+        stores = '<p class="extras ' + last_class + '"><em>Stores:</em> ' + merchants.join(', ') + '</p>';
+      }
       div.append(
-        markup.join('') + '</div></div></div></div></div>')
+        markup.join('') + '</div></div>' + stores +
+        '<p class="extras"><em>Total price:</em> ' + 
+        numeral(parseFloat(look.look_metrics[0].total_look_price)).format('$0,0.00') + 
+        '</p><p class="extras"><em>Average item price:</em> ' + 
+        numeral(parseFloat(look.look_metrics[0].average_item_price)).format('$0,0.00') +
+        '</p>' + desc + '</div></div>'
+      );
+    }
+    if(list_object.page == 1){
+      if(typeof explore_page.masonry == 'object'){
+        explore_page.masonry.remove();
+      }
+      explore_page.masonry = Macy({
+          container: '#all-looks-list',
+          trueOrder: true,
+          waitForImages: false,
+          margin: 8,
+          columns: 3
+      });
+    }else{
+      explore_page.masonry.recalculate();
     }
     if(cropped_images.length > 0){
       for(var i = 0, l = cropped_images.length; i<l; i++){
@@ -255,5 +301,101 @@ var explore_page = {
     if((list_object.page + 1) <= list_object.num_pages){
       $('#loader').removeClass('active').data('page', list_object.page + 1);
     }
+  },
+  /**
+  * @description search widget functionality
+  */
+  searchSetUp: function(){  
+    var at_load_stylist = utils.readURLParams('set_stylist');  
+    $('#stylist-select').val(' ').selectize({ create: false, sortField: 'text'}).change(function(e){
+      var dd = $(this);
+      if(dd.val() != ''){
+        explore_page.generateSearch();
+      }
+    });
+    if(at_load_stylist == null){
+      /* get the initial page of looks */
+      $('#loader').data('filter', {});
+      explore_page.getLooks({});
+    }else{
+      $('#stylist-select')[0].selectize.setValue(at_load_stylist, true);
+      /* get the initial page of looks for specified stylist */
+      $('#loader').data('filter', {stylist: at_load_stylist});
+      explore_page.getLooks({stylist: at_load_stylist});      
+    }
+    $('#search-terms').val('').blur(function(){
+      explore_page.generateSearch();
+    }).keyup(function(event) {
+      if (event.keyCode === 13) {
+        explore_page.generateSearch();
+      }
+    });
+    $('#explore-only-faves').prop('checked', false).click(function(){
+      explore_page.generateSearch();
+    });
+    var total_slider = $('#total-price-range')[0];
+    var total_slider_min = $('#total-price-min')[0];
+    var total_slider_max = $('#total-price-max')[0];
+    var total_slider_inputs = [total_slider_min, total_slider_max];
+    noUiSlider.create(total_slider, {
+      start: [0, 10000],
+      behaviour: 'drag',
+      connect: true,
+      range: {
+        'min': [0],
+        'max': [10000]
+      }
+    });
+    var avg_slider = $('#avg-price-range')[0];
+    var avg_slider_min = $('#avg-price-min')[0];
+    var avg_slider_max = $('#avg-price-max')[0];
+    var avg_slider_inputs = [avg_slider_min, avg_slider_max];
+    noUiSlider.create(avg_slider, {
+      start: [0, 2000],
+      behaviour: 'drag',
+      connect: true,
+      range: {
+        'min': [0],
+        'max': [2000]
+      }
+    });
+    total_slider.noUiSlider.on('update', function( values, handle ) {
+      total_slider_inputs[handle].value = values[handle];
+    });
+    total_slider.noUiSlider.on('set', function() {
+      explore_page.generateSearch();
+    });    
+    total_slider_inputs.forEach(function(input, handle) {
+      input.addEventListener('change', function(){
+        var r = [null,null];
+        r[handle] = this.value;
+        total_slider.noUiSlider.set(r);
+      });
+    });
+    avg_slider.noUiSlider.on('update', function( values, handle ) {
+      avg_slider_inputs[handle].value = values[handle];
+    });
+    avg_slider.noUiSlider.on('set', function() {
+      explore_page.generateSearch();
+    });    
+    avg_slider_inputs.forEach(function(input, handle) {
+      input.addEventListener('change', function(){
+        var r = [null,null];
+        r[handle] = this.value;
+        avg_slider.noUiSlider.set(r);
+      });
+    });
+    $("#explore-form input.ranger").keydown(function(event) {
+      console.log(event.keyCode)
+      // Allowing backspace, delete, enter
+      if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 13 ) {
+        
+      }else {
+        // Ensure that it is a number and stop the keypress
+        if (event.keyCode < 48 || event.keyCode > 57 ) {
+          event.preventDefault(); 
+        } 
+      }
+    });
   }
 }

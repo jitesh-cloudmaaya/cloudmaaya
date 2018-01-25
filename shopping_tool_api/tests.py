@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from shopping_tool_api.serializers import LookMetricsSerializer
+from shopping_tool_api.serializers import LookMetricsSerializer, LookSerializer
 
 from shopping_tool.models import *
 from django.http.cookie import SimpleCookie
@@ -38,6 +38,23 @@ class LookMetricsTestCase(APITestCase):
         self.assertEqual(u'0.00', json['store_rank'])
         self.assertEqual(u'0.00', json['total_item_sales'])
 
+    # test the lookmetrics serializer in the look serializer?
+    def test_look_serializer(self):
+        """
+        Test that look_metrics field of a Look is setup correctly.
+        """
+        l = Look.objects.get(pk=1)
+        serializer = LookSerializer(l)
+        self.assertIsNotNone(serializer)
+        json = serializer.data
+        lookmetrics = json['look_metrics'][0]
+        self.assertEqual(1, lookmetrics['look'])
+        self.assertEqual(u'32.00', lookmetrics['average_item_price'])
+        self.assertEqual(u'64.00', lookmetrics['total_look_price'])
+        self.assertEqual(3, lookmetrics['total_favorites'])
+        self.assertEqual(u'0.00', lookmetrics['total_item_sales'])
+        self.assertEqual(u'0.00', lookmetrics['store_rank'])
+
     def test_get_look_list_total_look_price(self):
         """
         Tests the ability to get a look list and filter on total look price.
@@ -45,43 +62,25 @@ class LookMetricsTestCase(APITestCase):
         url = reverse("shopping_tool_api:look_list")
 
         # test on strictly less than
-        total_look_price_filter_data = {'total_look_price': 400.00, 'total_look_price_comparison': 'lt'}
+        total_look_price_filter_data = {'total_look_price_minimum': 100.00, 'total_look_price_maximum': 500.00}
         response = self.client.post(url, total_look_price_filter_data)
         self.assertEqual(200, response.status_code)
         data = json.loads(response.content)
         # check length of looks returned
-        self.assertEqual(13, len(data['looks']))
+        self.assertEqual(6, len(data['looks']))
         # as well as the thresholds set in the filter?
 
         # test on less than or equal to
-        total_look_price_filter_data = {'total_look_price': 36.20, 'total_look_price_comparison': 'lte'}
+        total_look_price_filter_data = {'total_look_price_minimum': 700.00, 'total_look_price_maximum': 500.00}
         response = self.client.post(url, total_look_price_filter_data)
         self.assertEqual(200, response.status_code)
         data = json.loads(response.content)
         # check length of looks returned
-        self.assertEqual(2, len(data['looks']))
-        # as well as the thresholds set in the filter
-
-        # test on equal to exists
-        total_look_price_filter_data = {'total_look_price': 1.00, 'total_look_price_comparison': 'e'}
-        response = self.client.post(url, total_look_price_filter_data)
-        self.assertEqual(200, response.status_code)
-        data = json.loads(response.content)
-        # check length of looks returned
-        self.assertEqual(1, len(data['looks']))
-        # as well as the thresholds set in the filter
-
-        # test on equal to does not exist
-        total_look_price_filter_data = {'total_look_price': 13.13, 'total_look_price_comparison': 'e'}
-        response = self.client.post(url, total_look_price_filter_data)
-        self.assertEqual(200, response.status_code)
-        data = json.loads(response.content)
-        # check lengths of looks returned
         self.assertEqual(0, len(data['looks']))
         # as well as the thresholds set in the filter
 
-        # test on greater than or equal to
-        total_look_price_filter_data = {'total_look_price': 1840.00, 'total_look_price_comparison': 'gte'}
+        # test on equal to exists
+        total_look_price_filter_data = {'total_look_price_minimum': 1000.00, 'total_look_price_maximum': 2500.00}
         response = self.client.post(url, total_look_price_filter_data)
         self.assertEqual(200, response.status_code)
         data = json.loads(response.content)
@@ -89,13 +88,22 @@ class LookMetricsTestCase(APITestCase):
         self.assertEqual(2, len(data['looks']))
         # as well as the thresholds set in the filter
 
-        # test on strictly greater than
-        total_look_price_filter_data = {'total_look_price': 3000.00, 'total_look_price_comparison': 'gt'}
+        # test on greater than or equal to
+        total_look_price_filter_data = {'total_look_price_minimum': 400.00, 'total_look_price_maximum': 1000.00}
         response = self.client.post(url, total_look_price_filter_data)
         self.assertEqual(200, response.status_code)
         data = json.loads(response.content)
         # check length of looks returned
-        self.assertEqual(1, len(data['looks']))
+        self.assertEqual(4, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on strictly greater than
+        total_look_price_filter_data = {'total_look_price_minimum': 250.00, 'total_look_price_maximum': 750.00}
+        response = self.client.post(url, total_look_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(3, len(data['looks']))
         # as well as the thresholds set in the filter
 
     def test_get_look_list_average_item_price(self):
@@ -105,25 +113,7 @@ class LookMetricsTestCase(APITestCase):
         url = reverse("shopping_tool_api:look_list")
 
         # test on strictly less than
-        average_item_price_filter_data = {'average_item_price': 40.00, 'average_item_price_comparison': 'lt'}
-        response = self.client.post(url, average_item_price_filter_data)
-        self.assertEqual(200, response.status_code)
-        data = json.loads(response.content)
-        # check length of looks returned
-        self.assertEqual(9, len(data['looks']))
-        # as well as the thresholds set in the filter
-
-        # test on less than or equal to
-        average_item_price_filter_data = {'average_item_price': 40.00, 'average_item_price_comparison': 'lte'}
-        response = self.client.post(url, average_item_price_filter_data)
-        self.assertEqual(200, response.status_code)
-        data = json.loads(response.content)
-        # check length of looks returned
-        self.assertEqual(10, len(data['looks']))
-        # as well as the thresholds set in the filter
-
-        # test on equal to exists
-        average_item_price_filter_data = {'average_item_price': 18.10, 'average_item_price_comparison': 'e'}
+        average_item_price_filter_data = {'average_item_price_minimum': 40.00, 'average_item_price_maximum': 80.00}
         response = self.client.post(url, average_item_price_filter_data)
         self.assertEqual(200, response.status_code)
         data = json.loads(response.content)
@@ -131,8 +121,17 @@ class LookMetricsTestCase(APITestCase):
         self.assertEqual(1, len(data['looks']))
         # as well as the thresholds set in the filter
 
-        # test on equal to does not exist
-        average_item_price_filter_data = {'average_item_price': 10.18, 'average_item_price_comparison': 'e'} 
+        # test on less than or equal to
+        average_item_price_filter_data = {'average_item_price_minimum': 10.00, 'average_item_price_maximum': 280.00}
+        response = self.client.post(url, average_item_price_filter_data)
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.content)
+        # check length of looks returned
+        self.assertEqual(13, len(data['looks']))
+        # as well as the thresholds set in the filter
+
+        # test on equal to exists
+        average_item_price_filter_data = {'average_item_price_minimum': 400.00, 'average_item_price_maximum': 0.00}
         response = self.client.post(url, average_item_price_filter_data)
         self.assertEqual(200, response.status_code)
         data = json.loads(response.content)
@@ -140,22 +139,22 @@ class LookMetricsTestCase(APITestCase):
         self.assertEqual(0, len(data['looks']))
         # as well as the thresholds set in the filter
 
-        # test on greater than or equal to
-        average_item_price_filter_data = {'average_item_price': 300.03, 'average_item_price_comparison': 'gte'}
+        # test on equal to does not exist
+        average_item_price_filter_data = {'average_item_price_minimum': 400.00, 'average_item_price_maximum': 4000.00}
         response = self.client.post(url, average_item_price_filter_data)
         self.assertEqual(200, response.status_code)
         data = json.loads(response.content)
         # check length of looks returned
-        self.assertEqual(5, len(data['looks']))
+        self.assertEqual(3, len(data['looks']))
         # as well as the thresholds set in the filter
 
-        # test on strictly greater than
-        average_item_price_filter_data = {'average_item_price': 100.00, 'average_item_price_comparison': 'gt'}
+        # test on greater than or equal to
+        average_item_price_filter_data = {'average_item_price_minimum': 1.00, 'average_item_price_maximum': 500.00}
         response = self.client.post(url, average_item_price_filter_data)
         self.assertEqual(200, response.status_code)
         data = json.loads(response.content)
         # check length of looks returned
-        self.assertEqual(9, len(data['looks']))
+        self.assertEqual(17, len(data['looks']))
         # as well as the thresholds set in the filter
 
     def test_both_lookmetrics_filters(self):
@@ -164,20 +163,20 @@ class LookMetricsTestCase(APITestCase):
         """
         url = reverse("shopping_tool_api:look_list")
 
-        filter_data = {'total_look_price': 1000.00, 'total_look_price_comparison': 'gt',
-                        'average_item_price': 100.00, 'average_item_price_comparison': 'gte'}
+        filter_data = {'total_look_price_minimum': 1000.00, 'total_look_price_maximum': 2500.00,
+                        'average_item_price_minimum': 900.00, 'average_item_price_maximum': 2000.00}
         response = self.client.post(url, filter_data)
         data = json.loads(response.content)
         # check lengths of looks returned
-        self.assertEqual(3, len(data['looks']))
+        self.assertEqual(2, len(data['looks']))
 
-        filter_data = {'total_look_price': 400.00, 'total_look_price_comparison': 'lte',
-                        'average_item_price': 40.00, 'average_item_price_comparison': 'lt'}
+        filter_data = {'total_look_price_minimum': 400.00, 'total_look_price_maximum': 1000.00,
+                        'average_item_price_minimum': 8.00, 'average_item_price_maximum': 400.00}
 
         response = self.client.post(url, filter_data)
         data = json.loads(response.content)
         # check length of looks returned
-        self.assertEqual(9, len(data['looks']))
+        self.assertEqual(4, len(data['looks']))
 
 
 class ShoppingToolAPITestCase(APITestCase):
@@ -217,7 +216,7 @@ class ShoppingToolAPITestCase(APITestCase):
         url = reverse("shopping_tool_api:styling_session_note", kwargs={'pk':0})
         
         stylist = WpUsers.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
-        data = {"notes": "Api Test Note", "styling_session": 1, "client": 5, "stylist": stylist.id, "visible": 1}
+        data = {"notes": "Api Test Note", "styling_session": 1, "client": 5, "user_id": 6, "stylist": 6, "visible": 1}
 
         response = self.client.put(url, data)
         response_data = json.loads(response.content)
