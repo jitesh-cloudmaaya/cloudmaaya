@@ -1,6 +1,7 @@
 import os
 import datetime
 import yaml
+import urlparse
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR
@@ -84,6 +85,10 @@ def clean_ran(local_temp_dir, file_ending):
                         primary_category = line[config_dict['primary_category']]
                         secondary_category = line[config_dict['secondary_category']]
                         product_url = line[config_dict['product_url']]
+                        try:
+                            raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
+                        except:
+                            raw_product_url = '' # there was an error of some kind
                         product_image_url = line[config_dict['product_image_url']]
                         buy_url = line[config_dict['buy_url']]
                         short_product_description = line[config_dict['short_product_description']]
@@ -184,6 +189,7 @@ def clean_ran(local_temp_dir, file_ending):
                         record += long_product_description + u'|'
                         record += short_product_description + u'|'
                         record += product_url + u'|'
+                        record += raw_product_url + u'|'
                         record += product_image_url + u'|'
                         record += buy_url + u'|'
                         record += manufacturer_name + u'|'

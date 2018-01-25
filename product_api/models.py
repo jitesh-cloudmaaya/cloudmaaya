@@ -13,6 +13,7 @@ class Product(models.Model):
     long_product_description = models.CharField(max_length=2000, blank=True, null=True)
     short_product_description = models.CharField(max_length=500, blank=True, null=True)
     product_url = models.CharField(max_length=2000, blank=True, null=True)
+    raw_product_url = models.CharField(max_length=2000, blank=True, null=True)
     product_image_url = models.CharField(max_length=2000, blank=True, null=True)
     buy_url = models.CharField(max_length=2000, blank=True, null=True)
     manufacturer_name = models.CharField(max_length=250, blank=True, null=True)

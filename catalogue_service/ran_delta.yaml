@@ -6,6 +6,7 @@ fields:
 - long_product_description
 - short_product_description
 - product_url
+- raw_product_url
 - product_image_url
 - buy_url
 - manufacturer_name
