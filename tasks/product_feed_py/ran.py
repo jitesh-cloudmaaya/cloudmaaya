@@ -85,10 +85,15 @@ def clean_ran(local_temp_dir, file_ending):
                         primary_category = line[config_dict['primary_category']]
                         secondary_category = line[config_dict['secondary_category']]
                         product_url = line[config_dict['product_url']]
+
+
+                        # implement cheap fix for now, change when migrating to python's csv library
                         try:
                             raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
+                            raw_product_url = raw_product_url.replace('|', '%7C') # look this over again when csv lib
                         except:
                             raw_product_url = '' # there was an error of some kind
+
                         product_image_url = line[config_dict['product_image_url']]
                         buy_url = line[config_dict['buy_url']]
                         short_product_description = line[config_dict['short_product_description']]
