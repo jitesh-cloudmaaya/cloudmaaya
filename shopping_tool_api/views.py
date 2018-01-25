@@ -114,7 +114,7 @@ def styling_session_notes(request, pk=None):
         /shopping_tool_api/styling_session_notes/{userid}/
     """
     try:
-        notes = AllumeUserStylistNotes.objects.filter(styling_session=pk).all()
+        notes = AllumeUserStylistNotes.objects.filter(client=pk).all()
     except AllumeUserStylistNotes.DoesNotExist:
         return HttpResponse(status=404)
 
@@ -361,7 +361,8 @@ def look(request, pk):
     elif request.method == 'DELETE':
         try:
             look = Look.objects.get(id = pk)
-            look.delete()
+            look.status = 'Deleted'
+            look.save()
             context = {'Success': True}
             return JsonResponse(context, status=status.HTTP_201_CREATED)
         except ObjectDoesNotExist as er:
@@ -398,6 +399,7 @@ def look_list(request):
     looks = looks.filter(look_layout__isnull=False)
     looks = looks.exclude(look_layout = 0)
 
+
     page = 1
     if 'page' in request.data:
         page = request.data['page']
@@ -405,6 +407,12 @@ def look_list(request):
     per_page = 20
     if 'per_page' in request.data:
         per_page = request.data['per_page']
+
+
+    if 'show_deleted' in request.data:
+        looks = looks
+    else:
+        looks = looks.exclude(status = 'Deleted')
 
     if 'client' in request.data:
         client = request.data['client']
