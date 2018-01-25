@@ -6,6 +6,7 @@ import subprocess
 from django.db import connection, transaction
 import yaml
 import datetime
+import time
 from product_feed_py import *
 from catalogue_service.settings import BASE_DIR
 
@@ -36,7 +37,9 @@ class ProductFeed(object):
     ### space for my additions
 
     def clean_data(self):
+        start = time.time()
         exec self._clean_data_method
+        print "Process takes %s seconds" % (time.time() - start)
 
 
     # cursor = connection.cursor()
@@ -47,6 +50,7 @@ class ProductFeed(object):
 
     # how to get filename of flat_file.csv
     def load_cleaned_data(self): # eventually rename
+        start = time.time()
         cursor = connection.cursor()
 
         # filepath to pd_temp/ran/cleaned/flat_file.csv ?
@@ -56,14 +60,8 @@ class ProductFeed(object):
         table = self._table
         fields = self._fields
 
-        # table = temporary/intermediate table
-        # statement = "DELETE FROM product_api_product WHERE temp_table.product_id = product_api.product_id"
-        # statement = "INSERT INTO"
-
-        # attempt to rewrite compound sql statements to separate statements via statements and split
         full_script = []
 
-        # separate current temp sql thingy into two files
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
         statement = sql_script.read()
         statements = statement.split(';')
@@ -77,7 +75,6 @@ class ProductFeed(object):
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
         statement = sql_script.read()
         statements = statement.split(';')
-
         for i in range(0, len(statements)):
             full_script.append(statements[i])
 
@@ -89,6 +86,8 @@ class ProductFeed(object):
                         cursor.execute(statement)
         finally:
             cursor.close()
+
+        print "Process takes %s seconds" % (time.time() - start)
 
     def decompress_data(self):
         file_list = os.listdir(self._local_temp_dir)
