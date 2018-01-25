@@ -47,6 +47,6 @@ ftp_config:
 leave_temp_files: true
 local_temp_dir: pd_temp/ran
 remote_dir: /
-table: product_api_product
+table: product_api_product_temp
 clean_data_method: ran.clean_ran(self._local_temp_dir, self._file_ending)
 file_ending: mp.txt

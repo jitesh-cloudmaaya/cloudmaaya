@@ -41,13 +41,6 @@ class ProductFeed(object):
         exec self._clean_data_method
         print "Process takes %s seconds" % (time.time() - start)
 
-
-    # cursor = connection.cursor()
-    # etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360.sql'))
-    # statement = etl_file.read()
-    # cursor.execute(statement)
-
-
     # how to get filename of flat_file.csv
     def load_cleaned_data(self): # eventually rename
         start = time.time()
@@ -68,7 +61,6 @@ class ProductFeed(object):
         for i in range(0, len(statements)):
             full_script.append(statements[i])
 
-        table = 'product_api_product_temp'
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s" % (f, table, fields)
         full_script.append(statement)
 
