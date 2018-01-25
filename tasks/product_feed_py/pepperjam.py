@@ -3,6 +3,7 @@ import datetime
 import yaml
 import json
 import urllib2
+import urlparse
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
@@ -140,9 +141,11 @@ def get_data(local_temp_dir):
                 record += product['name'] + u'|' #product_name
                 record += product['description_long'] + u'|' #long_product_description
                 record += product['description_short'] + u'|' #short_product_description
-                record += product['buy_url'] + u'|' #product_url
+
+                buy_url = product['buy_url']
+                record += buy_url + u'|' #product_url
                 record += product['image_url'] + u'|' #product_image_url
-                record += product['buy_url'] + u'|' #buy_url
+                record += buy_url + u'|' #buy_url
                 record += product['manufacturer'] + u'|' #manufacturer_name
                 record += product['mpn'] + u'|' #manufacturer_part_number
                 record += product['sku'] + u'|' #SKU
@@ -238,9 +241,16 @@ def get_data(local_temp_dir):
 
                 # is_deleted logic
                 if "modification" == 'D':
-                    record += '1\n' # is this okay given is_deleted is boolean data type
+                    record += '1|' # is this okay given is_deleted is boolean data type
                 else:
-                    record += '0\n'
+                    record += '0|'
+
+
+                raw_url = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
+                record += raw_url 
+
+                # Final Line Break
+                record += '\n'
 
                 cleaned.write(record.encode('UTF-8'))
                 writtenCount += 1
