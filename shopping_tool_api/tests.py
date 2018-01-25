@@ -216,7 +216,7 @@ class ShoppingToolAPITestCase(APITestCase):
         url = reverse("shopping_tool_api:styling_session_note", kwargs={'pk':0})
         
         stylist = WpUsers.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
-        data = {"notes": "Api Test Note", "styling_session": 1, "client": 5, "stylist": stylist.id, "visible": 1}
+        data = {"notes": "Api Test Note", "styling_session": 1, "client": 5, "user_id": 6, "stylist": 6, "visible": 1}
 
         response = self.client.put(url, data)
         response_data = json.loads(response.content)

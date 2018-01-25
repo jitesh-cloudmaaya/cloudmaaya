@@ -7,6 +7,11 @@ from shopping_tool.models import *
 ##  REST SERIALIZERS
 ####################################################################################
 
+class WpUsersNoteUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WpUsers
+        fields = ['first_name', 'last_name']
+
 class LookLayoutSerializer(serializers.ModelSerializer):
     #layout_json = serializers.JSONField()
 
@@ -99,6 +104,7 @@ class AllumeClient360Serializer(serializers.ModelSerializer):
         fields = '__all__'#
 
 class AllumeUserStylistNotesSerializer(serializers.ModelSerializer):
+    #stylist = WpUsersNoteUserSerializer(many=False, read_only=True)
 
     class Meta:
         model = AllumeUserStylistNotes
