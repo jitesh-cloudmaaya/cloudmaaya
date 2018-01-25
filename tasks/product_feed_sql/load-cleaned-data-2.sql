@@ -120,7 +120,7 @@ ON DUPLICATE KEY UPDATE
     end_date = VALUES(end_date),
     merchant_name = VALUES(merchant_name),
     created_at = VALUES(created_at),
-    -- updated_at = VALUES(updated_at),
+    updated_at = VALUES(updated_at),
     allume_score = VALUES(allume_score),
     brand = VALUES(brand),
     is_best_seller = VALUES(is_best_seller),
