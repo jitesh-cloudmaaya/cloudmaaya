@@ -44,7 +44,7 @@ ftp_config:
   host: aftp.linksynergy.com
   password: yT%6-Pl@h
   user: allumestye
-leave_temp_files: true
+leave_temp_files: false
 local_temp_dir: pd_temp/ran
 remote_dir: /
 table: product_api_product_temp
