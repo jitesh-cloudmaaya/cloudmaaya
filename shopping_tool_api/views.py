@@ -17,7 +17,7 @@ from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
 from product_api.models import Product
-from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments
+from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, AllumeUserStylistNotes
 from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360
 from serializers import *
 from rest_framework import status
@@ -41,6 +41,86 @@ def client_360(request, pk=None):
 
     serializer = AllumeClient360Serializer(client)
     return JsonResponse(serializer.data, safe=client)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@check_login
+@permission_classes((AllowAny, ))
+def styling_session_note(request, pk=None):
+    """
+    get:
+        View styling session Note
+
+        /shopping_tool_api/styling_session_note/{note_id}/
+    put:
+        Add note to the styling session
+
+        /shopping_tool_api/styling_session_note/0/
+
+        Sample JSON Object
+
+        {
+          "stylist": 1,
+          "client": 10,
+          "styling_session": 393223,
+          "notes": 393223,
+          "visible": 11
+        }
+
+    delete:
+        Remove a Note from the styling session        
+    """
+    if request.method == 'GET':
+        try:
+            note = AllumeUserStylistNotes.objects.get(id=pk)
+        except AllumeUserStylistNotes.DoesNotExist:
+            return HttpResponse(status=404)
+
+        serializer = AllumeUserStylistNotesSerializer(note)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+
+        try:
+            note = AllumeUserStylistNotes.objects.get(id=pk)
+            serializer = AllumeUserStylistNotesSerializer(note, data=request.data)
+        except AllumeUserStylistNotes.DoesNotExist:
+            serializer = AllumeUserStylistNotesSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        try:
+            note = AllumeUserStylistNotes.objects.get(id = pk)
+            note.delete()
+            context = {'Success': True}
+            return JsonResponse(context, status=status.HTTP_201_CREATED)
+        except ObjectDoesNotExist as er:
+            context = {'Success': False, 'Info': str(er)}
+            return JsonResponse(context, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(context) 
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def styling_session_notes(request, pk=None):
+    """
+    get:
+        View list of styling Session Notes
+
+        /shopping_tool_api/styling_session_notes/{userid}/
+    """
+    try:
+        notes = AllumeUserStylistNotes.objects.filter(client=pk).all()
+    except AllumeUserStylistNotes.DoesNotExist:
+        return HttpResponse(status=404)
+
+    serializer = AllumeUserStylistNotesSerializer(notes, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -252,6 +332,8 @@ def look(request, pk):
          "stylist": 117,
          "description": ""
         }
+    delete:
+        Delete a look
     """
     if request.method == 'GET':
 
@@ -275,6 +357,18 @@ def look(request, pk):
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        try:
+            look = Look.objects.get(id = pk)
+            look.status = 'Deleted'
+            look.save()
+            context = {'Success': True}
+            return JsonResponse(context, status=status.HTTP_201_CREATED)
+        except ObjectDoesNotExist as er:
+            context = {'Success': False, 'Info': str(er)}
+            return JsonResponse(context, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @check_login
@@ -305,6 +399,7 @@ def look_list(request):
     looks = looks.filter(look_layout__isnull=False)
     looks = looks.exclude(look_layout = 0)
 
+
     page = 1
     if 'page' in request.data:
         page = request.data['page']
@@ -312,6 +407,12 @@ def look_list(request):
     per_page = 20
     if 'per_page' in request.data:
         per_page = request.data['per_page']
+
+
+    if 'show_deleted' in request.data:
+        looks = looks
+    else:
+        looks = looks.exclude(status = 'Deleted')
 
     if 'client' in request.data:
         client = request.data['client']
