@@ -83,29 +83,88 @@ var utils = {
     $('#client-tabs a').click(function(e){
       e.preventDefault();
       var link = $(this);
-      var div = $(link.attr('href'));
+      var href = link.attr('href')
+      var div = $(href);
       if(link.hasClass('on') == false){
         link.addClass('on').siblings('a').removeClass('on');
-        div.addClass('show').siblings('div.client-section').removeClass('show');
+        div.addClass('show').siblings('div.client-section').removeClass('show'); 
+        if(href == '#client-notes'){
+          div.closest('div.client-sections').addClass('notes');
+        }else{
+          div.closest('div.client-sections').removeClass('notes');
+        }
       }
     });
-
-    /** get the notes for the client 
-    
+    /* add notes form toggle */
+    $('#add-note-toggle').click(function(e){
+      e.preventDefault();
+      $('#add-notes-form').slideToggle();
+    });
+    /* submit the new note */
+    $('#submit-note').click(function(e){
+      var nl = $('#note-list');
+      e.preventDefault();
+      var note_obj ={
+        "stylist": parseInt($('#stylist').data('stylistid')),
+        "client": parseInt($('#user-clip').data('userid')),
+        "styling_session": parseInt($('body').data('stylesession')),
+        "notes": $('#added-note').val(),
+        "visible": 1
+      }
+      $('#add-notes-form').slideToggle();
+      $.ajax({
+        beforeSend: function(xhr){
+          nl.prepend(
+            '<div id="notes-loader">' +
+            '<span class="pulse_loader"></span>' +
+            '<span class="pulse_message">adding your note...</span>' +
+            '</div>'
+          );
+        },
+        contentType : 'application/json',
+        data: JSON.stringify(note_obj),        
+        success: function(response){
+          $('#notes-loader').remove();
+          nl.prepend(
+            '<div class="client-note"><p>' + response.notes + '</p>' +
+            '<span class="date">' + 
+            moment(response.last_modified).format('MMMM Do, YYYY h:mm a') + 
+            '</span><span class="tail"></span>' +
+            '<span class="name">Stylist name</span></div>'
+          );
+          $('#added-note').val('');
+        },
+        type: 'PUT',
+        url:'/shopping_tool_api/styling_session_note/0/'
+      });
+    });
+    /* load the client notes */
     $.ajax({
-      data: JSON.stringify({user_id: clip.data('userid') }),
-      success:function(response){
+      success: function(response){
         console.log(response)
+        var ui_div = $('#note-list');
+        var count = response.length;
+        if(count > 0){
+          var header_txt = count == 1 ? '1 Note' : count + ' Notes';
+          $('#client-notes h3').html(header_txt).data('num', count);
+          var notes_markup = [];
+          for(var i = 0; i<count; i++){
+            var note = response[i];
+            notes_markup.push(
+              '<div class="client-note"><p>' + note.notes+ '</p>' +
+              '<span class="date">' + 
+              moment(note.last_modified).format('MMMM Do, YYYY h:mm a') + 
+              '</span><span class="tail"></span>' +
+              '<span class="name">Stylist name</span></div>'
+            );
+          }
+          ui_div.html(notes_markup.join(''));
+        }else{
+          $('#client-notes h3').html('There are no notes for this client.').data('num', count);
+        }
       },
-      dataType: 'jsonp',
-      type: 'POST',
-      url: 'https://styling-service-stage.allume.co/view_user_styling_notes/'
-    })
-    
-    */
-    
-
-
+      url:'/shopping_tool_api/styling_session_notes/' + $('#user-clip').data('userid')
+    });
   },
   /**
   * @description make a groups of DOM objects all the same height

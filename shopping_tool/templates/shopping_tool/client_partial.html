@@ -24,9 +24,14 @@
     </div>
     <div class="client-sections">
       <div id="client-notes" class="client-section">
-        <br/><br/><br/><br/>
-        NOTES UI WILL GO HERE
-        <br/><br/><br/><br/>
+        <a href="#" id="add-note-toggle">add note</a>
+        <h3></h3>
+        <div id="add-notes-form">
+          <label>Note</label>
+          <textarea id="added-note" placeholder="Please enter your note..."></textarea>
+          <a href="#" id="submit-note">submit note</a>
+        </div>
+        <div id="note-list"></div>
       </div>
     	<div id="client-bio" class="client-section show">
     		<span class="client-details"><em>height:</em>{{ client.client_360.height }}</span>

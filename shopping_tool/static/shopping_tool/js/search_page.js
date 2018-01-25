@@ -173,6 +173,11 @@ var search_page = {
                 if(sizes.indexOf(facet.key) > -1){
                   checked = "checked";
                 }
+              }else if((pretty_name == 'price_range')&&(cs.clientsettings == true)){
+                var spend = cs.clientspend;
+                if(spend == facet.key){
+                  checked = "checked";
+                }
               }
               if(facet.key != ''){
                 group_markup.markup[display_name].push(
@@ -280,11 +285,13 @@ var search_page = {
   performSearch: function(page){
     $('#facet-bar').removeClass('show');
     /* generate the query string */
-    var selection_markup = []
+    var selection_markup = [];
+    var facets = [];
     var q = '';
     var search_box = $('#search-field');
     var new_search = false;
     var text = search_box.val();
+    var category = $('#search-categories').val();    
     if(text != '') { 
       q += 'text=' + encodeURIComponent(text); 
       selection_markup.push(
@@ -295,8 +302,10 @@ var search_page = {
       search_box.data('lookup', text);
       new_search = true;
     }
-    var facets = [];
-    var category = $('#search-categories').val();
+    if(category != search_box.data('cat')){
+      new_search = true;
+      search_box.data('cat', category)
+    }
     if(category != ''){
       facets.push('&primary_category=' + category);
       selection_markup.push(
@@ -309,12 +318,10 @@ var search_page = {
         var sizes = [];
         var cleaned_sizes = [];
         if(["Dresses", "Jackets"].indexOf(category) > -1){
-          spend = client_360.categories[category].spend;        
-        }else if(["Jeans", "Shoes", "Tops"].indexOf(category) > -1){
-          sizes = client_360.categories[category].size.split(','); 
-        }else if(category == 'Pants'){
-          spend = client_360.categories[category].spend;
-          sizes = client_360.categories[category].size.split(',');        
+          spend.push(client_360.categories[category].spend);        
+        }else if(["Jeans", "Shoes", "Tops", "Pants"].indexOf(category) > -1){
+          spend.push(client_360.categories[category].spend);
+          sizes = client_360.categories[category].size.split(',');   
         }
         for(i = 0, l = sizes.length; i<l; i++){
           var size = sizes[i];
@@ -330,8 +337,16 @@ var search_page = {
             '&size=' + encodeURIComponent(cleaned_sizes.join('|'))
           );
         }
-        search_box.data('clientsize', cleaned_sizes.join('|')).data('clientsettings', true);
-        // fix spend stuff here
+        if(spend.length > 0){
+          selection_markup.push(
+            '<a href="#" class="remove-facet" data-qparam="price_range" data-facet="' + 
+            spend.join('') + '">' + spend.join('') + '<i class="fa fa-times-circle"></i></a>'
+          );          
+          facets.push(
+            '&price_range=' + encodeURIComponent(spend.join(''))
+          );
+        }
+        search_box.data('clientsize', cleaned_sizes.join('|')).data('clientspend', spend.join('')).data('clientsettings', true);
       }
     }
     if(new_search == false){

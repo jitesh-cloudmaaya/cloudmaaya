@@ -114,7 +114,7 @@ def styling_session_notes(request, pk=None):
         /shopping_tool_api/styling_session_notes/{userid}/
     """
     try:
-        notes = AllumeUserStylistNotes.objects.filter(client=pk).all()
+        notes = AllumeUserStylistNotes.objects.filter(client=pk).order_by('-last_modified').all()
     except AllumeUserStylistNotes.DoesNotExist:
         return HttpResponse(status=404)
 
