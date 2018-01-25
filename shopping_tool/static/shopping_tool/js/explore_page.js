@@ -14,6 +14,13 @@ var explore_page = {
   * @description cache array of favorited look ids, used to set correct favorite link 
   */
   favorite_look_ids: [],
+  /**
+  * @description cache of getLooks xhr object
+  */
+  fetch: '',  
+  /**
+  * @description cache of masonry object for explore layout
+  */
   masonry : '',
   /** 
   * @description cache of styling session
@@ -31,17 +38,6 @@ var explore_page = {
     /* explore page functionality */
     var looks_header = $('#looks-header');
     var explore_form = $('#explore-form');
-    var at_load_stylist = utils.readURLParams('set_stylist');
-    if(at_load_stylist == null){
-      /* get the initial page of looks */
-      $('#loader').data('filter', {});
-      explore_page.getLooks({});
-    }else{
-      $('#stylist-select')[0].selectize.setValue(at_load_stylist, true);
-      /* get the initial page of looks for specified stylist */
-      $('#loader').data('filter', {stylist: at_load_stylist});
-      explore_page.getLooks({stylist: at_load_stylist});      
-    }
     $('#all-looks-list').on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
@@ -167,25 +163,32 @@ var explore_page = {
   * @param {object} lookup - json representation of fields to pass to API
   */  
   getLooks: function(lookup){
-      $('#looks-header h2').html('loading looks...');
-      $.ajax({
-        contentType : 'application/json',
-        data: JSON.stringify(lookup),
-        success:function(response){
-          //console.log(response)
-          explore_page.looksDisplay(response);
-        },
-        type: 'POST',
-        url: '/shopping_tool_api/look_list/'
-      });    
-    },
+    /**
+    * @description logic to make sure only one looks_list call happends at a time
+    */
+    if((typeof explore_page.fetch == 'object')&&(explore_page.fetch.readyState != 4)){
+      explore_page.fetch.abort();
+    }
+    $('#looks-header h2').html('loading looks...');
+    console.log(lookup)
+    explore_page.fetch = $.ajax({
+      contentType : 'application/json',
+      data: JSON.stringify(lookup),
+      success:function(response){
+        //console.log(response)
+        explore_page.looksDisplay(response);
+      },
+      type: 'POST',
+      url: '/shopping_tool_api/look_list/'
+    });    
+  },
   /**
   * @description add looks to the DOM/UI
   * @param {object} list_object look_list object
   */
   looksDisplay: function(list_object){
     var div = $('#all-looks-list');
-    console.log(list_object.looks)
+    //console.log(list_object.looks)
     var cropped_images = [];
     for(var i = 0, l = list_object.looks.length; i<l; i++){
       var look = list_object.looks[i];
@@ -229,11 +232,9 @@ var explore_page = {
               var price_display = '';
               if((sale >= retail)||(sale == 0)){
                 price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-                prices.push(parseFloat(retail));
               }else{
                 price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
                   ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-                prices.push(parseFloat(sale));
               }
               merchants.push(prod.product.merchant_name);
               product_markup.push(
@@ -252,22 +253,20 @@ var explore_page = {
         );
       }
       var stores = '';
-      var price_info ='';
       var desc = look.description != '' ? '<p class="desc"><em>Description:</em>' + look.description + '</p>' : '';
       if(merchants.length > 0){
         merchants = [...new Set(merchants)];
         var last_class = prices.length == 0 ? 'last' : '' ;
         stores = '<p class="extras ' + last_class + '"><em>Stores:</em> ' + merchants.join(', ') + '</p>';
       }
-      if(prices.length > 0){
-        var tp = prices.reduce(function(accumulator, currentValue, currentIndex, array){
-          return accumulator + currentValue;
-        });
-        price_info = '<p class="extras"><em>Total price:</em> ' + numeral(tp).format('$0,0.00') + 
-          '</p><p class="extras"><em>Average item price:</em> ' + numeral(tp/prices.length).format('$0,0.00') +
-          '</p>';
-      }
-      div.append(markup.join('') + '</div></div>' + stores + '' + price_info + '' + desc + '</div></div>');
+      div.append(
+        markup.join('') + '</div></div>' + stores +
+        '<p class="extras"><em>Total price:</em> ' + 
+        numeral(parseFloat(look.look_metrics[0].total_look_price)).format('$0,0.00') + 
+        '</p><p class="extras"><em>Average item price:</em> ' + 
+        numeral(parseFloat(look.look_metrics[0].average_item_price)).format('$0,0.00') +
+        '</p>' + desc + '</div></div>'
+      );
     }
     if(list_object.page == 1){
       if(typeof explore_page.masonry == 'object'){
@@ -281,7 +280,6 @@ var explore_page = {
           columns: 3
       });
     }else{
-      console.log(typeof explore_page.masonry)
       explore_page.masonry.recalculate();
     }
     if(cropped_images.length > 0){
@@ -307,15 +305,30 @@ var explore_page = {
   /**
   * @description search widget functionality
   */
-  searchSetUp: function(){    
+  searchSetUp: function(){  
+    var at_load_stylist = utils.readURLParams('set_stylist');  
     $('#stylist-select').val(' ').selectize({ create: false, sortField: 'text'}).change(function(e){
       var dd = $(this);
       if(dd.val() != ''){
         explore_page.generateSearch();
       }
     });
+    if(at_load_stylist == null){
+      /* get the initial page of looks */
+      $('#loader').data('filter', {});
+      explore_page.getLooks({});
+    }else{
+      $('#stylist-select')[0].selectize.setValue(at_load_stylist, true);
+      /* get the initial page of looks for specified stylist */
+      $('#loader').data('filter', {stylist: at_load_stylist});
+      explore_page.getLooks({stylist: at_load_stylist});      
+    }
     $('#search-terms').val('').blur(function(){
       explore_page.generateSearch();
+    }).keyup(function(event) {
+      if (event.keyCode === 13) {
+        explore_page.generateSearch();
+      }
     });
     $('#explore-only-faves').prop('checked', false).click(function(){
       explore_page.generateSearch();
@@ -349,6 +362,9 @@ var explore_page = {
     total_slider.noUiSlider.on('update', function( values, handle ) {
       total_slider_inputs[handle].value = values[handle];
     });
+    total_slider.noUiSlider.on('set', function() {
+      explore_page.generateSearch();
+    });    
     total_slider_inputs.forEach(function(input, handle) {
       input.addEventListener('change', function(){
         var r = [null,null];
@@ -359,6 +375,9 @@ var explore_page = {
     avg_slider.noUiSlider.on('update', function( values, handle ) {
       avg_slider_inputs[handle].value = values[handle];
     });
+    avg_slider.noUiSlider.on('set', function() {
+      explore_page.generateSearch();
+    });    
     avg_slider_inputs.forEach(function(input, handle) {
       input.addEventListener('change', function(){
         var r = [null,null];

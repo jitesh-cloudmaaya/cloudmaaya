@@ -98,7 +98,6 @@ $.when(
   $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/'),
   $.get('/shopping_tool_api/user_look_favorites/' + $('#stylist').data('stylistid') + '/')
 ).then(function(favorite_products, favorite_looks){
-  console.log(favorite_looks)
   if(favorite_products[0] != undefined){
     for(var i = 0, l = favorite_products[0].length;i<l;i++){
       var fave = favorite_products[0][i];
