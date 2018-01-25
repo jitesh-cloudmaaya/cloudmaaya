@@ -89,13 +89,19 @@ def clean_ran(local_temp_dir, file_ending):
                         short_product_description = line[config_dict['short_product_description']]
                         long_product_description = line[config_dict['long_product_description']]
                         discount = line[config_dict['discount']]
+                        if not discount:
+                            discount = '0.00'
                         discount_type = line[config_dict['discount_type']]
                         sale_price = line[config_dict['sale_price']]
+                        if not sale_price:
+                            sale_price = '0.00'
                         retail_price = line[config_dict['retail_price']]
                         begin_date = line[config_dict['begin_date']]
                         end_date = line[config_dict['end_date']]
                         brand = line[config_dict['brand']]
                         shipping = line[config_dict['shipping']]
+                        if not shipping:
+                            shipping = '0.00'
                         keywords = line[config_dict['keywords']]
                         manufacturer_part_number = line[config_dict['manufacturer_part_number']]
                         manufacturer_name = line[config_dict['manufacturer_name']]
