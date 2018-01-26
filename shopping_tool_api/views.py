@@ -312,7 +312,7 @@ def rack_item(request, pk=None):
 
         return Response(context) 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 @check_login
 @permission_classes((AllowAny, ))
 def look(request, pk):
