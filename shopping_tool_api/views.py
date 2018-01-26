@@ -393,6 +393,7 @@ def look_list(request):
          "total_look_price_maximum": 1000.00,
          "average_item_price_minimum": 20.00,
          "average_item_price_maximum": 45.00,
+         "show_deleted": True
         }
     """
     looks = Look.objects.all()  
