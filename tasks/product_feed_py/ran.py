@@ -36,7 +36,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
         for f in file_list:
             with open(f, "r") as csvfile:
                 header = csvfile.readline()
-                header = header.decode('utf-8')
+                header = header.decode('UTF-8')
                 header = header.split('|')
                 merchant_id = header[1]
                 merchant_name = header[2]
@@ -83,7 +83,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
                         # do unicode sandwich stuff
                         for key, value in datum.iteritems():
-                            datum[key] = value.decode('utf-8')
+                            datum[key] = value.decode('UTF-8')
 
                         # breaking down the data from the merchant files
                         product_id = datum['product_id']
@@ -268,7 +268,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
                         # unicode sandwich finish
                         for key, value in record.iteritems():
-                            record[key] = value.encode('utf-8')
+                            record[key] = value.encode('UTF-8')
 
                         cleaned_fields = cleaned_fields.split(',')
                         writer = csv.DictWriter(cleaned, cleaned_fields)
