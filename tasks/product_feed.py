@@ -62,7 +62,9 @@ class ProductFeed(object):
         for i in range(0, len(statements)):
             full_script.append(statements[i])
 
-        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s" % (f, table, fields)
+        # need to escape the backslash for python and then also for mySQL?
+        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' %s" % (f, table, fields)
+
         full_script.append(statement)
 
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))

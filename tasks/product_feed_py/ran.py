@@ -15,7 +15,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
 
-    destination = local_temp_dir + '/cleaned/flat_file.txt'
+    destination = local_temp_dir + '/cleaned/flat_file.csv'
     with open(destination, "w") as cleaned:
         file_list = []
         file_directory = os.listdir(local_temp_dir)
@@ -31,10 +31,17 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
         allumecategorySkipped = 0
         inactiveSkipped = 0
 
-        # BEGIN CSV READER STUFF
-        csv.register_dialect('pipes', delimiter='|', quoting=csv.QUOTE_NONE, quotechar='')
+        # different dialects for reading and writing?
+        csv.register_dialect('reading', delimiter='|', quoting=csv.QUOTE_NONE, quotechar='')
+        # second dialect
+        # set the delimiter as a pipe character
+        # quote all the fields when written to flat file
+        # use " as the quoting character
+        # use the escapecharacter and set it to \
+        csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\')
+
         cleaned_fieldnames = cleaned_fields.split(',')
-        writer = csv.DictWriter(cleaned, cleaned_fieldnames, dialect = 'pipes')
+        writer = csv.DictWriter(cleaned, cleaned_fieldnames, dialect = 'writing')
         for f in file_list:
             with open(f, "r") as csvfile:
                 header = csvfile.readline()
@@ -74,7 +81,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         config_dict = yaml.load(config)
                         fields = config_dict['fields'] # grabs the fields as an array
                     # print fields
-                    reader = csv.DictReader(lines, fieldnames = fields, restval='', dialect = 'pipes')
+                    reader = csv.DictReader(lines, fieldnames = fields, restval='', dialect = 'reading')
                     for datum in reader:
                         totalCount += 1
 
@@ -92,7 +99,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
                         try:
                             raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
-                            raw_product_url = raw_product_url.replace('|', '7%C')
+                            # raw_product_url = raw_product_url.replace('|', '7%C')
                         except:
                             raw_product_url = u'' # there was an error of some kind
 
