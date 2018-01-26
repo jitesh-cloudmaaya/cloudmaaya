@@ -212,7 +212,7 @@ var rack_builder = {
             var product_markup = [];
             for(var p = 0, prods = comp.look_products.length; p<prods; p++){
               var prod = comp.look_products[p];
-              if(prod.layout_position == position){
+              if((prod.layout_position == position)&&(prod.product != undefined)){
                 var src = prod.product.product_image_url;
                 if(prod.cropped_dimensions != null){
                   var crop = {

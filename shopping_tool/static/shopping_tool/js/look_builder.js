@@ -267,46 +267,48 @@ var look_builder = {
         var cropped_images = [];
         for(var i = 0, l = result.look_products.length; i<l; i++){
           var prod = result.look_products[i];
-          var retail = prod.product.retail_price;
-          var sale = prod.product.sale_price;
-          var price_display = '';
-          var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
-          var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>';    
-          if((sale >= retail)||(sale == 0)){
-            price_display = '<span class="price"><em class="label">price:</em>' + 
-              numeral(retail).format('$0,0.00') + '</span>';
-          }else{
-            price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
-              numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-          }
-          var src = prod.product.product_image_url;
-          /* if product has been cropped for the look add crop object */
-          if(prod.cropped_dimensions != null){
-            var crop = {
-              id: 'detailsitem-' + prod.id,
-              src: look_proxy + '' + src,
-              dims: prod.cropped_dimensions
+          if(prof.product != undefined){
+            var retail = prod.product.retail_price;
+            var sale = prod.product.sale_price;
+            var price_display = '';
+            var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
+            var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>';    
+            if((sale >= retail)||(sale == 0)){
+              price_display = '<span class="price"><em class="label">price:</em>' + 
+                numeral(retail).format('$0,0.00') + '</span>';
+            }else{
+              price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
+                numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
             }
-            cropped_images.push(crop);
+            var src = prod.product.product_image_url;
+            /* if product has been cropped for the look add crop object */
+            if(prod.cropped_dimensions != null){
+              var crop = {
+                id: 'detailsitem-' + prod.id,
+                src: look_proxy + '' + src,
+                dims: prod.cropped_dimensions
+              }
+              cropped_images.push(crop);
+            }
+            var other_details = '';
+            if(i == 0){
+              other_details = '<td class="desc" rowspan="' + l + '"><p class="desc"><em>description:</em>' + 
+                result.description + '</td>';
+            }
+            markup.push(
+              '<tr><td class="img"><a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
+              '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
+              '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
+              '" data-crop="' + prod.cropped_dimensions + '"><i class="fa fa-crop"></i></a>' +
+              '<span id="detailsitem-' + prod.id + '"><img src="' + src + '"/></span></td>' +
+              '<td class="details"><a href="' + prod.product.product_url + '" target="_blank" class="name">' + 
+              prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
+              prod.product.short_product_description + '</p>' + price_display +
+              '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
+              '<span class="general"><em>category:</em>' + prod.product.primary_category + 
+              '</span></td>' + other_details + '</tr>'
+            );
           }
-          var other_details = '';
-          if(i == 0){
-            other_details = '<td class="desc" rowspan="' + l + '"><p class="desc"><em>description:</em>' + 
-              result.description + '</td>';
-          }
-          markup.push(
-            '<tr><td class="img"><a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
-            '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
-            '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
-            '" data-crop="' + prod.cropped_dimensions + '"><i class="fa fa-crop"></i></a>' +
-            '<span id="detailsitem-' + prod.id + '"><img src="' + src + '"/></span></td>' +
-            '<td class="details"><a href="' + prod.product.product_url + '" target="_blank" class="name">' + 
-            prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
-            prod.product.short_product_description + '</p>' + price_display +
-            '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
-            '<span class="general"><em>category:</em>' + prod.product.primary_category + 
-            '</span></td>' + other_details + '</tr>'
-          );
         }
         markup.push('</table>');
         $('#look-indepth').html(
@@ -507,7 +509,7 @@ var look_builder = {
         var product_markup = [];
         for(var p = 0, prods = look.look_products.length; p<prods; p++){
           var prod = look.look_products[p];
-          if(prod.layout_position == position){
+          if((prod.layout_position == position)&&(prod.product != undefined)){
             var src = prod.product.product_image_url;
             if(prod.cropped_dimensions != null){
               var crop = {
@@ -612,7 +614,7 @@ var look_builder = {
           var product_markup = [];
           for(var p = 0, prods = result.look_products.length; p<prods; p++){
             var prod = result.look_products[p];
-            if(prod.layout_position == position){
+            if((prod.layout_position == position)&&(prod.product != undefined)){
               var src = prod.product.product_image_url;
               if(prod.cropped_dimensions != null){
                 var crop = {
