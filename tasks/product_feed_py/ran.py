@@ -8,14 +8,14 @@ from . import mappings
 from catalogue_service.settings import BASE_DIR
 
 ### attempt at writing record with logic
-def clean_ran(local_temp_dir, file_ending):
+def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     # instantiate relevant mappings
     merchant_mapping = mappings.create_merchant_mapping()
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
 
-    destination = local_temp_dir + '/cleaned/flat_file.txt'
+    destination = local_temp_dir + '/cleaned/flat_file.csv'
     with open(destination, "w") as cleaned:
         file_list = []
         file_directory = os.listdir(local_temp_dir)
@@ -210,8 +210,8 @@ def clean_ran(local_temp_dir, file_ending):
 
 
                         # current behavior is take the first and find its mapping if possible
+                        record['merchant_color'] = attribute_5_color
                         merchant_color = attribute_5_color.split(',')[0].lower()
-                        record['merchant_color'] = merchant_color
                         try:
                             allume_color = color_mapping[merchant_color]
                         except:
@@ -270,12 +270,8 @@ def clean_ran(local_temp_dir, file_ending):
                         for key, value in record.iteritems():
                             record[key] = value.encode('utf-8')
 
-                        print record
-
-                        # reader = csv.DictReader(lines, fieldnames = fields, dialect = 'pipes')
-                        # fieldnames = ?
-                        fieldnames = ['product_id', 'merchant_id', 'product_name', 'long_product_description', 'short_product_description', 'product_url', 'raw_product_url', 'product_image_url', 'buy_url', 'manufacturer_name', 'manufacturer_part_number', 'SKU', 'product_type', 'discount', 'discount_type', 'sale_price', 'retail_price', 'shipping_price', 'color', 'merchant_color', 'gender', 'style', 'size', 'material', 'age', 'currency', 'availability', 'keywords', 'primary_category', 'secondary_category', 'allume_category', 'brand', 'updated_at', 'merchant_name', 'is_best_seller', 'is_trending', 'allume_score', 'current_price', 'is_deleted']
-                        writer = csv.DictWriter(cleaned, fieldnames)
+                        cleaned_fields = cleaned_fields.split(',')
+                        writer = csv.DictWriter(cleaned, cleaned_fields)
                         # write the reconstructed line to the cleaned file
                         writer.writerow(record)
                         writtenCount += 1
