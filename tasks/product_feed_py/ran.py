@@ -84,8 +84,6 @@ def clean_ran(local_temp_dir, file_ending):
                         # do unicode sandwich stuff
                         for key, value in datum.iteritems():
                             datum[key] = value.decode('utf-8')
-                        print datum
-                        return
 
                         # breaking down the data from the merchant files
                         product_id = datum['product_id']
@@ -152,33 +150,13 @@ def clean_ran(local_temp_dir, file_ending):
                             modification = ''
 
                         # begins attribute manipulation logic
-                        print 'kinda sorta successful'
 
-
-
-                        break
-                  
-
-
-                        ########## END CSV CONVERSION CODE #######################
-                        return
-                        ########## BEGIN OLD WAY OF PARSING DATA #################
                         # moving gender check above categories check
                         # as all men categories have no entries in category tables
                         gender = attribute_6_gender.upper()
                         gender = gender.replace('FEMALE', 'WOMEN')
                         gender = gender.replace('MALE', 'MEN')
                         gender = gender.replace('MAN', 'MEN')
-
-                        # set blanks to proper default?
-                        # if not discount:
-                        #     discount = '\N'
-                        # if not sale_price:
-                        #     sale_price = '\N'
-                        # if not retail_price:
-                        #     retail_price = '\N'
-                        # if not shipping:
-                        #     shipping = '\N'
 
                         # check if gender makes record 'inactive'
                         if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS': # girls and boys?
@@ -241,7 +219,7 @@ def clean_ran(local_temp_dir, file_ending):
                         record['color'] = allume_color
 
                         record['gender'] = gender
-                        record['style'] = style
+                        record['style'] = attribute_7_style
 
                         attribute_3_size = attribute_3_size.upper()
                         attribute_3_size = attribute_3_size.replace('~', ',')
@@ -270,7 +248,7 @@ def clean_ran(local_temp_dir, file_ending):
 
                         # set defaults
                         record['is_best_seller'] = u'0'
-                        recofd['is_trending'] = u'0'
+                        record['is_trending'] = u'0'
                         record['allume_score'] = u'0'
 
                         # if there is a sale
@@ -292,11 +270,16 @@ def clean_ran(local_temp_dir, file_ending):
                         for key, value in record.iteritems():
                             record[key] = value.encode('utf-8')
 
-                        # re-write writing process using csvwriter
+                        print record
 
+                        # reader = csv.DictReader(lines, fieldnames = fields, dialect = 'pipes')
+                        # fieldnames = ?
+                        fieldnames = ['product_id', 'merchant_id', 'product_name', 'long_product_description', 'short_product_description', 'product_url', 'raw_product_url', 'product_image_url', 'buy_url', 'manufacturer_name', 'manufacturer_part_number', 'SKU', 'product_type', 'discount', 'discount_type', 'sale_price', 'retail_price', 'shipping_price', 'color', 'merchant_color', 'gender', 'style', 'size', 'material', 'age', 'currency', 'availability', 'keywords', 'primary_category', 'secondary_category', 'allume_category', 'brand', 'updated_at', 'merchant_name', 'is_best_seller', 'is_trending', 'allume_score', 'current_price', 'is_deleted']
+                        writer = csv.DictWriter(cleaned, fieldnames)
                         # write the reconstructed line to the cleaned file
-                        cleaned.write(record)
+                        writer.writerow(record)
                         writtenCount += 1
+                        return
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
