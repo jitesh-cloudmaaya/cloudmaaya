@@ -52,7 +52,7 @@ class ProductFeed(object):
         f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
         table = self._table
         fields = self._fields
-        fields = " (%s) " % (self.fields)
+        fields = " (%s) " % (self._fields)
 
         full_script = []
 
