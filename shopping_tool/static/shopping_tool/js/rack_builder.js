@@ -201,6 +201,10 @@ var rack_builder = {
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
+        /* if we are on looks builder page use this initial looks call to populate the list */
+        if((window.location.href.indexOf('look_builder') > -1)&&(type == 'regular')){
+          look_builder.editableLooksMarkup(response.looks);
+        }
         var markup = [];
         var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){

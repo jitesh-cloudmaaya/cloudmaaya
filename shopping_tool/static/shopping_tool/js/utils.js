@@ -167,7 +167,6 @@ var utils = {
     /* load the client notes */
     $.ajax({
       success: function(response){
-        console.log(response)
         var ui_div = $('#note-list');
         var current_stylist = parseInt($('#stylist').data('stylistid'));
         var count = response.length;

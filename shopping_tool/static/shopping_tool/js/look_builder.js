@@ -15,40 +15,33 @@ var look_builder = {
   * @param {object} lookup - json data for API call
   * @param {integer} at_load - id of currently being edited look or null
   */  
-  editableLooksMarkup: function(lookup, at_load){
-    var at_load_look = utils.readURLParams('look');
+  editableLooksMarkup: function(looks){
+    console.log(looks)
+    var at_load = utils.readURLParams('look');
     var comp_looks = $('#compare-looks div.other-looks');
-    $.ajax({
-      contentType : 'application/json',
-      data: JSON.stringify(lookup),
-      success:function(response){
-        var markup = [];
-        var cropped_images = [];
-        for(var i = 0, l = response.looks.length; i<l; i++){
-          var comp = response.looks[i];
-          var content = look_builder.lookMarkupGenerator(comp, 'comp', at_load)
-          markup.push(content[0]);
-          cropped_images = cropped_images.concat(content[1]);
+    var markup = [];
+    var cropped_images = [];
+    for(var i = 0, l = looks.length; i<l; i++){
+      var comp = looks[i];
+      var content = look_builder.lookMarkupGenerator(comp, 'comp', at_load)
+      markup.push(content[0]);
+      cropped_images = cropped_images.concat(content[1]);
+    }
+    /* display no looks message or add looks and drag/drop functionality */
+    if(markup.length == 0){ 
+      comp_looks.html('<span class="no-looks" id="no-look-display">add some looks...</span>'); 
+    }else if(markup.length > 0){
+      comp_looks.html(markup.join(''));
+      if(at_load != null){
+        $('#compare-looks div.comp-look:not(".editing")').addClass('off');
+      }
+      /* afix cropped images if present */
+      if(cropped_images.length > 0){
+        for(var i = 0, l = cropped_images.length; i<l; i++){
+          look_builder.getCroppedImage(cropped_images[i], '#compare-looks');
         }
-        /* display no looks message or add looks and drag/drop functionality */
-        if(markup.length == 0){ 
-          comp_looks.html('<span class="no-looks" id="no-look-display">add some looks...</span>'); 
-        }else if(markup.length > 0){
-          comp_looks.html(markup.join(''));
-          if(at_load != null){
-            $('#compare-looks div.comp-look:not(".editing")').addClass('off');
-          }
-          /* afix cropped images if present */
-          if(cropped_images.length > 0){
-            for(var i = 0, l = cropped_images.length; i<l; i++){
-              look_builder.getCroppedImage(cropped_images[i], '#compare-looks');
-            }
-          }
-        }
-      },
-      type: 'POST',
-      url: '/shopping_tool_api/look_list/'
-    });
+      }
+    }
   },
   /** 
   * @description create the crop image ui/ux
@@ -375,7 +368,6 @@ var look_builder = {
     $('#delete-look-overlay').find('a.yes').click(function(e){
       e.preventDefault();
       var link = $(this);
-      console.log(link.data('lookid'))
       $('#client-look-id-' + link.data('lookid')).remove();
       $.ajax({
         success:function(r){
@@ -512,14 +504,6 @@ var look_builder = {
     if(at_load_look != null){
       look_builder.setUpBuilder(at_load_look);
     }
-    /* build list of session looks */
-    var lookup = {
-      "client": parseInt($('#user-clip').data('userid')),
-      "allume_styling_session": look_builder.session_id,
-      "stylist": look_builder.stylist_id,
-      "page": 1
-    }
-    look_builder.editableLooksMarkup(lookup, at_load_look);
   },
   /**
   * @description helper template function to generate look markup
