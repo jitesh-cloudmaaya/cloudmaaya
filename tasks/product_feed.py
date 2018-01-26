@@ -6,6 +6,7 @@ import subprocess
 from django.db import connection, transaction
 import yaml
 import datetime
+import time
 from product_feed_py import *
 from catalogue_service.settings import BASE_DIR
 
@@ -36,17 +37,13 @@ class ProductFeed(object):
     ### space for my additions
 
     def clean_data(self):
+        start = time.time()
         exec self._clean_data_method
-
-
-    # cursor = connection.cursor()
-    # etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360.sql'))
-    # statement = etl_file.read()
-    # cursor.execute(statement)
-
+        print "Process takes %s seconds" % (time.time() - start)
 
     # how to get filename of flat_file.csv
     def load_cleaned_data(self): # eventually rename
+        start = time.time()
         cursor = connection.cursor()
 
         # filepath to pd_temp/ran/cleaned/flat_file.csv ?
@@ -56,37 +53,33 @@ class ProductFeed(object):
         table = self._table
         fields = self._fields
 
-        # table = temporary/intermediate table
-        # statement = "DELETE FROM product_api_product WHERE temp_table.product_id = product_api.product_id"
-        # statement = "INSERT INTO"
-
-        # attempt to rewrite compound sql statements to separate statements via statements and split
         full_script = []
 
-        # separate current temp sql thingy into two files
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
         statement = sql_script.read()
         statements = statement.split(';')
-        for i in range(0, len(statements) - 1):
+        for i in range(0, len(statements)):
             full_script.append(statements[i])
 
-        table = 'product_api_product_temp'
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s" % (f, table, fields)
         full_script.append(statement)
 
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
         statement = sql_script.read()
         statements = statement.split(';')
-
-        for i in range(0, len(statements) - 1):
+        for i in range(0, len(statements)):
             full_script.append(statements[i])
 
         try:
             with transaction.atomic():
-                for statement in full_script:
-                    cursor.execute(statement)
+                for i in range(0, len(full_script)):
+                    statement = full_script[i]
+                    if statement.strip(): # avoid 'query was empty' operational error
+                        cursor.execute(statement)
         finally:
             cursor.close()
+
+        print "Process takes %s seconds" % (time.time() - start)
 
     def decompress_data(self):
         file_list = os.listdir(self._local_temp_dir)
