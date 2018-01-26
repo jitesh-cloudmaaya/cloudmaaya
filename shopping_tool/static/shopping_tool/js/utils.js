@@ -102,10 +102,11 @@ var utils = {
     });
     /* submit the new note */
     $('#submit-note').click(function(e){
-      var nl = $('#note-list');
       e.preventDefault();
+      var nl = $('#note-list');
+      var current_stylist = parseInt($('#stylist').data('stylistid'));
       var note_obj ={
-        "stylist": parseInt($('#stylist').data('stylistid')),
+        "stylist": current_stylist,
         "client": parseInt($('#user-clip').data('userid')),
         "styling_session": parseInt($('body').data('stylesession')),
         "notes": $('#added-note').val(),
@@ -125,24 +126,50 @@ var utils = {
         data: JSON.stringify(note_obj),        
         success: function(response){
           $('#notes-loader').remove();
-          nl.prepend(
-            '<div class="client-note"><p>' + response.notes + '</p>' +
-            '<span class="date">' + 
-            moment(response.last_modified).format('MMMM Do, YYYY h:mm a') + 
-            '</span><span class="tail"></span>' +
-            '<span class="name">Stylist name</span></div>'
-          );
+          nl.prepend(utils.noteTemplate(response, current_stylist));
           $('#added-note').val('');
+          var header = $('#client-notes h3');
+          var count = parseInt(header.data('num')) + 1;
+          var header_txt = count == 1 ? '1 Note' : count + ' Notes';
+          header.html(header_txt).data('num',count);
         },
         type: 'PUT',
         url:'/shopping_tool_api/styling_session_note/0/'
       });
     });
+    /* delete not functionality */
+    $('#note-list').on('click', 'a.delete-note', function(e){
+      e.preventDefault();
+      var link = $(this);
+      $('#delete-note-overlay').find('a.yes').data('noteid', link.data('noteid')).end().fadeIn();
+    });
+    /* delete note confirm dialog */
+    $('#delete-note-overlay').find('a.yes').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      $('#client-note-id-' + link.data('noteid')).remove();
+      $.ajax({
+        type: 'DELETE',
+        url: '/shopping_tool_api/styling_session_note/' + link.data('noteid') + '/'
+      });
+      $('#delete-note-overlay').fadeOut();
+       var header = $('#client-notes h3');
+        var count = parseInt(header.data('num')) - 1;
+        var header_txt = count == 1 ? '1 Note' : count + ' Notes';
+        if(count == 0){
+          header_txt = 'There are no notes for this client.'
+        }
+        header.html(header_txt).data('num',count);
+    }).end().find('a.cancel').click(function(e){
+      e.preventDefault();
+      $('#delete-note-overlay').fadeOut();
+    })
     /* load the client notes */
     $.ajax({
       success: function(response){
         console.log(response)
         var ui_div = $('#note-list');
+        var current_stylist = parseInt($('#stylist').data('stylistid'));
         var count = response.length;
         if(count > 0){
           var header_txt = count == 1 ? '1 Note' : count + ' Notes';
@@ -150,13 +177,7 @@ var utils = {
           var notes_markup = [];
           for(var i = 0; i<count; i++){
             var note = response[i];
-            notes_markup.push(
-              '<div class="client-note"><p>' + note.notes+ '</p>' +
-              '<span class="date">' + 
-              moment(note.last_modified).format('MMMM Do, YYYY h:mm a') + 
-              '</span><span class="tail"></span>' +
-              '<span class="name">Stylist name</span></div>'
-            );
+            notes_markup.push(utils.noteTemplate(note, current_stylist));
           }
           ui_div.html(notes_markup.join(''));
         }else{
@@ -194,6 +215,22 @@ var utils = {
       $('#nav-menu div.menu').removeClass('show');
       $('#nav-menu').fadeOut();
     });
+  },
+  /**
+  * @description template for note display
+  * @params {object} note - json for note object
+  * @params {integer} stylist_id - id of the current stylist logged in
+  * @returns {string} HTML
+  */
+  noteTemplate: function(note, stylist_id){
+    var delete_link = '';
+    if(note.stylist == stylist_id){
+      delete_link = '<a href="#" data-noteid="' + note.id + '" class="delete-note"><i class="fa fa-times"></i></a>'
+    }
+    return '<div class="client-note" id="client-note-id-' + note.id + '"><p>' + note.notes+ '</p>' +
+      '<span class="date">' + moment(note.last_modified).format('MMMM Do, YYYY h:mm a') + 
+      '</span><span class="tail"></span><span class="name">Stylist name</span>' +
+      delete_link + '</div>';
   },
   /**
   * @description processing and template for pagination of results
