@@ -32,7 +32,7 @@ var look_builder = {
         }
         /* display no looks message or add looks and drag/drop functionality */
         if(markup.length == 0){ 
-          comp_looks.html('<span class="no-looks">add some looks...</span>'); 
+          comp_looks.html('<span class="no-looks" id="no-look-display">add some looks...</span>'); 
         }else if(markup.length > 0){
           comp_looks.html(markup.join(''));
           if(at_load != null){
@@ -169,6 +169,7 @@ var look_builder = {
           data: JSON.stringify(look_obj),
           success:function(response){
             look_builder.setUpBuilder(response.id);
+            $('#no-look-display').remove();
             $.get('/shopping_tool_api/look/' + response.id + '/', function(result){
               var content = look_builder.lookMarkupGenerator(result, 'comp', null);
               $('#compare-looks div.other-looks').prepend(content[0]);
@@ -364,6 +365,33 @@ var look_builder = {
       var div = link.closest('div.comp-look');
       div.addClass('editing').siblings('div.comp-look').removeClass('editing').addClass('off');
       look_builder.setUpBuilder(look);
+    }).on('click', 'a.delete-look-btn', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var look = link.data('lookid');
+      $('#delete-look-overlay').find('a.yes').data('lookid', look).end().fadeIn();
+    });
+    /* delete look confirm dialog */
+    $('#delete-look-overlay').find('a.yes').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      console.log(link.data('lookid'))
+      $('#client-look-id-' + link.data('lookid')).remove();
+      $.ajax({
+        success:function(r){
+          console.log(r)
+        },
+        type: 'DELETE',
+        url: '/shopping_tool_api/look/' + link.data('lookid') + '/'
+      });
+      $('#delete-look-overlay').fadeOut();
+      var remaining_looks = $('#compare-looks div.other-looks div.comp-look').length;
+      if(remaining_looks == 0){
+        $('#compare-looks div.other-looks').html('<span class="no-looks" id="no-look-display">add some looks...</span>');
+      }
+    }).end().find('a.cancel').click(function(e){
+      e.preventDefault();
+      $('#delete-look-overlay').fadeOut();
     });
     $('#look-indepth').on('click', 'a.close-indepth', function(e){
       e.preventDefault();
@@ -537,8 +565,9 @@ var look_builder = {
       var desc = look.description != '' ? '<span class="layout desc"><em>description: </em>' + look.description + '</span>' :  '';
       var display_class = check == look.id ? 'editing' : '';
       return ['<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
-        '"><a href="#" class="edit-look-btn" data-lookid="' + 
-        look.id + '"><i class="fa fa-pencil"></i></a><h3>' + look.name + '</h3>' +
+        '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
+        look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="delete-look-btn" data-lookid="' + 
+        look.id + '"><i class="fa fa-times"></i></a><h3>' + look.name + '</h3>' +
         '<span class="layout"><em>layout: </em>' + look.look_layout.display_name + '</span>' +
         '<div class="comp-look-display">' + look_products_markup.join('') + '</div>' + desc + 
         '<div class="editing">editing look...</div></div>', cropped_images];

@@ -163,7 +163,7 @@ var utils = {
     }).end().find('a.cancel').click(function(e){
       e.preventDefault();
       $('#delete-note-overlay').fadeOut();
-    })
+    });
     /* load the client notes */
     $.ajax({
       success: function(response){

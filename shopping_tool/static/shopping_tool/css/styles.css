@@ -1282,7 +1282,7 @@ div.layout-option span.name {
 #create-look,
 #creating-look,
 #publish-lookbook-overlay,
-#delete-note-overlay {
+div.deletion-confirm {
   background:rgba(0,0,0,0.7);
   display:none;
   height:100%;
@@ -1295,7 +1295,7 @@ div.layout-option span.name {
 #create-look div.stage,
 #creating-look div.stage,
 #publish-lookbook-overlay div.stage,
-#delete-note-overlay div.stage,
+div.deletion-confirm div.stage,
 div.indepth-loading {
   background:#fff;
   border-radius:5px;
@@ -2417,12 +2417,15 @@ p#look-desc {
 }
 
 #compare-looks div.comp-look.editing a.edit-look-btn,
+#compare-looks div.comp-look.editing a.delete-look-btn,
 #compare-looks div.comp-look.editing span.layout,
 #compare-looks div.comp-look.editing div.comp-look-display,
 #compare-looks div.comp-look.updating a.edit-look-btn,
+#compare-looks div.comp-look.updating a.delete-look-btn,
 #compare-looks div.comp-look.updating span.layout,
 #compare-looks div.comp-look.updating div.comp-look-display,
 #compare-looks div.comp-look.off a.edit-look-btn { display:none; }
+#compare-looks div.comp-look.off a.delete-look-btn {right:-10px;}
 #compare-looks div.comp-look.editing div.editing,
 #compare-looks div.comp-look.updating div.editing  {display:block;}
 
@@ -2575,14 +2578,15 @@ div.lookbook-btns a#publish-lookbook:active{
   width:calc(100% - 30px);
 }
 #add-new-look-to-lookbook i {margin-right:3px; font-size:15px;}
-#compare-looks div.comp-look a.edit-look-btn{
+#compare-looks div.comp-look a.edit-look-btn,
+#compare-looks div.comp-look a.delete-look-btn{
   background:#f2987e;
   border-radius:15px;
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 1px 5px 0 rgba(0,0,0,0.12),0 3px 1px -2px rgba(0,0,0,0.2);
   color:#fff;
   font-size:14px;
   height:30px;
-  line-height: 30px;
+  line-height: 28px;
   position:absolute;
   right:-10px;
   text-decoration: none;
@@ -2591,15 +2595,23 @@ div.lookbook-btns a#publish-lookbook:active{
   width:30px;
   z-index:3;
 }
+#compare-looks div.comp-look a.delete-look-btn {
+  background:#F44336;
+  right:26px;
+  top:-10px;
+}
 #compare-looks div.comp-look a.edit-look-btn:hover {
   background:#ed8365;
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.2),0 3px 1px -2px rgba(0,0,0,0.3);
 }
-#compare-looks div.comp-look a.edit-look-btn:active{  
+#compare-looks div.comp-look a.delete-look-btn:hover { background:#E53935; }
+#compare-looks div.comp-look a.edit-look-btn:active,
+#compare-looks div.comp-look a.delete-look-btn:active{  
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
   color:#474747;
 }
+
 #look-drop label {
   display:block;
   font-size:14px;
@@ -2704,7 +2716,7 @@ div.lookbook-btns a#publish-lookbook:active{
 }
 #note-list div.client-note:hover a.delete-note {display:block;}
 #note-list div.client-note a.delete-note:hover {
-  background:#C62828;
+  background:#E53935;
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.2),0 3px 1px -2px rgba(0,0,0,0.3);
 }
 #note-list div.client-note a.delete-note:active{  
@@ -2831,7 +2843,7 @@ div.lookbook-btns a#publish-lookbook:active{
     background-color: #F8BB86;
   }
 }
-#are-your-sure {
+div.deletion-confirm div.are-your-sure {
   color: #999;
   font-size: 30px;
   font-weight: 100;
@@ -2839,18 +2851,18 @@ div.lookbook-btns a#publish-lookbook:active{
   top: 49px;
   left: 170px;
 }
-#delete-note-overlay div.stage {
+div.deletion-confirm div.stage {
   height:216px;
   left:calc(50% - 300px);
   top:calc(50% - 108px);
   width:600px;
 }
-#delete-note-overlay div.btns {
+div.deletion-confirm div.btns {
   left:170px;
   position:absolute;
   top:141px;
 }
-#delete-note-overlay div.btns a {
+div.deletion-confirm div.btns a {
   background:#f2987e;
   border-radius:3px;
   color:#fff;
@@ -2865,11 +2877,11 @@ div.lookbook-btns a#publish-lookbook:active{
   vertical-align: top;
   width:150px;
 }
-#delete-note-overlay div.btns a.cancel {background:#ccc; color:#000;}
-#delete-note-overlay div.btns a:hover {background:#ed8365;}
-#delete-note-overlay div.btns a.cancel:hover {background:#bbb;}
-#delete-note-overlay div.btns a:active,
-#delete-note-overlay div.btns a.cancel:active{  
+div.deletion-confirm div.btns a.cancel {background:#ccc; color:#000;}
+div.deletion-confirm div.btns a:hover {background:#ed8365;}
+div.deletion-confirm div.btns a.cancel:hover {background:#bbb;}
+div.deletion-confirm div.btns a:active,
+div.deletion-confirm div.btns a.cancel:active{  
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
   color:#474747;
