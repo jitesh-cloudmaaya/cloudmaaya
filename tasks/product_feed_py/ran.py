@@ -73,27 +73,27 @@ def clean_ran(local_temp_dir, file_ending):
                         fields = config_dict['fields'] # grabs the fields as an array
                     # print fields
                     reader = csv.DictReader(lines, fieldnames = fields, dialect = 'pipes')
-                    for record in reader:
+                    for datum in reader:
                         totalCount += 1
 
                         # do we still need a unicode sandwich?
 
-                        # for key, value in record.iteritems():
+                        # for key, value in datum.iteritems():
                         #     print (key, value)
 
                         # do unicode sandwich stuff
-                        for key, value in record.iteritems():
-                            record[key] = value.decode('utf-8')
-                        print record
+                        for key, value in datum.iteritems():
+                            datum[key] = value.decode('utf-8')
+                        print datum
                         return
 
                         # breaking down the data from the merchant files
-                        product_id = record['product_id']
-                        product_name = record['product_name']
-                        SKU = record['SKU']
-                        primary_category = record['primary_category']
-                        secondary_category = record['secondary_category']
-                        product_url = record['product_url']
+                        product_id = datum['product_id']
+                        product_name = datum['product_name']
+                        SKU = datum['SKU']
+                        primary_category = datum['primary_category']
+                        secondary_category = datum['secondary_category']
+                        product_url = datum['product_url']
 
                         # implement a cheap fix for now, change when migrating to python's csv library
                         try:
@@ -102,52 +102,52 @@ def clean_ran(local_temp_dir, file_ending):
                         except:
                             raw_product_url = '' # there was an error of some kind
 
-                        product_image_url = record['product_image_url']
-                        buy_url = record['buy_url']
-                        short_product_description = record['short_product_description']
-                        long_product_description = record['long_product_description']
-                        discount = record['discount']
+                        product_image_url = datum['product_image_url']
+                        buy_url = datum['buy_url']
+                        short_product_description = datum['short_product_description']
+                        long_product_description = datum['long_product_description']
+                        discount = datum['discount']
                         if not discount:
                             discount = u'0.00' # unicode necessary or not
-                        discount_type = record['discount_type']
-                        sale_price = record['sale_price']
+                        discount_type = datum['discount_type']
+                        sale_price = datum['sale_price']
                         if not sale_price:
                             sale_price = u'0.00' # unicode necessary or not?
-                        retail_price = record['retail_price']
-                        begin_date = record['begin_date']
-                        end_date = record['end_date']
-                        brand = record['brand']
-                        shipping = record['shipping']
+                        retail_price = datum['retail_price']
+                        begin_date = datum['begin_date']
+                        end_date = datum['end_date']
+                        brand = datum['brand']
+                        shipping = datum['shipping']
                         if not shipping:
                             shipping = u'0.00' # unicode necessary or not?
-                        keywords = record['keywords']
-                        manufacturer_part_number = record['manufacturer_part_number']
-                        manufacturer_name = record['manufacturer_name']
-                        shipping_information = record['shipping_information']
-                        availability = record['availability']
-                        universal_product_code = record['universal_product_code']
-                        class_ID = record['class_ID']
-                        currency = record['currency']
-                        M1 = record['M1']
-                        pixel = record['pixel']
+                        keywords = datum['keywords']
+                        manufacturer_part_number = datum['manufacturer_part_number']
+                        manufacturer_name = datum['manufacturer_name']
+                        shipping_information = datum['shipping_information']
+                        availability = datum['availability']
+                        universal_product_code = datum['universal_product_code']
+                        class_ID = datum['class_ID']
+                        currency = datum['currency']
+                        M1 = datum['M1']
+                        pixel = datum['pixel']
 
                         # optional attributes begin here
                         # can have different orders
                         # modification must always be at the end (in deltas)
-                        attribute_1_misc = record['attribute_1_misc']
-                        attribute_2_product_type = record['attribute_2_product_type']
-                        attribute_3_size = record['attribute_3_size']
-                        attribute_4_material = record['attribute_4_material']
-                        attribute_5_color = record['attribute_5_color']
-                        attribute_6_gender = record['attribute_6_gender']
-                        attribute_7_style = record['attribute_7_style']
-                        attribute_8_age = record['attribute_8_age']
-                        attribute_9 = record['attribute_9']
-                        attribute_10 = record['attribute_10']
+                        attribute_1_misc = datum['attribute_1_misc']
+                        attribute_2_product_type = datum['attribute_2_product_type']
+                        attribute_3_size = datum['attribute_3_size']
+                        attribute_4_material = datum['attribute_4_material']
+                        attribute_5_color = datum['attribute_5_color']
+                        attribute_6_gender = datum['attribute_6_gender']
+                        attribute_7_style = datum['attribute_7_style']
+                        attribute_8_age = datum['attribute_8_age']
+                        attribute_9 = datum['attribute_9']
+                        attribute_10 = datum['attribute_10']
 
                         # in a delta file, there is 1 additional field for modification
-                        if record['modification']:
-                            modification = record['modification']
+                        if datum['modification']:
+                            modification = datum['modification']
                         else: # not a delta file
                             modification = ''
 
@@ -163,34 +163,6 @@ def clean_ran(local_temp_dir, file_ending):
                         ########## END CSV CONVERSION CODE #######################
                         return
                         ########## BEGIN OLD WAY OF PARSING DATA #################
-
-
-                        # unicode sandwich
-                        line = line.decode('utf-8')
-                        line = line.split('|')
-
-
-
-                        # optional attributes begin here
-                        # can have different orders
-                        # modification must always be at the end (in deltas)
-                        attribute_1_misc = line[config_dict['attribute_1_misc']]
-                        attribute_2_product_type = line[config_dict['attribute_2_product_type']]
-                        attribute_3_size = line[config_dict['attribute_3_size']]
-                        attribute_4_material = line[config_dict['attribute_4_material']]
-                        attribute_5_color = line[config_dict['attribute_5_color']]
-                        attribute_6_gender = line[config_dict['attribute_6_gender']]
-                        attribute_7_style = line[config_dict['attribute_7_style']]
-                        attribute_8_age = line[config_dict['attribute_8_age']]
-                        attribute_9 = line[config_dict['attribute_9']]
-
-                        # in a delta file, there is 1 additional field for modification
-                        attribute_10 = line[config_dict['attribute_10']].rstrip('\n') # account for other line endings?
-                        try:
-                            modification = line[config_dict['modification']].rstrip('\n') # account for other line endings?
-                        except:
-                            modification = ''
-
                         # moving gender check above categories check
                         # as all men categories have no entries in category tables
                         gender = attribute_6_gender.upper()
@@ -233,90 +205,94 @@ def clean_ran(local_temp_dir, file_ending):
                             allumecategorySkipped += 1
                             continue
 
-
-                        # logic for constructing record for product_api_product
-                        record = ''
-                        record += product_id + u'|'
-                        record += merchant_id + u'|'
-                        record += product_name + u'|'
-                        record += long_product_description + u'|'
-                        record += short_product_description + u'|'
-                        record += product_url + u'|'
-                        record += raw_product_url + u'|'
-                        record += product_image_url + u'|'
-                        record += buy_url + u'|'
-                        record += manufacturer_name + u'|'
-                        record += manufacturer_part_number + u'|'
-                        record += SKU + u'|'
-                        record += attribute_2_product_type + u'|'
-                        if discount_type != "amount" or discount_type != "percentage":
-                            record += '0.0|' # how to indicate null or 0 as in sql?
-                            record += 'amount|'
+                        # new logic for writing record
+                        record = {}
+                        record['product_id'] = product_id
+                        record['merchant_id'] = merchant_id
+                        record['product_name'] = product_name
+                        record['long_product_description'] = long_product_description
+                        record['short_product_description'] = short_product_description
+                        record['product_url'] = product_url
+                        record['raw_product_url'] = raw_product_url
+                        record['product_image_url'] = product_image_url
+                        record['buy_url'] = buy_url
+                        record['manufacturer_name'] = manufacturer_name
+                        record['manufacturer_part_number'] = manufacturer_part_number
+                        record['SKU'] = SKU
+                        record['product_type'] = attribute_2_product_type
+                        if discount_type != 'amount' or discount_type != 'percentage':
+                            record['discount'] = u'0.00'
+                            record['discount_type'] = u'amount'
                         else:
-                            record += discount + u'|'
-                            record += discount_type + u'|'
-                        record += sale_price + u'|'
-                        record += retail_price + u'|'
-                        record += shipping + u'|'
+                            record['discount'] = discount
+                            record['discount_type'] = discount_type
+                        record['sale_price'] = sale_price
+                        record['retail_price'] = retail_price
+                        record['shipping_price'] = shipping
+
 
                         # current behavior is take the first and find its mapping if possible
-                        color = attribute_5_color.split(',')[0].lower()
+                        merchant_color = attribute_5_color.split(',')[0].lower()
+                        record['merchant_color'] = merchant_color
                         try:
-                            record += color_mapping[color] + u'|'
-                        except: # where there is no analog
-                            record += "other|"
-                        record += attribute_5_color + u'|' # merchant color field
+                            allume_color = color_mapping[merchant_color]
+                        except:
+                            allume_color = u'other'
+                        record['color'] = allume_color
 
-                        # gender
-                        record += gender + u'|'
-                        record += attribute_7_style + u'|'
+                        record['gender'] = gender
+                        record['style'] = style
+
                         attribute_3_size = attribute_3_size.upper()
                         attribute_3_size = attribute_3_size.replace('~', ',')
-                        record += attribute_3_size + u'|'
-                        record += attribute_4_material + u'|'
+                        record['size'] = attribute_3_size
+
+                        record['material'] = attribute_4_material
+
                         attribute_8_age = attribute_8_age.upper()
-                        record += attribute_8_age + u'|'
-                        record += currency + u'|'
+                        record['age'] = attribute_8_age
+
+                        record['currency'] = currency
+
                         if availability == '':
                             availability = 'out-of-stock'
-                        record += availability + u'|'
-                        record += keywords + u'|'
+                        record['availability'] = availability
 
+                        record['keywords'] = keywords
                         # allume category information
-                        record += primary_category + u'|'
-                        record += secondary_category + u'|'
+                        record['primary_category'] = primary_category
+                        record['secondary_category'] = secondary_category
+                        record['allume_category'] = allume_category
+                        record['brand'] = brand
 
-                        record += allume_category + u'|'
+                        record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        record['merchant_name'] = merchant_name
 
-                        record += brand + u'|'
-                        # double check date formatting
-                        record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + u'|'
-                        # record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f') + ',') ?
-                        # end date
-                        record += merchant_name + u'|'
-                        # how to indicate null or 0 as in ran.sql
-                        record += '0|' # is_best_seller default
-                        record += '0|' # is_trending default
-                        record += '0|' # allume_score default
+                        # set defaults
+                        record['is_best_seller'] = u'0'
+                        recofd['is_trending'] = u'0'
+                        record['allume_score'] = u'0'
 
+                        # if there is a sale
                         try:
-                            # if there is a sale
-                            if float(sale_price) > 0: # OR NOT NULL ??
-                                record += sale_price + u'|'
+                            if float(sale_price) > 0:
+                                record['current_price'] = sale_price
                             else:
-                                record += retail_price + u'|'
+                                record['current_price'] = retail_price
                         except:
-                            record += retail_price + u'|'
+                            record['current_price'] = retail_price
 
                         # is_deleted logic
                         if modification == 'D':
-                            record += '1\n' # is this okay given is_deleted is boolean data type
+                            record['is_deleted'] = u'1'
                         else:
-                            record += '0\n'
-                        # last record needs newline character instead of delimiter
+                            record['is_deleted'] = u'0'
 
                         # unicode sandwich finish
-                        record = record.encode('utf-8')
+                        for key, value in record.iteritems():
+                            record[key] = value.encode('utf-8')
+
+                        # re-write writing process using csvwriter
 
                         # write the reconstructed line to the cleaned file
                         cleaned.write(record)
