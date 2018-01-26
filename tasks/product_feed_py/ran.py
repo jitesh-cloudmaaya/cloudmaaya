@@ -2,6 +2,7 @@ import os
 import datetime
 import yaml
 import urlparse
+import csv
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR
@@ -30,17 +31,17 @@ def clean_ran(local_temp_dir, file_ending):
         allumecategorySkipped = 0
         inactiveSkipped = 0
 
-        # iterate only over the .txt files
+        # BEGIN CSV READER STUFF
+        csv.register_dialect('pipes', delimiter='|', quoting=csv.QUOTE_NONE)
         for f in file_list:
-
-            with open(f, "r") as f: #, open('temp.txt', 'r') as test:
-                header = f.readline()
+            with open(f, "r") as csvfile:
+                header = csvfile.readline()
                 header = header.decode('utf-8')
                 header = header.split('|')
                 merchant_id = header[1]
                 merchant_name = header[2]
 
-                lines = f.readlines()
+                lines = csvfile.readlines()
                 lines = lines[:-1]
 
                 # handle if merchant_id not in merchant_table?
@@ -48,7 +49,7 @@ def clean_ran(local_temp_dir, file_ending):
                     merchant_is_active = merchant_mapping[int(merchant_id)]
                 except:
                     merchant_is_active = 0
-                # check that the merchant_id is active in the merchant mapping
+                # check that the merchant_id is active in the merchant_mapping
                 if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
                     # check config files
                     config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/'
@@ -65,63 +66,110 @@ def clean_ran(local_temp_dir, file_ending):
                         # use that specific config file for reading the merchant file
                         # print 'specific file used!'
                         full_path = config_path + merchant_id_filename
-                        
+
                     with open(full_path, "r") as config:
                         # we shall use the default
                         config_dict = yaml.load(config)
-                        config_dict = config_dict['fields'][0]
-
-                    for line in lines:
+                        fields = config_dict['fields'] # grabs the fields as an array
+                    # print fields
+                    reader = csv.DictReader(lines, fieldnames = fields, dialect = 'pipes')
+                    for record in reader:
                         totalCount += 1
+
+                        # do we still need a unicode sandwich?
+
+                        # for key, value in record.iteritems():
+                        #     print (key, value)
+
+                        # do unicode sandwich stuff
+                        for key, value in record.iteritems():
+                            record[key] = value.decode('utf-8')
+                        print record
+                        return
+
+                        # breaking down the data from the merchant files
+                        product_id = record['product_id']
+                        product_name = record['product_name']
+                        SKU = record['SKU']
+                        primary_category = record['primary_category']
+                        secondary_category = record['secondary_category']
+                        product_url = record['product_url']
+
+                        # implement a cheap fix for now, change when migrating to python's csv library
+                        try:
+                            raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
+                            raw_product_url = raw_product_url.replace('|', '7%C') # look this over again when csv lib
+                        except:
+                            raw_product_url = '' # there was an error of some kind
+
+                        product_image_url = record['product_image_url']
+                        buy_url = record['buy_url']
+                        short_product_description = record['short_product_description']
+                        long_product_description = record['long_product_description']
+                        discount = record['discount']
+                        if not discount:
+                            discount = u'0.00' # unicode necessary or not
+                        discount_type = record['discount_type']
+                        sale_price = record['sale_price']
+                        if not sale_price:
+                            sale_price = u'0.00' # unicode necessary or not?
+                        retail_price = record['retail_price']
+                        begin_date = record['begin_date']
+                        end_date = record['end_date']
+                        brand = record['brand']
+                        shipping = record['shipping']
+                        if not shipping:
+                            shipping = u'0.00' # unicode necessary or not?
+                        keywords = record['keywords']
+                        manufacturer_part_number = record['manufacturer_part_number']
+                        manufacturer_name = record['manufacturer_name']
+                        shipping_information = record['shipping_information']
+                        availability = record['availability']
+                        universal_product_code = record['universal_product_code']
+                        class_ID = record['class_ID']
+                        currency = record['currency']
+                        M1 = record['M1']
+                        pixel = record['pixel']
+
+                        # optional attributes begin here
+                        # can have different orders
+                        # modification must always be at the end (in deltas)
+                        attribute_1_misc = record['attribute_1_misc']
+                        attribute_2_product_type = record['attribute_2_product_type']
+                        attribute_3_size = record['attribute_3_size']
+                        attribute_4_material = record['attribute_4_material']
+                        attribute_5_color = record['attribute_5_color']
+                        attribute_6_gender = record['attribute_6_gender']
+                        attribute_7_style = record['attribute_7_style']
+                        attribute_8_age = record['attribute_8_age']
+                        attribute_9 = record['attribute_9']
+                        attribute_10 = record['attribute_10']
+
+                        # in a delta file, there is 1 additional field for modification
+                        if record['modification']:
+                            modification = record['modification']
+                        else: # not a delta file
+                            modification = ''
+
+                        # begins attribute manipulation logic
+                        print 'kinda sorta successful'
+
+
+
+                        break
+                  
+
+
+                        ########## END CSV CONVERSION CODE #######################
+                        return
+                        ########## BEGIN OLD WAY OF PARSING DATA #################
+
 
                         # unicode sandwich
                         line = line.decode('utf-8')
                         line = line.split('|')
 
-                        # breaking down the data from the merchant files
-                        product_id = line[config_dict['product_id']]
-                        product_name = line[config_dict['product_name']]
-                        SKU = line[config_dict['SKU']]
-                        primary_category = line[config_dict['primary_category']]
-                        secondary_category = line[config_dict['secondary_category']]
-                        product_url = line[config_dict['product_url']]
 
-
-                        # implement cheap fix for now, change when migrating to python's csv library
-                        try:
-                            raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
-                            raw_product_url = raw_product_url.replace('|', '%7C') # look this over again when csv lib
-                        except:
-                            raw_product_url = '' # there was an error of some kind
-
-                        product_image_url = line[config_dict['product_image_url']]
-                        buy_url = line[config_dict['buy_url']]
-                        short_product_description = line[config_dict['short_product_description']]
-                        long_product_description = line[config_dict['long_product_description']]
-                        discount = line[config_dict['discount']]
-                        if not discount:
-                            discount = '0.00'
-                        discount_type = line[config_dict['discount_type']]
-                        sale_price = line[config_dict['sale_price']]
-                        if not sale_price:
-                            sale_price = '0.00'
-                        retail_price = line[config_dict['retail_price']]
-                        begin_date = line[config_dict['begin_date']]
-                        end_date = line[config_dict['end_date']]
-                        brand = line[config_dict['brand']]
-                        shipping = line[config_dict['shipping']]
-                        if not shipping:
-                            shipping = '0.00'
-                        keywords = line[config_dict['keywords']]
-                        manufacturer_part_number = line[config_dict['manufacturer_part_number']]
-                        manufacturer_name = line[config_dict['manufacturer_name']]
-                        shipping_information = line[config_dict['shipping_information']]
-                        availability = line[config_dict['availability']]
-                        universal_product_code = line[config_dict['universal_product_code']]
-                        class_ID = line[config_dict['class_ID']]
-                        currency = line[config_dict['currency']]
-                        M1 = line[config_dict['M1']]
-                        pixel = line[config_dict['pixel']]
 
                         # optional attributes begin here
                         # can have different orders
