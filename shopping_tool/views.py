@@ -155,7 +155,9 @@ def image_proxy(request):
     
     url = request.GET.get('image_url')
 
-    im = Image.open(requests.get(url, stream=True).raw)
+    image_data = requests.get(url, stream=True)
+    image_data.raw.decode_content = True
+    im = Image.open(image_data.raw)
     response = HttpResponse(content_type="image/png")
     im.save(response, "PNG")
 
