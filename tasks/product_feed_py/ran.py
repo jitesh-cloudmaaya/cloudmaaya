@@ -1,6 +1,7 @@
 import os
 import datetime
 import yaml
+import urlparse
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR
@@ -84,18 +85,33 @@ def clean_ran(local_temp_dir, file_ending):
                         primary_category = line[config_dict['primary_category']]
                         secondary_category = line[config_dict['secondary_category']]
                         product_url = line[config_dict['product_url']]
+
+
+                        # implement cheap fix for now, change when migrating to python's csv library
+                        try:
+                            raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
+                            raw_product_url = raw_product_url.replace('|', '%7C') # look this over again when csv lib
+                        except:
+                            raw_product_url = '' # there was an error of some kind
+
                         product_image_url = line[config_dict['product_image_url']]
                         buy_url = line[config_dict['buy_url']]
                         short_product_description = line[config_dict['short_product_description']]
                         long_product_description = line[config_dict['long_product_description']]
                         discount = line[config_dict['discount']]
+                        if not discount:
+                            discount = '0.00'
                         discount_type = line[config_dict['discount_type']]
                         sale_price = line[config_dict['sale_price']]
+                        if not sale_price:
+                            sale_price = '0.00'
                         retail_price = line[config_dict['retail_price']]
                         begin_date = line[config_dict['begin_date']]
                         end_date = line[config_dict['end_date']]
                         brand = line[config_dict['brand']]
                         shipping = line[config_dict['shipping']]
+                        if not shipping:
+                            shipping = '0.00'
                         keywords = line[config_dict['keywords']]
                         manufacturer_part_number = line[config_dict['manufacturer_part_number']]
                         manufacturer_name = line[config_dict['manufacturer_name']]
@@ -178,6 +194,7 @@ def clean_ran(local_temp_dir, file_ending):
                         record += long_product_description + u'|'
                         record += short_product_description + u'|'
                         record += product_url + u'|'
+                        record += raw_product_url + u'|'
                         record += product_image_url + u'|'
                         record += buy_url + u'|'
                         record += manufacturer_name + u'|'

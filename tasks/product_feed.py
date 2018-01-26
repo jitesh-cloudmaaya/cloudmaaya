@@ -6,7 +6,9 @@ import subprocess
 from django.db import connection, transaction
 import yaml
 import datetime
+import time
 from product_feed_py import *
+from catalogue_service.settings import BASE_DIR
 
 class ProductFeed(object):
 
@@ -35,10 +37,13 @@ class ProductFeed(object):
     ### space for my additions
 
     def clean_data(self):
+        start = time.time()
         exec self._clean_data_method
+        print "Process takes %s seconds" % (time.time() - start)
 
     # how to get filename of flat_file.csv
     def load_cleaned_data(self): # eventually rename
+        start = time.time()
         cursor = connection.cursor()
 
         # filepath to pd_temp/ran/cleaned/flat_file.csv ?
@@ -48,8 +53,33 @@ class ProductFeed(object):
         table = self._table
         fields = self._fields
 
-        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s;" % (f, table, fields)
-        cursor.execute(statement)
+        full_script = []
+
+        sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
+        statement = sql_script.read()
+        statements = statement.split(';')
+        for i in range(0, len(statements)):
+            full_script.append(statements[i])
+
+        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s" % (f, table, fields)
+        full_script.append(statement)
+
+        sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
+        statement = sql_script.read()
+        statements = statement.split(';')
+        for i in range(0, len(statements)):
+            full_script.append(statements[i])
+
+        try:
+            with transaction.atomic():
+                for i in range(0, len(full_script)):
+                    statement = full_script[i]
+                    if statement.strip(): # avoid 'query was empty' operational error
+                        cursor.execute(statement)
+        finally:
+            cursor.close()
+
+        print "Process takes %s seconds" % (time.time() - start)
 
     def decompress_data(self):
         file_list = os.listdir(self._local_temp_dir)

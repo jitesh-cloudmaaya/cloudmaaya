@@ -17,7 +17,7 @@ from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
 from product_api.models import Product
-from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments
+from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, AllumeUserStylistNotes
 from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360
 from serializers import *
 from rest_framework import status
@@ -41,6 +41,86 @@ def client_360(request, pk=None):
 
     serializer = AllumeClient360Serializer(client)
     return JsonResponse(serializer.data, safe=client)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@check_login
+@permission_classes((AllowAny, ))
+def styling_session_note(request, pk=None):
+    """
+    get:
+        View styling session Note
+
+        /shopping_tool_api/styling_session_note/{note_id}/
+    put:
+        Add note to the styling session
+
+        /shopping_tool_api/styling_session_note/0/
+
+        Sample JSON Object
+
+        {
+          "stylist": 1,
+          "client": 10,
+          "styling_session": 393223,
+          "notes": 393223,
+          "visible": 11
+        }
+
+    delete:
+        Remove a Note from the styling session        
+    """
+    if request.method == 'GET':
+        try:
+            note = AllumeUserStylistNotes.objects.get(id=pk)
+        except AllumeUserStylistNotes.DoesNotExist:
+            return HttpResponse(status=404)
+
+        serializer = AllumeUserStylistNotesSerializer(note)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+
+        try:
+            note = AllumeUserStylistNotes.objects.get(id=pk)
+            serializer = AllumeUserStylistNotesSerializer(note, data=request.data)
+        except AllumeUserStylistNotes.DoesNotExist:
+            serializer = AllumeUserStylistNotesSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        try:
+            note = AllumeUserStylistNotes.objects.get(id = pk)
+            note.delete()
+            context = {'Success': True}
+            return JsonResponse(context, status=status.HTTP_201_CREATED)
+        except ObjectDoesNotExist as er:
+            context = {'Success': False, 'Info': str(er)}
+            return JsonResponse(context, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(context) 
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def styling_session_notes(request, pk=None):
+    """
+    get:
+        View list of styling Session Notes
+
+        /shopping_tool_api/styling_session_notes/{userid}/
+    """
+    try:
+        notes = AllumeUserStylistNotes.objects.filter(client=pk).order_by('-last_modified').all()
+    except AllumeUserStylistNotes.DoesNotExist:
+        return HttpResponse(status=404)
+
+    serializer = AllumeUserStylistNotesSerializer(notes, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -252,6 +332,8 @@ def look(request, pk):
          "stylist": 117,
          "description": ""
         }
+    delete:
+        Delete a look
     """
     if request.method == 'GET':
 
@@ -276,6 +358,18 @@ def look(request, pk):
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
+    elif request.method == 'DELETE':
+        try:
+            look = Look.objects.get(id = pk)
+            look.status = 'Deleted'
+            look.save()
+            context = {'Success': True}
+            return JsonResponse(context, status=status.HTTP_201_CREATED)
+        except ObjectDoesNotExist as er:
+            context = {'Success': False, 'Info': str(er)}
+            return JsonResponse(context, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @check_login
 @permission_classes((AllowAny, ))
@@ -284,7 +378,9 @@ def look_list(request):
     post:
         Get a list of looks filtered by shopper, client or styling_session and its products, layouts, etc
        
-        Sample JSON Object, all filters below are optional.
+        Sample JSON Object, all filters below are optional, though both total_look_price and average_item_price
+        expect to occur with a respective minimum and maximum.
+
         {
          "client": 1,
          "allume_styling_session":3,
@@ -292,10 +388,14 @@ def look_list(request):
          "name": "Body Suit",
          "page": 1,
          "per_page": 20,
-         "favorites_only": True
+         "favorites_only": True,
+         "total_look_price_minimum": 500.00,
+         "total_look_price_maximum": 1000.00,
+         "average_item_price_minimum": 20.00,
+         "average_item_price_maximum": 45.00,
         }
     """
-    looks = Look.objects.all()#
+    looks = Look.objects.all()  
     looks = looks.filter(look_layout__isnull=False)
     looks = looks.exclude(look_layout = 0)
 
@@ -306,6 +406,11 @@ def look_list(request):
     per_page = 20
     if 'per_page' in request.data:
         per_page = request.data['per_page']
+
+    if 'show_deleted' in request.data:
+        looks = looks
+    else:
+        looks = looks.exclude(status = 'Deleted')
 
     if 'client' in request.data:
         client = request.data['client']
@@ -318,10 +423,7 @@ def look_list(request):
 
     if 'stylist' in request.data:
         stylist = request.data['stylist']
-        print stylist
         looks = looks.filter(stylist = stylist)
-
-        print looks.count()
 
     if 'name' in request.data:
         name = request.data['name']
@@ -331,6 +433,22 @@ def look_list(request):
         if request.data['favorites_only'] == "True":
             favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('look_id', flat=True)
             looks = looks.filter(id__in = favs)
+
+    lookmetrics = LookMetrics.objects.all()
+    if 'total_look_price_minimum' in request.data and 'total_look_price_maximum' in request.data:
+        minimum = request.data['total_look_price_minimum']
+        maximum = request.data['total_look_price_maximum']
+        lookmetrics = LookMetrics.objects.filter(total_look_price__gte = minimum, total_look_price__lte = maximum)
+
+    if 'average_item_price_minimum' in request.data and 'average_item_price_maximum' in request.data:
+        minimum = request.data['average_item_price_minimum']
+        maximum = request.data['average_item_price_maximum']
+        lookmetrics = lookmetrics.filter(average_item_price__gte = minimum, average_item_price__lte = maximum)
+
+    # do this step after filtering on potentially both total look price and average item price
+    if 'total_look_price_minimum' in request.data or 'average_item_price_minimum' in request.data:
+        lookmetrics = lookmetrics.values_list('look', flat=True)
+        looks = looks.filter(id__in = lookmetrics)
 
     paginator = Paginator(looks, per_page)
 
