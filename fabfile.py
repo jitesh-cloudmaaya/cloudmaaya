@@ -118,6 +118,8 @@ def deploy_web_container():
 @roles('worker')
 def deploy_celery_container():
 
+    run("docker pull allumestyle/catalogue-service:%s" % (env.docker_tag))  # Add Tag
+
     #Restart Celery
     env.warn_only = True#Allows process to proceed if there is no current container
     run('docker rm $(docker stop $(docker ps -a -q --filter name=celery))')
