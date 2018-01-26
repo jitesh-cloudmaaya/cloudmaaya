@@ -267,7 +267,7 @@ var look_builder = {
         var cropped_images = [];
         for(var i = 0, l = result.look_products.length; i<l; i++){
           var prod = result.look_products[i];
-          if(prof.product != undefined){
+          if(prod.product != undefined){
             var retail = prod.product.retail_price;
             var sale = prod.product.sale_price;
             var price_display = '';
