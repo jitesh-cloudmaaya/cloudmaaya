@@ -32,7 +32,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
         inactiveSkipped = 0
 
         # BEGIN CSV READER STUFF
-        csv.register_dialect('pipes', delimiter='|', quoting=csv.QUOTE_NONE)
+        csv.register_dialect('pipes', delimiter='|', quoting=csv.QUOTE_NONE, quotechar='')
+        cleaned_fieldnames = cleaned_fields.split(',')
+        writer = csv.DictWriter(cleaned, cleaned_fieldnames, dialect = 'pipes')
         for f in file_list:
             with open(f, "r") as csvfile:
                 header = csvfile.readline()
@@ -72,14 +74,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         config_dict = yaml.load(config)
                         fields = config_dict['fields'] # grabs the fields as an array
                     # print fields
-                    reader = csv.DictReader(lines, fieldnames = fields, dialect = 'pipes')
+                    reader = csv.DictReader(lines, fieldnames = fields, restval='', dialect = 'pipes')
                     for datum in reader:
                         totalCount += 1
-
-                        # do we still need a unicode sandwich?
-
-                        # for key, value in datum.iteritems():
-                        #     print (key, value)
 
                         # do unicode sandwich stuff
                         for key, value in datum.iteritems():
@@ -93,12 +90,11 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         secondary_category = datum['secondary_category']
                         product_url = datum['product_url']
 
-                        # implement a cheap fix for now, change when migrating to python's csv library
                         try:
                             raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
-                            raw_product_url = raw_product_url.replace('|', '7%C') # look this over again when csv lib
+                            raw_product_url = raw_product_url.replace('|', '7%C')
                         except:
-                            raw_product_url = '' # there was an error of some kind
+                            raw_product_url = u'' # there was an error of some kind
 
                         product_image_url = datum['product_image_url']
                         buy_url = datum['buy_url']
@@ -142,14 +138,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         attribute_8_age = datum['attribute_8_age']
                         attribute_9 = datum['attribute_9']
                         attribute_10 = datum['attribute_10']
-
                         # in a delta file, there is 1 additional field for modification
-                        if datum['modification']:
-                            modification = datum['modification']
-                        else: # not a delta file
-                            modification = ''
-
-                        # begins attribute manipulation logic
+                        modification = datum['modification']
 
                         # moving gender check above categories check
                         # as all men categories have no entries in category tables
@@ -270,12 +260,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         for key, value in record.iteritems():
                             record[key] = value.encode('UTF-8')
 
-                        cleaned_fields = cleaned_fields.split(',')
-                        writer = csv.DictWriter(cleaned, cleaned_fields, dialect = 'pipes')
-                        # write the reconstructed line to the cleaned file
+                        # write the reconstructed line to the cleaned file using the csvwriter
                         writer.writerow(record)
                         writtenCount += 1
-                        return
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
