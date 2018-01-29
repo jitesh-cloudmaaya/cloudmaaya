@@ -119,6 +119,7 @@ var explore_page = {
           var fields = loader.data();
           var lookup = fields.filter;
           lookup.page = fields.page;
+          lookup.per_page = 9
           explore_page.getLooks(lookup);
         }
       }
@@ -141,7 +142,8 @@ var explore_page = {
     var total_maximum = parseFloat(totals[1]);
     var avg_minimum = parseFloat(avgs[0]);
     var avg_maximum = parseFloat(avgs[1]);
-    lookup.page = 1
+    lookup.page = 1;
+    lookup.per_page = 9;
     if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
     if(name != ''){ lookup.name = name; }
     if(faves == true){ lookup.favorites_only = "True"};
@@ -170,7 +172,6 @@ var explore_page = {
       explore_page.fetch.abort();
     }
     $('#looks-header h2').html('loading looks...');
-    console.log(lookup)
     explore_page.fetch = $.ajax({
       contentType : 'application/json',
       data: JSON.stringify(lookup),
@@ -253,18 +254,23 @@ var explore_page = {
         );
       }
       var stores = '';
-      var desc = look.description != '' ? '<p class="desc"><em>Description:</em>' + look.description + '</p>' : '';
+      var desc = look.description != '' ? '<p class="desc" title="' + look.description + '"><em>Description:</em><span>' + look.description + '</span></p>' : '';
       if(merchants.length > 0){
         merchants = [...new Set(merchants)];
         var last_class = prices.length == 0 ? 'last' : '' ;
         stores = '<p class="extras ' + last_class + '"><em>Stores:</em> ' + merchants.join(', ') + '</p>';
       }
+
+      var total_price = '';
+      var avg_price = '';
+      if(look.look_metrics[0] != undefined){
+        total_price = numeral(parseFloat(look.look_metrics[0].total_look_price)).format('$0,0.00');
+        avg_price = numeral(parseFloat(look.look_metrics[0].average_item_price)).format('$0,0.00');
+      }
       div.append(
         markup.join('') + '</div></div>' + stores +
-        '<p class="extras"><em>Total price:</em> ' + 
-        numeral(parseFloat(look.look_metrics[0].total_look_price)).format('$0,0.00') + 
-        '</p><p class="extras"><em>Average item price:</em> ' + 
-        numeral(parseFloat(look.look_metrics[0].average_item_price)).format('$0,0.00') +
+        '<p class="extras"><em>Total price:</em> ' + total_price + 
+        '</p><p class="extras"><em>Average item price:</em> ' + avg_price +
         '</p>' + desc + '</div></div>'
       );
     }
@@ -316,12 +322,12 @@ var explore_page = {
     if(at_load_stylist == null){
       /* get the initial page of looks */
       $('#loader').data('filter', {});
-      explore_page.getLooks({});
+      explore_page.getLooks({per_page: 9});
     }else{
       $('#stylist-select')[0].selectize.setValue(at_load_stylist, true);
       /* get the initial page of looks for specified stylist */
       $('#loader').data('filter', {stylist: at_load_stylist});
-      explore_page.getLooks({stylist: at_load_stylist});      
+      explore_page.getLooks({stylist: at_load_stylist, per_page: 9});      
     }
     $('#search-terms').val('').blur(function(){
       explore_page.generateSearch();

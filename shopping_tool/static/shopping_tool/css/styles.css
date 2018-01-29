@@ -1708,7 +1708,7 @@ div.lookbook-btns a:active,
 }
 #inspect-item div.stage table td.img img {height:300px; margin:0;}
 #look-indepth div.stage div.products table td.details,
-#inspect-item div.stage table td.details {padding:15px 10px 10px;}
+#inspect-item div.stage table td.details {padding:15px 10px 10px; position:relative;}
 #inspect-item div.stage table td#inspect-sizes {padding:15px 10px 10px;}
 #look-indepth div.stage div.products table tr:first-child td.img,
 #look-indepth div.stage div.products table tr:first-child td.details {padding-top:5px;}
@@ -2040,6 +2040,14 @@ div.lookbook-btns a:active,
   font-weight:400; 
   display:block;
 }
+#all-looks-list div.look p.desc span {
+  display:block;
+  height:18px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+  width:100%;
+}
 #all-looks-list div.look div.display {
   background:#fff;
   border-radius:3px;
@@ -2188,6 +2196,52 @@ div.lookbook-btns a:active,
   box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
   color:#474747;
 }
+
+#inspect-item a#color-toggle {
+  border:1px solid #ddd;
+  border-radius:3px;
+  display:inline-block;
+  color:#474747;
+  padding:3px 10px;
+  text-decoration: none;
+}
+#inspect-item a#color-toggle i {color:#999; margin-left:10px;}
+#inspect-item a#color-toggle:hover {
+  border-color: #ccc;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+#inspect-item a#color-toggle.on,
+#inspect-item a#color-toggle:active {
+  background:#666;
+  border-color:#444;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.8);
+  color:#fff;
+}
+#inspect-item a#color-toggle.on i {color:#fff;} 
+#inspect-item #color-options {
+  background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,0.4);
+  display:none;
+  width:250px;
+  position:absolute;
+  z-index:2;
+}
+#inspect-item #color-options a {
+  background:#fff;
+  color:#000;
+  display:block;
+  font-size:14px;
+  font-weight:100;
+  padding:10px;
+  text-decoration: none;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;   
+}
+#inspect-item #color-options a.selected {display:none;}
+#inspect-item #color-options a:hover {
+  background:rgba(0,0,0,0.1);
+}
+#inspect-item #color-options a:active {color:#f2987e}
 #cropper-zone p {
   color:#777;
   font-size:18px;
