@@ -35,6 +35,7 @@ def clean_ran(local_temp_dir, file_ending):
         inactiveSkipped = 0
         pendingReviewSkipped = 0
         categoriesDiscovered = 0
+        merchantsDiscovered = 0
 
         for f in file_list:
             with open(f, "r") as f:
@@ -49,10 +50,12 @@ def clean_ran(local_temp_dir, file_ending):
                 
                 long_merchant_id = long(merchant_id) # cast for use
                 if long_merchant_id not in merchant_mapping.keys():
+                    print 'does this happen?'
                     # add merchant that does not yet exist in table
                     mappings.add_new_merchant(long_merchant_id, merchant_name, network, False)
                     # add entry for new merchant in mapping instance
                     merchant_mapping[long_merchant_id] = 0
+                    merchantsDiscovered += 1
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_mapping[long_merchant_id]: # set the merchant_table active column to 1 for a few companies when testing
                     # check config files
@@ -288,7 +291,8 @@ def clean_ran(local_temp_dir, file_ending):
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
     print('Discovered %s unmapped primary and secondary category pairs' % categoriesDiscovered)
-    print('Dropped %s records due to pending discovered categories' % pendingReviewSkipped) 
+    print('Discovered %s new merchant(s)' % merchantsDiscovered)
+    print('Dropped %s records due to pending discovered categories' % pendingReviewSkipped)
     print('Dropped %s records due to gender' % genderSkipped)
     # print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
     print('Dropped %s records due to inactive categories' % inactiveSkipped)
