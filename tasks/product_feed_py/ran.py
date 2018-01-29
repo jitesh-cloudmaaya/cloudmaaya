@@ -31,7 +31,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
         allumecategorySkipped = 0
         inactiveSkipped = 0
 
-        # different dialects for reading and writing?
+        # different dialects for reading and writing
         csv.register_dialect('reading', delimiter='|', quoting=csv.QUOTE_NONE, quotechar='')
         # second dialect
         # set the delimiter as a pipe character
