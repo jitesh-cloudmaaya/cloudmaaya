@@ -59,6 +59,23 @@ def create_allume_category_mapping():
 
     return allume_category_mapping
 
+
+def is_active_merchant(merchant_id, merchant_mapping):
+    """
+    Checks if a provided merchant_id is an already discovered merchant_id.
+    Adds/creates it if it does not. Returns True if an active merchant, False otherwise.
+    Modifies the merchant_mapping dictionary in-place.
+    """
+    merchant_id = long(merchant_id)
+    # logic for handling if merchant from RAN is not present
+    if merchant_id not in merchant_mapping.keys():
+        # add merchant that does not yet exist in table
+        mappings.add_new_merchant(merchant_id, merchant_name, network, False)
+        # add entry for new merchant in mapping instance
+        merchant_mapping[merchant_id] = 0
+    # is the merchant active
+    return merchant_mapping[merchant_id]
+
 def add_new_merchant(external_merchant_id, name, network, active = False):
     Merchant.objects.create(external_merchant_id = external_merchant_id, name = name, network = network, active = active)
 

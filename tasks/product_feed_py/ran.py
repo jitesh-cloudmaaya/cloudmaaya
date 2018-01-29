@@ -5,6 +5,7 @@ import urlparse
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR
+from product_api.models import Merchant
 
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir, file_ending):
@@ -13,6 +14,9 @@ def clean_ran(local_temp_dir, file_ending):
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+
+    # initialize network instance for adding potential new merchants
+    network = mappings.get_network('RAN')
 
     destination = local_temp_dir + '/cleaned/flat_file.txt'
     with open(destination, "w") as cleaned:
@@ -23,16 +27,14 @@ def clean_ran(local_temp_dir, file_ending):
             if f.endswith(file_ending):
                 file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
 
+        # metric variables
         totalCount = 0
         writtenCount = 0
-
         genderSkipped = 0
         allumecategorySkipped = 0
         inactiveSkipped = 0
-
         pendingReviewSkipped = 0
         categoriesDiscovered = 0
-
         # iterate only over the .txt files
         for f in file_list:
 
@@ -45,14 +47,9 @@ def clean_ran(local_temp_dir, file_ending):
 
                 lines = f.readlines()
                 lines = lines[:-1]
-
-                # handle if merchant_id not in merchant_table?
-                try:
-                    merchant_is_active = merchant_mapping[int(merchant_id)]
-                except:
-                    merchant_is_active = 0
+                
                 # check that the merchant_id is active in the merchant mapping
-                if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
+                if is_active_merchant(merchant_id, merchant_mapping): # set the merchant_table active column to 1 for a few companies when testing
                     # check config files
                     config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/'
                     fd = os.listdir(config_path)
@@ -173,7 +170,7 @@ def clean_ran(local_temp_dir, file_ending):
                                 print identifier
                                 # increment a discovered variable metric
                                 categoriesDiscovered += 1
-                                
+
                             allume_category_id, active = category_mapping[identifier]
                             if not allume_category_id:
                                 # it is None because it is a newly discovered category
