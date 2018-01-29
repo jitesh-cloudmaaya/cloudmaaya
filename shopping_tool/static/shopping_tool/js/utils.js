@@ -48,6 +48,7 @@ var utils = {
     var bra_size = bra.data('sizes');
     if((bra_size != undefined)&&(typeof bra_size == 'object')){
       bra.html('<em>bra:</em>' + bra_size.band + '' + bra_size.cup);
+      $('#prev-bra-size').html('<em>bra:</em>' + bra_size.band + '' + bra_size.cup);
     }
     /* correctly display birthday */
     var bd = $('#client-birthday');
@@ -56,7 +57,9 @@ var utils = {
       var proc_bday = moment(bday.month +'/' + bday.day +'/' + bday.year, 'M/D/YYYY');
       var now = moment();
       var diff = now.diff(proc_bday, 'years')
-      bd.html('<em>age:</em>' + diff + ' years old &nbsp;&nbsp;(' + proc_bday.format('MMMM Do, YYYY') + ')')
+      var bd_display = '<em>age:</em>' + diff + ' years old &nbsp;&nbsp;(' + proc_bday.format('MMMM Do, YYYY') + ')';
+      bd.html(bd_display);
+      $('#prev-client-birthday').html(bd_display);
     }
     /* check to see if the social links are valid, if not hide, if they are valid up the link index count */
     var social = $('#client-social');
@@ -75,6 +78,7 @@ var utils = {
     if((city_state != undefined)&&(typeof city_state == 'object')){
       var cs_display = city_state.city + ', ' + city_state.state;
       locale.html(cs_display);
+      $('#prev-client-locale').html(cs_display)
       $('#client-weather-locale').html('Seasonal norms for ' + cs_display + ':');
     }    
     /* if link idex is 0, no social links are valid thus hide the whole social div */

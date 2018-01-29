@@ -773,6 +773,7 @@ div#rack-btns span {
 #close-design-look,
 #close-cropper,
 #close-lb,
+#close-lb-pre,
 #look-indepth a.close-indepth,
 #inspect-item a.close-inspect {
   color:#bbb;
@@ -793,12 +794,14 @@ div#rack-btns span {
 #look-indepth a.close-indepth:hover,
 #inspect-item a.close-inspect:hover,
 #close-lb:hover,
+#close-lb-pre:hover,
 #close-cropper:hover {color:#474747;}
 #close-rack:active,
 #cancel-new-look:active,
 #close-design-look:active,
 #cancel-edit-look:active,
 #close-lb:active,
+#close-lb-pre:active,
 #look-indepth a.close-indepth:active,
 #inspect-item a.close-inspect:active,
 #close-cropper:active {color:#0090D9;}
@@ -1282,6 +1285,7 @@ div.layout-option span.name {
 #create-look,
 #creating-look,
 #publish-lookbook-overlay,
+#preview-lookbook-overlay,
 div.deletion-confirm {
   background:rgba(0,0,0,0.7);
   display:none;
@@ -1295,6 +1299,7 @@ div.deletion-confirm {
 #create-look div.stage,
 #creating-look div.stage,
 #publish-lookbook-overlay div.stage,
+#preview-lookbook-overlay div.stage,
 div.deletion-confirm div.stage,
 div.indepth-loading {
   background:#fff;
@@ -1307,7 +1312,8 @@ div.indepth-loading {
   width:600px;
   z-index:201;
 }
-#publish-lookbook-overlay div.stage {
+#publish-lookbook-overlay div.stage,
+#preview-lookbook-overlay div.stage {
   height:calc(100% - 40px);
   left:20px;
   top:20px;
@@ -1315,6 +1321,58 @@ div.indepth-loading {
 }
 #create-look div.stage {height:320px; top:calc(50% - 160px);}
 #creating-look div.stage,
+#preview-lookbook-overlay div.stage iframe {
+  border:0;
+  box-shadow:0 0 3px rgba(0,0,0,0.3);
+  height:1200px;
+  width:calc(100% - 30px);
+  margin:15px;
+}
+
+#preview-lookbook-overlay div.preview-container {
+  height:calc(100% - 50px);
+  overflow:auto;
+}
+#preview-lookbook-overlay div.preview-container h4 {
+  font-size:18px;
+  font-weight:300;
+  padding:15px 15px 0;
+}
+#preview-lookbook-overlay div.preview-container div.client-details {
+  background: rgba(242, 152, 126, 0.05);
+  border: 1px solid #f2987e;
+  border-radius:5px;
+  margin:15px 15px 0;
+  overflow:auto;
+  padding:15px;
+}
+#preview-lookbook-overlay div.preview-container div.client-details h3 {
+  color:#000;
+  font-size:18px;
+  font-weight:500;
+  padding-bottom:5px;
+}#preview-lookbook-overlay div.preview-container div.client-details div.bio {
+  overflow:auto;
+}
+#preview-lookbook-overlay div.preview-container div.client-details img {
+  border-radius:75px;
+  float:left;
+  margin:0 15px 0 0;
+  height:150px;
+  width:150px;
+}
+#preview-lookbook-overlay div.preview-container div.client-details div.bio span,
+#preview-lookbook-overlay div.preview-container div.client-details p span {
+  color:#000;
+  display:block;
+  font-size:16px;
+  font-weight:300;
+  line-height:24px;
+}
+#preview-lookbook-overlay div.preview-container div.client-details div.bio span em,
+#preview-lookbook-overlay div.preview-container div.client-details p span em {font-weight:100; padding-right:8px;}
+#preview-lookbook-overlay div.preview-container div.client-details p {float:right;padding-left:25px;}
+
 div.indepth-loading {
   height:150px; 
   left:calc(50% - 250px);
@@ -1324,7 +1382,8 @@ div.indepth-loading {
 #creating-look div.stage span.pulse_loader,
 div.indepth-loading span.pulse_loader {margin:45px 0 0 75px;}
 #create-look div.stage h2,
-#publish-lookbook-overlay h2{
+#publish-lookbook-overlay h2,
+#preview-lookbook-overlay h2{
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;

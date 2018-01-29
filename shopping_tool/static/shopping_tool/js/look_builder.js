@@ -90,12 +90,6 @@ var look_builder = {
   * @description look builder ui/ux functionality
   */
   functionality: function(){
-    $('#preview-lookbook').click(function(e){
-      e.preventDefault();
-    });
-    $('#publish-lookbook').click(function(e){
-      e.preventDefault();
-    });
     $('#add-new-look-to-lookbook').click(function(e){
       e.preventDefault();
       $('#new-look-error').html('');
@@ -423,6 +417,11 @@ var look_builder = {
       e.preventDefault();
       $('#cropper').fadeOut();
     });
+    $('#preview-lookbook').click(function(e){
+      e.preventDefault();
+      $('#previewIframe').attr('src', 'https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
+      $('#preview-lookbook-overlay').fadeIn();
+    });
     $('#publish-lookbook').click(function(e){
       e.preventDefault();
       $('#publish-lookbook-overlay').fadeIn();
@@ -431,7 +430,11 @@ var look_builder = {
     $('#close-lb').click(function(e){
       e.preventDefault();
       $('#publish-lookbook-overlay').fadeOut();
-    });    
+    });
+    $('#close-lb-pre').click(function(e){
+      e.preventDefault();
+      $('#preview-lookbook-overlay').fadeOut();
+    });       
   },
   /**
   * @description to handle invalid states we use a recursive loading check for images before we crop them
