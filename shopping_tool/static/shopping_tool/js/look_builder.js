@@ -340,6 +340,7 @@ var look_builder = {
         }
       });
       $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
+      $('#publish-lookbook').data('allowed', 'false');
     });
     $('#compare-looks').on('click', 'a.item-detail', function(e){
       e.preventDefault();
@@ -352,6 +353,7 @@ var look_builder = {
       var div = link.closest('div.comp-look');
       div.addClass('editing').siblings('div.comp-look').removeClass('editing').addClass('off');
       look_builder.setUpBuilder(look);
+      $('#publish-lookbook').data('allowed', 'false');
     }).on('click', 'a.delete-look-btn', function(e){
       e.preventDefault();
       var link = $(this);
@@ -375,6 +377,7 @@ var look_builder = {
       if(remaining_looks == 0){
         $('#compare-looks div.other-looks').html('<span class="no-looks" id="no-look-display">add some looks...</span>');
       }
+      $('#publish-lookbook').data('allowed', 'false');
     }).end().find('a.cancel').click(function(e){
       e.preventDefault();
       $('#delete-look-overlay').fadeOut();
@@ -419,13 +422,24 @@ var look_builder = {
     });
     $('#preview-lookbook').click(function(e){
       e.preventDefault();
-      $('#previewIframe').attr('src', 'https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
-      $('#preview-lookbook-overlay').fadeIn();
+      var edit_status = $('#look-drop').find('div.start').length;
+      if(edit_status != 1){
+        alert('You must finish editing your selected look before you can preview the lookbook.')
+      }else{
+        $('#previewIframe').attr('src', 'https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
+        $('#preview-lookbook-overlay').fadeIn();
+        $('#publish-lookbook').data('allowed', 'true');
+      }
     });
     $('#publish-lookbook').click(function(e){
       e.preventDefault();
-      $('#publish-lookbook-overlay').fadeIn();
-      /* the setting looks categories go here */
+      var link = $(this);
+      if(link.data('allowed') == 'true'){
+        /* the setting looks categories go here */
+        $('#publish-lookbook-overlay').fadeIn();
+      }else{
+        alert('You must preview the lookbook before you can publish.')
+      }
     });
     $('#close-lb').click(function(e){
       e.preventDefault();
