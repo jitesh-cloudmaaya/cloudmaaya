@@ -35,10 +35,9 @@ def clean_ran(local_temp_dir, file_ending):
         inactiveSkipped = 0
         pendingReviewSkipped = 0
         categoriesDiscovered = 0
-        # iterate only over the .txt files
-        for f in file_list:
 
-            with open(f, "r") as f: #, open('temp.txt', 'r') as test:
+        for f in file_list:
+            with open(f, "r") as f:
                 header = f.readline()
                 header = header.decode('utf-8')
                 header = header.split('|')
@@ -48,8 +47,14 @@ def clean_ran(local_temp_dir, file_ending):
                 lines = f.readlines()
                 lines = lines[:-1]
                 
+                long_merchant_id = long(merchant_id) # cast for use
+                if long_merchant_id not in merchant_mapping.keys():
+                    # add merchant that does not yet exist in table
+                    mappings.add_new_merchant(long_merchant_id, merchant_name, network, False)
+                    # add entry for new merchant in mapping instance
+                    merchant_mapping[long_merchant_id] = 0
                 # check that the merchant_id is active in the merchant mapping
-                if is_active_merchant(merchant_id, merchant_mapping): # set the merchant_table active column to 1 for a few companies when testing
+                if merchant_mapping[long_merchant_id]: # set the merchant_table active column to 1 for a few companies when testing
                     # check config files
                     config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/'
                     fd = os.listdir(config_path)
