@@ -70,7 +70,7 @@ class EProductSearch(FacetedSearch):
     index = PRODUCT_INDEX
 
     fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category', 'color']
-    price_ranges=[("$0 - $50", (0, 50)), ("$50 - $100", (50, 100)), ("$100 - $250", (100, 250)), ("$250 - $500", (250, 500)), ("$500 And Up", (500, None))]
+    price_ranges=[("$0 - $50", (0, 50)), ("$50 - $100", (50, 100)), ("$100 - $150", (100, 150)), ("$150 - $200", (150, 200)), ("$200+", (200, None))]
     
     facets = collections.OrderedDict((
         # use bucket aggregations to define facets
