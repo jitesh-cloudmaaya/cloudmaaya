@@ -15,7 +15,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
 
-    destination = local_temp_dir + '/cleaned/flat_file.csv'
+    destination = local_temp_dir + '/cleaned/ran_flat_file.csv'
     with open(destination, "w") as cleaned:
         file_list = []
         file_directory = os.listdir(local_temp_dir)
