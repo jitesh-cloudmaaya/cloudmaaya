@@ -206,6 +206,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         record['retail_price'] = retail_price
                         record['shipping_price'] = shipping
 
+                        # comment
 
                         # current behavior is take the first and find its mapping if possible
                         record['merchant_color'] = attribute_5_color
