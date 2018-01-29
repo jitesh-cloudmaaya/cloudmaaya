@@ -59,3 +59,7 @@ IMGKIT_OPTIONS = {
     'javascript-delay': '300',
 #     'window-status':'ready'
     }
+
+PEPPERJAM_API_VERSION = '20120402'
+PEPPERJAM_API_KEY = ''
+
