@@ -1,6 +1,9 @@
 from django.db import connection
 from product_api.models import Merchant, Network, CategoryMap
 
+
+# test = {}
+
 def create_merchant_mapping():
     cursor = connection.cursor()
     cursor.execute("SELECT external_merchant_id, active FROM product_api_merchant")
@@ -22,6 +25,10 @@ def create_color_mapping():
 
     return color_mapping
 
+def create_test_mapping():
+    global test
+    test = {'arbor': 'tree'}
+    print 'this happens'
 
 def create_category_mapping():
     cursor = connection.cursor()

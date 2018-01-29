@@ -6,6 +6,19 @@ from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR
 
+
+
+# discover unmapped categories and merchants as a method
+# there is a network model in product_api, in pepperjam this is used to add merchants with a network id of pepperjam
+# for ran, something similar should occur where discovered merchants that are added have a network id correspodning to RAN
+# pepperjam gets the merchants using the api url
+# a varible to count process metrics
+# then for each merchant in the data, he checks if it is in the mapping table,
+# if it is not, he adds a corresponding merchant object
+# and then recreates the merchant_mapping
+# suggestion is to have a global mappings table that is generated once and added to and reference throughout life of program
+# something similar for category map?
+
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir, file_ending):
     # instantiate relevant mappings
@@ -13,6 +26,12 @@ def clean_ran(local_temp_dir, file_ending):
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+
+
+    # check the lengths of the category mapping after two passes on the same data
+    print '##################  LENGTH #############################'
+    print len(category_mapping)
+    print '##################  EnD #############################'
 
     destination = local_temp_dir + '/cleaned/flat_file.txt'
     with open(destination, "w") as cleaned:
@@ -29,6 +48,9 @@ def clean_ran(local_temp_dir, file_ending):
         genderSkipped = 0
         allumecategorySkipped = 0
         inactiveSkipped = 0
+
+        pendingReviewSkipped = 0
+        categoriesDiscovered = 0
 
         # iterate only over the .txt files
         for f in file_list:
@@ -165,25 +187,123 @@ def clean_ran(local_temp_dir, file_ending):
                             genderSkipped += 1
                             continue
 
+                        # category map discovery stuff
+                        # rather than recreating the mapping for every record with a new mapping
+                        # let's change it to a method that checks for its existance,
+                        # adding it to a global mapping variable that is generated once if otherwise
 
-                        try:
-                            identifier = (primary_category, secondary_category)
-                            allume_category_id, active = category_mapping[identifier]
-                            # activity check on the primary, secondary category pair
-                            if not active:
-                                inactiveSkipped += 1
-                                continue
-                            # print(active)
-                            allume_category, active = allume_category_mapping[allume_category_id]
-                            # activity check on the allume_category
-                            if not active:
-                                inactiveSkipped += 1
-                                continue
-                        except:
-                            # there is no entry in the category tables for the provided categories
-                            # assume inactive?
-                            allumecategorySkipped += 1
+
+                        def checkCategoryMap(primary_category, secondary_category):
+                            """
+                            Takes in both a primary_category and secondary_category and checks for its
+                            existance in CategoryMap, discovering it otherwise.
+                            """
+                            # isn't it essentially
+                            # (primary_category, secondary_category) in category_mapping?
+                            pass
+
+                        # new process
+                        # call a function that checks for the (primary_category, secondary_category)
+                        # try:
+                        # identifier in the current_category_mappings
+                        identifier = (primary_category, secondary_category)
+                        # checkCategoryMap(primary_category, secondary_category)
+                        if identifier not in category_mapping.keys():
+                            # if it does not exist, add it both django/db
+                            mappings.add_category_map(primary_category, secondary_category, None, False, True)
+                            # and mapping instance
+                            category_mapping[identifier] = (None, 0)
+                            # print the category pair we 'discovered'
+                            print identifier
+                            # increment a discovered variable metric
+                            categoriesDiscovered += 1
+
+                            # even if we skip the newly added category here, other occurences will still cause a None error
+
+                        allume_category_id, active = category_mapping[identifier]
+                        if not allume_category_id:
+                            # it is None because it is a newly discovered category
+                            # or a category that is still pending review
+                            pendingReviewSkipped += 1
                             continue
+                        # activity check on primary, secondary category pair
+                        if not active:
+                            inactiveSkipped += 1
+                            continue
+                        allume_category, active = allume_category_mapping[allume_category_id]
+                        # activity check on the allume_category
+                        if not active:
+                            inactiveSkipped += 1
+                            continue
+                        # except Exception as e:
+                            # raise e
+
+                            # key error in either category_mapping or allume_category_mapping
+                            # print 'somehow an identifier without an entry was accessed'
+                            # print e
+                            # continue
+
+
+
+#                         try:
+#                             identifier = (primary_category, secondary_category)
+#                             allume_category_id, active = category_mapping[identifier]
+#                             # activity check on the primary, secondary category pair
+#                             if not active:
+#                                 inactiveSkipped += 1
+#                                 continue
+#                             # print(active)
+#                             allume_category, active = allume_category_mapping[allume_category_id]
+#                             # activity check on the allume_category
+#                             if not active:
+#                                 inactiveSkipped += 1
+#                                 continue
+#                         except:
+#                             # there is no entry in the category tables for the provided categories
+#                             # assume inactive?
+
+
+# # +----+-----------------------+-------------------------+--------+------------+------------+--------------------+----------------+
+# # | id | external_cat1         | external_cat2           | active | created_at | updated_at | allume_category_id | pending_review |
+# # +----+-----------------------+-------------------------+--------+------------+------------+--------------------+----------------+
+# # |  1 | Apparel & Accessories | Clothing~~Shirts & Tops |      1 | NULL       | NULL       |                  1 |              0 |
+# # |  2 | Apparel & Accessories |                         |      1 | NULL       | NULL       |                  2 |              0 |
+# # |  3 | Apparel & Accessories | Clothing~~Pants         |      1 | NULL       | NULL       |                  3 |              0 |
+# # |  4 | Apparel & Accessories | Shoes                   |      1 | NULL       | NULL       |                  4 |              0 |
+# # |  5 | Apparel & Accessories | Clothing~~Dresses       |      1 | NULL       | NULL       |                  5 |              0 |
+# # +----+-----------------------+-------------------------+--------+------------+------------+--------------------+----------------+
+
+#                             #################### MY ATTEMPT #################################
+
+#                             # call as a function?
+#                             # e.g. # checkCategory(primary_category, secondary_category)
+
+#                             # update the categorymap instance to include this category
+#                             category_mapping[(primary_category, secondary_category)] = None # intialize with allume_cat_id of None
+
+#                             # create the category map in django/db
+#                             CategoryMap.objects.create(primary_category, secondary_category, None, False, True)
+
+#                             # instead of allumecategorySkipped
+#                             # categoriesDiscovered += 1
+
+#                             #################### END MY ATTEMPT #############################
+
+#                             # add the unmappped category to the mappings table
+#                             ##################### FROM PEPPERJAM ############################
+
+#                             mappings.add_category_map(primary_category, secondary_category, None, False, True)
+#                             allume_category_mapping = mappings.create_allume_category_mapping()
+#                             category_mapping = mappings.create_category_mapping()
+
+#                             ##################### END FROM PEPPERJAM ########################
+# # def add_category_map(external_cat1, external_cat2, allume_category, active = False, pending_review=True):
+# #     CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, 
+# #                                allume_category = None, active = active, pending_review=pending_review)
+
+
+#                             allumecategorySkipped += 1
+#                             continue
 
 
                         # logic for constructing record for product_api_product
@@ -276,8 +396,10 @@ def clean_ran(local_temp_dir, file_ending):
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
+    print('Discovered %s unmapped primary and secondary category pairs' % categoriesDiscovered)
+    print('Dropped %s records due to pending discovered categories' % pendingReviewSkipped) 
     print('Dropped %s records due to gender' % genderSkipped)
-    print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
+    # print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
     print('Dropped %s records due to inactive categories' % inactiveSkipped)
 
 
