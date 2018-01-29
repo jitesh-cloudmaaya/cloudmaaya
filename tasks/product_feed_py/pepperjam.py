@@ -4,6 +4,7 @@ import yaml
 import json
 import urllib2
 import urlparse
+import csv
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
@@ -59,7 +60,7 @@ def get_data(local_temp_dir):
 
     # Set output Destination
     destination = local_temp_dir + '/ppj_flat_file.txt'
-
+    print destination
     # Create some variables to count process metrics
     totalCount = 0
     writtenCount = 0
@@ -68,6 +69,8 @@ def get_data(local_temp_dir):
     inactiveSkipped = 0
     new_merchants = 0
 
+    # first guess at dialect
+    csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\')
 
     with open(destination, "w") as cleaned:
 
@@ -75,21 +78,26 @@ def get_data(local_temp_dir):
 
         while more_pages:
 
+            # commenting out because API only has X amount of access allowed in a day
             ## Prod & Staging Only
-            print("Getting Data")
-            print(pepper_jam_api_product_url)
-            product_feed = json.load(urllib2.urlopen(pepper_jam_api_product_url))
+            # print("Getting Data")
+            # print(pepper_jam_api_product_url)
+            # product_feed = json.load(urllib2.urlopen(pepper_jam_api_product_url))
 
             ## Dev Only
-            #json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')  
-            #product_feed = json.load(json_data)
-            #json_data.close()
+            # print("Getting Data")
+            # print(pepper_jam_api_product_url)
+            json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')  
+            product_feed = json.load(json_data)
+            json_data.close()
 
-            if 'next' in  product_feed['meta']['pagination']:
+            if 'next' in product_feed['meta']['pagination']:
                 pepper_jam_api_product_url = product_feed['meta']['pagination']['next']['href']
             else:
                 more_pages = False
 
+
+            # print statements before any continues
 
             for product in product_feed['data']:
 
@@ -111,28 +119,34 @@ def get_data(local_temp_dir):
                 primary_category = product['category_program']
                 secondary_category = product['category_network']
 
+                # temporarily don't skip if product is of an inactive category
+
+                ################### DON"T SKIP ANY RECORDS FOR NOW ################ 
+
                 # Test if Category is Active
-                try:
-                    identifier = (primary_category, secondary_category)
-                    allume_category_id, active = category_mapping[identifier]
-                    # activity check on the primary, secondary category pair
-                    if not active:
-                        inactiveSkipped += 1
-                        continue
-                    # print(active)
-                    allume_category, active = allume_category_mapping[allume_category_id]
-                    # activity check on the allume_category
-                    if not active:
-                        inactiveSkipped += 1
-                        continue
-                except:
-                    # there is no entry in the category tables for the provided categories
-                    # assume inactive?
-                    allumecategorySkipped += 1
-                    mappings.add_category_map(primary_category, secondary_category, None, False, True)
-                    allume_category_mapping = mappings.create_allume_category_mapping()
-                    category_mapping = mappings.create_category_mapping()
-                    continue
+                # try:
+                #     identifier = (primary_category, secondary_category)
+                #     allume_category_id, active = category_mapping[identifier]
+                #     # activity check on the primary, secondary category pair
+                #     if not active:
+                #         # inactiveSkipped += 1
+                #         # continue
+                #         pass
+                #     # print(active)
+                #     allume_category, active = allume_category_mapping[allume_category_id]
+                #     # activity check on the allume_category
+                #     if not active:
+                #         # inactiveSkipped += 1
+                #         # continue
+                #         pass
+                # except:
+                #     # there is no entry in the category tables for the provided categories
+                #     # assume inactive?
+                #     allumecategorySkipped += 1
+                #     mappings.add_category_map(primary_category, secondary_category, None, False, True)
+                #     allume_category_mapping = mappings.create_allume_category_mapping()
+                #     category_mapping = mappings.create_category_mapping()
+                #     continue
 
                 ## Build Record for Insertion
                 record = ''
@@ -261,7 +275,7 @@ def get_data(local_temp_dir):
     print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
     print('Dropped %s records due to inactive categories' % inactiveSkipped)
     print('Added %s new merchants' % new_merchants)
-    new_merchants
+    # new_merchants ?
 		
 
 """
