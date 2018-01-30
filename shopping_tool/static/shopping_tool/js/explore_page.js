@@ -138,6 +138,11 @@ var explore_page = {
     var faves = $('#explore-only-faves').prop('checked');
     var totals = $('#total-price-range')[0].noUiSlider.get();
     var avgs = $('#avg-price-range')[0].noUiSlider.get();
+    var styles = $('#explore-style').val();
+    var occasions = $('#explore-occasion').val();
+    console.log(styles)
+    console.log(occasions)
+
     var total_minimum = parseFloat(totals[0]);
     var total_maximum = parseFloat(totals[1]);
     var avg_minimum = parseFloat(avgs[0]);
@@ -319,6 +324,14 @@ var explore_page = {
         explore_page.generateSearch();
       }
     });
+    $('#explore-style').val('').selectize({ create: false, sortField: 'text'}).change(function(e){
+      var dd = $(this);
+      explore_page.generateSearch();
+    });
+    $('#explore-occasion').val('').selectize({ create: false, sortField: 'text'}).change(function(e){
+      var dd = $(this);
+      explore_page.generateSearch();
+    });        
     if(at_load_stylist == null){
       /* get the initial page of looks */
       $('#loader').data('filter', {});

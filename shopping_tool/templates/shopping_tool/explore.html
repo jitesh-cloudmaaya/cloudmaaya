@@ -54,6 +54,20 @@
       </td>
     </tr>
   </table>
+  <label>Style:</label>
+  <select id="explore-style" placeholder="Please select look styles..." multiple>
+    <option value=""></option>
+  {% for style in styles %}
+    <option value="{{style.id}}">{{style.name}}</option>
+  {% endfor %} 
+  </select>
+  <label>Occasion:</label>
+  <select id="explore-occasion" placeholder="Please select look occasions..." multiple>
+    <option value=""></option>
+  {% for occ in occasions %}
+    <option value="{{occ.id}}">{{occ.name}}</option>
+  {% endfor %} 
+  </select>
   <label class="toggle faves">
     <input id="explore-only-faves" name="show-faves" type="checkbox"><span><small></small></span>
     <em>show only my favorites</em>
