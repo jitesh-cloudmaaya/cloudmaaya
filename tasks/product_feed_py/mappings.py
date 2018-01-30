@@ -90,14 +90,32 @@ def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
         return True
     return False
 
-"""
-class CategoryMap(models.Model):
-    external_cat1 = models.CharField(max_length=250, blank=True, null=True)
-    external_cat2 = models.CharField(max_length=250, blank=True, null=True)
-    allume_category = models.ForeignKey(AllumeCategory, blank=True, null=True)
-    active = models.BooleanField(default=False)
-    pending_review = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
-"""
-
+def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping):
+    """
+    Takes in a primary category and a secondary category as strings and a
+    category_mapping dictionary and checks to see if they constitute an
+    undiscovered pair, adding it to the relevant table if so. Additionally,
+    checks to see if they are active at the primary and secondary category level
+    as well as the allume category level. Returns the allume category if so and
+    False otherwise.
+    """
+    identifier = (primary_category, secondary_category)
+    if identifier not in category_mapping.keys():
+        mappings.add_category_map(primary_category, secondary_category, None, False, True)
+        # edit the mapping instance
+        category_mapping[identifier] = (None, False)
+        # print discovered categories pair
+        print identifier
+    allume_category_id, categories_are_active = category_mapping[identifier]
+    if allume_category_id == None:
+        # allume_category_id is None because it is either a newly discovered category
+        # or a category that is still pending review post-discovery
+        return False
+    # check if the primary and secondary categories are active
+    if not categories_are_active:
+        return False
+    allume_category, allume_category_is_active = allume_category_mapping[allume_category_id]
+    # check allume_category is active
+    if not allume_category_is_active:
+        return False
+    return allume_category

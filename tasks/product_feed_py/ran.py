@@ -165,132 +165,97 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             genderSkipped += 1
                             continue
 
-                        # new process
-                        # call a function that checks for the (primary_category, secondary_category)?
-                        try:
-                            # identifier in the current_category_mappings
-                            identifier = (primary_category, secondary_category)
-                            # checkCategoryMap(primary_category, secondary_category)
-                            if identifier not in category_mapping.keys():
-                                # if it does not exist, add it both django/db
-                                mappings.add_category_map(primary_category, secondary_category, None, False, True)
-                                # and mapping instance
-                                category_mapping[identifier] = (None, False)
-                                # print the category pair we 'discovered'
-                                print identifier
-                                # increment a discovered variable metric
-                                categoriesDiscovered += 1
-
-                            allume_category_id, active = category_mapping[identifier]
-                            if allume_category_id == None:
-                                # it is None because it is a newly discovered category
-                                # or a category that is still pending review
-                                pendingReviewSkipped += 1
-                                continue
-                            # activity check on primary, secondary category pair
-                            if not active:
-                                inactiveSkipped += 1
-                                continue
-                            allume_category, active = allume_category_mapping[allume_category_id]
-                            # activity check on the allume_category
-                            if not active:
-                                inactiveSkipped += 1
-                                continue
-                        except Exception as e:
-                            # key error in either category_mapping or allume_category_mapping
-                            print 'somehow an identifier without an entry was accessed'
-                            print e
-                            continue
-
-                        # new logic for writing record
-                        record = {}
-                        record['product_id'] = product_id
-                        record['merchant_id'] = merchant_id
-                        record['product_name'] = product_name
-                        record['long_product_description'] = long_product_description
-                        record['short_product_description'] = short_product_description
-                        record['product_url'] = product_url
-                        record['raw_product_url'] = raw_product_url
-                        record['product_image_url'] = product_image_url
-                        record['buy_url'] = buy_url
-                        record['manufacturer_name'] = manufacturer_name
-                        record['manufacturer_part_number'] = manufacturer_part_number
-                        record['SKU'] = SKU
-                        record['product_type'] = attribute_2_product_type
-                        if discount_type != 'amount' or discount_type != 'percentage':
-                            record['discount'] = u'0.00'
-                            record['discount_type'] = u'amount'
-                        else:
-                            record['discount'] = discount
-                            record['discount_type'] = discount_type
-                        record['sale_price'] = sale_price
-                        record['retail_price'] = retail_price
-                        record['shipping_price'] = shipping
-
-                        # current behavior is take the first and find its mapping if possible
-                        record['merchant_color'] = attribute_5_color
-                        merchant_color = attribute_5_color.split(',')[0].lower()
-                        try:
-                            allume_color = color_mapping[merchant_color]
-                        except:
-                            allume_color = u'other'
-                        record['color'] = allume_color
-
-                        record['gender'] = gender
-                        record['style'] = attribute_7_style
-
-                        attribute_3_size = attribute_3_size.upper()
-                        attribute_3_size = attribute_3_size.replace('~', ',')
-                        record['size'] = attribute_3_size
-
-                        record['material'] = attribute_4_material
-
-                        attribute_8_age = attribute_8_age.upper()
-                        record['age'] = attribute_8_age
-
-                        record['currency'] = currency
-
-                        if availability == '':
-                            availability = 'out-of-stock'
-                        record['availability'] = availability
-
-                        record['keywords'] = keywords
-                        # allume category information
-                        record['primary_category'] = primary_category
-                        record['secondary_category'] = secondary_category
-                        record['allume_category'] = allume_category
-                        record['brand'] = brand
-
-                        record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        record['merchant_name'] = merchant_name
-
-                        # set defaults
-                        record['is_best_seller'] = u'0'
-                        record['is_trending'] = u'0'
-                        record['allume_score'] = u'0'
-
-                        # if there is a sale
-                        try:
-                            if float(sale_price) > 0:
-                                record['current_price'] = sale_price
+                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping)
+                        if allume_category:
+                            # new logic for writing record
+                            record = {}
+                            record['product_id'] = product_id
+                            record['merchant_id'] = merchant_id
+                            record['product_name'] = product_name
+                            record['long_product_description'] = long_product_description
+                            record['short_product_description'] = short_product_description
+                            record['product_url'] = product_url
+                            record['raw_product_url'] = raw_product_url
+                            record['product_image_url'] = product_image_url
+                            record['buy_url'] = buy_url
+                            record['manufacturer_name'] = manufacturer_name
+                            record['manufacturer_part_number'] = manufacturer_part_number
+                            record['SKU'] = SKU
+                            record['product_type'] = attribute_2_product_type
+                            if discount_type != 'amount' or discount_type != 'percentage':
+                                record['discount'] = u'0.00'
+                                record['discount_type'] = u'amount'
                             else:
+                                record['discount'] = discount
+                                record['discount_type'] = discount_type
+                            record['sale_price'] = sale_price
+                            record['retail_price'] = retail_price
+                            record['shipping_price'] = shipping
+
+                            # current behavior is take the first and find its mapping if possible
+                            record['merchant_color'] = attribute_5_color
+                            merchant_color = attribute_5_color.split(',')[0].lower()
+                            try:
+                                allume_color = color_mapping[merchant_color]
+                            except:
+                                allume_color = u'other'
+                            record['color'] = allume_color
+
+                            record['gender'] = gender
+                            record['style'] = attribute_7_style
+
+                            attribute_3_size = attribute_3_size.upper()
+                            attribute_3_size = attribute_3_size.replace('~', ',')
+                            record['size'] = attribute_3_size
+
+                            record['material'] = attribute_4_material
+
+                            attribute_8_age = attribute_8_age.upper()
+                            record['age'] = attribute_8_age
+
+                            record['currency'] = currency
+
+                            if availability == '':
+                                availability = 'out-of-stock'
+                            record['availability'] = availability
+
+                            record['keywords'] = keywords
+                            # allume category information
+                            record['primary_category'] = primary_category
+                            record['secondary_category'] = secondary_category
+                            record['allume_category'] = allume_category
+                            record['brand'] = brand
+
+                            record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            record['merchant_name'] = merchant_name
+
+                            # set defaults
+                            record['is_best_seller'] = u'0'
+                            record['is_trending'] = u'0'
+                            record['allume_score'] = u'0'
+
+                            # if there is a sale
+                            try:
+                                if float(sale_price) > 0:
+                                    record['current_price'] = sale_price
+                                else:
+                                    record['current_price'] = retail_price
+                            except:
                                 record['current_price'] = retail_price
-                        except:
-                            record['current_price'] = retail_price
 
-                        # is_deleted logic
-                        if modification == 'D':
-                            record['is_deleted'] = u'1'
-                        else:
-                            record['is_deleted'] = u'0'
+                            # is_deleted logic
+                            if modification == 'D':
+                                record['is_deleted'] = u'1'
+                            else:
+                                record['is_deleted'] = u'0'
 
-                        # unicode sandwich finish
-                        for key, value in record.iteritems():
-                            record[key] = value.encode('UTF-8')
+                            # unicode sandwich finish
+                            for key, value in record.iteritems():
+                                record[key] = value.encode('UTF-8')
 
-                        # write the reconstructed line to the cleaned file using the csvwriter
-                        writer.writerow(record)
-                        writtenCount += 1
+                            # write the reconstructed line to the cleaned file using the csvwriter
+                            writer.writerow(record)
+                            writtenCount += 1
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
