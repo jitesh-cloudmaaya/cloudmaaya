@@ -1410,14 +1410,17 @@ div.indepth-loading span.pulse_loader {margin:45px 0 0 75px;}
 }
 
 #create-look div.stage div.selectize-control {margin:0 17px 0 15px;}
-#new-look-error span {
+#new-look-error span,
+#pub-section1-errors span {
   color:#AD1457;
   display:block;
   font-size:18px;
   font-weight:100;
   padding:10px 15px 0;
 }
-#new-look-error span i {margin-right:10px;}
+#pub-section1-errors span {border:1px solid #AD1457; border-radius:5px; margin:15px 15px 0; padding:15px;}
+#new-look-error span i,
+#pub-section1-errors span i {margin-right:10px;}
 #look-drop,
 #rack-draggable,
 #compare-looks { position:absolute; top:80px; }
@@ -1855,11 +1858,13 @@ div.lookbook-btns a:active,
 #look-filter-options.show {top:50px;}
 #look-filter-options label.toggle,
 #search label.toggle,
-#explore-form label.toggle { 
+#explore-form label.toggle,
+div.publish-section label.toggle { 
   cursor: pointer; 
   display:block;
   margin:0 10px 10px; 
 }
+div.publish-section label.toggle {margin:0 0 5px;}
 #looks-header label.toggle {
   cursor:pointer;
   display:none;
@@ -1872,7 +1877,8 @@ div.lookbook-btns a:active,
 #look-filter-options label.toggle em,
 #search label.toggle em,
 #looks-header label.toggle em,
-#explore-form label.toggle em{
+#explore-form label.toggle em,
+div.publish-section label.toggle em{
   color:#000;
   display:inline-block;
   font-size:14px;
@@ -1882,10 +1888,12 @@ div.lookbook-btns a:active,
   top:2px; 
   white-space: nowrap;
 }
+div.publish-section label.toggle em.left {padding: 0 10px 0 0;}
 #look-filter-options label.toggle span,
 #search label.toggle span,
 #looks-header label.toggle span,
-#explore-form label.toggle span {
+#explore-form label.toggle span,
+div.publish-section label.toggle span {
   background-color: #fff;
   border: 1px solid #dfdfdf;
   border-radius: 12px;
@@ -1899,10 +1907,14 @@ div.lookbook-btns a:active,
   vertical-align: middle;
   width: 30px;
 }
+
+div.publish-section label#send-email.toggle span {box-shadow: 0px 0px 0px 16px rgb(242,152,126) inset; border-color:#f2987e;}
+
 #look-filter-options label.toggle span small,
 #search label.toggle span small,
 #looks-header label.toggle span small,
-#explore-form label.toggle span small {
+#explore-form label.toggle span small,
+div.publish-section label.toggle span small {
   background: #fff;
   border-radius: 100%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -1917,14 +1929,18 @@ div.lookbook-btns a:active,
 #look-filter-options label.toggle input,
 #search label.toggle input,
 #explore-form label.toggle input,
-#looks-header label.toggle input {display:none;}
+#looks-header label.toggle input,
+div.publish-section label.toggle input {display:none;}
 #look-filter-options label.toggle input:checked + span,
 #explore-form label.toggle input:checked + span,
-#search label.toggle input:checked + span { box-shadow: 0px 0px 0px 16px rgb(81,81,81) inset; border-color:#515151; }
-#looks-header label.toggle input:checked + span {box-shadow: 0px 0px 0px 16px rgb(242,152,126) inset; border-color:#f2987e;}
+#search label.toggle input:checked + span,
+div.publish-section label#send-email.toggle :checked + span { box-shadow: 0px 0px 0px 16px rgb(81,81,81) inset; border-color:#515151; }
+#looks-header label.toggle input:checked + span,
+div.publish-section label.toggle input:checked + span {box-shadow: 0px 0px 0px 16px rgb(242,152,126) inset; border-color:#f2987e;}
 #look-filter-options label.toggle input:checked + span > small,
 #looks-header label.toggle input:checked + span > small,
 #explore-form label.toggle input:checked + span > small,
+div.publish-section label.toggle input:checked + span > small,
 #search label.toggle input:checked + span > small { left:15px; }
 #look-filter-options input[type="text"] {
   background:#fff;
@@ -2423,6 +2439,7 @@ p#look-desc {
   width:760px;
 }
 #compare-looks div.comp-look div.compare-look-wrapper,
+div.publish-look-wrapper,
 #looks-list div.rack-look div.rack-look-wrapper,
 #fave-looks div.rack-look div.rack-look-wrapper {
   height:150px;
@@ -2433,6 +2450,7 @@ p#look-desc {
 #looks-list div.rack-look div.rack-look-wrapper,
 #fave-looks div.rack-look div.rack-look-wrapper{height:275px; width:502px;}
 #compare-looks div.comp-look div.compare-looks-layout,
+div.publish-looks-layout,
 #looks-list div.rack-look div.rack-looks-layout,
 #fave-looks div.rack-look div.rack-looks-layout {
   background:#eee;
@@ -2444,6 +2462,7 @@ p#look-desc {
   margin-left:-246px;
   width:760px;  
 }
+div.publish-looks-layout {background:#fff;}
 #looks-list div.rack-look div.rack-looks-layout,
 #fave-looks div.rack-look div.rack-looks-layout {  transform:scale(0.66); margin-left:-129px;margin-top:-70px;}
 #all-looks-list div.look div.display div.explore-look-wrapper {
@@ -2469,6 +2488,7 @@ p#look-desc {
   overflow:hidden;
 }
 #compare-looks div.comp-look div.compare-looks-layout div.layout-block,
+div.publish-looks-layout div.layout-block,
 #looks-list div.rack-look div.rack-looks-layout div.layout-block,
 #fave-looks div.rack-look div.rack-looks-layout div.layout-block,
 #all-looks-list div.look div.display div.explore-look-layout div.layout-block {
@@ -2489,6 +2509,8 @@ p#look-desc {
 #look-drop div.drop-zone { float:left; height:100%; width:calc(75% - 20px); }
 #look-layout-grid div.layout-block div.item,
 #compare-looks div.comp-look div.compare-looks-layout div.layout-block div.item,
+div.publish-looks-layout div.layout-block div.item,
+div.publish-looks-layout div.item,
 #looks-list div.rack-look div.rack-looks-layout div.layout-block div.item,
 #fave-looks div.rack-look div.rack-looks-layout div.layout-block div.item { height:100%; position:relative; width:100%; }
 #look-layout-grid div.layout-block div.item span.fave {display:none;}
@@ -2512,6 +2534,7 @@ p#look-desc {
   width:100%;
 }
 #compare-looks div.comp-look div.compare-looks-layout div.layout-block div.item img,
+div.publish-looks-layout div.layout-block div.item img,
 #looks-list div.rack-look div.rack-looks-layout div.layout-block div.item img,
 #fave-looks div.rack-look div.rack-looks-layout div.layout-block div.item img {
   display:block; 
@@ -2999,5 +3022,81 @@ div.deletion-confirm div.btns a.cancel:active{
   box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
   color:#474747;
 }
+/* publish lookbook styles */
+#publish-wizard {border-bottom:1px solid #eee; display:flex;}
+#publish-wizard a {
+  border-right:1px solid #eee; 
+  color:#ccc;
+  display:block;
+  flex-grow:1;
+  font-size:18px;
+  font-weight:100;
+  padding:15px;
+  text-decoration:none;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;     
+}
+#publish-wizard a:nth-of-type(3) {border:0;}
+#publish-wizard a span { display:block; font-size:12px; font-weight:500; }
+#publish-wizard a:hover { color:#474747;}
+#publish-wizard a.on,
+#publish-wizard a.on:hover { background:#f2987e; border-color:#f2987e; color:#fff; }
+div.publish-sections  { height:calc(100% - 118px); overflow:auto; }
+div.publish-sections div.publish-section {display:none}
+div.publish-sections div.publish-section.on {display:block}
+div.publish-section h5 { font-size:24px; font-weight:300; margin:0 0 10px; }
+#pub-section2 {position:relative;}
+#pub-section2 h5 {margin:15px;}
+label#send-email {position:absolute; top:42px; left:70%;}
+div.publish-section h5 span { border-bottom:1px solid #ddd; display:inline-block; padding:0 0 10px; }
+div.publish-section p { float:left; }
+div.publish-section div.pub-look {padding:15px; border-bottom:1px solid #eee;}
+div.publish-section div.pub-look:last-child {border:0;}
+div.publish-section div.pub-look table td { padding:10px; vertical-align: top }
+div.publish-section div.pub-look table td.label { font-size:14px; font-weight:500; padding:0 10px; }
+div.publish-section div.pub-look table td.split { border-left:1px solid #eee; padding-left:20px; }
+div.publish-section div.pub-look table td.collage {padding:10px 10px 10px 0;}
+div.publish-loading {margin:25px;}
+#publish-email {
+  background:#fff;
+  border:1px solid #d0d0d0;
+  border-radius:3px;
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.1);
+  color:#303030;
+  display:block;
+  font-size:13px;
+  font-weight:200;
+  line-height:18px;
+  max-height:500px;
+  min-height:500px;
+  height:500px;
+  margin:0 15px 10px 15px; 
+  padding:8px;
+  min-width:calc(70% - 48px);
+  max-width:calc(70% - 48px);
+  width:calc(70% - 48px);
+}
+/* date picker css over writes */
+#send-later-wrapper {display:none; left:70%;position:absolute; top:75px; }
+#send-later-wrapper label {display:block; font-size:14px; font-weight:300; margin-bottom:10px;}
+div.rd-container { border:1px solid #d0d0d0; border-radius:3px; font-size:14px; font-weight:100; z-index:5;}
+div.rd-container div.rd-month-label {font-weight:400;}
+div.rd-container button.rd-back {margin-left:5px;}
+div.rd-container button.rd-next {margin-right:5px;}
+div.rd-container th,
+div.rd-container td {height:28px;width:28px;text-align:center;}
+div.rd-container td.rd-day-body { background:#fff; border-radius:50%; }
+div.rd-container td.rd-day-body:hover {background:#777;color:#fff;}
+div.rd-container td.rd-day-body.rd-day-disabled {color:#AD1457;}
+div.rd-container td.rd-day-body.rd-day-disabled:hover {background:#fff; color:#AD1457;}
+div.rd-container td.rd-day-selected,
+div.rd-container td.rd-day-selected:hover { background:#f2987e; border-radius:50%;}
+div.rd-container td.rd-day-body.rd-day-disabled.rd-day-selected,
+div.rd-container td.rd-day-body.rd-day-disabled.rd-day-selected:hover {background:#fff; color:#f48fb1;}
+div.rd-time div.rd-time-list {border:1px solid #d0d0d0; border-top:0; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px}
+div.rd-time-selected { background:#eee; border-radius:3px; color:#474747;}
+div.rd-time-selected:before { content: "\f017"; display:inline-block; float:left; font-family:'FontAwesome'; margin-right:3px; }
+div.rd-time-selected:hover {background:#777;color:#fff;}
+div.rd-time-option:hover {background:#eee;color:#000;}
 
 

@@ -187,7 +187,7 @@ var utils = {
           $('#client-notes h3').html('There are no notes for this client.').data('num', count);
         }
       },
-      url:'/shopping_tool_api/styling_session_notes/' + $('#user-clip').data('userid')
+      url:'/shopping_tool_api/styling_session_notes/' + $('#user-clip').data('userid') + '/'
     });
   },
   /**

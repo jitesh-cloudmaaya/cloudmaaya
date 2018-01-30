@@ -151,6 +151,7 @@ var look_builder = {
       if(pre == 0){
         $('#creating-look').show();
         $('#create-look').hide();
+        $('#publish-lookbook').data('allowed', 'false');
         $.ajax({
           contentType : 'application/json',
           data: JSON.stringify(look_obj),
@@ -435,7 +436,122 @@ var look_builder = {
       e.preventDefault();
       var link = $(this);
       if(link.data('allowed') == 'true'){
-        /* the setting looks categories go here */
+        var lookup = {
+          "client": parseInt($('#user-clip').data('userid')),
+          "allume_styling_session": rack_builder.session_id,
+          "stylist": parseInt($('#stylist').data('stylistid')),
+          "page": 1
+        }
+        $.ajax({
+          contentType : 'application/json',
+          data: JSON.stringify(lookup),
+          success:function(response){
+            var markup = [];
+            var cropped_images = [];
+            for(var i = 0, l = response.looks.length; i<l; i++){
+              var look = response.looks[i];
+              var look_products_markup = ['<div class="publish-look-wrapper"><div class="publish-looks-layout">'];
+              for(var ix = 0, lx = look.look_layout.layout_json.length; ix<lx; ix++){
+                var block = look.look_layout.layout_json[ix];
+                var position = block.position;
+                var product_markup = [];
+                for(var p = 0, prods = look.look_products.length; p<prods; p++){
+                  var prod = look.look_products[p];
+                  if((prod.layout_position == position)&&(prod.product != undefined)){
+                    var src = prod.product.product_image_url;
+                    if(prod.cropped_dimensions != null){
+                      var crop = {
+                        id: 'pub-' + look.id + '-item-' + prod.id,
+                        src: look_proxy + '' + src,
+                        dims: prod.cropped_dimensions
+                      }
+                      cropped_images.push(crop);
+                    }
+                    product_markup.push(
+                      '<div class="item"><span id="pub-' + look.id + '-item-' + prod.id + 
+                        '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></div>'
+                    );
+                  }
+                }
+                look_products_markup.push(
+                  '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
+                  'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
+                  'px" data-position="' + position + '">' + product_markup.join() + '</div>'
+                );
+              }
+              look_products_markup.push('</div></div>');
+              markup.push(
+                '<div class="pub-look" data-lookname="' + look.name + '">' +
+                '<h5><span>' + look.name + '</span></h5>' +
+                '<table class="categorize-look"><tr><td rowspan="2" class="collage">' +
+                look_products_markup.join('') + '</td><td class="label">Style:</td>' +
+                '<td class="label"></td><td class="label split">Occasion:</td><td class="label"></td></tr><tr>' +
+                '<td><label class="toggle"><input value="Bohemian" class="style" type="checkbox"/>' +
+                '<span><small></small></span><em>Bohemian</em></label>' +
+                '<label class="toggle"><input value="Chic" class="style" type="checkbox"/>' +
+                '<span><small></small></span><em>Chic</em></label>' +
+                '<label class="toggle"><input value="Classic" class="style" type="checkbox"/>' +
+                '<span><small></small></span><em>Classic</em></label>' +
+                '<label class="toggle"><input value="Edgy" class="style" type="checkbox"/>' +
+                '<span><small></small></span><em>Edgy</em></label>' +
+                '<label class="toggle"><input value="Glamorous" class="style" type="checkbox"/>' +
+                '<span><small></small></span><em>Glamorous</em></label></td>' +
+                '<td><label class="toggle"><input value="Preppy" class="style" type="checkbox"/>' +
+                '<span><small></small></span><em>Preppy</em></label>' +
+                '<label class="toggle"><input value="Romantic" class="style" type="checkbox"/>' +
+                '<span><small></small></span><em>Romantic</em></label>' +
+                '<label class="toggle"><input value="Sexy" class="style" type="checkbox"/>' +
+                '<span><small></small></span><em>Sexy</em></label>' +
+                '<label class="toggle"><input value="Sophisticated" class="style" type="checkbox"/>' +
+                '<span><small></small></span><em>Sophisticated</em></label>' +
+                '<label class="toggle"><input value="Sporty" class="style" type="checkbox"/>' +
+                '<span><small></small></span><em>Sporty</em></label></td>' +
+                '<td class="split"><label class="toggle"><input value="Day Time Casual" class="occ" type="checkbox"/>' +
+                '<span><small></small></span><em>Day Time Casual</em></label>' +
+                '<label class="toggle"><input value="Dressy Casual" class="occ" type="checkbox"/>' +
+                '<span><small></small></span><em>Dressy Casual</em></label>' +
+                '<label class="toggle"><input value="Athleisure / Lounge" class="occ" type="checkbox"/>' +
+                '<span><small></small></span><em>Athleisure / Lounge</em></label>' +
+                '<label class="toggle"><input value="Business Casual" class="occ" type="checkbox"/>' +
+                '<span><small></small></span><em>Business Casual</em></label></td>' +
+                '<td><label class="toggle"><input value="Business Professional" class="occ" type="checkbox"/>' +
+                '<span><small></small></span><em>Business Professional</em></label>' +
+                '<label class="toggle"><input value="Vacation" class="occ" type="checkbox"/>' +
+                '<span><small></small></span><em>Vacation</em></label>' +
+                '<label class="toggle"><input value="Night Out" class="occ" type="checkbox"/>' +
+                '<span><small></small></span><em>Night Out</em></label>' +
+                '<label class="toggle"><input value="Special Event / Wedding" class="occ" type="checkbox"/>' +
+                '<span><small></small></span><em>Special Event / Wedding</em></label></td></tr></table></div>'
+              );
+            }
+            $('#pub-section1').html(
+              '<div id="pub-section1-errors"></div>' + 
+              markup.join('')
+            );
+            if(cropped_images.length > 0){
+              for(var i = 0, l = cropped_images.length; i<l; i++){
+                look_builder.getCroppedImage(cropped_images[i], '#pub-section1');
+              }
+            }
+          },
+          type: 'POST',
+          url: '/shopping_tool_api/look_list/'
+        });
+        $('#pub-section1').html(
+          '<div class="publish-loading">' +
+          '<span class="pulse_loader"></span><span class="pulse_message">loading the looks for this lookbook...</span>' +
+          '</div>'
+        ).addClass('on').siblings('div').removeClass('on');
+        $('#pub-wizard-step1').addClass('on').siblings('a').removeClass('on');
+        $('#send-toggle').prop('checked', false);
+        $('#send-later-wrapper').hide();
+        var start_id = document.getElementById('send-later')
+        rome(start_id, {
+          initialValue:  moment().startOf('day').format('YYYY-MM-DD'),
+          min: moment().startOf('day').format('YYYY-MM-DD'),
+          time: true,
+          timeFormat: 'h:mm a'
+        });
         $('#publish-lookbook-overlay').fadeIn();
       }else{
         alert('You must preview the lookbook before you can publish.')
@@ -448,7 +564,72 @@ var look_builder = {
     $('#close-lb-pre').click(function(e){
       e.preventDefault();
       $('#preview-lookbook-overlay').fadeOut();
-    });       
+    }); 
+    /* wizard tabs and their status checking */
+    $('#pub-wizard-step1').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      link.addClass('on').siblings('a').removeClass('on');
+      $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
+    })      
+    $('#pub-wizard-step2').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      var step = look_builder.publishCheck1();
+      if(step == 'pass'){
+        link.addClass('on').siblings('a').removeClass('on');
+        $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
+      }
+    });
+    $('#pub-wizard-step3').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      var step = look_builder.publishCheck1();
+      if(step == 'pass'){
+        var look_summary = [];
+        $.each($('#pub-section1 div.pub-look'), function(idx){
+          var div = $(this);
+          var styles = [];
+          var occs = [];
+          $.each(div.find('input.style:checked'), function(num){
+            styles.push($(this).val());
+          });
+          $.each(div.find('input.occ:checked'), function(num){
+            occs.push($(this).val());
+          });
+          look_summary.push(
+            '<div class="look-summary"><span class="name">' +div.data('lookname') + 
+            '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
+            '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
+            '</span></div>'
+          )
+        });
+        var step_div = $(link.attr('href'));
+        var email_at = '<span class="summary-sent">Email will be sent <strong>now</strong>.</span>';
+        if($('#send-toggle').prop('checked')){
+          var t = rome.find(document.getElementById('send-later'))
+          email_at = '<span class="summary-sent">Email will be sent <strong>' + t.getMoment() + 
+          '</strong> ' + $('#send-later').data('tz') + ' time zone</span>';
+        }
+        step_div.html(
+          look_summary.join('') +
+          '<div class="summary-email">' + $('#publish-email').val() +
+          '</div>' + email_at
+        );
+        link.addClass('on').siblings('a').removeClass('on');
+        step_div.addClass('on').siblings('div').removeClass('on');
+
+      }
+    });
+    $('#send-toggle').change(function(e){
+      var box = $(this);
+      var div = $('#send-later-wrapper')
+      if(box.prop('checked')){
+        div.show();
+      }else{
+        div.hide();
+      }
+    })      
   },
   /**
   * @description to handle invalid states we use a recursive loading check for images before we crop them
@@ -623,6 +804,33 @@ var look_builder = {
         draggable: ".item"
       });
     });
+  },
+  /**
+  * @description helper fuction to verify user has selected at least 
+  * one style and occasion for each look in lookbook
+  * @returns {string} - pass/fail
+  */
+  publishCheck1: function(){
+    var check = 0;
+    var err = $('#pub-section1-errors');
+    err.html('');
+    $.each($('#pub-section1 div.pub-look'), function(idx){
+      var div = $(this);
+      var style_checks = div.find('input.style:checked').length;
+      var occ_checks = div.find('input.occ:checked').length;
+      if(style_checks == 0){check++;}
+      if(occ_checks == 0){check++;}
+    }); 
+    if(check > 0){
+      err.html(
+        '<span><i class="fa fa-exclamation-circle"></i>' +
+        'You must select at least one style and occasion ' +
+        'for each look.</span>'
+      );
+      return 'fail';
+    }else{
+      return 'pass';
+    }
   },
   /**
   * @description set up the builder ui/ux from clicked look link
