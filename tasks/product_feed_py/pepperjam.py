@@ -159,10 +159,11 @@ def get_data(local_temp_dir):
                 record['product_name'] = product['name'] # product_name
                 record['long_product_description'] = product['description_long']
                 record['short_product_description'] = product['description_short']
-                record['product_url'] = product['buy_url'] # product_url == buy_url?
-                # record['raw_product_url'] = # does not exist for pj?
+                buy_url = product['buy_url']
+                record['product_url'] = buy_url # product_url == buy_url?
+                record['raw_product_url'] = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
                 record['product_image_url'] = product['image_url']
-                record['buy_url'] = product['buy_url']
+                record['buy_url'] = buy_url
                 record['manufacturer_name'] = product['manufacturer']
                 record['manufacturer_part_number'] = product['mpn']
                 record['SKU'] = product['sku']
@@ -261,123 +262,7 @@ def get_data(local_temp_dir):
                 ######################### END CSV RECORD BUILDING ################################
 
 
-                ## Build Record for Insertion
-                record = ''
-                record += "-99" + u'|' #product_id
-                record += merchant_id + u'|'
-                record += product['name'] + u'|' #product_name
-                record += product['description_long'] + u'|' #long_product_description
-                record += product['description_short'] + u'|' #short_product_description
 
-                buy_url = product['buy_url']
-                record += buy_url + u'|' #product_url
-                record += product['image_url'] + u'|' #product_image_url
-                record += buy_url + u'|' #buy_url
-                record += product['manufacturer'] + u'|' #manufacturer_name
-                record += product['mpn'] + u'|' #manufacturer_part_number
-                record += product['sku'] + u'|' #SKU
-                record += 'attribute_2_product_type' + u'|' #
-
-
-                discount_type = "" #No Discount Field in the Data
-                if discount_type != "amount" or discount_type != "percentage":
-                    record += '0.0|' # how to indicate null or 0 as in sql?
-                    record += 'amount|'
-                else:
-                    record += discount + u'|'
-                    record += discount_type + u'|'
-
-                sale_price = product['price_sale'] #float(product['price_sale'].decode('utf-8'))
-                if sale_price != None:
-                    record += sale_price + u'|' #retail_price
-                else:
-                    record += "" + u'|' #retail_price
-
-                retail_price = product['price'] #float(product['price_retail'].decode('utf-8'))
-                if retail_price != None:
-                    record += retail_price + u'|' #retail_price
-                else:
-                    record += "" + u'|' #retail_price
-
-                shipping = product['price_shipping'] #float(product['price_shipping'].decode('utf-8'))
-                if shipping != None:
-                    record += shipping + u'|' #shipping
-                else:
-                    record += "" + u'|' #shipping
-
-                # current behavior is take the first and find its mapping if possible
-                color = product['color']
-                try:
-                    record += color_mapping[color] + u'|'
-                except: # where there is no analog
-                    record += "other|"
-
-                record += product['color'] + u'|' # attribute_5_color merchant color field
-
-                # gender
-                record += "" + u'|' #gender
-                record += product['style'] + u'|' #attribute_7_style
-
-                attribute_3_size = product['size']
-                attribute_3_size = attribute_3_size.upper()
-                attribute_3_size = attribute_3_size.replace('~', ',')
-                record += attribute_3_size + u'|'
-
-                record +=  product['material'] + u'|' #attribute_4_material
-
-                attribute_8_age = product['age_range']
-                record += attribute_8_age + u'|'
-
-                record += product['currency'] + u'|' #currency
-
-                if product['in_stock'] == '':
-                    availability = 'out-of-stock'
-                else:
-                    availability = product['in_stock']
-                record += availability + u'|'
-
-
-                record += product['keywords'] + u'|' #keywords
-
-                # allume category information
-                record += primary_category + u'|'
-                record += secondary_category + u'|'
-
-                record += 'allume_category' + u'|' #allume_category
-
-                record += product['manufacturer'] + u'|' #brand
-                # double check date formatting
-                record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + u'|'
-                # record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f') + ',') ?
-                # end date
-                record += merchant_name + u'|'
-                # how to indicate null or 0 as in ran.sql
-                record += '0|' # is_best_seller default
-                record += '0|' # is_trending default
-                record += '0|' # allume_score default
-
-                sale_price = product['price_sale']
-                try:
-                    # if there is a sale
-                    if float(sale_price) > 0: # OR NOT NULL ??
-                        record += sale_price + u'|'
-                    else:
-                        record += retail_price + u'|'
-                except:
-                    record += retail_price + u'|'
-
-                # is_deleted logic
-                if "modification" == 'D':
-                    record += '1|' # is this okay given is_deleted is boolean data type
-                else:
-                    record += '0|'
-
-
-                raw_url = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
-                record += raw_url 
-
-                # Final Line Break
-                record += '\n'
 
                 cleaned.write(record.encode('UTF-8'))
                 writtenCount += 1
