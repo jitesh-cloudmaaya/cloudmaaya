@@ -19,7 +19,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('RAN')
 
-    destination = local_temp_dir + '/cleaned/flat_file.txt'
+    destination = local_temp_dir + '/cleaned/flat_file.csv'
 
     with open(destination, "w") as cleaned:
         file_list = []
@@ -188,7 +188,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                                 categoriesDiscovered += 1
 
                             allume_category_id, active = category_mapping[identifier]
-                            if not allume_category_id:
+                            if allume_category_id == None:
                                 # it is None because it is a newly discovered category
                                 # or a category that is still pending review
                                 pendingReviewSkipped += 1
