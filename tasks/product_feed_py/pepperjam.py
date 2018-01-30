@@ -58,7 +58,7 @@ def get_data(local_temp_dir):
     pepper_jam_api_base_url = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_API_VERSION)
     pepper_jam_api_product_url = pepper_jam_api_base_url + "publisher/creative/product?apiKey=%s&format=json" % (PEPPERJAM_API_KEY)
 
-    # Set output Destinationƒ
+    # Set output Destination
     destination = local_temp_dir + '/ppj_flat_file.csv'
     print destination
     # Create some variables to count process metrics
@@ -98,9 +98,6 @@ def get_data(local_temp_dir):
                 pepper_jam_api_product_url = product_feed['meta']['pagination']['next']['href']
             else:
                 more_pages = False
-
-
-            # print statements before any continues
 
             for product in product_feed['data']:
 
@@ -151,8 +148,6 @@ def get_data(local_temp_dir):
                 #     category_mapping = mappings.create_category_mapping()
                 #     continue
 
-
-                ####################### BEGIN CSV RECORD BUILDING #################################
                 record = {}
                 record['product_id'] = u'-99'
                 record['merchant_id'] = merchant_id
@@ -228,7 +223,7 @@ def get_data(local_temp_dir):
                 record['secondary_category'] = secondary_category
                 record['allume_category'] = u'allume_category' # allume_category hard coded
                 record['brand'] = product['manufacturer'] # doubles as brand
-                record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
                 record['merchant_name'] = merchant_name
 
                 # set defaults
@@ -251,20 +246,12 @@ def get_data(local_temp_dir):
                 else:
                     record['is_deleted'] = u'0'
 
-                # still doing a unicode sandwich?
-                pass
+                # end unicode sandwich
+                for key, value in record.iteritems():
+                    record[key] = value.encode('UTF-8')
 
                 # write the reconstructed line to the cleaned file using the csvwriter
                 writer.writerow(record)
-                writtenCount += 1
-
-                continue # remove this and below once confirmed working
-                ######################### END CSV RECORD BUILDING ################################
-
-
-
-
-                cleaned.write(record.encode('UTF-8'))
                 writtenCount += 1
 
     print('Processed %s records' % totalCount)
