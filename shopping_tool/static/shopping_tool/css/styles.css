@@ -1320,7 +1320,6 @@ div.indepth-loading {
   width:calc(100% - 40px);
 }
 #create-look div.stage {height:320px; top:calc(50% - 160px);}
-#creating-look div.stage,
 #preview-lookbook-overlay div.stage iframe {
   border:0;
   box-shadow:0 0 3px rgba(0,0,0,0.3);
@@ -1372,7 +1371,7 @@ div.indepth-loading {
 #preview-lookbook-overlay div.preview-container div.client-details div.bio span em,
 #preview-lookbook-overlay div.preview-container div.client-details p span em {font-weight:100; padding-right:8px;}
 #preview-lookbook-overlay div.preview-container div.client-details p {float:right;padding-left:25px;}
-
+#creating-look div.stage,
 div.indepth-loading {
   height:150px; 
   left:calc(50% - 250px);
