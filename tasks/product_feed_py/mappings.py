@@ -32,17 +32,16 @@ def create_color_mapping():
 def create_category_mapping():
     """
     Returns a dict of (primary_category, secondary_category) as keys mapped to 
-    a tuple (allume_category_id, active). Allume_category_id is expected to be
-    used in allume_category_mapping. 1 is active, and 0 is not active.
+    a tuple (allume_category_id, active). Allume_category_id is a long expected to be
+    used in allume_category_mapping. Active is a boolean.
     """
-    cursor = connection.cursor()
-    cursor.execute("SELECT external_cat1, external_cat2, allume_category_id, active FROM product_api_categorymap")
-
     category_mapping = {}
-    for tup in cursor.fetchall():
-        category_pair = (tup[0], tup[1])
-        info = (tup[2], tup[3])
-        category_mapping[category_pair] = info
+
+    categorymaps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'active')
+    for categorymap in categorymaps:
+        key_tup = (categorymap[0], categorymap[1])
+        val_tup = (categorymap[2], categorymap[3])
+        category_mapping[key_tup] = val_tup
 
     return category_mapping
 
