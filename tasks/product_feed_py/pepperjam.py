@@ -14,6 +14,7 @@ PEPPER_JAM_API_BASE_URL = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_AP
 
 def get_merchants(status='joined'):
 
+
     # Set Up PepperJam URL
     pepper_jam_api_merchant_url = PEPPER_JAM_API_BASE_URL + "publisher/advertiser?apiKey=%s&status=%s&format=json" % (PEPPERJAM_API_KEY, status)
 
@@ -21,14 +22,19 @@ def get_merchants(status='joined'):
     merchant_mapping = mappings.create_merchant_mapping()
     network = mappings.get_network('PepperJam')
 
+    ## Dev Only
+    # Test Merchants Data
+    print("Getting local test data")
+    json_data = open('tasks/product_feed_py/sample_data/pepperjam_merchant.json')
+
     # Get Merchants
-    merchants = json.load(urllib2.urlopen(pepper_jam_api_merchant_url))
+    # merchants = json.load(urllib2.urlopen(pepper_jam_api_merchant_url))
     
     # Create some variables to count process metrics
     new_merchants = 0
 
     for merchant in merchants['data']:
-        merchant_id = int(merchant['id'])
+        merchant_id = long(merchant['id'])
         merchant_name = merchant['name']
 
         try:
@@ -39,6 +45,10 @@ def get_merchants(status='joined'):
             new_merchants += 1
 
     print('Added %s new merchants' % new_merchants)
+
+
+def discover_categories():
+    pass
 
 def get_data(local_temp_dir):
 
