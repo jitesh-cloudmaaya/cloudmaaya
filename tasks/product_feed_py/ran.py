@@ -37,7 +37,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
         inactiveSkipped = 0
         pendingReviewSkipped = 0
         categoriesDiscovered = 0
-        merchantsDiscovered = 0
+        # merchantsDiscovered = 0
+        merchantCount = Merchant.objects.count()
 
         # different dialects for reading and writing
         csv.register_dialect('reading', delimiter='|', quoting=csv.QUOTE_NONE, quotechar='')
@@ -61,16 +62,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
                 lines = csvfile.readlines()
                 lines = lines[:-1]
-                
-                long_merchant_id = long(merchant_id) # cast for use
-                if long_merchant_id not in merchant_mapping.keys():
-                    # add merchant that does not yet exist in table
-                    mappings.add_new_merchant(long_merchant_id, merchant_name, network, False)
-                    # add entry for new merchant in mapping instance
-                    merchant_mapping[long_merchant_id] = False
-                    merchantsDiscovered += 1
-                # check that the merchant_id is active in the merchant mapping
-                if merchant_mapping[long_merchant_id]: # set the merchant_table active column to 1 for a few companies when testing
+
+                merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
+                if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
                     # check config files
                     config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/'
                     fd = os.listdir(config_path)
@@ -301,7 +295,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
     print('Discovered %s unmapped primary and secondary category pairs' % categoriesDiscovered)
-    print('Discovered %s new merchant(s)' % merchantsDiscovered)
+    print('Discovered %s new merchant(s)' % (Merchant.objects.count() - merchantCount))
     print('Dropped %s records due to pending discovered categories' % pendingReviewSkipped)
     print('Dropped %s records due to gender' % genderSkipped)
     # print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)

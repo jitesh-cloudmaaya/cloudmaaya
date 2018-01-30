@@ -71,6 +71,25 @@ def add_category_map(external_cat1, external_cat2, allume_category, active = Fal
     CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, 
                                allume_category = None, active = active, pending_review=pending_review)
 
+def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
+    """
+    Takes in as arguments a str merchant_id, a string merchant_name, a network
+    id corresponding to the appropriate Network object, a dictionary, merchant_mapping,
+    created with each call to the clean_data function. Creates the merchant if it does
+    not exist. Returns True if the merchant is in the merchant_mapping and active,
+    False otherwise.
+    """
+    merchant_id = long(merchant_id)
+    # if not in the map
+    if merchant_id not in merchant_mapping.keys():
+        # create a new instance and save
+        add_new_merchant(merchant_id, merchant_name, network, False)
+        # edit the passed-in dict
+        merchant_mapping[merchant_id] = False
+    if merchant_mapping[merchant_id]:
+        return True
+    return False
+
 """
 class CategoryMap(models.Model):
     external_cat1 = models.CharField(max_length=250, blank=True, null=True)
