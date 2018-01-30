@@ -58,8 +58,8 @@ def get_data(local_temp_dir):
     pepper_jam_api_base_url = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_API_VERSION)
     pepper_jam_api_product_url = pepper_jam_api_base_url + "publisher/creative/product?apiKey=%s&format=json" % (PEPPERJAM_API_KEY)
 
-    # Set output Destination
-    destination = local_temp_dir + '/ppj_flat_file.txt'
+    # Set output Destinationƒ
+    destination = local_temp_dir + '/ppj_flat_file.csv'
     print destination
     # Create some variables to count process metrics
     totalCount = 0
@@ -69,10 +69,13 @@ def get_data(local_temp_dir):
     inactiveSkipped = 0
     new_merchants = 0
 
-    # first guess at dialect
-    csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\')
-
     with open(destination, "w") as cleaned:
+        # first guess at dialect
+        csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\')
+        # cleaned_fieldnames const until can pass in yaml
+        cleaned_fieldnames = ['product_id', 'merchant_id', 'product_name', 'long_product_description', 'short_product_description', 'product_url', 'raw_product_url', 'product_image_url', 'buy_url', 'manufacturer_name', 'manufacturer_part_number', 'SKU', 'product_type', 'discount', 'discount_type', 'sale_price', 'retail_price', 'shipping_price', 'color', 'merchant_color', 'gender', 'style', 'size', 'material', 'age', 'currency', 'availability', 'keywords', 'primary_category', 'secondary_category', 'allume_category', 'brand', 'updated_at', 'merchant_name', 'is_best_seller', 'is_trending', 'allume_score', 'current_price', 'is_deleted']
+        # intiialize the csv wrtier
+        writer = csv.DictWriter(cleaned, cleaned_fieldnames, dialect = 'writing')
 
         more_pages = True
 
@@ -147,6 +150,116 @@ def get_data(local_temp_dir):
                 #     allume_category_mapping = mappings.create_allume_category_mapping()
                 #     category_mapping = mappings.create_category_mapping()
                 #     continue
+
+
+                ####################### BEGIN CSV RECORD BUILDING #################################
+                record = {}
+                record['product_id'] = u'-99'
+                record['merchant_id'] = merchant_id
+                record['product_name'] = product['name'] # product_name
+                record['long_product_description'] = product['description_long']
+                record['short_product_description'] = product['description_short']
+                record['product_url'] = product['buy_url'] # product_url == buy_url?
+                # record['raw_product_url'] = # does not exist for pj?
+                record['product_image_url'] = product['image_url']
+                record['buy_url'] = product['buy_url']
+                record['manufacturer_name'] = product['manufacturer']
+                record['manufacturer_part_number'] = product['mpn']
+                record['SKU'] = product['sku']
+                record['product_type'] = u'attribute_2_product_type'
+
+                discount_type = '' # no discount field in data
+                if discount_type != 'amount' or discount_type != 'percantage':
+                    record['discount'] = u'0.00'
+                    record['discount_type'] = u'amount'
+                else:
+                    record['discount'] = discount
+                    record['discount_type'] = discount_type
+
+                sale_price = product['price_sale']
+                if sale_price != None:
+                    record['sale_price'] = sale_price
+                else:
+                    record['sale_price'] = ''
+
+                retail_price = product['price']
+                if retail_price != None:
+                    record['retail_price'] = retail_price
+                else:
+                    record['retail_price'] = ''
+
+                shipping = product['price_shipping']
+                if shipping != None:
+                    record['shipping_price'] = shipping
+
+                merchant_color = product['color']
+                record['merchant_color'] = merchant_color
+                try:
+                    allume_color = color_mapping[merchant_color]
+                except:
+                    allume_color = u'other'
+                record['color'] = allume_color
+
+                record['gender'] = u'' # no data for gender?
+                record['style'] = product['style']
+
+                attribute_3_size = product['size']
+                attribute_3_size = attribute_3_size.upper()
+                attribute_3_size = attribute_3_size.replace('~', ',')
+                record['size'] = attribute_3_size
+
+                record['material'] = product['material']
+
+                attribute_8_age = product['age_range']
+                attribute_8_age.upper()
+                record['age'] = attribute_8_age
+
+                record['currency'] = product['currency']
+
+                if product['in_stock'] == '':
+                    availability = 'out-of-stock'
+                else:
+                    availability = product['in_stock']
+                record['availability'] = availability
+
+                record['keywords'] = product['keywords']
+                record['primary_category'] = primary_category
+                record['secondary_category'] = secondary_category
+                record['allume_category'] = u'allume_category' # allume_category hard coded
+                record['brand'] = product['manufacturer'] # doubles as brand
+                record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                record['merchant_name'] = merchant_name
+
+                # set defaults
+                record['is_best_seller'] = u'0'
+                record['is_trending'] = u'0'
+                record['allume_score'] = u'0'
+
+                # if there is a sale
+                try:
+                    if float(sale_price) > 0:
+                        record['current_price'] = sale_price
+                    else:
+                        record['current_price'] = retail_price
+                except:
+                    record['current_price']
+
+                # is_deleted logic
+                if 'modification' == 'D': # hardcoded false?
+                    record['is_deleted'] = u'1'
+                else:
+                    record['is_deleted'] = u'0'
+
+                # still doing a unicode sandwich?
+                pass
+
+                # write the reconstructed line to the cleaned file using the csvwriter
+                writer.writerow(record)
+                writtenCount += 1
+
+                continue # remove this and below once confirmed working
+                ######################### END CSV RECORD BUILDING ################################
+
 
                 ## Build Record for Insertion
                 record = ''
