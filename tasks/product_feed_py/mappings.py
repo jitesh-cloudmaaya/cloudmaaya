@@ -51,8 +51,8 @@ def create_category_mapping():
 
 def create_allume_category_mapping():
     """
-    Returns a dict of allume category names as keys mapped to whether or not that
-    allume category is active. 1 is active and 0 is not active.
+    Returns a dict of allume category names as keys mapped to a tuple of the allume
+    category name and whether or not it is active. 1 is active and 0 is not active.
     """
 
     cursor = connection.cursor()
