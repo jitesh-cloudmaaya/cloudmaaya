@@ -78,7 +78,7 @@ ears_pierced TEXT,
 jewelry_style TEXT,
 jewelry_type TEXT,
 last_updated TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW()
-) ENGINE=INNODB ROW_FORMAT=COMPRESSED;
+) ENGINE=MYISAM;
 
 
 CREATE OR REPLACE VIEW order_list AS

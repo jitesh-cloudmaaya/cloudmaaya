@@ -91,6 +91,7 @@ COPY $DOCKYARD_SRC $DOCKYARD_SRVPROJ
 RUN rm -rf /srv/catalogue_service/catalogue_service/settings_local.py
 
 # Install Python dependencies
+RUN pip install --upgrade pip
 RUN pip install -r $DOCKYARD_SRVPROJ/requirements.txt  
 
 # Port to expose

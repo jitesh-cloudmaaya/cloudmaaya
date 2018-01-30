@@ -1,10 +1,16 @@
 from rest_framework import serializers
 from product_api.models import Product, ProductSerializer
-from shopping_tool.models import LookLayout, AllumeStylingSessions, Rack, LookProduct, Look, UserProductFavorite, UserLookFavorite, AllumeClient360, LookMetrics
+from shopping_tool.models import *
+
 
 ####################################################################################
 ##  REST SERIALIZERS
 ####################################################################################
+
+class WpUsersNoteUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WpUsers
+        fields = ['first_name', 'last_name']
 
 class LookLayoutSerializer(serializers.ModelSerializer):
     #layout_json = serializers.JSONField()
@@ -52,7 +58,7 @@ class LookMetricsSerializer(serializers.ModelSerializer):
 class LookSerializer(serializers.ModelSerializer):
     look_layout = LookLayoutSerializer(many=False, read_only=True)
     look_products = LookProductSerializer(source='product_set', many=True, read_only=True)
-    look_metrics = LookMetricsSerializer(many=False, read_only=True)
+    look_metrics = LookMetricsSerializer(source='metric_set', many=True, read_only=True)
 
     class Meta:
         model = Look
@@ -96,3 +102,11 @@ class AllumeClient360Serializer(serializers.ModelSerializer):
     class Meta:
         model = AllumeClient360
         fields = '__all__'#
+
+class AllumeUserStylistNotesSerializer(serializers.ModelSerializer):
+    #stylist = WpUsersNoteUserSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = AllumeUserStylistNotes
+        fields = '__all__'#
+

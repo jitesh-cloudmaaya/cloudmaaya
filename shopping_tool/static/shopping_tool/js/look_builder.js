@@ -5,14 +5,18 @@ var look_builder = {
   /** 
   * @description cache of styling session
   */
-  session_id: '',  
+  session_id: '',
+  /** 
+  * @description cache of stylist id
+  */
+  stylist_id: '',    
   /**
   * @description gather the compare looks objects and create markup for display
   * @param {object} lookup - json data for API call
-  * @param {integer} loopk_id - id of currently being edited look
-  * @param {integer} call_number - index of calls performed to looks markup generator used for the infinte scrolling checks
+  * @param {integer} at_load - id of currently being edited look or null
   */  
-  compareLooksMarkup: function(lookup, look_id, call_number){
+  editableLooksMarkup: function(lookup, at_load){
+    var at_load_look = utils.readURLParams('look');
     var comp_looks = $('#compare-looks div.other-looks');
     $.ajax({
       contentType : 'application/json',
@@ -22,59 +26,17 @@ var look_builder = {
         var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
           var comp = response.looks[i];
-          if(comp.id != look_id){
-            var look_products_markup = ['<div class="compare-look-wrapper"><div class="compare-looks-layout">'];
-            for(var ix = 0, lx = comp.look_layout.layout_json.length; ix<lx; ix++){
-              var block = comp.look_layout.layout_json[ix];
-              var position = block.position;
-              var product_markup = [];
-              for(var p = 0, prods = comp.look_products.length; p<prods; p++){
-                var prod = comp.look_products[p];
-                if(prod.layout_position == position){
-                  var src = prod.product.product_image_url;
-                  if(prod.cropped_dimensions != null){
-                    var crop = {
-                      id: 'complook-' + comp.id + '-item-' + prod.id,
-                      src: look_proxy + '' + src,
-                      dims: prod.cropped_dimensions
-                    }
-                    cropped_images.push(crop);
-                  }
-                  product_markup.push(
-                    '<div class="item"><a href="#" class="item-detail" ' + 
-                      'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
-                      '" data-productid="' + prod.product.id + '"><span id="complook-' + comp.id + '-item-' + prod.id + 
-                      '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></a></div>'
-                  );
-                }
-              }
-              look_products_markup.push(
-                '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
-                'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
-                'px" data-position="' + position + '">' + product_markup.join() + '</div>'
-              );
-            }
-            look_products_markup.push('</div></div>');
-            markup.push(
-              '<div class="comp-look"><h3>' + comp.name + '</h3>' +
-              '<span class="layout"><em>layout: </em>' + comp.look_layout.display_name + '</span>' +
-              '<div class="comp-look-display">' + look_products_markup.join('') + '</div>' +
-              '<span class="layout desc"><em>description: </em>' + comp.description + '</span></div>'
-            );
-          }
+          var content = look_builder.lookMarkupGenerator(comp, 'comp', at_load)
+          markup.push(content[0]);
+          cropped_images = cropped_images.concat(content[1]);
         }
         /* display no looks message or add looks and drag/drop functionality */
         if(markup.length == 0){ 
-          if(call_number == 1){
-            comp_looks.html('<span class="no-looks">no looks ready to compare</span>'); 
-          }
+          comp_looks.html('<span class="no-looks">add some looks...</span>'); 
         }else if(markup.length > 0){
-          var page = parseInt(comp_looks.data('page'));
-          comp_looks.data('page', page + 1).data('total', response.num_pages)
-          if(call_number == 1){
-            comp_looks.html(markup.join(''));
-          }else{
-            comp_looks.append(markup.join(''))
+          comp_looks.html(markup.join(''));
+          if(at_load != null){
+            $('#compare-looks div.comp-look:not(".editing")').addClass('off');
           }
           /* afix cropped images if present */
           if(cropped_images.length > 0){
@@ -82,23 +44,6 @@ var look_builder = {
               look_builder.getCroppedImage(cropped_images[i], '#compare-looks');
             }
           }
-        }
-        /* if the first t ime compare looks are loaded add the infinite scroll functionality */
-        if(call_number == 1){
-          $('#compare-looks div.other-looks').scroll(function(){
-            var div = $(this);
-            var st = div.scrollTop();
-            var ih = div.innerHeight();
-            var sh = div[0].scrollHeight;
-            if(st + ih >= sh) {
-              var next_page = parseInt(comp_looks.data('page'));
-              var total = parseInt(comp_looks.data('total'));
-              lookup.page = next_page;
-              if(next_page <= total){
-                look_builder.compareLooksMarkup(lookup, look_id, next_page);
-              }
-            }
-          });
         }
       },
       type: 'POST',
@@ -152,48 +97,18 @@ var look_builder = {
   * @description look builder ui/ux functionality
   */
   functionality: function(){
-    /* cache the session id */
-    look_builder.session_id = $('body').data('stylesession');    
-    $('#add-look-btn').click(function(e){
+    $('#preview-lookbook').click(function(e){
+      e.preventDefault();
+    });
+    $('#publish-lookbook').click(function(e){
+      e.preventDefault();
+    });
+    $('#add-new-look-to-lookbook').click(function(e){
       e.preventDefault();
       $('#new-look-error').html('');
       $('#new-look-name').val('');
       $('#new-look-layout')[0].selectize.setValue('',true);
-      $('#new-look-description').val('');
       $('#create-look').fadeIn();
-    });
-    $('#look-links').on('click', 'a.look-link', function(e){
-      e.preventDefault();
-      var link = $(this);
-      var data = link.data();
-      look_builder.setUpBuilder(data.lookid);
-      setTimeout(function(){
-        $('#rack').removeClass('show');
-      },1000);
-      $('#designing').html(
-        data.lookname + '<a href="#" class="edit-look" data-lookname="' + data.lookname + 
-        '" data-lookid="' + data.lookid + '" data-lookdesc="' + data.lookdesc + 
-        '" data-looklayoutid="' + data.looklayoutid + '"><i class="fa fa-pencil"></i> edit</a>'
-      ).after(
-        '<p id="look-desc">' + data.lookdesc + '</p>'
-      );
-      $('#design-look').attr('class','').addClass('show');
-    });
-    $('#designing').mouseenter(function(e){
-      var title = $(this);
-      title.next('p').fadeIn();
-    }).mouseleave(function(e){
-      var title = $(this);
-      title.next('p').fadeOut();
-    }).on('click', 'a.edit-look', function(e){
-      e.preventDefault();
-      var link = $(this);
-      var data = link.data();
-      $('#edit-look-error').html('');
-      $('#edit-look-name').val(data.lookname);
-      $('#edit-look-description').val(data.lookdesc);
-      $('#submit-edit-look').data('lookid', data.lookid).data('looklayoutid', data.looklayoutid);
-      $('#edit-look').fadeIn();
     });
     /* new look create form */
     $('#new-look-layout').selectize({
@@ -225,11 +140,7 @@ var look_builder = {
     $('#cancel-new-look').click(function(e){
       e.preventDefault()
       $('#create-look').fadeOut();
-    });
-    $('#cancel-edit-look').click(function(e){
-      e.preventDefault()
-      $('#edit-look').fadeOut();
-    });    
+    });   
     $('#create-new-look').click(function(e){
       $('#new-look-error').html('');
       e.preventDefault();
@@ -238,9 +149,9 @@ var look_builder = {
       var look_obj = {
        "name": $('#new-look-name').val(),
        "look_layout": parseInt($('#new-look-layout').val()),
-       "description": $('#new-look-description').val(),
+       "description": '',
        "allume_styling_session": look_builder.session_id,
-       "stylist": parseInt($('#stylist').data('stylistid'))        
+       "stylist": look_builder.stylist_id        
       }
       if(look_obj.name == ''){ 
         pre++; 
@@ -250,17 +161,20 @@ var look_builder = {
         pre++; 
         msg.push('select a look layout'); 
       }
-      if(look_obj.description == ''){
-        pre++
-        msg.push('provide a look description')
-      }
       if(pre == 0){
+        $('#creating-look').show();
+        $('#create-look').hide();
         $.ajax({
           contentType : 'application/json',
           data: JSON.stringify(look_obj),
           success:function(response){
-            rack_builder.getRackLooks('regular', '#looks-list');
-            $('#create-look').fadeOut();
+            look_builder.setUpBuilder(response.id);
+            $.get('/shopping_tool_api/look/' + response.id + '/', function(result){
+              var content = look_builder.lookMarkupGenerator(result, 'comp', null);
+              $('#compare-looks div.other-looks').prepend(content[0]);
+              var new_div = $('#compare-looks div.other-looks div.comp-look:nth-child(1)');
+              new_div.addClass('editing').siblings('div.comp-look').removeClass('editing off').addClass('off')
+            });
           },
           type: 'PUT',
           url: '/shopping_tool_api/look/0/'
@@ -273,82 +187,6 @@ var look_builder = {
         );
       }
     }); 
-    $('#submit-edit-look').click(function(e){
-      $('#edit-look-error').html('');
-      e.preventDefault();
-      var link = $(this);
-      var data = link.data()
-      var pre = 0;
-      var msg = [];
-      var look_obj = {
-       "name": $('#edit-look-name').val(),
-       "look_layout": data.looklayoutid,
-       "description": $('#edit-look-description').val(),
-       "allume_styling_session": look_builder.session_id,
-       "stylist": parseInt($('#stylist').data('stylistid'))        
-      }
-      if(look_obj.name == ''){ 
-        pre++; 
-        msg.push('provide a look name'); 
-      }
-      if(look_obj.description == ''){
-        pre++
-        msg.push('provide a look description')
-      }
-      if(pre == 0){
-        $.ajax({
-          contentType : 'application/json',
-          data: JSON.stringify(look_obj),
-          success:function(response){
-            /* update the look builder header section */
-            $('#designing').html(
-              response.name + '<a href="#" class="edit-look" data-lookname="' + response.name + 
-              '" data-lookid="' + response.id + '" data-lookdesc="' + response.description + 
-              '" data-looklayoutid="' + response.look_layout.id + 
-              '"><i class="fa fa-pencil"></i> edit</a>'
-            ).after(
-              '<p id="look-desc">' + response.description + '</p>'
-            );
-            /* update the look list link name */
-            $('#look-links a.look-link[data-lookid="' + response.id + '"]').data('lookname', response.name)
-            .find('span.name').html(response.name);
-            /* check and see if an explore looks page look matches the id of the edited look
-            * if we find a match then update to the edited name
-            */
-            var exp_look = $('#all-looks-list').find('em[data-lookid="' + response.id + '"]');
-            if(exp_look.length > 0){ exp_look.html(response.name); }
-            /* redraw the look builder to get the new settings */
-            look_builder.setUpBuilder(data.lookid);
-            $('#edit-look').fadeOut();
-          },
-          type: 'PUT',
-          url: '/shopping_tool_api/look/' + data.lookid + '/'
-        })
-      }else{
-        $('#edit-look-error').html(
-          '<span><i class="fa fa-exclamation-circle"></i>' +
-          'You must ' + msg.join('; ') + 
-          '.</span>'
-        );
-      }
-    });
-    Mousetrap.bind('shift+q+w', function(e) {
-      $('#new-look-error').html('');
-      $('#new-look-name').val('');
-      $('#new-look-layout')[0].selectize.setValue('',true);  
-      $('#new-look-description').val('');    
-      $('#create-look').fadeToggle();
-      rack_builder.getRackLooks('regular', '#looks-list');
-      return false;
-    });       
-    $('#close-design-look').click(function(e){
-      e.preventDefault();
-      $('#design-look').addClass('hide');
-      $('#rack-draggable').html('');
-      $('#look-drop').html('');
-      $('#compare-looks').html('');
-      rack_builder.getRackLooks('regular', '#looks-list');
-    });
     $('#rack-draggable').on('click','a.close-all-rack-sections', function(e){
       e.preventDefault();
       var link = $(this);
@@ -409,28 +247,16 @@ var look_builder = {
       e.preventDefault();
       var link = $(this);
       rack_builder.inspectItem(link, 'compare');
-    }).on('click', 'a.look-link', function(e){
-      e.preventDefault();
-      var link = $(this);
-      var data = link.data();
-      look_builder.setUpBuilder(data.lookid);
-      setTimeout(function(){
-        $('#rack').removeClass('show');
-      },1000);
-      $('#designing').html(
-        data.lookname + '<a href="#" class="edit-look" data-lookname="' + data.lookname + 
-        '" data-lookid="' + data.lookid + '" data-lookdesc="' + data.lookdesc + 
-        '" data-looklayoutid="' + data.looklayoutid + '"><i class="fa fa-pencil"></i> edit</a>'
-      ).after(
-        '<p id="look-desc">' + data.lookdesc + '</p>'
-      );
-      $('#design-look').attr('class','').addClass('show');
     });
 
     $('#look-drop').on('click','a.look-more-details', function(e){
       e.preventDefault();
       var link = $(this);
-      $('#look-indepth').html('').fadeIn();
+      $('#look-indepth').html(
+        '<div class="indepth-loading">' +
+        '<span class="pulse_loader"></span><span class="pulse_message">loading look details...</span>' +
+        '</div>'
+      ).fadeIn();
       $.get('/shopping_tool_api/look/' + link.data('look') + '/', function(result){
         var markup = ['<table>'];
         result.look_products.sort(function(a,b){
@@ -463,6 +289,11 @@ var look_builder = {
             }
             cropped_images.push(crop);
           }
+          var other_details = '';
+          if(i == 0){
+            other_details = '<td class="desc" rowspan="' + l + '"><p class="desc"><em>description:</em>' + 
+              result.description + '</td>';
+          }
           markup.push(
             '<tr><td class="img"><a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
             '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
@@ -473,7 +304,8 @@ var look_builder = {
             prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
             prod.product.short_product_description + '</p>' + price_display +
             '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
-            '<span class="general"><em>category:</em>' + prod.product.primary_category + '</span></td></tr>'
+            '<span class="general"><em>category:</em>' + prod.product.primary_category + 
+            '</span></td>' + other_details + '</tr>'
           );
         }
         markup.push('</table>');
@@ -495,72 +327,41 @@ var look_builder = {
       e.preventDefault();
       var link = $(this);
       look_builder.cropImage(link);
-    }).on('click','a.look-publish-status',function(e){
+    }).on('blur', 'input#look-name', function(e){
+      look_builder.updateLook();
+    }).on('blur', 'textarea#look-desc', function(e){
+      look_builder.updateLook();
+    }).on('click', '#finish-editing-look', function(e){
       e.preventDefault();
       var link = $(this);
-      var status = '';
-      var settings = $('#designing a').data();
-      if(link.hasClass('Draft')){
-        link.removeClass('Draft').addClass('Published');
-        status = 'Published';
-      }else{
-        link.removeClass('Published').addClass('Draft');
-        status = 'Draft';
-      }
-      var look_obj = {
-       "name": settings.lookname,
-       "look_layout": settings.looklayoutid,
-       "description": settings.lookdesc,
-       "allume_styling_session": look_builder.session_id,
-       "stylist": parseInt($('#stylist').data('stylistid')),
-       "status": status        
-      }
-      $.ajax({
-        contentType : 'application/json',
-        data: JSON.stringify(look_obj),
-        success:function(response){
-          console.log(response)
-        },
-        type: 'PUT',
-        url: '/shopping_tool_api/look/' + settings.lookid + '/'
-      })
+      var data = link.data();
+      var looks = $('#compare-looks');
+      looks.find('div.comp-look.off').removeClass('off');
+      var div = looks.find('div.comp-look.editing');
+      div.addClass('updating').removeClass('editing').find('div.editing').html('loading changes...');
+      $.get('/shopping_tool_api/look/' + data.lookid + '/', function(result){
+        var content = look_builder.lookMarkupGenerator(result, 'comp', null);
+        div.before(content[0]);
+        div.remove();
+        if(content[1].length > 0){
+          for(var i = 0, l = content[1].length; i<l; i++){
+            look_builder.getCroppedImage(content[1][i], '#compare-looks');
+          }
+        }
+      });
+      $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
     });
-    $('#compare-looks').on('click','a.look-filter', function(e){
-      e.preventDefault();
-      var link = $(this);
-      link.toggleClass('open')
-      $('#look-filter-options').toggleClass('show');
-    }).on('click','a.submit-filter-btn', function(e){
-      var comp_looks = $('#compare-looks');
-      e.preventDefault();
-      var link = $(this);
-      var look_id = link.data('look');
-      var checked = [];
-      $.each($('#look-filter-options input:checked'), function(idx){ checked.push($(this).attr('name')); })
-      var link_text = '';
-      var lookup = {};
-      if((checked.indexOf('session') > -1)||(checked.length == 0)){
-        link_text = 'session looks';
-        lookup.allume_styling_session = look_builder.session_id
-      }else{
-        link_text = checked.join('/') + ' looks';
-        if(checked.indexOf('stylist') > -1){
-          lookup.stylist = parseInt($('#stylist').data('stylistid'));
-        }
-        if(checked.indexOf('client') > -1){
-          lookup.client = parseInt($('#user-clip').data('userid'));         
-        }
-      }
-      lookup.name = $('#look-filter-options input.filter').val();
-      lookup.page = 1;
-      comp_looks.data('page', 1);
-      comp_looks.find('a.look-filter').html(link_text + ' <i class="fa fa-caret-down"></i>').removeClass('open');
-      $('#look-filter-options').removeClass('show');
-      look_builder.compareLooksMarkup(lookup, look_id, 1);
-    }).on('click', 'a.item-detail', function(e){
+    $('#compare-looks').on('click', 'a.item-detail', function(e){
       e.preventDefault();
       var link = $(this);
       rack_builder.inspectItem(link, 'compare');
+    }).on('click', 'a.edit-look-btn', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var look = link.data('lookid');
+      var div = link.closest('div.comp-look');
+      div.addClass('editing').siblings('div.comp-look').removeClass('editing').addClass('off');
+      look_builder.setUpBuilder(look);
     });
     $('#look-indepth').on('click', 'a.close-indepth', function(e){
       e.preventDefault();
@@ -600,6 +401,15 @@ var look_builder = {
       e.preventDefault();
       $('#cropper').fadeOut();
     });
+    $('#publish-lookbook').click(function(e){
+      e.preventDefault();
+      $('#publish-lookbook-overlay').fadeIn();
+      /* the setting looks categories go here */
+    });
+    $('#close-lb').click(function(e){
+      e.preventDefault();
+      $('#publish-lookbook-overlay').fadeOut();
+    });    
   },
   /**
   * @description to handle invalid states we use a recursive loading check for images before we crop them
@@ -654,6 +464,84 @@ var look_builder = {
     return img_data
   },
   /**
+  * @description setup look builder page
+  */
+  init: function(){
+    utils.menu();
+    utils.client();
+    rack_builder.init();
+    /* cache ids for faster reuse */
+    look_builder.session_id = $('body').data('stylesession');  
+    look_builder.stylist_id = parseInt($('#stylist').data('stylistid'));
+    /* attach the functionality */
+    look_builder.functionality();
+    /* set up the initial rack display */
+    look_builder.unorderedRack();
+    /* check if user wanted to load a look to edit at start up */
+    var at_load_look = utils.readURLParams('look');
+    if(at_load_look != null){
+      look_builder.setUpBuilder(at_load_look);
+    }
+    /* build list of session looks */
+    var lookup = {
+      "client": parseInt($('#user-clip').data('userid')),
+      "allume_styling_session": look_builder.session_id,
+      "stylist": look_builder.stylist_id,
+      "page": 1
+    }
+    look_builder.editableLooksMarkup(lookup, at_load_look);
+  },
+  /**
+  * @description helper template function to generate look markup
+  * @params {object} look - the look object
+  * @params {string} mod - id string modifier
+  * @params {integer} check - id of currently editing look or null
+  * @returns {array}  - [HTML, cropped images array]
+  */
+  lookMarkupGenerator: function(look, mod, check){
+      var look_products_markup = ['<div class="compare-look-wrapper"><div class="compare-looks-layout">'];
+      var cropped_images = [];
+      for(var ix = 0, lx = look.look_layout.layout_json.length; ix<lx; ix++){
+        var block = look.look_layout.layout_json[ix];
+        var position = block.position;
+        var product_markup = [];
+        for(var p = 0, prods = look.look_products.length; p<prods; p++){
+          var prod = look.look_products[p];
+          if(prod.layout_position == position){
+            var src = prod.product.product_image_url;
+            if(prod.cropped_dimensions != null){
+              var crop = {
+                id: mod + '-' + look.id + '-item-' + prod.id,
+                src: look_proxy + '' + src,
+                dims: prod.cropped_dimensions
+              }
+              cropped_images.push(crop);
+            }
+            product_markup.push(
+              '<div class="item"><a href="#" class="item-detail" ' + 
+                'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
+                '" data-productid="' + prod.product.id + '"><span id="' + mod + '-' + look.id + '-item-' + prod.id + 
+                '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></a></div>'
+            );
+          }
+        }
+        look_products_markup.push(
+          '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
+          'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
+          'px" data-position="' + position + '">' + product_markup.join() + '</div>'
+        );
+      }
+      look_products_markup.push('</div></div>');
+      var desc = look.description != '' ? '<span class="layout desc"><em>description: </em>' + look.description + '</span>' :  '';
+      var display_class = check == look.id ? 'editing' : '';
+      return ['<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
+        '"><a href="#" class="edit-look-btn" data-lookid="' + 
+        look.id + '"><i class="fa fa-pencil"></i></a><h3>' + look.name + '</h3>' +
+        '<span class="layout"><em>layout: </em>' + look.look_layout.display_name + '</span>' +
+        '<div class="comp-look-display">' + look_products_markup.join('') + '</div>' + desc + 
+        '<div class="editing">editing look...</div></div>', cropped_images];
+  },
+  /**
   * @description the ordered look and feel for look builder rack
   */  
   orderedRack: function(){
@@ -666,6 +554,8 @@ var look_builder = {
         '<a class="sort-link unsort-items" href="#">' +
         '<i class="fa fa-th"></i>unsort items</a>'
       );
+    }else{
+      rack_items.push('<div class="empty">Your rack is empty...</div>')
     }
     $.each(rack_cats, function(idx){
       var block = $(this);
@@ -707,182 +597,171 @@ var look_builder = {
   * @param {integer} id -  the look id 
   */
   setUpBuilder: function(id){
+    $('#look-drop').html('<div class="start">building look editor...</div>');
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
-      var look_drop = $('#look-drop');
-      var cropped_images = [];
-      var markup = [];
-      markup.push('<div id="look-layout-grid">')
-      for(var i = 0, l = result.look_layout.layout_json.length; i<l; i++){
-        var block = result.look_layout.layout_json[i];
-        var position = block.position;
-        var product_markup = [];
-        for(var p = 0, prods = result.look_products.length; p<prods; p++){
-          var prod = result.look_products[p];
-          if(prod.layout_position == position){
-            var src = prod.product.product_image_url;
-            if(prod.cropped_dimensions != null){
-              var crop = {
-                id: 'lookitem-' + prod.id,
-                src: look_proxy + '' + src,
-                dims: prod.cropped_dimensions
+      $('#creating-look').hide();
+      if((result.allume_styling_session == look_builder.session_id)&&(result.stylist == look_builder.stylist_id)){
+        var look_drop = $('#look-drop');
+        var cropped_images = [];
+        var markup = [];
+        markup.push('<div id="look-layout-grid">')
+        for(var i = 0, l = result.look_layout.layout_json.length; i<l; i++){
+          var block = result.look_layout.layout_json[i];
+          var position = block.position;
+          var product_markup = [];
+          for(var p = 0, prods = result.look_products.length; p<prods; p++){
+            var prod = result.look_products[p];
+            if(prod.layout_position == position){
+              var src = prod.product.product_image_url;
+              if(prod.cropped_dimensions != null){
+                var crop = {
+                  id: 'lookitem-' + prod.id,
+                  src: look_proxy + '' + src,
+                  dims: prod.cropped_dimensions
+                }
+                cropped_images.push(crop);
               }
-              cropped_images.push(crop);
+              product_markup.push(
+                '<div class="item" id="lookitem-' + prod.id + 
+                '" data-productid="' + prod.product.id + 
+                '" data-lookitemid="' + prod.id + '">' +
+                '<a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
+                '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
+                '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
+                '" data-crop="' + prod.cropped_dimensions + '"><i class="fa fa-crop"></i></a>' +
+                '<img class="handle" src="' + src + '"/></div>'
+              );
             }
-            product_markup.push(
-              '<div class="item" id="lookitem-' + prod.id + 
-              '" data-productid="' + prod.product.id + 
-              '" data-lookitemid="' + prod.id + '">' +
-              '<a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
-              '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
-              '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
-              '" data-crop="' + prod.cropped_dimensions + '"><i class="fa fa-crop"></i></a>' +
-              '<img class="handle" src="' + src + '"/></div>'
-            );
+          }
+          markup.push(
+            '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
+            'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
+            'px" data-position="' + position + '">' + product_markup.join() + '</div>'
+          );
+        }
+        markup.push('</div>');
+        /* add the created look markup to the ui, including instructions and trash bin */
+        look_drop.html(
+          '<a href="#" class="look-more-details" data-look="' + id + '">' +
+          '<i class="fa fa-search"></i>look details</a>' +
+          '<p class="look-drop-info">&bull; Drag items from the left into ' +
+          'the look layout, or items from the look to trash to remove.</p>' + markup.join('') + 
+          '<div id="look-trash"></div><label style="margin-top:10px">Name</label><input id="look-name" value="' + 
+          result.name + '"/><label>Description</label><textarea id="look-desc">' + 
+          result.description + '</textarea><input type="hidden" id="look-layoutid" value="' + 
+          result.look_layout.id + '"/><input type="hidden" id="look-id" value="' + id + '"/>' +
+          '<a href="#" id="finish-editing-look" data-lookid="' + id + '"><i class="fa fa-check"></i>done editing</a>'
+        );
+        if(cropped_images.length > 0){
+          for(var i = 0, l = cropped_images.length; i<l; i++){
+            look_builder.getCroppedImage(cropped_images[i], '#look-layout-grid');
           }
         }
-        markup.push(
-          '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
-          'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
-          'px" data-position="' + position + '">' + product_markup.join() + '</div>'
-        );
-      }
-      markup.push('</div>');
-      /* add the created look markup to the ui, including instructions and trash bin */
-      look_drop.html(
-        '<p class="look-drop-info">&bull; Drag rack items from the left into ' +
-        'open spots within the look layout.</p><p class="look-drop-info">&bull; Dragging an item into an ' +
-        'occupied spot will remove the old item from that position.</p><p class="look-drop-info">&bull; ' +
-        'Drag items to trash to remove from the look.</p>' + markup.join('') + 
-        '<a href="#" class="look-publish-status ' + result.status + '" data-lookid="' + 
-        id + '"><span class="published">published</span><span class="draft">draft</span>' +
-        '<small></small></a><a href="#" class="look-more-details" data-look="' + id + '">' +
-        '<i class="fa fa-search"></i>look details</a><div id="look-trash"></div>'
-      );
-      if(cropped_images.length > 0){
-        for(var i = 0, l = cropped_images.length; i<l; i++){
-          look_builder.getCroppedImage(cropped_images[i], '#look-layout-grid');
-        }
-      }
-      /* add the trash functionality - simply accept objects and immediately remove from ui */
-      new Sortable(document.getElementById('look-trash'), {
-        group: "look",
-        onAdd: function (evt) {
-          var el = evt.item;
-          el.parentNode.removeChild(el);
-        }
-      });
-      /* add the drag/drop functionality to the newly created drop zones */
-      $.each(look_drop.find('#look-layout-grid div.layout-block'), function(idx){
-        var box = $(this);
-        new Sortable(box[0], {
-          handle: ".handle",
-          group: { name: "look", pull: true, put: true },
-          sort: false,
-          draggable: ".item",
+        /* add the trash functionality - simply accept objects and immediately remove from ui */
+        new Sortable(document.getElementById('look-trash'), {
+          group: "look",
           onAdd: function (evt) {
             var el = evt.item;
-            var el_id = el.dataset.productid;
-            /* create REST object */
-            var obj = {
-              layout_position: box.data('position'),
-              look: id,
-              product: parseInt(el_id),
-              cropped_dimensions:  null         
-            }
-            var dims = $(el).find('a.crop-product-image').data('crop')
-            if(dims != null){
-              obj.cropped_dimensions = dims;
-            }
-            $.ajax({
-              contentType : 'application/json',
-              data: JSON.stringify(obj),
-              success:function(response){
-                var elem = $(el);
-                elem.data('lookitemid', response.id)
-                elem.data('isnew', 'yes');
-                elem.siblings('div.item').data('isnew','no')
-                if(elem.find('a.crop-product-image').length == 0){
-                  elem.append(
-                    '<a href="#" class="crop-product-image" data-productid="' + response.product + 
-                    '" data-url="' + elem.data('url')  + '" data-look="' + response.look + 
-                    '" data-lookitemid="' + response.id + '" data-position="' + response.layout_position + 
-                    '" data-crop="' + response.cropped_dimensions + '"><i class="fa fa-crop"></i></a>'
-                  );
-                }
-                /** ecom API addition */
-                $.ajax({
-                  data: 'look_product_id=' + obj.product,
-                  type: 'POST',
-                  url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/'
-                });
-                var list_items = box.find('div.item');
-                if(list_items.length > 1){
-                  $.each(list_items, function(e){
-                    var item = $(this);
-                    var data = item.data();
-                    if(data.isnew == 'no'){
-                      $.ajax({
-                        success:function(response){
-                          item.remove();
-                        },
-                        type: 'DELETE',
-                        url: '/shopping_tool_api/look_item/' + data.lookitemid + '/'
-                      });
-                    }
-                  });
-                }
-              },
-              type: 'PUT',
-              url: '/shopping_tool_api/look_item/0/'
-            });
-          },
-          onRemove: function(evt){
-            var elem = $(evt.item);
-            /* delete the item from the look/db when removed from a drop box */
-            $.ajax({
-              success:function(response){},
-              type: 'DELETE',
-              url: '/shopping_tool_api/look_item/' + elem.data('lookitemid') + '/'
-            });            
+            el.parentNode.removeChild(el);
           }
-        });        
-      });
+        });
+        /* add the drag/drop functionality to the newly created drop zones */
+        $.each(look_drop.find('#look-layout-grid div.layout-block'), function(idx){
+          var box = $(this);
+          new Sortable(box[0], {
+            handle: ".handle",
+            group: { name: "look", pull: true, put: true },
+            sort: false,
+            draggable: ".item",
+            onAdd: function (evt) {
+              var el = evt.item;
+              var el_id = el.dataset.productid;
+              /* create REST object */
+              var obj = {
+                layout_position: box.data('position'),
+                look: id,
+                product: parseInt(el_id),
+                cropped_dimensions:  null         
+              }
+              var dims = $(el).find('a.crop-product-image').data('crop')
+              if(dims != null){
+                obj.cropped_dimensions = dims;
+              }
+              $.ajax({
+                contentType : 'application/json',
+                data: JSON.stringify(obj),
+                success:function(response){
+                  var elem = $(el);
+                  elem.data('lookitemid', response.id)
+                  elem.data('isnew', 'yes');
+                  elem.siblings('div.item').data('isnew','no')
+                  if(elem.find('a.crop-product-image').length == 0){
+                    elem.append(
+                      '<a href="#" class="crop-product-image" data-productid="' + response.product + 
+                      '" data-url="' + elem.data('url')  + '" data-look="' + response.look + 
+                      '" data-lookitemid="' + response.id + '" data-position="' + response.layout_position + 
+                      '" data-crop="' + response.cropped_dimensions + '"><i class="fa fa-crop"></i></a>'
+                    );
+                  }
+                  /** ecom API addition */
+                  $.ajax({
+                    data: 'look_product_id=' + response.id,
+                    type: 'POST',
+                    url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/'
+                  });
+                  var list_items = box.find('div.item');
+                  if(list_items.length > 1){
+                    $.each(list_items, function(e){
+                      var item = $(this);
+                      var data = item.data();
+                      if(data.isnew == 'no'){
+                        $.ajax({
+                          success:function(response){
+                            item.remove();
+                          },
+                          type: 'DELETE',
+                          url: '/shopping_tool_api/look_item/' + data.lookitemid + '/'
+                        });
+                      }
+                    });
+                  }
+                },
+                type: 'PUT',
+                url: '/shopping_tool_api/look_item/0/'
+              });
+            },
+            onRemove: function(evt){
+              var elem = $(evt.item);
+              /* delete the item from the look/db when removed from a drop box */
+              $.ajax({
+                success:function(response){},
+                type: 'DELETE',
+                url: '/shopping_tool_api/look_item/' + elem.data('lookitemid') + '/'
+              });            
+            }
+          });        
+        });
+      }else{
+
+      }
     });
-    /* clone the contents of the rack for drag/drop */
-    look_builder.orderedRack();
-    /* create compare looks scaffolding and get looks */
-    $('#compare-looks').html(
-      '<h2>Compare <a href="#" class="look-filter">session looks <i class="fa fa-caret-down"></i></a></h2>' +
-      '<div id="look-filter-options"><label class="toggle">' +
-      '<input name="session" type="checkbox" checked><span><small></small></span>' +
-      '<em>session looks</em></label><label class="toggle">' +
-      '<input name="stylist" type="checkbox"><span><small></small></span>' +
-      '<em>stylist looks</em></label><label class="toggle">' +
-      '<input name="client" type="checkbox"><span><small></small></span>' +
-      '<em>client looks</em></label><input type="text" placeholder="' +
-      'Enter filter keywords..." class="filter"/><div class="look-filter-submit">' +
-      '<a href="#" class="submit-filter-btn" data-look="' + id + '">filter looks</a></div></div>' +
-      '<div class="other-looks" data-page="1"></div>'
-    );
-    var lookup = {
-      "client": parseInt($('#user-clip').data('userid')),
-      "allume_styling_session": look_builder.session_id,
-      "stylist": parseInt($('#stylist').data('stylistid')),
-      "page": 1
-    }
-    look_builder.compareLooksMarkup(lookup, id, 1);
   },
   /**
   * @description the unordered look and feel for look builder rack
   */
   unorderedRack: function(){
     var rack_items = [];
-    rack_items.push(
-      '<a class="sort-link sort-items" href="#">' +
-      '<i class="fa fa-th-list"></i>sort items</a>'
-    );
-    $.each($('#rack-list').find('div.item'), function(index){
+    var rack_items_dom = $('#rack-list').find('div.item');
+    if(rack_items_dom.length > 0){
+      rack_items.push(
+        '<a class="sort-link sort-items" href="#">' +
+        '<i class="fa fa-th-list"></i>sort items</a>'
+      );
+    }else{
+      rack_items.push('<div class="empty">Your rack is empty...</div>');
+    }
+    $.each(rack_items_dom, function(index){
       var item = $(this);
       var src = item.find('img').attr('src');
       rack_items.push(
@@ -902,6 +781,25 @@ var look_builder = {
       group: { name: "look", pull: 'clone', put: false },
       sort: true,
       draggable: ".item"
+    });  
+  },
+  /**
+  * @description update a look with any changes to its fields
+  */
+  updateLook: function(){
+    var look_obj = {
+     "name": $('#look-name').val(),
+     "look_layout": parseInt($('input#look-layoutid').val()),
+     "description": $('#look-desc').val(),
+     "allume_styling_session": look_builder.session_id,
+     "stylist": look_builder.stylist_id        
+    }
+    $.ajax({
+      contentType : 'application/json',
+      data: JSON.stringify(look_obj),
+      success:function(response){},
+      type: 'PUT',
+      url: '/shopping_tool_api/look/' + $('input#look-id').val() + '/'
     });  
   }
 }

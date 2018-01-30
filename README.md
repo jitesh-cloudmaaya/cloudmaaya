@@ -16,6 +16,10 @@ This is a Django Project
 * Database: MySQL 
 * Search Store: Elastic Search
 
+### Jobs Server
+* Celery
+* Redis (Elasticache - Redis_)
+
 ### Indexing Pipeline - Logstash
 [Logstash Config](https://qbox.io/blog/migrating-mysql-data-into-elasticsearch-using-logstash)
 

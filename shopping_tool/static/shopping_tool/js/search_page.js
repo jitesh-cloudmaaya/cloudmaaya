@@ -14,23 +14,6 @@ var search_page = {
     utils.client();
     rack_builder.init();
     look_builder.functionality();
-    /* cache the session id */
-    search_page.session_id = $('body').data('stylesession');
-    /* add keyboard shortcuts for client open/close */
-    Mousetrap.bind('shift+a+s', function(e) {
-      $('#user-card').toggleClass('show')
-      return false;
-    }); 
-    /* search functionality */
-    $('#search-btn').click(function(e){
-      e.preventDefault();
-      search_page.performSearch(1);
-    });
-    $("#search-field").keyup(function(event) {
-      if (event.keyCode === 13) {
-        search_page.performSearch(1);
-      }
-    });
     /* facets functionality */
     $('#facets').on('click', 'a.facet-group', function(e){
       e.preventDefault();
@@ -66,7 +49,39 @@ var search_page = {
         search_page.performSearch(1);
       }
     });
-    $('#search-categories').val('').selectize({ create: false, sortField: 'text'});
+    $('#search-categories').change(function(){
+      var dd = $(this);
+      var val = dd.val();
+      var def_div = $('#client-defaults');
+      var header = '<h5>Client preferences and sizes for <strong>' + val + '</strong>:</h5>';
+      var general = '<span><em>colors:</em>' + client_360.colors + '</span>' +
+        '<span><em>styles to avoid:</em>' + client_360.avoid + '</span>';
+      if(["Dresses", "Jackets"].indexOf(val) > -1){
+        def_div.html(
+          '<div class="client-settings">' + header +
+          '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
+          '<span><em>style:</em>' + client_360.categories[val].style + '</span>' +
+          general + '</div>'
+        );        
+      }else if(["Jeans", "Shoes", "Tops"].indexOf(val) > -1){
+        def_div.html(
+          '<div class="client-settings">' + header +
+          '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
+          '<span><em>style:</em>' + client_360.categories[val].style + '</span>' +
+          '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
+          general + '</div>'
+        );  
+      }else if(val == 'Pants'){
+        def_div.html(
+          '<div class="client-settings">' + header +
+          '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
+          '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
+          general + '</div>'
+        );          
+      }else{
+        def_div.html('');
+      }
+    });
     $('#facet-show-faves').prop('checked', false).click(function(e){
       search_page.performSearch(1);
     });
@@ -110,6 +125,7 @@ var search_page = {
   */
   facetTemplate: function(facets){
     var markup = [];
+    var cs = $('#search-field').data();
     if(facets != undefined){
       var social_facets = [];
       var group_markup = {names: [], markup: {}}
@@ -151,12 +167,24 @@ var search_page = {
             }
             for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
               var facet = facet_list[display_name].buckets[j];
+              var checked = '';
+              if((pretty_name == 'size')&&(cs.clientsettings == true)){
+                var sizes = cs.clientsize.split('|');
+                if(sizes.indexOf(facet.key) > -1){
+                  checked = "checked";
+                }
+              }else if((pretty_name == 'price_range')&&(cs.clientsettings == true)){
+                var spend = cs.clientspend;
+                if(spend == facet.key){
+                  checked = "checked";
+                }
+              }
               if(facet.key != ''){
                 group_markup.markup[display_name].push(
                   '<label class="facet">' +
                   '<input class="facet-box" type="checkbox" value="' + 
-                  facet.key + '" data-facetgroup="' + display_name + '"/><span>' +
-                  '<i class="fa fa-circle-thin"></i>' +
+                  facet.key + '" ' + checked + ' data-facetgroup="' + 
+                  display_name + '"/><span>' + '<i class="fa fa-circle-thin"></i>' +
                   '<i class="fa fa-check-circle"></i>' +
                   '</span><em class="number">' + 
                   numeral(facet.doc_count).format('0,0') +
@@ -204,6 +232,7 @@ var search_page = {
         markup.push(group_markup.markup[group_name].join(''));
       }
       $('#facets').html(markup.join(''));
+      $('#search-field').data('clientsettings', false);
     }    
   },
   /**
@@ -256,11 +285,13 @@ var search_page = {
   performSearch: function(page){
     $('#facet-bar').removeClass('show');
     /* generate the query string */
-    var selection_markup = []
+    var selection_markup = [];
+    var facets = [];
     var q = '';
     var search_box = $('#search-field');
     var new_search = false;
     var text = search_box.val();
+    var category = $('#search-categories').val();    
     if(text != '') { 
       q += 'text=' + encodeURIComponent(text); 
       selection_markup.push(
@@ -271,15 +302,52 @@ var search_page = {
       search_box.data('lookup', text);
       new_search = true;
     }
-    var facets = [];
-    var category = $('#search-categories').val();
+    if(category != search_box.data('cat')){
+      new_search = true;
+      search_box.data('cat', category)
+    }
     if(category != ''){
       facets.push('&primary_category=' + category);
       selection_markup.push(
         '<a href="#" class="remove-category" data-qparam="primary_category" ' +
         'data-facet="' + category + '">' + category + 
         '<i class="fa fa-times-circle"></i></a>'
-      );      
+      );
+      if(new_search == true){
+        var spend = [];
+        var sizes = [];
+        var cleaned_sizes = [];
+        if(["Dresses", "Jackets"].indexOf(category) > -1){
+          spend.push(client_360.categories[category].spend);        
+        }else if(["Jeans", "Shoes", "Tops", "Pants"].indexOf(category) > -1){
+          spend.push(client_360.categories[category].spend);
+          sizes = client_360.categories[category].size.split(',');   
+        }
+        for(i = 0, l = sizes.length; i<l; i++){
+          var size = sizes[i];
+          size = size.replace(/\s/g, "");
+          cleaned_sizes.push(size);
+          selection_markup.push(
+            '<a href="#" class="remove-facet" data-qparam="size" data-facet="' + 
+            size + '">' + size + '<i class="fa fa-times-circle"></i></a>'
+          );
+        }
+        if(cleaned_sizes.length > 0){
+          facets.push(
+            '&size=' + encodeURIComponent(cleaned_sizes.join('|'))
+          );
+        }
+        if(spend.length > 0){
+          selection_markup.push(
+            '<a href="#" class="remove-facet" data-qparam="price_range" data-facet="' + 
+            spend.join('') + '">' + spend.join('') + '<i class="fa fa-times-circle"></i></a>'
+          );          
+          facets.push(
+            '&price_range=' + encodeURIComponent(spend.join(''))
+          );
+        }
+        search_box.data('clientsize', cleaned_sizes.join('|')).data('clientspend', spend.join('')).data('clientsettings', true);
+      }
     }
     if(new_search == false){
       $.each($('#facets div.facet-list'), function(idx){

@@ -22,6 +22,7 @@ schema_view = get_swagger_view(title='Shopping Tool API')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^admin/', include("massadmin.urls")),
     url(r'^product_api/', include('product_api.urls', namespace='v1')),
     url(r'', include('shopping_tool.urls', namespace='shopping_tool')),
     url(r'^shopping_tool_api/', include('shopping_tool_api.urls', namespace='shopping_tool_api')),

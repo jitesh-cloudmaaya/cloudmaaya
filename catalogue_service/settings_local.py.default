@@ -45,6 +45,7 @@ NOAA_TOKEN = 'YdgPMhahlBcRshMkgsmDaoFlvAFcjwnr'
 
 AUTH_LOGIN_URL = 'https://social-services-stage.allume.co/auth/oauth/login/google-oauth2/'
 AUTH_EMAIL_KEY = 'user_email' #'allume-stylist-email-stage'
+DEV_AUTH_EMAIL = 'wduenow@allume.co'
 
 IMGKIT_URL = 'https://shopping-tool-web-stage.allume.co'
 
@@ -58,3 +59,7 @@ IMGKIT_OPTIONS = {
     'javascript-delay': '300',
 #     'window-status':'ready'
     }
+
+PEPPERJAM_API_VERSION = '20120402'
+PEPPERJAM_API_KEY = ''
+

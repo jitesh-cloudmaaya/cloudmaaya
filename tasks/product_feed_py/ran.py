@@ -6,6 +6,7 @@ import csv
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR
+from product_api.models import Merchant
 
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir, file_ending, cleaned_fields):
@@ -15,7 +16,11 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
 
-    destination = local_temp_dir + '/cleaned/ran_flat_file.csv'
+    # initialize network instance for adding potential new merchants
+    network = mappings.get_network('RAN')
+
+    destination = local_temp_dir + '/cleaned/flat_file.txt'
+
     with open(destination, "w") as cleaned:
         file_list = []
         file_directory = os.listdir(local_temp_dir)
@@ -24,12 +29,15 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
             if f.endswith(file_ending):
                 file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
 
+        # metric variables
         totalCount = 0
         writtenCount = 0
-
         genderSkipped = 0
         allumecategorySkipped = 0
         inactiveSkipped = 0
+        pendingReviewSkipped = 0
+        categoriesDiscovered = 0
+        merchantsDiscovered = 0
 
         # different dialects for reading and writing
         csv.register_dialect('reading', delimiter='|', quoting=csv.QUOTE_NONE, quotechar='')
@@ -53,14 +61,16 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
                 lines = csvfile.readlines()
                 lines = lines[:-1]
-
-                # handle if merchant_id not in merchant_table?
-                try:
-                    merchant_is_active = merchant_mapping[int(merchant_id)]
-                except:
-                    merchant_is_active = 0
-                # check that the merchant_id is active in the merchant_mapping
-                if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
+                
+                long_merchant_id = long(merchant_id) # cast for use
+                if long_merchant_id not in merchant_mapping.keys():
+                    # add merchant that does not yet exist in table
+                    mappings.add_new_merchant(long_merchant_id, merchant_name, network, False)
+                    # add entry for new merchant in mapping instance
+                    merchant_mapping[long_merchant_id] = 0
+                    merchantsDiscovered += 1
+                # check that the merchant_id is active in the merchant mapping
+                if merchant_mapping[long_merchant_id]: # set the merchant_table active column to 1 for a few companies when testing
                     # check config files
                     config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/'
                     fd = os.listdir(config_path)
@@ -161,24 +171,41 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             genderSkipped += 1
                             continue
 
-
+                        # new process
+                        # call a function that checks for the (primary_category, secondary_category)?
                         try:
+                            # identifier in the current_category_mappings
                             identifier = (primary_category, secondary_category)
+                            # checkCategoryMap(primary_category, secondary_category)
+                            if identifier not in category_mapping.keys():
+                                # if it does not exist, add it both django/db
+                                mappings.add_category_map(primary_category, secondary_category, None, False, True)
+                                # and mapping instance
+                                category_mapping[identifier] = (None, 0)
+                                # print the category pair we 'discovered'
+                                print identifier
+                                # increment a discovered variable metric
+                                categoriesDiscovered += 1
+
                             allume_category_id, active = category_mapping[identifier]
-                            # activity check on the primary, secondary category pair
+                            if not allume_category_id:
+                                # it is None because it is a newly discovered category
+                                # or a category that is still pending review
+                                pendingReviewSkipped += 1
+                                continue
+                            # activity check on primary, secondary category pair
                             if not active:
                                 inactiveSkipped += 1
                                 continue
-                            # print(active)
                             allume_category, active = allume_category_mapping[allume_category_id]
                             # activity check on the allume_category
                             if not active:
                                 inactiveSkipped += 1
                                 continue
-                        except:
-                            # there is no entry in the category tables for the provided categories
-                            # assume inactive?
-                            allumecategorySkipped += 1
+                        except Exception as e:
+                            # key error in either category_mapping or allume_category_mapping
+                            print 'somehow an identifier without an entry was accessed'
+                            print e
                             continue
 
                         # new logic for writing record
@@ -205,8 +232,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         record['sale_price'] = sale_price
                         record['retail_price'] = retail_price
                         record['shipping_price'] = shipping
-
-                        # comment
 
                         # current behavior is take the first and find its mapping if possible
                         record['merchant_color'] = attribute_5_color
@@ -275,8 +300,11 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
+    print('Discovered %s unmapped primary and secondary category pairs' % categoriesDiscovered)
+    print('Discovered %s new merchant(s)' % merchantsDiscovered)
+    print('Dropped %s records due to pending discovered categories' % pendingReviewSkipped)
     print('Dropped %s records due to gender' % genderSkipped)
-    print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
+    # print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
     print('Dropped %s records due to inactive categories' % inactiveSkipped)
 
 

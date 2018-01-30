@@ -526,6 +526,21 @@ class LookMetrics(models.Model):
     total_item_sales = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Blank for now
     store_rank = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Blank for now  
 
+class AllumeUserStylistNotes(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='last_author_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
+    client = models.ForeignKey(WpUsers, related_name='client_id', db_constraint=False, db_column='user_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Client
+    notes = models.TextField()
+    styling_session = models.ForeignKey(AllumeStylingSessions, db_column='styling_session_id', db_constraint=False, null=True, on_delete=models.DO_NOTHING)
+    visible = models.IntegerField()
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    last_modified = models.DateTimeField(auto_now=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'allume_user_stylist_notes'
+
+
 @receiver(pre_save, sender=Look)
 def set_look_client_id(sender, instance, *args, **kwargs):
     instance.wp_client_id = instance.allume_styling_session.client.id
