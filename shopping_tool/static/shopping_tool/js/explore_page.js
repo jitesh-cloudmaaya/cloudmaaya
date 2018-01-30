@@ -119,7 +119,7 @@ var explore_page = {
           var fields = loader.data();
           var lookup = fields.filter;
           lookup.page = fields.page;
-          lookup.per_page = 9
+          lookup.per_page = 12
           explore_page.getLooks(lookup);
         }
       }
@@ -138,17 +138,16 @@ var explore_page = {
     var faves = $('#explore-only-faves').prop('checked');
     var totals = $('#total-price-range')[0].noUiSlider.get();
     var avgs = $('#avg-price-range')[0].noUiSlider.get();
-    var styles = $('#explore-style').val();
-    var occasions = $('#explore-occasion').val();
-    console.log(styles)
-    console.log(occasions)
-
     var total_minimum = parseFloat(totals[0]);
     var total_maximum = parseFloat(totals[1]);
     var avg_minimum = parseFloat(avgs[0]);
     var avg_maximum = parseFloat(avgs[1]);
     lookup.page = 1;
-    lookup.per_page = 9;
+    lookup.per_page = 12;
+    lookup.style_type = $('#explore-style').val().map(function(val, i){ return parseInt(val)});
+    lookup.style_occasion = $('#explore-occasion').val().map(function(val, i){ return parseInt(val)}); 
+    if(lookup.style_type.length == 0){ delete look.style_type; }  
+    if(lookup.style_occasion.length == 0){ delete look.style_occasion; } 
     if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
     if(name != ''){ lookup.name = name; }
     if(faves == true){ lookup.favorites_only = "True"};
@@ -258,16 +257,25 @@ var explore_page = {
           'px" data-position="' + position + '">' + product_markup.join() + '</div>'
         );
       }
+      var avg_price = '';
+      var occasions = '';
       var stores = '';
+      var styles = '';
+      var total_price = '';    
       var desc = look.description != '' ? '<p class="desc" title="' + look.description + '"><em>Description:</em><span>' + look.description + '</span></p>' : '';
       if(merchants.length > 0){
         merchants = [...new Set(merchants)];
         var last_class = prices.length == 0 ? 'last' : '' ;
         stores = '<p class="extras ' + last_class + '"><em>Stores:</em> ' + merchants.join(', ') + '</p>';
       }
-
-      var total_price = '';
-      var avg_price = '';
+      if(look.look_style_types != undefined && look.look_style_types.length > 0){
+        styles = '<p class="extras"><em>Style:</em>' + 
+        look.look_style_types.map(function(x, i){ return x.name}).join(', ') + '</p>';
+      }
+      if(look.look_style_occasions != undefined && look.look_style_occasions.length > 0){
+        occasions = '<p class="extras"><em>Occasions:</em>' + 
+        look.look_style_occasions.map(function(x, i){ return x.name}).join(', ') + '</p>';
+      }      
       if(look.look_metrics[0] != undefined){
         total_price = numeral(parseFloat(look.look_metrics[0].total_look_price)).format('$0,0.00');
         avg_price = numeral(parseFloat(look.look_metrics[0].average_item_price)).format('$0,0.00');
@@ -276,7 +284,7 @@ var explore_page = {
         markup.join('') + '</div></div>' + stores +
         '<p class="extras"><em>Total price:</em> ' + total_price + 
         '</p><p class="extras"><em>Average item price:</em> ' + avg_price +
-        '</p>' + desc + '</div></div>'
+        '</p>' + styles + '' + occasions + '' + desc + '</div></div>'
       );
     }
     if(list_object.page == 1){
@@ -335,12 +343,12 @@ var explore_page = {
     if(at_load_stylist == null){
       /* get the initial page of looks */
       $('#loader').data('filter', {});
-      explore_page.getLooks({per_page: 9});
+      explore_page.getLooks({per_page: 12});
     }else{
       $('#stylist-select')[0].selectize.setValue(at_load_stylist, true);
       /* get the initial page of looks for specified stylist */
       $('#loader').data('filter', {stylist: at_load_stylist});
-      explore_page.getLooks({stylist: at_load_stylist, per_page: 9});      
+      explore_page.getLooks({stylist: at_load_stylist, per_page: 12});      
     }
     $('#search-terms').val('').blur(function(){
       explore_page.generateSearch();

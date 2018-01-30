@@ -570,6 +570,7 @@ var look_builder = {
       if(step == 'pass'){
         link.addClass('on').siblings('a').removeClass('on');
         $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
+        look_builder.updateLookCategories();
       }
     });
     $('#pub-wizard-step3').click(function(e){
@@ -577,6 +578,7 @@ var look_builder = {
       var link = $(this);
       var step = look_builder.publishCheck1();
       if(step == 'pass'){
+        look_builder.updateLookCategories();
         var look_summary = [];
         $.each($('#pub-section1 div.pub-look'), function(idx){
           var div = $(this);
@@ -612,7 +614,6 @@ var look_builder = {
         );
         link.addClass('on').siblings('a').removeClass('on');
         step_div.addClass('on').siblings('div').removeClass('on');
-
       }
     });
     $('#send-toggle').change(function(e){
@@ -1038,5 +1039,32 @@ var look_builder = {
       type: 'PUT',
       url: '/shopping_tool_api/look/' + $('input#look-id').val() + '/'
     });  
+  },
+  /**
+  * @description update looks categories when tabs are clicked in publish
+  */  
+  updateLookCategories: function(){
+    $.each($('#pub-section1 div.pub-look'), function(idx){
+      var div = $(this);
+      var data = div.data();
+      var look = {
+        look_id: data.lookid,
+        style_type: [],
+        style_occasion: []
+      }
+      $.each(div.find('input.style:checked'), function(num){
+        look.style_type.push(parseInt($(this).val()));
+      });
+      $.each(div.find('input.occ:checked'), function(num){
+        look.style_occasion.push(parseInt($(this).val()));
+      });
+      $.ajax({
+        contentType : 'application/json',
+        data: JSON.stringify(look),
+        success:function(response){console.log(response)},
+        type: 'PUT',
+        url: '/shopping_tool_api/look_meta_tags/' + data.lookid + '/'
+      });
+    });
   }
 }
