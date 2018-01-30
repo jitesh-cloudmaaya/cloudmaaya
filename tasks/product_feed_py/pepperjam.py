@@ -49,11 +49,7 @@ def get_merchants(status='joined'):
 
     print('Added %s new merchants' % new_merchants)
 
-
-    # probably?
     return merchant_mapping
-
-
 
 def discover_categories():
     pass
@@ -84,7 +80,8 @@ def get_data(local_temp_dir):
     genderSkipped = 0
     allumecategorySkipped = 0
     inactiveSkipped = 0
-    new_merchants = 0
+    categoriesDiscovered = 0
+    pendingReviewSkipped = 0
 
     with open(destination, "w") as cleaned:
         # first guess at dialect
@@ -136,7 +133,31 @@ def get_data(local_temp_dir):
                 primary_category = product['category_program']
                 secondary_category = product['category_network']
 
-                # temporarily don't skip if product is of an inactive category
+                # new category discovery stuff
+                try:
+                    identifier = (primary_category, secondary_category)
+                    if identifier not in category_mapping.keys():
+                        mappings.add_category_map(primary_category, secondary_category, None, False, True)
+                        category_mapping[identifier] = (None, 0)
+                        print identifier
+                        categoriesDiscovered += 1
+
+                    allume_category_id, active = category_mapping[identifier]
+                    if allume_category_id == None:
+                        pendingReviewSkipped += 1
+                        continue
+                    if not active:
+                        inactiveSkipped += 1
+                        continue
+                    allume_category, active = allume_category_mapping[allume_category_id]
+                    if not active:
+                        inactiveSkipped += 1
+                        continue
+                except Exception as e:
+                    # key error in either category_mapping or allume_category_mapping
+                    print 'somehow an identifier without an entry was accessed'
+                    print e
+                    continue
 
                 ################### DON'T SKIP ANY RECORDS FOR NOW ################ 
 
@@ -273,10 +294,12 @@ def get_data(local_temp_dir):
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
+    print('Discovered %s unmapped primary and secondary category pairs' % categoriesDiscovered)
+    print('Dropped %s records due to pending discovered categories' % pendingReviewSkipped)
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
     print('Dropped %s records due to inactive categories' % inactiveSkipped)
-    print('Added %s new merchants' % new_merchants)
+    # print('Added %s new merchants' % new_merchants)
     # new_merchants ?
 		
 
