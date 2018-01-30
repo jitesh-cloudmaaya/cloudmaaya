@@ -448,6 +448,28 @@ var look_builder = {
           success:function(response){
             var markup = [];
             var cropped_images = [];
+            var look_occasions = [];
+            var look_styles = [];
+            for(var i = 0, l = style_types.length; i<l; i++){
+              var ls = style_types[i];
+              look_styles.push(
+                '<label class="toggle"><input value="' + ls.id + '" data-display="' + ls.name +
+                '" class="style" type="checkbox"/><span><small></small></span><em>' +
+                ls.name +'</em></label>'
+              );
+            }
+            for(var i = 0, l = occasion_types.length; i<l; i++){
+              var ls = occasion_types[i];
+              look_occasions.push(
+                '<label class="toggle"><input value="' + ls.id + '" data-display="' + ls.name +
+                '" class="occ" type="checkbox"/><span><small></small></span><em>' +
+                ls.name +'</em></label>'
+              );
+            }
+            var half_styles = Math.ceil(look_styles.length / 2);
+            var half_occs = Math.ceil(look_occasions.length / 2);
+            var first_half_styles = look_styles.splice(0,half_styles);
+            var first_half_occs = look_occasions.splice(0,half_occs);
             for(var i = 0, l = response.looks.length; i<l; i++){
               var look = response.looks[i];
               var look_products_markup = ['<div class="publish-look-wrapper"><div class="publish-looks-layout">'];
@@ -481,47 +503,16 @@ var look_builder = {
               }
               look_products_markup.push('</div></div>');
               markup.push(
-                '<div class="pub-look" data-lookname="' + look.name + '">' +
-                '<h5><span>' + look.name + '</span></h5>' +
+                '<div class="pub-look" data-lookname="' + look.name + '" data-lookid="' + 
+                look.id + '"><h5><span>' + look.name + '</span></h5>' +
                 '<table class="categorize-look"><tr><td rowspan="2" class="collage">' +
                 look_products_markup.join('') + '</td><td class="label">Style:</td>' +
-                '<td class="label"></td><td class="label split">Occasion:</td><td class="label"></td></tr><tr>' +
-                '<td><label class="toggle"><input value="Bohemian" class="style" type="checkbox"/>' +
-                '<span><small></small></span><em>Bohemian</em></label>' +
-                '<label class="toggle"><input value="Chic" class="style" type="checkbox"/>' +
-                '<span><small></small></span><em>Chic</em></label>' +
-                '<label class="toggle"><input value="Classic" class="style" type="checkbox"/>' +
-                '<span><small></small></span><em>Classic</em></label>' +
-                '<label class="toggle"><input value="Edgy" class="style" type="checkbox"/>' +
-                '<span><small></small></span><em>Edgy</em></label>' +
-                '<label class="toggle"><input value="Glamorous" class="style" type="checkbox"/>' +
-                '<span><small></small></span><em>Glamorous</em></label></td>' +
-                '<td><label class="toggle"><input value="Preppy" class="style" type="checkbox"/>' +
-                '<span><small></small></span><em>Preppy</em></label>' +
-                '<label class="toggle"><input value="Romantic" class="style" type="checkbox"/>' +
-                '<span><small></small></span><em>Romantic</em></label>' +
-                '<label class="toggle"><input value="Sexy" class="style" type="checkbox"/>' +
-                '<span><small></small></span><em>Sexy</em></label>' +
-                '<label class="toggle"><input value="Sophisticated" class="style" type="checkbox"/>' +
-                '<span><small></small></span><em>Sophisticated</em></label>' +
-                '<label class="toggle"><input value="Sporty" class="style" type="checkbox"/>' +
-                '<span><small></small></span><em>Sporty</em></label></td>' +
-                '<td class="split"><label class="toggle"><input value="Day Time Casual" class="occ" type="checkbox"/>' +
-                '<span><small></small></span><em>Day Time Casual</em></label>' +
-                '<label class="toggle"><input value="Dressy Casual" class="occ" type="checkbox"/>' +
-                '<span><small></small></span><em>Dressy Casual</em></label>' +
-                '<label class="toggle"><input value="Athleisure / Lounge" class="occ" type="checkbox"/>' +
-                '<span><small></small></span><em>Athleisure / Lounge</em></label>' +
-                '<label class="toggle"><input value="Business Casual" class="occ" type="checkbox"/>' +
-                '<span><small></small></span><em>Business Casual</em></label></td>' +
-                '<td><label class="toggle"><input value="Business Professional" class="occ" type="checkbox"/>' +
-                '<span><small></small></span><em>Business Professional</em></label>' +
-                '<label class="toggle"><input value="Vacation" class="occ" type="checkbox"/>' +
-                '<span><small></small></span><em>Vacation</em></label>' +
-                '<label class="toggle"><input value="Night Out" class="occ" type="checkbox"/>' +
-                '<span><small></small></span><em>Night Out</em></label>' +
-                '<label class="toggle"><input value="Special Event / Wedding" class="occ" type="checkbox"/>' +
-                '<span><small></small></span><em>Special Event / Wedding</em></label></td></tr></table></div>'
+                '<td class="label"></td><td class="label split">Occasion:</td>' +
+                '<td class="label"></td></tr><tr>' +
+                '<td>' + first_half_styles.join('') + '</td>' +
+                '<td>' + look_styles.join('') + '</td>' +
+                '<td class="split">' + first_half_occs.join('') + '</td>' +
+                '<td>' + look_occasions.join('') + '</td></tr></table></div>'
               );
             }
             $('#pub-section1').html(
@@ -565,7 +556,7 @@ var look_builder = {
       e.preventDefault();
       $('#preview-lookbook-overlay').fadeOut();
     }); 
-    /* wizard tabs and their status checking */
+    /* wizard tabs, their status checking and other functionality for publish lookbook */
     $('#pub-wizard-step1').click(function(e){
       e.preventDefault();
       var link = $(this);
@@ -592,10 +583,10 @@ var look_builder = {
           var styles = [];
           var occs = [];
           $.each(div.find('input.style:checked'), function(num){
-            styles.push($(this).val());
+            styles.push($(this).data('display'));
           });
           $.each(div.find('input.occ:checked'), function(num){
-            occs.push($(this).val());
+            occs.push($(this).data('display'));
           });
           look_summary.push(
             '<div class="look-summary"><span class="name">' +div.data('lookname') + 
@@ -608,13 +599,16 @@ var look_builder = {
         var email_at = '<span class="summary-sent">Email will be sent <strong>now</strong>.</span>';
         if($('#send-toggle').prop('checked')){
           var t = rome.find(document.getElementById('send-later'))
-          email_at = '<span class="summary-sent">Email will be sent <strong>' + t.getMoment() + 
+          email_at = '<span class="summary-sent">Email will be sent <strong>' + 
+          t.getMoment().format('MMMM Do, YYYY h:mm a') + 
           '</strong> ' + $('#send-later').data('tz') + ' time zone</span>';
         }
         step_div.html(
-          look_summary.join('') +
+          '<h5>Looks</h5><div class="look-summary-section">' +
+          look_summary.join('') + '</div>' +
+          '<h5>Email</h5>' + email_at +
           '<div class="summary-email">' + $('#publish-email').val() +
-          '</div>' + email_at
+          '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
         );
         link.addClass('on').siblings('a').removeClass('on');
         step_div.addClass('on').siblings('div').removeClass('on');
@@ -629,7 +623,10 @@ var look_builder = {
       }else{
         div.hide();
       }
-    })      
+    });
+    $('#pub-section3').on('click', 'a#submit-lookbook', function(e){
+      e.preventDefault();
+    })     
   },
   /**
   * @description to handle invalid states we use a recursive loading check for images before we crop them

@@ -51,12 +51,15 @@ def index(request, styling_session_id=None):
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     categories = AllumeCategory.objects.filter(active = True)
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    styles = StyleType.objects.filter(active=True).all()
+    occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
-               'looks': looks, 'weather_info': weather_info}
+               'looks': looks, 'weather_info': weather_info,'styles': styles,
+               'occasions': occasions}
                
     return render(request, 'shopping_tool/index.html', context)
 
@@ -79,12 +82,15 @@ def look_builder(request, styling_session_id=None):
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     categories = AllumeCategory.objects.filter(active = True)
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    styles = StyleType.objects.filter(active=True).all()
+    occasions = StyleOccasion.objects.filter(active=True).all()
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
-               'looks': looks, 'weather_info': weather_info}
+               'looks': looks, 'weather_info': weather_info, 'styles': styles,
+               'occasions': occasions}
                
     return render(request, 'shopping_tool/look_builder.html', context)
 
@@ -136,12 +142,15 @@ def explore(request, styling_session_id=None):
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     stylists = WpUsers.objects.stylists()
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    styles = StyleType.objects.filter(active=True).all()
+    occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
 
     context = {'favorites': favorites, 'user': user, 'stylists': stylists, 
                'styling_session': styling_session, 'rack_items': rack_items, 
                'client': client, 'layouts': layouts, 'looks': looks,
-               'product_image_proxy': product_image_proxy, 'weather_info': weather_info}
+               'product_image_proxy': product_image_proxy, 'styles': styles,
+               'occasions': occasions, 'weather_info': weather_info}
 
     return render(request, 'shopping_tool/explore.html', context)
 

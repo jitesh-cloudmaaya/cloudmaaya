@@ -1635,6 +1635,7 @@ div.lookbook-btns a,
 #add-new-look-to-lookbook,
 #finish-editing-look,
 #add-note-toggle,
+#submit-lookbook,
 #submit-note {
   background:#f2987e;
   border-radius:5px;
@@ -1669,6 +1670,7 @@ div.rack-look a.look-link:hover,
 #add-new-look-to-lookbook:hover,
 #finish-editing-look:hover,
 #add-note-toggle:hover,
+#submit-lookbook:hover,
 #submit-note:hover {background:#ed8365;}
 #add-look-btn:active,
 div.rack-look a.look-link:active,
@@ -1677,7 +1679,8 @@ div.lookbook-btns a:active,
 #add-new-look-to-lookbook:active,
 #finish-editing-look:active,
 #add-note-toggle:active,
-#submit-note:active{  
+#submit-note:active,
+#submit-lookbook:active{  
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
   color:#474747;
@@ -3075,6 +3078,59 @@ div.publish-loading {margin:25px;}
   min-width:calc(70% - 48px);
   max-width:calc(70% - 48px);
   width:calc(70% - 48px);
+}
+#pub-section3 {padding:15px;position:relative;}
+#pub-section3 h5 { margin-bottom:15px; }
+#pub-section3 div.look-summary-section {overflow:auto; margin-bottom:15px;}
+#pub-section3 div.look-summary {
+  box-shadow:0 0 3px rgba(0,0,0,0.3);
+  float:left;
+  margin:3px 12px 12px 3px;
+  padding:0 0 5px;
+  width:calc(25% - 30px);
+}
+#pub-section3 div.look-summary:nth-child(4n) {margin-right:0;}
+#pub-section3 div.look-summary span.name{
+  background:#fafafa;
+  border-bottom:1px solid #ddd;
+  display:block;
+  font-size:18px;
+  font-weight:300;
+  margin:0 0 5px;
+  padding:10px;
+}
+#pub-section3 div.look-summary span.categories {
+  color:#777;
+  display:block;
+  font-size:14px;
+  font-weight:100;
+  padding:0 10px 5px;
+}
+#pub-section3 div.summary-email {
+  box-shadow:0 0 3px rgba(0,0,0,0.3);
+  color:#000;
+  font-size:14px;
+  font-weight: 300;
+  line-height: 20px;
+  margin:0 3px;
+  padding:10px;
+  white-space: pre-wrap;
+  width:45%;
+}
+#pub-section3 span.summary-sent {  
+  display:block;
+  font-size:14px;
+  font-weight: 300;
+  margin:0 0 15px;
+}
+#pub-section3 span.summary-sent strong {font-weight: 700}
+#pub-section3 div.look-summary span.categories em {color:#000; font-weight:300; padding-right:3px;}
+#submit-lookbook {
+  font-size:18px;
+  margin:0;
+  position:absolute;
+  top:10px;
+  right:1px;
 }
 /* date picker css over writes */
 #send-later-wrapper {display:none; left:70%;position:absolute; top:75px; }
