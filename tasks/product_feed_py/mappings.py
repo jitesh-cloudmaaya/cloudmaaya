@@ -22,9 +22,9 @@ def create_color_mapping():
 
     color_mapping = {}
 
-    colormaps = ColorMap.objects.values_list('external_color', 'allume_color')
-    for colormap in colormaps:
-        color_mapping[colormap[0]] = colormap[1]
+    color_maps = ColorMap.objects.values_list('external_color', 'allume_color')
+    for color_map in color_maps:
+        color_mapping[color_map[0]] = color_map[1]
 
     return color_mapping
 
@@ -37,10 +37,10 @@ def create_category_mapping():
     """
     category_mapping = {}
 
-    categorymaps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'active')
-    for categorymap in categorymaps:
-        key_tup = (categorymap[0], categorymap[1])
-        val_tup = (categorymap[2], categorymap[3])
+    category_maps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'active')
+    for category_map in category_maps:
+        key_tup = (category_map[0], category_map[1])
+        val_tup = (category_map[2], category_map[3])
         category_mapping[key_tup] = val_tup
 
     return category_mapping
@@ -49,16 +49,15 @@ def create_category_mapping():
 def create_allume_category_mapping():
     """
     Returns a dict of allume category names as keys mapped to a tuple of the allume
-    category name and whether or not it is active. 1 is active and 0 is not active.
+    category name and whether or not it is active. Active is a boolean.
     """
-
-    cursor = connection.cursor()
-    cursor.execute("SELECT id, name, active FROM product_api_allumecategory")
-
     allume_category_mapping = {}
-    for tup in cursor.fetchall():
-        info = (tup[1], tup[2])
-        allume_category_mapping[tup[0]] = info
+
+    allume_categories = AllumeCategory.objects.values_list('id', 'name', 'active')
+
+    for allume_category in allume_categories:
+        val_tup = (allume_category[1], allume_category[2])
+        allume_category_mapping[allume_category[0]] = val_tup
 
     return allume_category_mapping
 

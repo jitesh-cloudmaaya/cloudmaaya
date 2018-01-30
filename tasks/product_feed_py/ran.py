@@ -181,7 +181,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                                 # if it does not exist, add it both django/db
                                 mappings.add_category_map(primary_category, secondary_category, None, False, True)
                                 # and mapping instance
-                                category_mapping[identifier] = (None, 0)
+                                category_mapping[identifier] = (None, False)
                                 # print the category pair we 'discovered'
                                 print identifier
                                 # increment a discovered variable metric
