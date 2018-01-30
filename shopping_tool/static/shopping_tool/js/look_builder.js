@@ -643,10 +643,10 @@ var look_builder = {
         var tz = $('#send-later').data('tz')
         var reg_str = t.getMoment().format('YYYY-MM-DD HH:MM');
         console.log(reg_str)
-        var send_string = moment.tz(reg_str, tz).format();
-        console.log(send_string)
+        var send_string = moment.tz(reg_str, tz).format('X');
         lookbook.send_at = send_string;
       }
+      console.log(lookbook)
       /* will uncooment to hook up to Allume API
       $.ajax({
         contentType : 'application/json',
