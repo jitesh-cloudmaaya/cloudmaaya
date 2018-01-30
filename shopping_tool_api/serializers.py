@@ -55,6 +55,19 @@ class LookMetricsSerializer(serializers.ModelSerializer):
         model = LookMetrics
         fields = '__all__'
 
+
+class StyleTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StyleType
+        fields = '__all__'#
+
+class StyleOccasionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StyleOccasion
+        fields = '__all__'#
+
 class LookSerializer(serializers.ModelSerializer):
     look_layout = LookLayoutSerializer(many=False, read_only=True)
     look_products = LookProductSerializer(source='product_set', many=True, read_only=True)
@@ -109,4 +122,5 @@ class AllumeUserStylistNotesSerializer(serializers.ModelSerializer):
     class Meta:
         model = AllumeUserStylistNotes
         fields = '__all__'#
+
 
