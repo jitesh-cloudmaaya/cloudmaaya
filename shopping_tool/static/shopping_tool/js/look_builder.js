@@ -566,54 +566,60 @@ var look_builder = {
     $('#pub-wizard-step2').click(function(e){
       e.preventDefault();
       var link = $(this);
-      var step = look_builder.publishCheck1();
-      if(step == 'pass'){
-        link.addClass('on').siblings('a').removeClass('on');
-        $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
-        look_builder.updateLookCategories();
+      var loading_check = $('#pub-section1 div.publish-loading').length;
+      if(loading_check == 0){
+        var step = look_builder.publishCheck1();
+        if(step == 'pass'){
+          link.addClass('on').siblings('a').removeClass('on');
+          $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
+          look_builder.updateLookCategories();
+        }
       }
     });
     $('#pub-wizard-step3').click(function(e){
       e.preventDefault();
       var link = $(this);
-      var step = look_builder.publishCheck1();
-      if(step == 'pass'){
-        look_builder.updateLookCategories();
-        var look_summary = [];
-        $.each($('#pub-section1 div.pub-look'), function(idx){
-          var div = $(this);
-          var styles = [];
-          var occs = [];
-          $.each(div.find('input.style:checked'), function(num){
-            styles.push($(this).data('display'));
+      var loading_check = $('#pub-section1 div.publish-loading').length;
+      if(loading_check == 0){
+        var step = look_builder.publishCheck1();
+        if(step == 'pass'){
+          look_builder.updateLookCategories();
+          var look_summary = [];
+          $.each($('#pub-section1 div.pub-look'), function(idx){
+            var div = $(this);
+            var styles = [];
+            var occs = [];
+            $.each(div.find('input.style:checked'), function(num){
+              styles.push($(this).data('display'));
+            });
+            $.each(div.find('input.occ:checked'), function(num){
+              occs.push($(this).data('display'));
+            });
+            look_summary.push(
+              '<div class="look-summary"><span class="name">' +div.data('lookname') + 
+              '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
+              '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
+              '</span></div>'
+            )
           });
-          $.each(div.find('input.occ:checked'), function(num){
-            occs.push($(this).data('display'));
-          });
-          look_summary.push(
-            '<div class="look-summary"><span class="name">' +div.data('lookname') + 
-            '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
-            '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
-            '</span></div>'
-          )
-        });
-        var step_div = $(link.attr('href'));
-        var email_at = '<span class="summary-sent">Email will be sent <strong>now</strong>.</span>';
-        if($('#send-toggle').prop('checked')){
-          var t = rome.find(document.getElementById('send-later'))
-          email_at = '<span class="summary-sent">Email will be sent <strong>' + 
-          t.getMoment().format('MMMM Do, YYYY h:mm a') + 
-          '</strong> ' + $('#send-later').data('tz') + ' time zone</span>';
+          var step_div = $(link.attr('href'));
+          var email_at = '<span class="summary-sent">Email will be sent <strong>now</strong>.</span>';
+          if($('#send-toggle').prop('checked')){
+            var t = rome.find(document.getElementById('send-later'))
+            email_at = '<span class="summary-sent">Email will be sent <strong>' + 
+            t.getMoment().format('MMMM Do, YYYY h:mm a') + 
+            ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
+          }
+          step_div.html(
+            '<h5>Looks</h5><div class="look-summary-section">' +
+            look_summary.join('') + '</div>' +
+            '<h5>Email</h5>' + email_at +
+            '<div class="summary-email">' + $('#publish-email').val() +
+            '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
+          );
+          link.addClass('on').siblings('a').removeClass('on');
+          step_div.addClass('on').siblings('div').removeClass('on');
         }
-        step_div.html(
-          '<h5>Looks</h5><div class="look-summary-section">' +
-          look_summary.join('') + '</div>' +
-          '<h5>Email</h5>' + email_at +
-          '<div class="summary-email">' + $('#publish-email').val() +
-          '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
-        );
-        link.addClass('on').siblings('a').removeClass('on');
-        step_div.addClass('on').siblings('div').removeClass('on');
       }
     });
     $('#send-toggle').change(function(e){
@@ -627,6 +633,27 @@ var look_builder = {
     });
     $('#pub-section3').on('click', 'a#submit-lookbook', function(e){
       e.preventDefault();
+      var lookbook = {
+        styling_session_id: look_builder.session_id,
+        send_at: null,
+        text_content: $('#publish-email').val()
+      }
+      if($('#send-toggle').prop('checked') == true){
+        var t = rome.find(document.getElementById('send-later'))
+        var tz = $('#send-later').data('tz')
+        var reg_str = t.getMoment().format('YYYY-MM-DD HH:MM');
+        console.log(reg_str)
+        var send_string = moment.tz(reg_str, tz).format();
+        console.log(send_string)
+        lookbook.send_at = send_string;
+      }
+      /* will uncooment to hook up to Allume API
+      $.ajax({
+        contentType : 'application/json',
+        data: JSON.stringify(lookbook),
+        type: 'POST',
+        url: 'https://styling-service-stage.allume.co/publish_looks/'
+      })*/
     })     
   },
   /**
