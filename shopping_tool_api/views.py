@@ -262,6 +262,82 @@ def user_product_favorites(request, pk=None):
     serializer = UserProductFavoriteSerializer(favs, many=True)
     return JsonResponse(serializer.data, safe=False)
 
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def style_type(request):
+    """
+    get:
+        View list of style types
+
+        /shopping_tool_api/style_type/
+    """
+    try:
+        styles = StyleType.objects.filter(active=True).all()
+    except StyleType.DoesNotExist:
+        return HttpResponse(status=404)
+
+    serializer = StyleTypeSerializer(styles, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def style_occasions(request):
+    """
+    get:
+        View list of style occasions
+
+        /shopping_tool_api/style_occasions/
+    """
+    try:
+        styles = StyleOccasion.objects.filter(active=True).all()
+    except StyleOccasion.DoesNotExist:
+        return HttpResponse(status=404)
+
+    serializer = StyleOccasionSerializer(styles, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
+def look_meta_tags(request, pk=None):
+    """
+    put:
+        Add Style and Occasion to Looks
+
+        /shopping_tool_api/look_meta_tags/{look_id}/
+
+        Sample JSON Object
+
+        {
+          "look_id": 393223,
+          "style_type": [1,2,4],
+          "style_occasion": [3,4]
+
+        }
+    """
+    try:
+        look = Look.objects.get(id=pk)
+    except Look.DoesNotExist:
+        return HttpResponse(status=404)
+
+    print ("Deleting Meta")
+    look.styleoccasion_set = []
+    look.styletype_set = []
+
+    print("Saving Occasion")
+    look.styleoccasion_set = request.data['style_occasion']
+
+    print("Savign Type")
+    look.styletype_set = request.data['style_type']
+
+    look.save()
+
+    return JsonResponse(request.data, safe=False)
+
+
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
 @permission_classes((AllowAny, ))
