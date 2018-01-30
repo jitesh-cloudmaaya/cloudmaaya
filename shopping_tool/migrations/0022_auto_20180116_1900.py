@@ -13,11 +13,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelOptions(
-            name='allumelookproducts',
+            name='lookproduct',
             options={'managed': False},
         ),
         migrations.AlterModelOptions(
-            name='allumelooks',
+            name='look',
             options={'managed': False},
         ),
     ]

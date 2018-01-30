@@ -15,11 +15,12 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("Attempting to run SQL commands and build LookMetrics table"))
             try:
                 with transaction.atomic():
-                    for i in range(0, len(statements) - 1):
-                        cursor.execute(statements[i])
+                    for i in range(0, len(statements)):
+                        if not statement.strip(): # avoid 'query was empty' operational error
+                            cursor.execute(statements[i])
             finally:
                 cursor.close()
-                self.stdout.write(self.style.WARNING("Successfully built shopping_tool_lookmetrics table"))
+                self.stdout.write(self.style.SUCCESS("Successfully built shopping_tool_lookmetrics table"))
         except Exception as e:
             self.stdout.write(self.style.ERROR("Failed"))
             self.stdout.write(self.style.ERROR(e))

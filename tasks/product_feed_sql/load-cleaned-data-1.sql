@@ -1,3 +1,4 @@
+SET SESSION sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
 DROP TABLE IF EXISTS product_api_product_temp;
 CREATE TABLE IF NOT EXISTS product_api_product_temp (
     id integer AUTO_INCREMENT NOT NULL PRIMARY KEY, 
@@ -6,7 +7,8 @@ CREATE TABLE IF NOT EXISTS product_api_product_temp (
     product_name varchar(255) NULL, 
     long_product_description varchar(2000) NULL, 
     short_product_description varchar(500) NULL, 
-    product_url varchar(2000) NULL, 
+    product_url varchar(2000) NULL,
+    raw_product_url varchar(2000) NULL,
     product_image_url varchar(2000) NULL, 
     buy_url varchar(2000) NULL, 
     manufacturer_name varchar(250) NULL,

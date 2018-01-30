@@ -540,6 +540,20 @@ class AllumeUserStylistNotes(models.Model):
         managed = False
         db_table = 'allume_user_stylist_notes'
 
+class StyleType(models.Model):
+    name = models.CharField(max_length=50, blank=True, null=True)
+    looks = models.ManyToManyField(Look, db_constraint=False)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class StyleOccasion(models.Model):
+    name = models.CharField(max_length=50, blank=True, null=True)
+    looks = models.ManyToManyField(Look, db_constraint=False)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
 
 @receiver(pre_save, sender=Look)
 def set_look_client_id(sender, instance, *args, **kwargs):
