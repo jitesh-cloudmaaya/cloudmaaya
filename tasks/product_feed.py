@@ -19,7 +19,7 @@ class ProductFeed(object):
         config_dict = yaml.load(config_file)
         self._table = config_dict['table']
         self._fields = ",".join(config_dict['fields'])
-        self._fields = " (%s) " % (self._fields)
+        # self._fields = " (%s) " % (self._fields)
         self._file_pattern = config_dict['file_pattern']
         self._ftp_host = config_dict['ftp_config']['host']
         self._ftp_user = config_dict['ftp_config']['user']
@@ -44,40 +44,43 @@ class ProductFeed(object):
     # how to get filename of flat_file.csv
     def load_cleaned_data(self): # eventually rename
         start = time.time()
-        cursor = connection.cursor()
-
-        # filepath to pd_temp/ran/cleaned/flat_file.csv ?
+        
         file_list = os.listdir(self._local_temp_dir_cleaned)
-        f = file_list[0] # corresponds to flat_file.csv
-        f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
-        table = self._table
-        fields = self._fields
 
-        full_script = []
+        for flat_file in file_list:
+            cursor = connection.cursor()
+            f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, flat_file)
+            table = self._table
+            fields = self._fields
+            fields = " (%s) " % (self._fields)
 
-        sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
-        statement = sql_script.read()
-        statements = statement.split(';')
-        for i in range(0, len(statements)):
-            full_script.append(statements[i])
+            full_script = []
 
-        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s" % (f, table, fields)
-        full_script.append(statement)
+            sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
+            statement = sql_script.read()
+            statements = statement.split(';')
+            for i in range(0, len(statements)):
+                full_script.append(statements[i])
 
-        sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
-        statement = sql_script.read()
-        statements = statement.split(';')
-        for i in range(0, len(statements)):
-            full_script.append(statements[i])
+            # need to escape the backslash for python and then also for mySQL
+            statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\n' %s" % (f, table, fields)
 
-        try:
-            with transaction.atomic():
-                for i in range(0, len(full_script)):
-                    statement = full_script[i]
-                    if statement.strip(): # avoid 'query was empty' operational error
-                        cursor.execute(statement)
-        finally:
-            cursor.close()
+            full_script.append(statement)
+
+            sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
+            statement = sql_script.read()
+            statements = statement.split(';')
+            for i in range(0, len(statements)):
+                full_script.append(statements[i])
+
+            try:
+                with transaction.atomic():
+                    for i in range(0, len(full_script)):
+                        statement = full_script[i]
+                        if statement.strip(): # avoid 'query was empty' operational error
+                            cursor.execute(statement)
+            finally:
+                cursor.close()
 
         print "Process takes %s seconds" % (time.time() - start)
 
