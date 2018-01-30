@@ -470,6 +470,8 @@ def look_list(request):
          "average_item_price_minimum": 20.00,
          "average_item_price_maximum": 45.00,
          "show_deleted": True
+          "style_type": [1,2,4],
+          "style_occasion": [3,4]
         }
     """
     looks = Look.objects.all()  
@@ -510,6 +512,12 @@ def look_list(request):
         if request.data['favorites_only'] == "True":
             favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('look_id', flat=True)
             looks = looks.filter(id__in = favs)
+
+    if 'style_type' in request.data:
+        looks = looks.filter(styletype__in = request.data['style_type'])
+
+    if 'style_occasion' in request.data:
+        looks = looks.filter(styleoccasion__in = request.data['style_occasion'])
 
     lookmetrics = LookMetrics.objects.all()
     if 'total_look_price_minimum' in request.data and 'total_look_price_maximum' in request.data:
