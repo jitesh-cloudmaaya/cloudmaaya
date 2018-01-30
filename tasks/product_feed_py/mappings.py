@@ -19,12 +19,12 @@ def create_color_mapping():
     Returns a dict of external_color mapped to the allume_color. Both values are strings.
     Both variables are lower case strings.
     """
-    cursor = connection.cursor()
-    cursor.execute("SELECT external_color, allume_color FROM product_api_colormap")
 
     color_mapping = {}
-    for tup in cursor.fetchall():
-        color_mapping[tup[0]] = tup[1]
+
+    colormaps = ColorMap.objects.values_list('external_color', 'allume_color')
+    for colormap in colormaps:
+        color_mapping[colormap[0]] = colormap[1]
 
     return color_mapping
 
