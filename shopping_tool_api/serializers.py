@@ -60,18 +60,20 @@ class StyleTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StyleType
-        fields = '__all__'#
+        fields = ['id', 'name']
 
 class StyleOccasionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StyleOccasion
-        fields = '__all__'#
+        fields = ['id', 'name']
 
 class LookSerializer(serializers.ModelSerializer):
     look_layout = LookLayoutSerializer(many=False, read_only=True)
     look_products = LookProductSerializer(source='product_set', many=True, read_only=True)
     look_metrics = LookMetricsSerializer(source='metric_set', many=True, read_only=True)
+    look_style_occasions = StyleOccasionSerializer(source='styleoccasion_set', many=True, read_only=True)
+    look_style_types = StyleTypeSerializer(source='styletype_set', many=True, read_only=True)
 
     class Meta:
         model = Look
