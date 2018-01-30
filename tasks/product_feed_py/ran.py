@@ -67,7 +67,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                     # add merchant that does not yet exist in table
                     mappings.add_new_merchant(long_merchant_id, merchant_name, network, False)
                     # add entry for new merchant in mapping instance
-                    merchant_mapping[long_merchant_id] = 0
+                    merchant_mapping[long_merchant_id] = False
                     merchantsDiscovered += 1
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_mapping[long_merchant_id]: # set the merchant_table active column to 1 for a few companies when testing

@@ -4,17 +4,15 @@ from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeC
 def create_merchant_mapping():
     """
     Returns a dict of merchant_ids as longs mapped to whether or not that
-    merchant is active. 1 is active and 0 is not active.
+    merchant is active as a boolean.
     """
-    cursor = connection.cursor()
-    cursor.execute("SELECT external_merchant_id, active FROM product_api_merchant")
-
     merchant_mapping = {}
-    for tup in cursor.fetchall():
-        merchant_mapping[tup[0]] = tup[1]
+
+    merchants = Merchant.objects.values_list('external_merchant_id', 'active')
+    for merchant in merchants:
+        merchant_mapping[merchant[0]] = merchant[1]
 
     return merchant_mapping
-
 
 def create_color_mapping():
     """
