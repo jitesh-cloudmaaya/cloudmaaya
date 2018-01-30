@@ -105,7 +105,7 @@ def are_categories_active(primary_category, secondary_category, category_mapping
     try:
         identifier = (primary_category, secondary_category)
         if identifier not in category_mapping.keys():
-            mappings.add_category_map(primary_category, secondary_category, None, False, True)
+            add_category_map(primary_category, secondary_category, None, False, True)
             # edit the mapping instance
             category_mapping[identifier] = (None, False)
             # print discovered categories pair
@@ -125,4 +125,3 @@ def are_categories_active(primary_category, secondary_category, category_mapping
         return allume_category
     except:
         return False
- 

@@ -6,7 +6,7 @@ import csv
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant
+from product_api.models import Merchant, CategoryMap
 
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir, file_ending, cleaned_fields):
@@ -33,12 +33,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
         totalCount = 0
         writtenCount = 0
         genderSkipped = 0
-        allumecategorySkipped = 0
-        inactiveSkipped = 0
-        pendingReviewSkipped = 0
-        categoriesDiscovered = 0
-        # merchantsDiscovered = 0
+        categoriesSkipped = 0
         merchantCount = Merchant.objects.count()
+        categoryCount = CategoryMap.objects.count()
 
         # different dialects for reading and writing
         csv.register_dialect('reading', delimiter='|', quoting=csv.QUOTE_NONE, quotechar='')
@@ -256,15 +253,16 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             # write the reconstructed line to the cleaned file using the csvwriter
                             writer.writerow(record)
                             writtenCount += 1
+                        else:
+                            categoriesSkipped += 1
+
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
-    print('Discovered %s unmapped primary and secondary category pairs' % categoriesDiscovered)
+    print('Discovered %s unmapped primary and secondary category pairs' % (CategoryMap.objects.count() - categoryCount))
     print('Discovered %s new merchant(s)' % (Merchant.objects.count() - merchantCount))
-    print('Dropped %s records due to pending discovered categories' % pendingReviewSkipped)
     print('Dropped %s records due to gender' % genderSkipped)
-    # print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
-    print('Dropped %s records due to inactive categories' % inactiveSkipped)
+    print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
 
 
