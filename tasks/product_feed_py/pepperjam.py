@@ -14,7 +14,6 @@ PEPPER_JAM_API_BASE_URL = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_AP
 
 def get_merchants(status='joined'):
 
-
     # Set Up PepperJam URL
     pepper_jam_api_merchant_url = PEPPER_JAM_API_BASE_URL + "publisher/advertiser?apiKey=%s&status=%s&format=json" % (PEPPERJAM_API_KEY, status)
 
@@ -26,6 +25,8 @@ def get_merchants(status='joined'):
     # Test Merchants Data
     print("Getting local test data")
     json_data = open('tasks/product_feed_py/sample_data/pepperjam_merchant.json')
+    merchants = json.load(json_data)
+    json_data.close()
 
     # Get Merchants
     # merchants = json.load(urllib2.urlopen(pepper_jam_api_merchant_url))
@@ -37,14 +38,21 @@ def get_merchants(status='joined'):
         merchant_id = long(merchant['id'])
         merchant_name = merchant['name']
 
-        try:
-            merchant_is_active = merchant_mapping[merchant_id]
-        except:
+        # replace merchant_is_active logic in pepperjam?
+        if merchant_id not in merchant_mapping.keys():
+            print 'this merchant did not exist, but will now be added %s, %s' % (merchant_id, merchant_name) # remove this
+            # create new merchant in django/db
             mappings.add_new_merchant(merchant_id, merchant_name, network, False)
-            merchant_mapping = mappings.create_merchant_mapping() #Reload Merchant Mapping
+            # update the merchants dict
+            merchant_mapping[merchant_id] = 0 # initially set to inactive
             new_merchants += 1
 
     print('Added %s new merchants' % new_merchants)
+
+
+    # probably?
+    return merchant_mapping
+
 
 
 def discover_categories():
@@ -56,9 +64,8 @@ def get_data(local_temp_dir):
     pepper_jam_api_product_url = PEPPER_JAM_API_BASE_URL + "publisher/creative/product?apiKey=%s&format=json" % (PEPPERJAM_API_KEY)
     #pepper_jam_api_product_url = "https://api.pepperjamnetwork.com/20120402/publisher/creative/product?apiKey=48db78a072444a019989822d21aa513a5f0f67bb2363d6370b9e59b23bd4b29d&format=json&page=26"
 
-
     # Get Mapping Data
-    merchant_mapping = mappings.create_merchant_mapping()
+    merchant_mapping = get_merchants(status='joined') # new way to create merchant_mapping?
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
@@ -114,14 +121,14 @@ def get_data(local_temp_dir):
                 merchant_id = product['program_id']
                 merchant_name = product['program_name']
 
+
                 # Test if Mechant Is Active
                 try:
-                    merchant_is_active = merchant_mapping[int(merchant_id)]
+                    # update if merchant is active, should always have entry
+                    merchant_is_active = merchant_mapping[long(merchant_id)]
                 except:
-                    mappings.add_new_merchant(merchant_id, merchant_name, network, False)
-                    merchant_mapping = mappings.create_merchant_mapping() #Reload Merchant Mapping
-                    new_merchants += 1
-                    merchant_is_active = 0
+                    print 'somehow used a merchant_id now present in the mapping'
+                    continue
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_is_active == False:
                     continue
@@ -131,7 +138,7 @@ def get_data(local_temp_dir):
 
                 # temporarily don't skip if product is of an inactive category
 
-                ################### DON"T SKIP ANY RECORDS FOR NOW ################ 
+                ################### DON'T SKIP ANY RECORDS FOR NOW ################ 
 
                 # Test if Category is Active
                 # try:
