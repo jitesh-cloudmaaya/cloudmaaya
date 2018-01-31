@@ -33,7 +33,7 @@ def look_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shopping_tool', '0033_auto_20180126_2342'),
+        ('shopping_tool', '0034_merge_20180129_1800'),
     ]
 
     operations = [
