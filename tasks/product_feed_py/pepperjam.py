@@ -126,8 +126,16 @@ def get_data(local_temp_dir):
                 primary_category = product['category_program']
                 secondary_category = product['category_network']
                 allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping)
-                
+                allume_category = 'allume_category' # include to overrule category activity checks
+
                 if allume_category:
+                    # print product['sku']
+                    # print type(product['sku'])
+                    # print merchant_id
+                    # print type(merchant_id)
+
+                    return
+
                     record = {}
                     record['product_id'] = u'-99'
                     record['merchant_id'] = merchant_id
@@ -142,6 +150,7 @@ def get_data(local_temp_dir):
                     record['manufacturer_name'] = product['manufacturer']
                     record['manufacturer_part_number'] = product['mpn']
                     record['SKU'] = product['sku']
+
                     record['product_type'] = u'attribute_2_product_type'
 
                     discount_type = '' # no discount field in data
@@ -244,7 +253,66 @@ def get_data(local_temp_dir):
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
     # print('Added %s new merchants' % new_merchants)
     # new_merchants ?
-		
+
+def generate_product_id(SKU, merchant_id):
+    """
+    Takes in the product's SKU as unicode and merchant_id as unicode and generates
+    a product_id as unicode to be used. Necessary because PepperJam data does not
+    have any product_id information and a unique identifier is required to perform
+    the upsert process for products.
+    """
+    # letter conversion dict that tries to minimize the length of digits added
+    alpha_to_numeric = {
+        u'a': u'1',
+        u'b': u'2',
+        u'c': u'3',
+        u'd': u'4',
+        u'e': u'5',
+        u'f': u'6',
+        u'g': u'7',
+        u'h': u'8',
+        u'i': u'9',
+        u'j': u'10',
+        u'k': u'11',
+        u'l': u'12',
+        u'm': u'13',
+        u'n': u'14',
+        u'o': u'15',
+        u'p': u'16',
+        u'q': u'17',
+        u'r': u'18',
+        u's': u'19',
+        u't': u'20',
+        u'u': u'21',
+        u'v': u'22',
+        u'w': u'23',
+        u'x': u'24',
+        u'y': u'25',
+        u'z': u'26',
+        # accomodate some additional characters seen in SKUs
+        u'(': u'27',
+        u')': u'28',
+        u'.': u'29',
+        u'-': u'30',
+        u'/': u'31'
+        }
+
+    product_id = SKU + merchant_id
+    product_id = product_id.lower()
+    product_id = list(product_id)
+    for i in range(0, len(product_id)):
+        if product_id[i] in alpha_to_numeric.keys():
+            product_id[i] = alpha_to_numeric[product_id[i]]
+        # case when it is a character that is not in our keys, but it is also not alphanumeric
+        elif not product_id[i].isalnum():
+            product_id[i] = u'32'
+
+    product_id = "".join(product_id)
+
+    # handle when the prod_id is too big for django's big interger / mysql bigint(20)?
+    product_id = product_id[:18]
+
+    return product_id
 
 """
 
