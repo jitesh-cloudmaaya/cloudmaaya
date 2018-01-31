@@ -78,7 +78,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
 
     with open(destination, "w") as cleaned:
         # first guess at dialect
-        csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\')
+        csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\', lineterminator='\n')
         # cleaned_fieldnames const until can pass in yaml
 
         cleaned_fieldnames = cleaned_fieldnames.split(',')
