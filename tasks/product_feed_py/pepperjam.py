@@ -218,7 +218,7 @@ def get_data(local_temp_dir):
                         else:
                             record['current_price'] = retail_price
                     except:
-                        record['current_price']
+                        record['current_price'] = retail_price
 
                     # is_deleted logic
                     if 'modification' == 'D': # hardcoded false?
