@@ -62,14 +62,58 @@ def add_category_map(external_cat1, external_cat2, allume_category, active = Fal
     CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, 
                                allume_category = None, active = active, pending_review=pending_review)
 
-"""
-class CategoryMap(models.Model):
-    external_cat1 = models.CharField(max_length=250, blank=True, null=True)
-    external_cat2 = models.CharField(max_length=250, blank=True, null=True)
-    allume_category = models.ForeignKey(AllumeCategory, blank=True, null=True)
-    active = models.BooleanField(default=False)
-    pending_review = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
-"""
+def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
+    """
+    Takes in as arguments a str merchant_id, a string merchant_name, a network
+    id corresponding to the appropriate Network object, a dictionary, merchant_mapping,
+    created with each call to the clean_data function. Creates the merchant if it does
+    not exist. Returns True if the merchant is in the merchant_mapping and active,
+    False otherwise.
+    """
+    try:
+        merchant_id = long(merchant_id)
+        # if not in the map
+        if merchant_id not in merchant_mapping.keys():
+            # create a new instance and save
+            add_new_merchant(merchant_id, merchant_name, network, False)
+            # edit the passed-in dict
+            merchant_mapping[merchant_id] = False
+        if merchant_mapping[merchant_id]:
+            return True
+        return False
+    except:
+        return False
+
+def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping):
+    """
+    Takes in a primary category and a secondary category as strings and a
+    category_mapping dictionary and checks to see if they constitute an
+    undiscovered pair, adding it to the relevant table if so. Additionally,
+    checks to see if they are active at the primary and secondary category level
+    as well as the allume category level. Returns the allume category if so and
+    False otherwise.
+    """
+    try:
+        identifier = (primary_category, secondary_category)
+        if identifier not in category_mapping.keys():
+            add_category_map(primary_category, secondary_category, None, False, True)
+            # edit the mapping instance
+            category_mapping[identifier] = (None, False)
+            # print discovered categories pair
+            print identifier
+        allume_category_id, categories_are_active = category_mapping[identifier]
+        if allume_category_id == None:
+            # allume_category_id is None because it is either a newly discovered category
+            # or a category that is still pending review post-discovery
+            return False
+        # check if the primary and secondary categories are active
+        if not categories_are_active:
+            return False
+        allume_category, allume_category_is_active = allume_category_mapping[allume_category_id]
+        # check allume_category is active
+        if not allume_category_is_active:
+            return False
+        return allume_category
+    except:
+        return False
 

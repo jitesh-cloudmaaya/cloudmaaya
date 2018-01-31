@@ -8,6 +8,7 @@ import csv
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
+from product_api.models import CategoryMap
 
 # Set Up PepeprJam URL
 PEPPER_JAM_API_BASE_URL = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_API_VERSION)
@@ -38,21 +39,15 @@ def get_merchants(status='joined'):
         merchant_id = long(merchant['id'])
         merchant_name = merchant['name']
 
-        # replace merchant_is_active logic in pepperjam?
         if merchant_id not in merchant_mapping.keys():
-            print 'this merchant did not exist, but will now be added %s, %s' % (merchant_id, merchant_name) # remove this
             # create new merchant in django/db
             mappings.add_new_merchant(merchant_id, merchant_name, network, False)
-            # update the merchants dict
-            merchant_mapping[merchant_id] = 0 # initially set to inactive
             new_merchants += 1
 
     print('Added %s new merchants' % new_merchants)
 
+    merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
     return merchant_mapping
-
-def discover_categories():
-    pass
 
 def get_data(local_temp_dir):
 
@@ -78,10 +73,8 @@ def get_data(local_temp_dir):
     totalCount = 0
     writtenCount = 0
     genderSkipped = 0
-    allumecategorySkipped = 0
-    inactiveSkipped = 0
-    categoriesDiscovered = 0
-    pendingReviewSkipped = 0
+    categoriesSkipped = 0
+    categoryCount = CategoryMap.objects.count()
 
     with open(destination, "w") as cleaned:
         # first guess at dialect
@@ -132,173 +125,122 @@ def get_data(local_temp_dir):
 
                 primary_category = product['category_program']
                 secondary_category = product['category_network']
+                allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping)
+                
+                if allume_category:
+                    record = {}
+                    record['product_id'] = u'-99'
+                    record['merchant_id'] = merchant_id
+                    record['product_name'] = product['name'] # product_name
+                    record['long_product_description'] = product['description_long']
+                    record['short_product_description'] = product['description_short']
+                    buy_url = product['buy_url']
+                    record['product_url'] = buy_url # product_url == buy_url?
+                    record['raw_product_url'] = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
+                    record['product_image_url'] = product['image_url']
+                    record['buy_url'] = buy_url
+                    record['manufacturer_name'] = product['manufacturer']
+                    record['manufacturer_part_number'] = product['mpn']
+                    record['SKU'] = product['sku']
+                    record['product_type'] = u'attribute_2_product_type'
 
-                # new category discovery stuff
-                try:
-                    identifier = (primary_category, secondary_category)
-                    if identifier not in category_mapping.keys():
-                        mappings.add_category_map(primary_category, secondary_category, None, False, True)
-                        category_mapping[identifier] = (None, 0)
-                        print identifier
-                        categoriesDiscovered += 1
-
-                    allume_category_id, active = category_mapping[identifier]
-                    if allume_category_id == None:
-                        pendingReviewSkipped += 1
-                        continue
-                    if not active:
-                        inactiveSkipped += 1
-                        continue
-                    allume_category, active = allume_category_mapping[allume_category_id]
-                    if not active:
-                        inactiveSkipped += 1
-                        continue
-                except Exception as e:
-                    # key error in either category_mapping or allume_category_mapping
-                    print 'somehow an identifier without an entry was accessed'
-                    print e
-                    continue
-
-                ################### DON'T SKIP ANY RECORDS FOR NOW ################ 
-
-                # Test if Category is Active
-                # try:
-                #     identifier = (primary_category, secondary_category)
-                #     allume_category_id, active = category_mapping[identifier]
-                #     # activity check on the primary, secondary category pair
-                #     if not active:
-                #         # inactiveSkipped += 1
-                #         # continue
-                #         pass
-                #     # print(active)
-                #     allume_category, active = allume_category_mapping[allume_category_id]
-                #     # activity check on the allume_category
-                #     if not active:
-                #         # inactiveSkipped += 1
-                #         # continue
-                #         pass
-                # except:
-                #     # there is no entry in the category tables for the provided categories
-                #     # assume inactive?
-                #     allumecategorySkipped += 1
-                #     mappings.add_category_map(primary_category, secondary_category, None, False, True)
-                #     allume_category_mapping = mappings.create_allume_category_mapping()
-                #     category_mapping = mappings.create_category_mapping()
-                #     continue
-
-                record = {}
-                record['product_id'] = u'-99'
-                record['merchant_id'] = merchant_id
-                record['product_name'] = product['name'] # product_name
-                record['long_product_description'] = product['description_long']
-                record['short_product_description'] = product['description_short']
-                buy_url = product['buy_url']
-                record['product_url'] = buy_url # product_url == buy_url?
-                record['raw_product_url'] = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
-                record['product_image_url'] = product['image_url']
-                record['buy_url'] = buy_url
-                record['manufacturer_name'] = product['manufacturer']
-                record['manufacturer_part_number'] = product['mpn']
-                record['SKU'] = product['sku']
-                record['product_type'] = u'attribute_2_product_type'
-
-                discount_type = '' # no discount field in data
-                if discount_type != 'amount' or discount_type != 'percantage':
-                    record['discount'] = u'0.00'
-                    record['discount_type'] = u'amount'
-                else:
-                    record['discount'] = discount
-                    record['discount_type'] = discount_type
-
-                sale_price = product['price_sale']
-                if sale_price != None:
-                    record['sale_price'] = sale_price
-                else:
-                    record['sale_price'] = ''
-
-                retail_price = product['price']
-                if retail_price != None:
-                    record['retail_price'] = retail_price
-                else:
-                    record['retail_price'] = ''
-
-                shipping = product['price_shipping']
-                if shipping != None:
-                    record['shipping_price'] = shipping
-
-                merchant_color = product['color']
-                record['merchant_color'] = merchant_color
-                try:
-                    allume_color = color_mapping[merchant_color]
-                except:
-                    allume_color = u'other'
-                record['color'] = allume_color
-
-                record['gender'] = u'' # no data for gender?
-                record['style'] = product['style']
-
-                attribute_3_size = product['size']
-                attribute_3_size = attribute_3_size.upper()
-                attribute_3_size = attribute_3_size.replace('~', ',')
-                record['size'] = attribute_3_size
-
-                record['material'] = product['material']
-
-                attribute_8_age = product['age_range']
-                attribute_8_age.upper()
-                record['age'] = attribute_8_age
-
-                record['currency'] = product['currency']
-
-                if product['in_stock'] == '':
-                    availability = 'out-of-stock'
-                else:
-                    availability = product['in_stock']
-                record['availability'] = availability
-
-                record['keywords'] = product['keywords']
-                record['primary_category'] = primary_category
-                record['secondary_category'] = secondary_category
-                record['allume_category'] = u'allume_category' # allume_category hard coded
-                record['brand'] = product['manufacturer'] # doubles as brand
-                record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
-                record['merchant_name'] = merchant_name
-
-                # set defaults
-                record['is_best_seller'] = u'0'
-                record['is_trending'] = u'0'
-                record['allume_score'] = u'0'
-
-                # if there is a sale
-                try:
-                    if float(sale_price) > 0:
-                        record['current_price'] = sale_price
+                    discount_type = '' # no discount field in data
+                    if discount_type != 'amount' or discount_type != 'percantage':
+                        record['discount'] = u'0.00'
+                        record['discount_type'] = u'amount'
                     else:
-                        record['current_price'] = retail_price
-                except:
-                    record['current_price']
+                        record['discount'] = discount
+                        record['discount_type'] = discount_type
 
-                # is_deleted logic
-                if 'modification' == 'D': # hardcoded false?
-                    record['is_deleted'] = u'1'
+                    sale_price = product['price_sale']
+                    if sale_price != None:
+                        record['sale_price'] = sale_price
+                    else:
+                        record['sale_price'] = ''
+
+                    retail_price = product['price']
+                    if retail_price != None:
+                        record['retail_price'] = retail_price
+                    else:
+                        record['retail_price'] = ''
+
+                    shipping = product['price_shipping']
+                    if shipping != None:
+                        record['shipping_price'] = shipping
+
+                    merchant_color = product['color']
+                    record['merchant_color'] = merchant_color
+                    try:
+                        allume_color = color_mapping[merchant_color]
+                    except:
+                        allume_color = u'other'
+                    record['color'] = allume_color
+
+                    record['gender'] = u'' # no data for gender?
+                    record['style'] = product['style']
+
+                    attribute_3_size = product['size']
+                    attribute_3_size = attribute_3_size.upper()
+                    attribute_3_size = attribute_3_size.replace('~', ',')
+                    record['size'] = attribute_3_size
+
+                    record['material'] = product['material']
+
+                    attribute_8_age = product['age_range']
+                    attribute_8_age.upper()
+                    record['age'] = attribute_8_age
+
+                    record['currency'] = product['currency']
+
+                    if product['in_stock'] == '':
+                        availability = 'out-of-stock'
+                    else:
+                        availability = product['in_stock']
+                    record['availability'] = availability
+
+                    record['keywords'] = product['keywords']
+                    record['primary_category'] = primary_category
+                    record['secondary_category'] = secondary_category
+                    record['allume_category'] = u'allume_category' # allume_category hard coded
+                    record['brand'] = product['manufacturer'] # doubles as brand
+                    record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
+                    record['merchant_name'] = merchant_name
+
+                    # set defaults
+                    record['is_best_seller'] = u'0'
+                    record['is_trending'] = u'0'
+                    record['allume_score'] = u'0'
+
+                    # if there is a sale
+                    try:
+                        if float(sale_price) > 0:
+                            record['current_price'] = sale_price
+                        else:
+                            record['current_price'] = retail_price
+                    except:
+                        record['current_price']
+
+                    # is_deleted logic
+                    if 'modification' == 'D': # hardcoded false?
+                        record['is_deleted'] = u'1'
+                    else:
+                        record['is_deleted'] = u'0'
+
+                    # end unicode sandwich
+                    for key, value in record.iteritems():
+                        record[key] = value.encode('UTF-8')
+
+                    # write the reconstructed line to the cleaned file using the csvwriter
+                    writer.writerow(record)
+                    writtenCount += 1
                 else:
-                    record['is_deleted'] = u'0'
-
-                # end unicode sandwich
-                for key, value in record.iteritems():
-                    record[key] = value.encode('UTF-8')
-
-                # write the reconstructed line to the cleaned file using the csvwriter
-                writer.writerow(record)
-                writtenCount += 1
+                    categoriesSkipped += 1
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
-    print('Discovered %s unmapped primary and secondary category pairs' % categoriesDiscovered)
-    print('Dropped %s records due to pending discovered categories' % pendingReviewSkipped)
+    print('Discovered %s unmapped primary and secondary category pairs' % (CategoryMap.objects.count() - categoryCount))
     print('Dropped %s records due to gender' % genderSkipped)
-    print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
-    print('Dropped %s records due to inactive categories' % inactiveSkipped)
+    print('Dropped %s records due to inactive categories' % categoriesSkipped)
     # print('Added %s new merchants' % new_merchants)
     # new_merchants ?
 		
