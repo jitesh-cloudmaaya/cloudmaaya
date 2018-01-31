@@ -23,7 +23,7 @@ def get_merchants(status='joined'):
     network = mappings.get_network('PepperJam')
 
     ## Dev Only
-    # Test Merchants Data
+    # # Test Merchants Data
     print("Getting local test data")
     json_data = open('tasks/product_feed_py/sample_data/pepperjam_merchant.json')
     merchants = json.load(json_data)
@@ -95,8 +95,8 @@ def get_data(local_temp_dir):
             # product_feed = json.load(urllib2.urlopen(pepper_jam_api_product_url))
 
             ## Dev Only
-            # print("Getting Data")
-            # print(pepper_jam_api_product_url)
+            print("Getting Data")
+            print(pepper_jam_api_product_url)
             json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')  
             product_feed = json.load(json_data)
             json_data.close()
@@ -201,7 +201,8 @@ def get_data(local_temp_dir):
                     record['keywords'] = product['keywords']
                     record['primary_category'] = primary_category
                     record['secondary_category'] = secondary_category
-                    record['allume_category'] = u'allume_category' # allume_category hard coded
+                    # record['allume_category'] = u'allume_category' # allume_category hard coded
+                    record['allume_category'] = allume_category # replace hard coding?
                     record['brand'] = product['manufacturer'] # doubles as brand
                     record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
                     record['merchant_name'] = merchant_name
