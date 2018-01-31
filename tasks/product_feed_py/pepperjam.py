@@ -310,7 +310,7 @@ def generate_product_id(SKU, merchant_id):
     product_id = "".join(product_id)
 
     # handle when the prod_id is too big for django's big interger / mysql bigint(20)?
-    product_id = product_id[:18]
+    product_id = product_id[:19]
 
     return product_id
 
