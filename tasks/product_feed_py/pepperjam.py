@@ -49,7 +49,7 @@ def get_merchants(status='joined'):
     merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
     return merchant_mapping
 
-def get_data(local_temp_dir):
+def get_data(local_temp_dir, cleaned_fieldnames):
 
      # Set Up PepperJam URL
     pepper_jam_api_product_url = PEPPER_JAM_API_BASE_URL + "publisher/creative/product?apiKey=%s&format=json" % (PEPPERJAM_API_KEY)
@@ -80,7 +80,8 @@ def get_data(local_temp_dir):
         # first guess at dialect
         csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\')
         # cleaned_fieldnames const until can pass in yaml
-        cleaned_fieldnames = ['product_id', 'merchant_id', 'product_name', 'long_product_description', 'short_product_description', 'product_url', 'raw_product_url', 'product_image_url', 'buy_url', 'manufacturer_name', 'manufacturer_part_number', 'SKU', 'product_type', 'discount', 'discount_type', 'sale_price', 'retail_price', 'shipping_price', 'color', 'merchant_color', 'gender', 'style', 'size', 'material', 'age', 'currency', 'availability', 'keywords', 'primary_category', 'secondary_category', 'allume_category', 'brand', 'updated_at', 'merchant_name', 'is_best_seller', 'is_trending', 'allume_score', 'current_price', 'is_deleted']
+
+        cleaned_fieldnames = cleaned_fieldnames.split(',')
         # intiialize the csv wrtier
         writer = csv.DictWriter(cleaned, cleaned_fieldnames, dialect = 'writing')
 
@@ -129,15 +130,7 @@ def get_data(local_temp_dir):
                 allume_category = 'allume_category' # include to overrule category activity checks
 
                 if allume_category:
-                    # print product['sku']
-                    # print type(product['sku'])
-                    # print merchant_id
-                    # print type(merchant_id)
-
-                    return
-
                     record = {}
-                    record['product_id'] = u'-99'
                     record['merchant_id'] = merchant_id
                     record['product_name'] = product['name'] # product_name
                     record['long_product_description'] = product['description_long']
@@ -150,6 +143,11 @@ def get_data(local_temp_dir):
                     record['manufacturer_name'] = product['manufacturer']
                     record['manufacturer_part_number'] = product['mpn']
                     record['SKU'] = product['sku']
+
+                    product_id = generate_product_id(product['sku'], merchant_id)
+                    # print product_id
+                    # print type(product_id)
+                    record['product_id'] = product_id
 
                     record['product_type'] = u'attribute_2_product_type'
 

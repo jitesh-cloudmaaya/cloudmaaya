@@ -19,7 +19,6 @@ class ProductFeed(object):
         config_dict = yaml.load(config_file)
         self._table = config_dict['table']
         self._fields = ",".join(config_dict['fields'])
-        self._fields = " (%s) " % (self._fields)
         self._file_pattern = config_dict['file_pattern']
         self._ftp_host = config_dict['ftp_config']['host']
         self._ftp_user = config_dict['ftp_config']['user']
@@ -47,11 +46,18 @@ class ProductFeed(object):
         cursor = connection.cursor()
 
         # filepath to pd_temp/ran/cleaned/flat_file.csv ?
-        file_list = os.listdir(self._local_temp_dir_cleaned)
-        f = file_list[0] # corresponds to flat_file.csv
-        f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
+        # file_list = os.listdir(self._local_temp_dir_cleaned)
+        # f = file_list[0] # corresponds to flat_file.csv
+        # f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
+        # table = self._table
+        # fields = self._fields
+
+        # change the way file list is generated temporarily for pepperjam
+        file_list = os.listdir('temp')
+        f = file_list[0]
+        f = os.path.join(os.getcwd(), 'temp', f)
         table = self._table
-        fields = self._fields
+        fields = " (%s) " % (self._fields)
 
         full_script = []
 
