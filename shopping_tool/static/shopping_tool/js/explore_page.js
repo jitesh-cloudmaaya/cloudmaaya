@@ -144,8 +144,8 @@ var explore_page = {
     lookup.per_page = 12;
     lookup.style_type = $('#explore-style').val().map(function(val, i){ return parseInt(val)});
     lookup.style_occasion = $('#explore-occasion').val().map(function(val, i){ return parseInt(val)}); 
-    if(lookup.style_type.length == 0){ delete look.style_type; }  
-    if(lookup.style_occasion.length == 0){ delete look.style_occasion; } 
+    if(lookup.style_type.length == 0){ delete lookup.style_type; }  
+    if(lookup.style_occasion.length == 0){ delete lookup.style_occasion; } 
     if((stylist != '')&&(stylist != ' ')){ lookup.stylist = stylist; }
     if(name != ''){ lookup.name = name; }
     if(faves == true){ lookup.favorites_only = "True"};
@@ -331,11 +331,9 @@ var explore_page = {
       }
     });
     $('#explore-style').val('').selectize({ create: false, sortField: 'text'}).change(function(e){
-      var dd = $(this);
       explore_page.generateSearch();
     });
     $('#explore-occasion').val('').selectize({ create: false, sortField: 'text'}).change(function(e){
-      var dd = $(this);
       explore_page.generateSearch();
     });        
     if(at_load_stylist == null){

@@ -610,11 +610,17 @@ var look_builder = {
             t.getMoment().format('MMMM Do, YYYY h:mm a') + 
             ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
           }
+          var email_text = $('#publish-email').val();
+          email_text = email_text.replace(
+            /\[Link to Lookbook\]/g, 
+            '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +'">Your Lookbook</a>'
+          );
+
           step_div.html(
             '<h5>Looks</h5><div class="look-summary-section">' +
             look_summary.join('') + '</div>' +
             '<h5>Email</h5>' + email_at +
-            '<div class="summary-email">' + $('#publish-email').val() +
+            '<div class="summary-email">' + email_text +
             '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
           );
           link.addClass('on').siblings('a').removeClass('on');
@@ -636,7 +642,10 @@ var look_builder = {
       var lookbook = {
         styling_session_id: look_builder.session_id,
         send_at: null,
-        text_content: $('#publish-email').val()
+        text_content: $('#publish-email').val().replace(
+          /\[Link to Lookbook\]/g, 
+          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +'">Your Lookbook</a>'
+        )
       }
       if($('#send-toggle').prop('checked') == true){
         var t = rome.find(document.getElementById('send-later'))
@@ -646,6 +655,7 @@ var look_builder = {
         var send_string = moment.tz(reg_str, tz).format('X');
         lookbook.send_at = send_string;
       }
+      //console.log(lookbook)
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(lookbook),
@@ -982,10 +992,13 @@ var look_builder = {
               if(dims != null){
                 obj.cropped_dimensions = dims;
               }
+              console.log(obj)
               $.ajax({
                 contentType : 'application/json',
                 data: JSON.stringify(obj),
                 success:function(response){
+                  console.log(response)
+                  console.log(obj.product)
                   var elem = $(el);
                   elem.data('lookitemid', response.id)
                   elem.data('isnew', 'yes');
@@ -999,10 +1012,81 @@ var look_builder = {
                     );
                   }
                   /** ecom API addition */
+                  /* get the elastic search data for the product */
                   $.ajax({
-                    data: 'look_product_id=' + response.id,
-                    type: 'POST',
-                    url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/'
+                    success: function(results){
+                      console.log(results)
+                      if((results.data != undefined)&&(results.data.length > 0)){
+                        var payload = {sites: { merchant: {} } };
+                        var tmp = {color_names: [], color_objects: {}};
+                        var matching_object = '';
+                        /* loop through results to set up content for payload */
+                        for(var i = 0, l = results.data.length; i<l; i++){
+                          var product = results.data[i]._source;
+                          if(product.id == response.product){
+                            matching_object = product;
+                          }
+                          /* create color object for payload */
+                          var clr = product.color.toLowerCase();
+                          if(tmp.color_names.indexOf(clr) == -1){
+                            tmp.color_names.push(clr);
+                            tmp.color_objects[clr] = { sizes: [], size_data : {}};
+                          }
+                          if(tmp.color_objects[clr].sizes.indexOf(product.size) == -1){
+                            tmp.color_objects[clr].sizes.push(product.size);
+                            tmp.color_objects[clr].size_data[product.size] = {
+                              image: product.raw_product_url,
+                              price: product.current_price,
+                              text: product.size,
+                              value: product.size
+                            }
+                          }
+                        }
+                        /* create payload object */
+                        payload.sites.merchant.merchant_id = matching_object.merchant_id;
+                        payload.sites.merchant.add_to_cart = {}
+                        payload.sites.merchant.add_to_cart.product = {};
+                        payload.sites.merchant.add_to_cart.product.product_id = response.product;
+                        payload.sites.merchant.add_to_cart.product.title = matching_object.product_name;
+                        payload.sites.merchant.add_to_cart.product.brand = matching_object.brand;
+                        payload.sites.merchant.add_to_cart.product.price = matching_object.current_price;
+                        payload.sites.merchant.add_to_cart.product.original_price = matching_object.retail_price;
+                        payload.sites.merchant.add_to_cart.product.image = matching_object.product_image_url;
+                        payload.sites.merchant.add_to_cart.product.description = matching_object.long_product_description;
+                        payload.sites.merchant.add_to_cart.product.required_field_names = ["color", "size", "quantity"];
+                        payload.sites.merchant.add_to_cart.product.required_field_values = {};
+                        payload.sites.merchant.add_to_cart.product.required_field_values.colors = [];
+                        payload.sites.merchant.add_to_cart.product.required_field_values.url = matching_object.product_url;
+                        payload.sites.merchant.add_to_cart.product.required_field_values.status = "done";
+                        payload.sites.merchant.add_to_cart.product.required_field_values.original_url = matching_object.raw_product_url;
+                      }
+                      /* create the colors array objects */
+                      for(var i = 0, l = tmp.color_names.length; i<l; i++){
+                        var color = tmp.color_names[i];
+                        var obj = {
+                          dep: { size: [] },
+                          image: matching_object.product_image_url,
+                          price: matching_object.current_price,
+                          tex: color,
+                          value: color
+                        }
+                        for(var ix = 0, il = tmp.color_objects[color].sizes.length; ix<il; ix++){
+                          var size_name = tmp.color_objects[color].sizes[ix];
+                          var size = tmp.color_objects[color].size_data[size_name];
+                          size.dep = {}
+                          obj.dep.size.push(size);
+                        }
+                        payload.sites.merchant.add_to_cart.product.required_field_values.colors.push(obj);
+                      }
+                     $.ajax({
+                        contentType : 'application/json',
+                        data: JSON.stringify({look_product_id: response.id, product: payload}),
+                        type: 'POST',
+                        url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/'
+                      });
+                    },
+                    type: "GET",
+                    url: '/product_api/get_product/' + response.product  + '/',
                   });
                   var list_items = box.find('div.item');
                   if(list_items.length > 1){
@@ -1036,8 +1120,6 @@ var look_builder = {
             }
           });        
         });
-      }else{
-
       }
     });
   },

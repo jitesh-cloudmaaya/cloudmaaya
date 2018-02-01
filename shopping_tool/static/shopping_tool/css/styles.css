@@ -3049,6 +3049,12 @@ div.publish-sections div.publish-section.on {display:block}
 div.publish-section h5 { font-size:24px; font-weight:300; margin:0 0 10px; }
 #pub-section2 {position:relative;}
 #pub-section2 h5 {margin:15px;}
+#pub-section2 em.help {
+  color:#777;
+  font-size:14px;
+  font-weight:100;
+  margin:5px 15px;
+}
 label#send-email {position:absolute; top:42px; left:70%;}
 div.publish-section h5 span { border-bottom:1px solid #ddd; display:inline-block; padding:0 0 10px; }
 div.publish-section p { float:left; }
