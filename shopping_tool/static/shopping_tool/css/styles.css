@@ -103,11 +103,11 @@ html {overflow-y:scroll;overflow-x:auto;}
 #nav-menu .menu.show {left:0;}
 #nav-menu .menu h2 {
   border-bottom:1px solid #ddd;
-  font-size: 28px;
+  font-size: 20px;
   font-weight:100;
   padding:15px 10px;
 }
-#nav-menu .menu h2 i {font-size:24px;margin-right:3px;}
+#nav-menu .menu h2 i {font-size:20px;margin-right:3px;}
 #nav-menu .menu a.menu-item {
   color:#777;
   display:block;
@@ -134,7 +134,7 @@ a#close-nav-menu {
   right:0;
   text-align:center;
   text-decoration: none;
-  top:11px;
+  top:5px;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;  
 }

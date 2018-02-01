@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Allume - Shopping Tool</title>
+  <title>Allume Shopping Tool - Look Builder</title>
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css" rel="stylesheet"/>
@@ -16,7 +16,6 @@
 {% include "shopping_tool/header_partial.html" %}
 {% include "shopping_tool/client_partial.html" %}
 <div id="content">
-  
   <div id="rack-draggable">
     <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
     <div class="empty">building the rack...</div>
@@ -32,9 +31,8 @@
     </div>
     <a href="#" id="add-new-look-to-lookbook"><i class="fa fa-plus"></i> add look</a>
   </div>
-  
 </div>
-<!-- delete note confim -->
+<!-- delete look confim -->
 <div id="delete-look-overlay" class="deletion-confirm">
   <div class="stage">
     <div class="sa">
@@ -119,16 +117,11 @@ On your Lookbook you'll be able to 'heart' and comment on each look, and you can
 
 I can also help you with choosing which pieces to try. Just a heads up that pieces do sell out online, I don't want you to miss out on anything that you love.  I'm excited to hear what you think after taking a further look!  Remember the more feedback you give me, the more it will help me do a good job for your next styling sessions.
 </textarea>
-
       </div>
       <div class="publish-section" id="pub-section3"></div>
     </div>
   </div>
 </div>
-
-
-
-
 {% include "shopping_tool/rack_partial.html" %}
 {% include "shopping_tool/looks_partial.html" %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -147,6 +140,8 @@ I can also help you with choosing which pieces to try. Just a heads up that piec
 <script>
 {% include "shopping_tool/js_arrays.html" %}
 /* before initializing page get stylist's favorites */
+utils.menu();
+utils.client();
 $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
   for(var i = 0, l = result.length;i<l;i++){
     var fave = result[i];

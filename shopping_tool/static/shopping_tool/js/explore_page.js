@@ -30,8 +30,6 @@ var explore_page = {
   * @description init function applying the functionality to the page elements
   */
   init: function(){
-    utils.menu();
-    utils.client();
     rack_builder.init();
     /* cache the session id */
     explore_page.session_id = $('body').data('stylesession');

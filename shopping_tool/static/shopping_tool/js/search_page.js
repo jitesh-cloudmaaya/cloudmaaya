@@ -10,10 +10,7 @@ var search_page = {
   * @description init function applying the functionality to the page elements
   */
   init: function(){
-    utils.menu();
-    utils.client();
     rack_builder.init();
-    look_builder.functionality();
     /* facets functionality */
     $('#facets').on('click', 'a.facet-group', function(e){
       e.preventDefault();

@@ -646,14 +646,12 @@ var look_builder = {
         var send_string = moment.tz(reg_str, tz).format('X');
         lookbook.send_at = send_string;
       }
-      console.log(lookbook)
-      /* will uncooment to hook up to Allume API
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(lookbook),
         type: 'POST',
         url: 'https://styling-service-stage.allume.co/publish_looks/'
-      })*/
+      });
     })     
   },
   /**
@@ -712,10 +710,7 @@ var look_builder = {
   * @description setup look builder page
   */
   init: function(){
-    utils.menu();
-    utils.client();
     rack_builder.init();
-    /* cache ids for faster reuse */
     look_builder.session_id = $('body').data('stylesession');  
     look_builder.stylist_id = parseInt($('#stylist').data('stylistid'));
     /* attach the functionality */
@@ -785,7 +780,13 @@ var look_builder = {
   orderedRack: function(){
     var rack_items = [];
     var rack_cats = $('#rack-list div.block');
-    if(rack_cats.length > 0){
+    var cat_list = $.map(rack_cats, function(c){ return $(c).data('category')})
+    var faves = $('#fave-prods div.item');
+    if(faves.length > 0){
+      cat_list.push('Favorites');
+      cat_list.sort();
+    }
+    if((rack_cats.length > 0)||(faves.length > 0)){
       rack_items.push(
         '<a class="close-all-rack-sections" href="#">' +
         '<i class="fa fa-caret-square-o-up"></i>collapse all sections</a>' +
@@ -795,9 +796,19 @@ var look_builder = {
     }else{
       rack_items.push('<div class="empty">Your rack is empty...</div>')
     }
+    var added_favorites = 0;
     $.each(rack_cats, function(idx){
       var block = $(this);
       var category = block.data('category');
+      var list_idx = cat_list.indexOf(category);
+      if((list_idx != idx)&&(added_favorites == 0)){
+        added_favorites++;
+        rack_items.push(
+          '<a href="#" class="rack-section-toggle closed"><i class="fa fa-angle-right"></i>' + 
+          'Favorites</a><div class="block" style="display:none" data-category="favorites">' +
+          look_builder.rackFavorites(faves) + '</div>'
+        );
+      }
       rack_items.push(
         '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
         category + '</a><div class="block" data-category="' + category + 
@@ -805,10 +816,9 @@ var look_builder = {
       );
       $.each(block.find('div.item'), function(index){
         var item = $(this);
-        var src = item.find('img').attr('src');
         rack_items.push(
-          '<div class="item" data-productid="' + item.data('productid') + 
-          '" data-url="' + src + '"><img class="handle" src="' + src + '"/></div>'
+          '<div class="item" data-productid="' + item.data('productid') + '">' +
+          '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
         );
       })
       rack_items.push('</div>');
@@ -856,6 +866,23 @@ var look_builder = {
     }else{
       return 'pass';
     }
+  },
+  /**
+  * @description generate rack itmes for favorits
+  * @param {array} faves - array of jquery items
+  * @returns {string} - HTML
+  */
+  rackFavorites: function(faves){
+    var markup = [];
+    $.each(faves, function(index){
+      var item = $(this);
+      markup.push(
+        '<div class="item" data-productid="' + item.data('productid') + '">' +
+        '<span class="fave"><i class="fa fa-heart"></i></span>' +
+        '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
+      );
+    });
+    return markup.join('');
   },
   /**
   * @description set up the builder ui/ux from clicked look link
@@ -1034,6 +1061,10 @@ var look_builder = {
         '" data-url="' + src + '"><img class="handle" src="' + src + '"/></div>'
       );
     });
+    var faves = $('#fave-prods div.item');
+    if(faves.length > 0){
+      rack_items.push(look_builder.rackFavorites(faves));
+    }
     /* add the clones and assign drag/drop functionality */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(
