@@ -19,7 +19,7 @@ class ProductFeed(object):
         config_dict = yaml.load(config_file)
         self._table = config_dict['table']
         self._fields = ",".join(config_dict['fields'])
-        self._fields = " (%s) " % (self._fields)
+        # self._fields = " (%s) " % (self._fields)
         self._file_pattern = config_dict['file_pattern']
         self._ftp_host = config_dict['ftp_config']['host']
         self._ftp_user = config_dict['ftp_config']['user']
@@ -46,12 +46,12 @@ class ProductFeed(object):
         start = time.time()
         cursor = connection.cursor()
 
-        # filepath to pd_temp/ran/cleaned/flat_file.csv ?
+        # change the way file list is generated temporarily for pepperjam
         file_list = os.listdir(self._local_temp_dir_cleaned)
-        f = file_list[0] # corresponds to flat_file.csv
+        f = file_list[0]
         f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
         table = self._table
-        fields = self._fields
+        fields = " (%s) " % (self._fields)
 
         full_script = []
 
@@ -61,7 +61,8 @@ class ProductFeed(object):
         for i in range(0, len(statements)):
             full_script.append(statements[i])
 
-        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '|' %s" % (f, table, fields)
+        # need to escape the backslash for python and then also for mySQL
+        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\n' %s" % (f, table, fields)
         full_script.append(statement)
 
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))

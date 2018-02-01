@@ -5,6 +5,22 @@ import os
 from catalogue_service.settings import BASE_DIR
 from celery_once import QueueOnce
 from tasks.product_feed import ProductFeed
+from tasks.product_feed_py.pepperjam import get_data, get_merchants
+
+@task(base=QueueOnce)
+def pepper_jam_get_merchants():
+    get_merchants()
+
+@task(base=QueueOnce)
+def pepperjam_pull():
+    pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/pepperjam.yaml'))
+    print("Creating temp directory for cleaned files")
+    pf.make_temp_dir()
+    print("Pulling and cleaning product data")
+    pf.clean_data()
+    print("Update API products table")
+    pf.load_cleaned_data()
+    print("Successfully updated API products table")
 
 @task(base=QueueOnce)
 def ran_delta_pull():
@@ -31,6 +47,7 @@ def ran_full_pull():
     print("Update API products table")
     pf.load_cleaned_data()
     print("Successfully updated API products table")
+
 
 @task(base=QueueOnce)
 def build_client_360():
