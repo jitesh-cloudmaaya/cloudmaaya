@@ -1017,7 +1017,7 @@ var look_builder = {
                     success: function(results){
                       //console.log(results)
                       if((results.data != undefined)&&(results.data.length > 0)){
-                        var payload = {sites: { merchant: {} } };
+                        var payload = {sites: { } };
                         var tmp = {color_names: [], color_objects: {}};
                         var matching_object = '';
                         /* loop through results to set up content for payload */
@@ -1043,22 +1043,23 @@ var look_builder = {
                           }
                         }
                         /* create payload object */
-                        payload.sites.merchant.merchant_id = matching_object.merchant_id;
-                        payload.sites.merchant.add_to_cart = {}
-                        payload.sites.merchant.add_to_cart.product = {};
-                        payload.sites.merchant.add_to_cart.product.product_id = response.product;
-                        payload.sites.merchant.add_to_cart.product.title = matching_object.product_name;
-                        payload.sites.merchant.add_to_cart.product.brand = matching_object.brand;
-                        payload.sites.merchant.add_to_cart.product.price = matching_object.current_price;
-                        payload.sites.merchant.add_to_cart.product.original_price = matching_object.retail_price;
-                        payload.sites.merchant.add_to_cart.product.image = matching_object.product_image_url;
-                        payload.sites.merchant.add_to_cart.product.description = matching_object.long_product_description;
-                        payload.sites.merchant.add_to_cart.product.required_field_names = ["color", "size", "quantity"];
-                        payload.sites.merchant.add_to_cart.product.required_field_values = {};
-                        payload.sites.merchant.add_to_cart.product.required_field_values.colors = [];
-                        payload.sites.merchant.add_to_cart.product.required_field_values.url = matching_object.product_url;
-                        payload.sites.merchant.add_to_cart.product.required_field_values.status = "done";
-                        payload.sites.merchant.add_to_cart.product.required_field_values.original_url = matching_object.raw_product_url;
+                        var merchant_node = matching_object.merchant_id.toString();
+                        var product_node = response.product.toString();
+                        payload.sites[merchant_node] = {}
+                        payload.sites[merchant_node].add_to_cart = {}
+                        payload.sites[merchant_node].add_to_cart[product_node] = {};
+                        payload.sites[merchant_node].add_to_cart[product_node].title = matching_object.product_name;
+                        payload.sites[merchant_node].add_to_cart[product_node].brand = matching_object.brand;
+                        payload.sites[merchant_node].add_to_cart[product_node].price = matching_object.current_price;
+                        payload.sites[merchant_node].add_to_cart[product_node].original_price = matching_object.retail_price;
+                        payload.sites[merchant_node].add_to_cart[product_node].image = matching_object.product_image_url;
+                        payload.sites[merchant_node].add_to_cart[product_node].description = matching_object.long_product_description;
+                        payload.sites[merchant_node].add_to_cart[product_node].required_field_names = ["color", "size", "quantity"];
+                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values = {};
+                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.colors = [];
+                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.url = matching_object.product_url;
+                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.status = "done";
+                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.original_url = matching_object.raw_product_url;
                       }
                       /* create the colors array objects */
                       for(var i = 0, l = tmp.color_names.length; i<l; i++){
@@ -1076,11 +1077,11 @@ var look_builder = {
                           size.dep = {}
                           obj.dep.size.push(size);
                         }
-                        payload.sites.merchant.add_to_cart.product.required_field_values.colors.push(obj);
+                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.colors.push(obj);
                       }
-                     $.ajax({
-                        contentType : 'application/json',
-                        data: JSON.stringify({look_product_id: response.id, product: payload}),
+                      $.ajax({
+                        contentType: 'application/x-www-form-urlencoded',
+                        data: $.param({look_product_id: response.id, product: payload}),
                         type: 'POST',
                         url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/'
                       });
