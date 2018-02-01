@@ -86,5 +86,27 @@ var client_360 = {
   "colors": "{{ client.client_360.colors_preference }}",
   "avoid" : "{{ client.client_360.style_avoid }}"
 }
+/**
+* @description style types for looks
+*/
+var style_types = [
+{% for style in styles %}
+  { 
+    "id": {{style.id}},
+    "name": "{{style.name}}"
+  },
+{% endfor %} 
+]
+/**
+* @description occasion types for looks
+*/
+var occasion_types = [
+{% for occ in occasions %}
+  { 
+    "id": {{occ.id}},
+    "name": "{{occ.name}}"
+  },
+{% endfor %} 
+]
 
 

@@ -388,7 +388,7 @@ def rack_item(request, pk=None):
 
         return Response(context) 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 @check_login
 @permission_classes((AllowAny, ))
 def look(request, pk):
@@ -469,6 +469,7 @@ def look_list(request):
          "total_look_price_maximum": 1000.00,
          "average_item_price_minimum": 20.00,
          "average_item_price_maximum": 45.00,
+         "show_deleted": True
           "style_type": [1,2,4],
           "style_occasion": [3,4]
         }

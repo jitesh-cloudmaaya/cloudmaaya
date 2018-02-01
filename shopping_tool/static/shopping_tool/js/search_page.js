@@ -10,10 +10,7 @@ var search_page = {
   * @description init function applying the functionality to the page elements
   */
   init: function(){
-    utils.menu();
-    utils.client();
     rack_builder.init();
-    look_builder.functionality();
     /* facets functionality */
     $('#facets').on('click', 'a.facet-group', function(e){
       e.preventDefault();
@@ -266,10 +263,7 @@ var search_page = {
       details.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
     }
     return '<div class="item"><div class="image">' + fave_link + 
-      '<a href="#" class="item-detail" data-name="' + details.product_name + 
-      '" data-brand="' + details.manufacturer_name + 
-      '" data-productid="' + details.id + '"><img src="' + 
-      details.product_image_url + '"></a></div><a href="' + details.product_url + 
+      '<img src="' + details.product_image_url + '"></div><a href="' + details.product_url + 
       '" target="_blank" class="name">' + details.product_name + '</a>' + 
       '<a href="#" class="add-to-rack" data-productid="' + details.id + 
       '"><i class="icon-hanger"></i>add to rack</a>' + merch + 

@@ -9,7 +9,7 @@
   <div class="details">
     <div class="social" id="client-social">
     	<span>social media:</span>
-      <a href="{{ client.client_360.instagram }}" class="instagram" target="_blank"><i class="fa fa-instagram"></i></a>
+      <a href="https://www.instagram.com/{{ client.client_360.instagram }}" class="instagram" target="_blank"><i class="fa fa-instagram"></i></a>
       <a href="{{ client.client_360.pinterest }}" class="pinterest" target="_blank"><i class="fa fa-pinterest"></i></a>
       <a href="{{ client.client_360.linkedin }}" class="linkedin" target="_blank"><i class="fa fa-linkedin"></i></a>
     </div>
@@ -60,11 +60,11 @@
         <span class="client-details"><em>jewelry (type):</em>{{ client.client_360.jewelry_type }}</span>        
     	</div>
     	<div id="client-spend" class="client-section">
-    		<span class="client-details"><em>tops:</em>{{ client.client_360.spending_tops }}</span>
-		    <span class="client-details"><em>bottoms:</em>{{ client.client_360.spending_bottoms }}</span>
-		    <span class="client-details"><em>dresses:</em>{{ client.client_360.spending_dresses }}</span>
-		    <span class="client-details"><em>jackets:</em>{{ client.client_360.spending_jackets }}</span>
-		    <span class="client-details"><em>shoes:</em>{{ client.client_360.spending_shoes }}</span>
+        <span class="client-details"><em>tops:</em>{{ client.client_360.spending_tops }}</span>
+        <span class="client-details"><em>bottoms:</em>{{ client.client_360.spending_bottoms }}</span>
+        <span class="client-details"><em>dresses:</em>{{ client.client_360.spending_dresses }}</span>
+        <span class="client-details"><em>jackets:</em>{{ client.client_360.spending_jackets }}</span>
+        <span class="client-details"><em>shoes:</em>{{ client.client_360.spending_shoes }}</span>
     	</div>
     	<div id="client-weather" class="client-section">
         <span id="client-weather-locale"></span>
@@ -108,3 +108,22 @@
     </div>
   </div>
 </div>
+
+<!-- delete note confim -->
+<div id="delete-note-overlay" class="deletion-confirm">
+  <div class="stage">
+    <div class="sa">
+      <div class="sa-warning">
+        <div class="sa-warning-body"></div>
+        <div class="sa-warning-dot"></div>
+      </div>
+    </div>
+    <div class="are-your-sure">Are you sure you wish to delete this note?</div>
+    <div class="btns">
+      <a href="#" class="yes">Yes</a>
+      <a href="#" class="cancel">No</a>
+    </div>
+  </div>
+</div>
+
+
