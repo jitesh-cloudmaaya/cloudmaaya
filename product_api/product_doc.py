@@ -4,6 +4,8 @@ from elasticsearch_dsl.field import (
 )
 from elasticsearch_dsl import FacetedSearch
 from elasticsearch_dsl import TermsFacet, DateHistogramFacet, HistogramFacet, RangeFacet
+from elasticsearch_dsl.connections import connections
+from elasticsearch.helpers import bulk
 from elasticsearch_dsl.query import Q
 from six import itervalues
 import collections
@@ -12,6 +14,8 @@ import inspect
 
 from catalogue_service.settings_local import PRODUCT_INDEX
 from six import iteritems, itervalues, string_types
+from datetime import datetime, timedelta
+
 """
 #Commenting out for now I expect to delete soon unless we decide to not use logstash for indexing
 
@@ -173,13 +177,8 @@ class EProductSearch(FacetedSearch):
             return search.query(main_q).query(q_faves).extra(collapse=collapse_dict)
         #.sort('-p')
 
-"""
-  "collapse": {
-    "field": "product_name.keyword",
-    "inner_hits": {
-      "name": "collapsed_by_size",
-      "from": 1,
-      "size": 2
-    }
-  }
-"""
+def remove_deleted_items(self, days_back = 14):
+
+    last_updated_date = (datetime.now() - timedelta(days=days_back)).strftime("%Y-%m-%d")
+    print last_updated_date
+
