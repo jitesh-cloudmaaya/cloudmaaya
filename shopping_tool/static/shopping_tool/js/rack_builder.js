@@ -201,6 +201,10 @@ var rack_builder = {
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
+        /* if we are on looks builder page use this initial looks call to populate the list */
+        if((window.location.href.indexOf('look_builder') > -1)&&(type == 'regular')){
+          look_builder.editableLooksMarkup(response.looks);
+        }
         var markup = [];
         var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
@@ -212,7 +216,7 @@ var rack_builder = {
             var product_markup = [];
             for(var p = 0, prods = comp.look_products.length; p<prods; p++){
               var prod = comp.look_products[p];
-              if(prod.layout_position == position){
+              if((prod.layout_position == position)&&(prod.product != undefined)){
                 var src = prod.product.product_image_url;
                 if(prod.cropped_dimensions != null){
                   var crop = {
@@ -480,7 +484,24 @@ var rack_builder = {
       var link = $(this);
       var from_compare = link.hasClass('compare') ? true : false;
       rack_builder.addToRack(link, 'inspect', from_compare);
-    });
+    }).on('click', 'a#color-toggle', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var pos = link.position()
+      link.toggleClass('on')
+      $('#color-options').css({left: pos.left + 1, top: pos.top + 30}).fadeToggle();
+    }).on('click', 'a.size-by-color', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var color_link = $('#color-toggle');
+      var data = color_link.data();
+      var color = link.data('color');
+      var sizes_list = [...new Set(data.colormap[color])].filter(String);
+      color_link.removeClass('on').html(color + '<i class="fa fa-caret-down"></i>');
+      link.addClass('selected').siblings('a').removeClass('selected');
+      $('#sizes-list').html(sizes_list.join(', '));
+      $('#color-options').hide();
+    })
     /* get all looks */
     rack_builder.getRackLooks('regular', '#looks-list');
     rack_builder.getRackLooks('favorites', '#fave-looks');
@@ -506,79 +527,87 @@ var rack_builder = {
         ).fadeIn();
       },
       type: "GET",
-      url: '/product_api/get_product/' + id,
+      url: '/product_api/get_product/' + id + '/',
       success: function(results){
-        var sizes_list = [];
+        console.log(results)
+        var inspect = $('#inspect-item');
         var markup = [];
-        results.data.sort(function(a,b){
-          var a_size = isNaN(a._source.size) ? a._source.size : parseInt(a._source.size);
-          var b_size = isNaN(b._source.size) ? b._source.size : parseInt(b._source.size);
-          if(a_size > b_size){ return 1; }
-          if(a_size < b_size){ return -1; }
-          return 0;          
-        })
+        var matching;
+        var colors_hash = {color_names: [], color_sizes: {}};
         for(var i = 0, l = results.data.length; i<l; i++){
           var product = results.data[i]._source;
-          var fave_link = '<a href="#" class="favorite" data-productid="' + 
-            product.id + '"><i class="fa fa-heart-o"></i></a>';
-          var fave_idx = rack_builder.favorites_product_ids.indexOf(product.id);
-          if(fave_idx > -1){
-            var favorite_object = rack_builder.favorites[fave_idx];
-            fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
-            product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
+          if(colors_hash.color_names.indexOf(product.color) == -1){
+            colors_hash.color_names.push(product.color)
+            colors_hash.color_sizes[product.color] = [];
           }
-          var rack_link = '<a href="#" class="add-to-rack ' + view_class + 
-              '" data-productid="' + product.id + '"><i class="icon-hanger"></i>add to rack</a>';          
+          colors_hash.color_sizes[product.color] = colors_hash.color_sizes[product.color].concat(product.size.split(','));
           if(product.id == id){
-            var retail = product.retail_price;
-            var sale = product.sale_price;
-            var price_display = '';
-            var merch = '<span class="merch">' + product.merchant_name + '</span>';
-            var manu = '<span class="manu">by ' + product.manufacturer_name + '</span>';  
-            if((sale >= retail)||(sale == 0)){
-              price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-            }else{
-              price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-                ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-            }
-            if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }
-            if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }   
-            markup.push(
-              '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
-              '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
-              '<tr><td class="img" rowspan="2"><img src="' + product.product_image_url + '"/>' + 
-              fave_link + '' + rack_link + '</td>' +
-              '<td class="details"><a href="' + product.product_url + '" target="_blank" class="name">' + 
-              product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
-              product.short_product_description + '</p>' + price_display +
-              '<span class="general"><em>size:</em>' + product.size + '</span>' +
-              '<span class="general"><em>sku:</em>' + product.sku + '</span>' +
-              '<span class="general"><em>color:</em>' + product.color + '</span>' +              
-              '<span class="general"><em>category:</em>' + product.primary_category + 
-              '</span></td></tr><tr><td id="inspect-sizes"></td></table></div></div>'
-            );
-          }else{
-            sizes_list.push(
-              '<div class="inspect-alt-size"><table><tr><td class="size-img">' +
-              '<img src="' + product.product_image_url + '"/></td><td>' +
-              '<span class="general"><em>store:</em>' + product.merchant_name + '</span>' +
-              '<span class="general"><em>size:</em>' + product.size + '</span>' +
-              '<span class="general"><em>sku:</em>' + product.sku + '</span>' +
-              '<span class="general"><em>color:</em>' + product.color + '</span>' +
-              fave_link + '' + rack_link + '</td></tr></table></div>'
-            )
+            matching = product;
           }
         }
-        $('#inspect-item').html(markup.join(''));
-        $('#inspect-sizes').append(sizes_list.join(''));
-        /* add info to each link */
-        for(var i = 0, l = results.data.length; i<l; i++){
-          var obj = results.data[i];
-          var rackit = $('#inspect-item').find('a.add-to-rack[data-productid="' + obj._source.id + '"]');
-          var fave = $('#inspect-item').find('a.favorite[data-productid="' + obj._source.id + '"]');
-          rackit.data('details',obj._source);
-          fave.data('details',obj._source)
+        colors_hash.color_names.sort();
+        var product = matching;
+        var color_options = [];
+        var color_link = '';
+        var sizes = '';
+        for(var i = 0, l = colors_hash.color_names.length; i<l; i++){
+          var color = colors_hash.color_names[i];
+          if(color == product.color){
+            if(l > 1){
+              color_link = '<a href="#" id="color-toggle">' + color + '<i class="fa fa-caret-down"></i></a>'
+            }else{
+              color_link = color;
+            }
+            color_options.push('<a href="#" class="size-by-color selected" data-color="' + color + '">' + color + '</a>');
+            var sizes_list = [...new Set(colors_hash.color_sizes[color])].filter(String);
+            sizes = '<span id="sizes-list">' + sizes_list.join(', ') + '</span>';
+          }else{
+            color_options.push('<a href="#" class="size-by-color" data-color="' + color + '">' + color + '</a>');
+          }
         }
+        var fave_link = '<a href="#" class="favorite" data-productid="' + 
+          product.id + '"><i class="fa fa-heart-o"></i></a>';
+        var fave_idx = rack_builder.favorites_product_ids.indexOf(product.id);
+        if(fave_idx > -1){
+          var favorite_object = rack_builder.favorites[fave_idx];
+          fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
+          product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
+        }
+        var rack_link = '<a href="#" class="add-to-rack ' + view_class + 
+            '" data-productid="' + product.id + '"><i class="icon-hanger"></i>add to rack</a>'; 
+        var retail = product.retail_price;
+        var sale = product.sale_price;
+        var price_display = '';
+        var merch = '<span class="merch">' + product.merchant_name + '</span>';
+        var manu = '<span class="manu">by ' + product.manufacturer_name + '</span>';  
+        if((sale >= retail)||(sale == 0)){
+          price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
+        }else{
+          price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
+            ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
+        }
+        if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }
+        if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }   
+        markup.push(
+          '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
+          '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
+          '<tr><td class="img" rowspan="2"><img src="' + product.product_image_url + '"/>' + 
+          fave_link + '' + rack_link + '</td>' +
+          '<td class="details"><a href="' + product.product_url + '" target="_blank" class="name">' + 
+          product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
+          product.short_product_description + '</p>' + price_display +
+          '<span class="general"><em>sku:</em>' + product.sku + '</span>' +
+          '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
+          '<div id="color-options">' + color_options.join('') + '</div>' +
+          '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
+          '<span class="general"><em>category:</em>' + product.primary_category + 
+          '</span></td></tr></table></div></div>'
+        );
+        inspect.html(markup.join(''));
+        /* add info to each link */
+        inspect.find('a.add-to-rack').data('details', product);
+        inspect.find('a.favorite').data('details', product);
+        inspect.find('a#color-toggle').data('colormap', colors_hash.color_sizes);
       }
     });
   },

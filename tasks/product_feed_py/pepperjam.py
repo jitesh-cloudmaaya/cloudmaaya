@@ -4,9 +4,12 @@ import yaml
 import json
 import urllib2
 import urlparse
+import csv
+import time
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
+from product_api.models import CategoryMap
 
 # Set Up PepeprJam URL
 PEPPER_JAM_API_BASE_URL = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_API_VERSION)
@@ -20,34 +23,51 @@ def get_merchants(status='joined'):
     merchant_mapping = mappings.create_merchant_mapping()
     network = mappings.get_network('PepperJam')
 
+    ## Dev Only
+    # # Test Merchants Data
+    # print("Getting local test data")
+    # json_data = open('tasks/product_feed_py/sample_data/pepperjam_merchant.json')
+    # merchants = json.load(json_data)
+    # json_data.close()
+
     # Get Merchants
-    merchants = json.load(urllib2.urlopen(pepper_jam_api_merchant_url))
+    ## Prod & Staging Only
+    print 'Getting merchants using API call'
+
+    # set api call variables
+    numTries = 4 # total number of tries
+    timeout = 60 # in seconds
+    delay = 3 # pause in seconds between retries
+    backoff = 2 # multiplier on timeout between retries
+
+    json_data = open_w_timeout_retry(pepper_jam_api_merchant_url, numTries, timeout, delay, backoff)
+    merchants = json.load(json_data)
     
     # Create some variables to count process metrics
     new_merchants = 0
 
     for merchant in merchants['data']:
-        merchant_id = int(merchant['id'])
+        merchant_id = long(merchant['id'])
         merchant_name = merchant['name']
 
-        try:
-            merchant_is_active = merchant_mapping[merchant_id]
-        except:
+        if merchant_id not in merchant_mapping.keys():
+            # create new merchant in django/db
             mappings.add_new_merchant(merchant_id, merchant_name, network, False)
-            merchant_mapping = mappings.create_merchant_mapping() #Reload Merchant Mapping
             new_merchants += 1
 
     print('Added %s new merchants' % new_merchants)
 
-def get_data(local_temp_dir):
+    merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
+    return merchant_mapping
+
+def get_data(local_temp_dir, cleaned_fieldnames):
 
      # Set Up PepperJam URL
     pepper_jam_api_product_url = PEPPER_JAM_API_BASE_URL + "publisher/creative/product?apiKey=%s&format=json" % (PEPPERJAM_API_KEY)
     #pepper_jam_api_product_url = "https://api.pepperjamnetwork.com/20120402/publisher/creative/product?apiKey=48db78a072444a019989822d21aa513a5f0f67bb2363d6370b9e59b23bd4b29d&format=json&page=26"
 
-
     # Get Mapping Data
-    merchant_mapping = mappings.create_merchant_mapping()
+    merchant_mapping = get_merchants(status='joined') # new way to create merchant_mapping?
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
@@ -58,211 +78,278 @@ def get_data(local_temp_dir):
     pepper_jam_api_product_url = pepper_jam_api_base_url + "publisher/creative/product?apiKey=%s&format=json" % (PEPPERJAM_API_KEY)
 
     # Set output Destination
-    destination = local_temp_dir + '/ppj_flat_file.txt'
-
+    destination = local_temp_dir + '/ppj_flat_file.csv'
+    print destination
     # Create some variables to count process metrics
     totalCount = 0
     writtenCount = 0
     genderSkipped = 0
-    allumecategorySkipped = 0
-    inactiveSkipped = 0
-    new_merchants = 0
-
+    categoriesSkipped = 0
+    categoryCount = CategoryMap.objects.count()
 
     with open(destination, "w") as cleaned:
+        # first guess at dialect
+        csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\', lineterminator='\n')
+        # cleaned_fieldnames const until can pass in yaml
+
+        cleaned_fieldnames = cleaned_fieldnames.split(',')
+        # intiialize the csv wrtier
+        writer = csv.DictWriter(cleaned, cleaned_fieldnames, dialect = 'writing')
 
         more_pages = True
 
         while more_pages:
 
+            # commenting out because API only has X amount of access allowed in a day
             ## Prod & Staging Only
+            print 'Getting data using the API calls'
             print("Getting Data")
+
+            # set api call variables
+            numTries = 4 # total number of tries
+            timeout = 60 # in seconds
+            delay = 3 # pause in seconds between retries
+            backoff = 2 # multiplier on timeout between retries
+
             print(pepper_jam_api_product_url)
-            product_feed = json.load(urllib2.urlopen(pepper_jam_api_product_url))
+            json_data = open_w_timeout_retry(pepper_jam_api_product_url, numTries, timeout, delay, backoff)
+            product_feed = json.load(json_data)
 
             ## Dev Only
-            #json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')  
-            #product_feed = json.load(json_data)
-            #json_data.close()
+            # print("Getting Data")
+            # print(pepper_jam_api_product_url)
+            # json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
+            # product_feed = json.load(json_data)
+            # json_data.close()
 
-            if 'next' in  product_feed['meta']['pagination']:
+            if 'next' in product_feed['meta']['pagination']:
                 pepper_jam_api_product_url = product_feed['meta']['pagination']['next']['href']
             else:
                 more_pages = False
-
 
             for product in product_feed['data']:
 
                 merchant_id = product['program_id']
                 merchant_name = product['program_name']
 
+
                 # Test if Mechant Is Active
                 try:
-                    merchant_is_active = merchant_mapping[int(merchant_id)]
+                    # update if merchant is active, should always have entry
+                    merchant_is_active = merchant_mapping[long(merchant_id)]
                 except:
-                    mappings.add_new_merchant(merchant_id, merchant_name, network, False)
-                    merchant_mapping = mappings.create_merchant_mapping() #Reload Merchant Mapping
-                    new_merchants += 1
-                    merchant_is_active = 0
+                    print 'somehow used a merchant_id now present in the mapping'
+                    continue
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_is_active == False:
                     continue
 
                 primary_category = product['category_program']
                 secondary_category = product['category_network']
+                allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping)
+                # allume_category = 'allume_category' # include to overrule category activity checks
 
-                # Test if Category is Active
-                try:
-                    identifier = (primary_category, secondary_category)
-                    allume_category_id, active = category_mapping[identifier]
-                    # activity check on the primary, secondary category pair
-                    if not active:
-                        inactiveSkipped += 1
-                        continue
-                    # print(active)
-                    allume_category, active = allume_category_mapping[allume_category_id]
-                    # activity check on the allume_category
-                    if not active:
-                        inactiveSkipped += 1
-                        continue
-                except:
-                    # there is no entry in the category tables for the provided categories
-                    # assume inactive?
-                    allumecategorySkipped += 1
-                    mappings.add_category_map(primary_category, secondary_category, None, False, True)
-                    allume_category_mapping = mappings.create_allume_category_mapping()
-                    category_mapping = mappings.create_category_mapping()
-                    continue
+                if allume_category:
+                    record = {}
+                    record['merchant_id'] = merchant_id
+                    record['product_name'] = product['name'] # product_name
+                    record['long_product_description'] = product['description_long']
+                    record['short_product_description'] = product['description_short']
+                    buy_url = product['buy_url']
+                    record['product_url'] = buy_url # product_url == buy_url?
+                    record['raw_product_url'] = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
+                    record['product_image_url'] = product['image_url']
+                    record['buy_url'] = buy_url
+                    record['manufacturer_name'] = product['manufacturer']
+                    record['manufacturer_part_number'] = product['mpn']
+                    record['SKU'] = product['sku']
 
-                ## Build Record for Insertion
-                record = ''
-                record += "-99" + u'|' #product_id
-                record += merchant_id + u'|'
-                record += product['name'] + u'|' #product_name
-                record += product['description_long'] + u'|' #long_product_description
-                record += product['description_short'] + u'|' #short_product_description
+                    product_id = generate_product_id(product['sku'], merchant_id)
+                    # print product_id
+                    # print type(product_id)
+                    record['product_id'] = product_id
 
-                buy_url = product['buy_url']
-                record += buy_url + u'|' #product_url
-                record += product['image_url'] + u'|' #product_image_url
-                record += buy_url + u'|' #buy_url
-                record += product['manufacturer'] + u'|' #manufacturer_name
-                record += product['mpn'] + u'|' #manufacturer_part_number
-                record += product['sku'] + u'|' #SKU
-                record += 'attribute_2_product_type' + u'|' #
+                    record['product_type'] = u'attribute_2_product_type'
 
-
-                discount_type = "" #No Discount Field in the Data
-                if discount_type != "amount" or discount_type != "percentage":
-                    record += '0.0|' # how to indicate null or 0 as in sql?
-                    record += 'amount|'
-                else:
-                    record += discount + u'|'
-                    record += discount_type + u'|'
-
-                sale_price = product['price_sale'] #float(product['price_sale'].decode('utf-8'))
-                if sale_price != None:
-                    record += sale_price + u'|' #retail_price
-                else:
-                    record += "" + u'|' #retail_price
-
-                retail_price = product['price'] #float(product['price_retail'].decode('utf-8'))
-                if retail_price != None:
-                    record += retail_price + u'|' #retail_price
-                else:
-                    record += "" + u'|' #retail_price
-
-                shipping = product['price_shipping'] #float(product['price_shipping'].decode('utf-8'))
-                if shipping != None:
-                    record += shipping + u'|' #shipping
-                else:
-                    record += "" + u'|' #shipping
-
-                # current behavior is take the first and find its mapping if possible
-                color = product['color']
-                try:
-                    record += color_mapping[color] + u'|'
-                except: # where there is no analog
-                    record += "other|"
-
-                record += product['color'] + u'|' # attribute_5_color merchant color field
-
-                # gender
-                record += "" + u'|' #gender
-                record += product['style'] + u'|' #attribute_7_style
-
-                attribute_3_size = product['size']
-                attribute_3_size = attribute_3_size.upper()
-                attribute_3_size = attribute_3_size.replace('~', ',')
-                record += attribute_3_size + u'|'
-
-                record +=  product['material'] + u'|' #attribute_4_material
-
-                attribute_8_age = product['age_range']
-                record += attribute_8_age + u'|'
-
-                record += product['currency'] + u'|' #currency
-
-                if product['in_stock'] == '':
-                    availability = 'out-of-stock'
-                else:
-                    availability = product['in_stock']
-                record += availability + u'|'
-
-
-                record += product['keywords'] + u'|' #keywords
-
-                # allume category information
-                record += primary_category + u'|'
-                record += secondary_category + u'|'
-
-                record += 'allume_category' + u'|' #allume_category
-
-                record += product['manufacturer'] + u'|' #brand
-                # double check date formatting
-                record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + u'|'
-                # record += datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f') + ',') ?
-                # end date
-                record += merchant_name + u'|'
-                # how to indicate null or 0 as in ran.sql
-                record += '0|' # is_best_seller default
-                record += '0|' # is_trending default
-                record += '0|' # allume_score default
-
-                sale_price = product['price_sale']
-                try:
-                    # if there is a sale
-                    if float(sale_price) > 0: # OR NOT NULL ??
-                        record += sale_price + u'|'
+                    discount_type = '' # no discount field in data
+                    if discount_type != 'amount' or discount_type != 'percantage':
+                        record['discount'] = u'0.00'
+                        record['discount_type'] = u'amount'
                     else:
-                        record += retail_price + u'|'
-                except:
-                    record += retail_price + u'|'
+                        record['discount'] = discount
+                        record['discount_type'] = discount_type
 
-                # is_deleted logic
-                if "modification" == 'D':
-                    record += '1|' # is this okay given is_deleted is boolean data type
+                    sale_price = product['price_sale']
+                    if sale_price != None:
+                        record['sale_price'] = sale_price
+                    else:
+                        record['sale_price'] = ''
+
+                    retail_price = product['price']
+                    if retail_price != None:
+                        record['retail_price'] = retail_price
+                    else:
+                        record['retail_price'] = ''
+
+                    shipping = product['price_shipping']
+                    if shipping != None:
+                        record['shipping_price'] = shipping
+
+                    merchant_color = product['color']
+                    record['merchant_color'] = merchant_color
+                    try:
+                        allume_color = color_mapping[merchant_color]
+                    except:
+                        allume_color = u'other'
+                    record['color'] = allume_color
+
+                    record['gender'] = u'' # no data for gender?
+                    record['style'] = product['style']
+
+                    attribute_3_size = product['size']
+                    attribute_3_size = attribute_3_size.upper()
+                    attribute_3_size = attribute_3_size.replace('~', ',')
+                    record['size'] = attribute_3_size
+
+                    record['material'] = product['material']
+
+                    attribute_8_age = product['age_range']
+                    attribute_8_age.upper()
+                    record['age'] = attribute_8_age
+
+                    record['currency'] = product['currency']
+
+                    if product['in_stock'] == '':
+                        availability = 'out-of-stock'
+                    else:
+                        availability = product['in_stock']
+                    record['availability'] = availability
+
+                    record['keywords'] = product['keywords']
+                    record['primary_category'] = primary_category
+                    record['secondary_category'] = secondary_category
+                    # record['allume_category'] = u'allume_category' # allume_category hard coded
+                    record['allume_category'] = allume_category # replace hard coding?
+                    record['brand'] = product['manufacturer'] # doubles as brand
+                    record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
+                    record['merchant_name'] = merchant_name
+
+                    # set defaults
+                    record['is_best_seller'] = u'0'
+                    record['is_trending'] = u'0'
+                    record['allume_score'] = u'0'
+
+                    # if there is a sale
+                    try:
+                        if float(sale_price) > 0:
+                            record['current_price'] = sale_price
+                        else:
+                            record['current_price'] = retail_price
+                    except:
+                        record['current_price'] = retail_price
+
+                    # is_deleted logic
+                    if 'modification' == 'D': # hardcoded false?
+                        record['is_deleted'] = u'1'
+                    else:
+                        record['is_deleted'] = u'0'
+
+                    # end unicode sandwich
+                    for key, value in record.iteritems():
+                        record[key] = value.encode('UTF-8')
+
+                    # write the reconstructed line to the cleaned file using the csvwriter
+                    writer.writerow(record)
+                    writtenCount += 1
                 else:
-                    record += '0|'
-
-
-                raw_url = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
-                record += raw_url 
-
-                # Final Line Break
-                record += '\n'
-
-                cleaned.write(record.encode('UTF-8'))
-                writtenCount += 1
+                    categoriesSkipped += 1
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
+    print('Discovered %s unmapped primary and secondary category pairs' % (CategoryMap.objects.count() - categoryCount))
     print('Dropped %s records due to gender' % genderSkipped)
-    print('Dropped %s records due to no allume_category_id mapping' % allumecategorySkipped)
-    print('Dropped %s records due to inactive categories' % inactiveSkipped)
-    print('Added %s new merchants' % new_merchants)
-    new_merchants
-		
+    print('Dropped %s records due to inactive categories' % categoriesSkipped)
+    # print('Added %s new merchants' % new_merchants)
+    # new_merchants ?
+
+def generate_product_id(SKU, merchant_id):
+    """
+    Takes in the product's SKU as unicode and merchant_id as unicode and generates
+    a product_id as unicode to be used. Necessary because PepperJam data does not
+    have any product_id information and a unique identifier is required to perform
+    the upsert process for products.
+    """
+    # letter conversion dict that tries to minimize the length of digits added
+    alpha_to_numeric = {
+        u'a': u'1',
+        u'b': u'2',
+        u'c': u'3',
+        u'd': u'4',
+        u'e': u'5',
+        u'f': u'6',
+        u'g': u'7',
+        u'h': u'8',
+        u'i': u'9',
+        u'j': u'10',
+        u'k': u'11',
+        u'l': u'12',
+        u'm': u'13',
+        u'n': u'14',
+        u'o': u'15',
+        u'p': u'16',
+        u'q': u'17',
+        u'r': u'18',
+        u's': u'19',
+        u't': u'20',
+        u'u': u'21',
+        u'v': u'22',
+        u'w': u'23',
+        u'x': u'24',
+        u'y': u'25',
+        u'z': u'26',
+        # accomodate some additional characters seen in SKUs
+        u'(': u'27',
+        u')': u'28',
+        u'.': u'29',
+        u'-': u'30',
+        u'/': u'31'
+        }
+
+    product_id = SKU + merchant_id
+    product_id = product_id.lower()
+    product_id = list(product_id)
+    for i in range(0, len(product_id)):
+        if product_id[i] in alpha_to_numeric.keys():
+            product_id[i] = alpha_to_numeric[product_id[i]]
+        # case when it is a character that is not in our keys, but it is also not alphanumeric
+        elif not product_id[i].isalnum():
+            product_id[i] = u'32'
+
+    product_id = "".join(product_id)
+
+    # handle when the prod_id is too big for django's big interger / mysql bigint(20)?
+    product_id = product_id[:19]
+
+    return product_id
+
+# simple timeout and retry
+def open_w_timeout_retry(url, tries, timeout, delay, backoff):
+    """
+    Attempts to open the provided URL within the specified timeout.
+    Retries on error for tries amount of times, with a delay in seconds.
+    Timeout is extended by multiplicative constant backoff until tries expire.
+    """
+    if tries > 0:
+        try:
+            return urllib2.urlopen(url, timeout = timeout)
+        except urllib2.URLError as e:
+            print(e)
+            print("Retrying in %s seconds" % (delay))
+            time.sleep(delay)
+            print("Retrying!")
+            return open_w_timeout_retry(url, tries - 1, timeout * backoff, delay, backoff)
+    else:
+        raise urllib2.URLError("URL causes significant problems, restart process")
 
 """
 
