@@ -816,9 +816,10 @@ var look_builder = {
       );
       $.each(block.find('div.item'), function(index){
         var item = $(this);
+        var src = item.find('img').attr('src');
         rack_items.push(
-          '<div class="item" data-productid="' + item.data('productid') + '">' +
-          '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
+          '<div class="item" data-productid="' + item.data('productid') + 
+          '" data-url="' + src + '"><img class="handle" src="' + src + '"/></div>'
         );
       })
       rack_items.push('</div>');
@@ -876,10 +877,11 @@ var look_builder = {
     var markup = [];
     $.each(faves, function(index){
       var item = $(this);
+      var src = item.find('img').attr('src');
       markup.push(
-        '<div class="item" data-productid="' + item.data('productid') + '">' +
-        '<span class="fave"><i class="fa fa-heart"></i></span>' +
-        '<img class="handle" src="' + item.find('img').attr('src') + '"/></div>'
+        '<div class="item" data-productid="' + item.data('productid') + 
+        '" data-url="' + src + '"><span class="fave"><i class="fa fa-heart"></i></span>' +
+        '<img class="handle" src="' + src + '"/></div>'
       );
     });
     return markup.join('');
