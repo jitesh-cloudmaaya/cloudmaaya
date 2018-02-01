@@ -41,11 +41,8 @@ fields:
 local_temp_dir: pd_temp/pepperjam
 table: product_api_product_temp
 clean_data_method: pepperjam.get_data(self._local_temp_dir_cleaned, self._fields)
-
-# not used?
-leave_temp_files: false
-
 # not used
+leave_temp_files: false
 etl_file_name: tasks/product_feed_sql/ran.sql
 file_pattern: .*_mp\.txt\.gz
 ftp_config:
