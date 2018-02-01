@@ -1,54 +1,63 @@
 from django.db import connection
-from product_api.models import Merchant, Network, CategoryMap
+from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory
 
 def create_merchant_mapping():
-    cursor = connection.cursor()
-    cursor.execute("SELECT external_merchant_id, active FROM product_api_merchant")
-
+    """
+    Returns a dict of merchant_ids as longs mapped to whether or not that
+    merchant is active as a boolean.
+    """
     merchant_mapping = {}
-    for tup in cursor.fetchall():
-        merchant_mapping[tup[0]] = tup[1]
+
+    merchants = Merchant.objects.values_list('external_merchant_id', 'active')
+    for merchant in merchants:
+        merchant_mapping[merchant[0]] = merchant[1]
 
     return merchant_mapping
 
-
 def create_color_mapping():
-    cursor = connection.cursor()
-    cursor.execute("SELECT external_color, allume_color FROM product_api_colormap")
+    """
+    Returns a dict of external_color mapped to the allume_color. Both values are strings.
+    Both variables are lower case strings.
+    """
 
     color_mapping = {}
-    for tup in cursor.fetchall():
-        color_mapping[tup[0]] = tup[1]
+
+    color_maps = ColorMap.objects.values_list('external_color', 'allume_color')
+    for color_map in color_maps:
+        color_mapping[color_map[0]] = color_map[1]
 
     return color_mapping
 
 
 def create_category_mapping():
-    cursor = connection.cursor()
-    cursor.execute("SELECT external_cat1, external_cat2, allume_category_id, active FROM product_api_categorymap")
-
+    """
+    Returns a dict of (primary_category, secondary_category) as keys mapped to 
+    a tuple (allume_category_id, active). Allume_category_id is a long expected to be
+    used in allume_category_mapping. Active is a boolean.
+    """
     category_mapping = {}
-    for tup in cursor.fetchall():
-        category_pair = (tup[0], tup[1])
-        info = (tup[2], tup[3])
-        category_mapping[category_pair] = info
+
+    category_maps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'active')
+    for category_map in category_maps:
+        key_tup = (category_map[0], category_map[1])
+        val_tup = (category_map[2], category_map[3])
+        category_mapping[key_tup] = val_tup
 
     return category_mapping
 
 
 def create_allume_category_mapping():
     """
-    Will return a dict of allume category names as keys mapped to whether or not that
-    allume category is active, 1 is active and 0 is not active.
+    Returns a dict of allume category names as keys mapped to a tuple of the allume
+    category name and whether or not it is active. Active is a boolean.
     """
-
-    cursor = connection.cursor()
-    cursor.execute("SELECT id, name, active FROM product_api_allumecategory")
-
     allume_category_mapping = {}
-    for tup in cursor.fetchall():
-        info = (tup[1], tup[2])
-        allume_category_mapping[tup[0]] = info
+
+    allume_categories = AllumeCategory.objects.values_list('id', 'name', 'active')
+
+    for allume_category in allume_categories:
+        val_tup = (allume_category[1], allume_category[2])
+        allume_category_mapping[allume_category[0]] = val_tup
 
     return allume_category_mapping
 
@@ -116,4 +125,3 @@ def are_categories_active(primary_category, secondary_category, category_mapping
         return allume_category
     except:
         return False
-

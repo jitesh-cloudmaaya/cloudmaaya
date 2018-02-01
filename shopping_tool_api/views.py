@@ -262,6 +262,82 @@ def user_product_favorites(request, pk=None):
     serializer = UserProductFavoriteSerializer(favs, many=True)
     return JsonResponse(serializer.data, safe=False)
 
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def style_type(request):
+    """
+    get:
+        View list of style types
+
+        /shopping_tool_api/style_type/
+    """
+    try:
+        styles = StyleType.objects.filter(active=True).all()
+    except StyleType.DoesNotExist:
+        return HttpResponse(status=404)
+
+    serializer = StyleTypeSerializer(styles, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def style_occasions(request):
+    """
+    get:
+        View list of style occasions
+
+        /shopping_tool_api/style_occasions/
+    """
+    try:
+        styles = StyleOccasion.objects.filter(active=True).all()
+    except StyleOccasion.DoesNotExist:
+        return HttpResponse(status=404)
+
+    serializer = StyleOccasionSerializer(styles, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
+def look_meta_tags(request, pk=None):
+    """
+    put:
+        Add Style and Occasion to Looks
+
+        /shopping_tool_api/look_meta_tags/{look_id}/
+
+        Sample JSON Object
+
+        {
+          "look_id": 393223,
+          "style_type": [1,2,4],
+          "style_occasion": [3,4]
+
+        }
+    """
+    try:
+        look = Look.objects.get(id=pk)
+    except Look.DoesNotExist:
+        return HttpResponse(status=404)
+
+    print ("Deleting Meta")
+    look.styleoccasion_set = []
+    look.styletype_set = []
+
+    print("Saving Occasion")
+    look.styleoccasion_set = request.data['style_occasion']
+
+    print("Savign Type")
+    look.styletype_set = request.data['style_type']
+
+    look.save()
+
+    return JsonResponse(request.data, safe=False)
+
+
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
 @permission_classes((AllowAny, ))
@@ -393,6 +469,8 @@ def look_list(request):
          "total_look_price_maximum": 1000.00,
          "average_item_price_minimum": 20.00,
          "average_item_price_maximum": 45.00,
+          "style_type": [1,2,4],
+          "style_occasion": [3,4]
         }
     """
     looks = Look.objects.all()  
@@ -433,6 +511,12 @@ def look_list(request):
         if request.data['favorites_only'] == "True":
             favs = UserLookFavorite.objects.filter(stylist=request.user.id).values_list('look_id', flat=True)
             looks = looks.filter(id__in = favs)
+
+    if 'style_type' in request.data:
+        looks = looks.filter(styletype__in = request.data['style_type'])
+
+    if 'style_occasion' in request.data:
+        looks = looks.filter(styleoccasion__in = request.data['style_occasion'])
 
     lookmetrics = LookMetrics.objects.all()
     if 'total_look_price_minimum' in request.data and 'total_look_price_maximum' in request.data:

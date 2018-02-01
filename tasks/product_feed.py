@@ -19,6 +19,7 @@ class ProductFeed(object):
         config_dict = yaml.load(config_file)
         self._table = config_dict['table']
         self._fields = ",".join(config_dict['fields'])
+        # self._fields = " (%s) " % (self._fields)
         self._file_pattern = config_dict['file_pattern']
         self._ftp_host = config_dict['ftp_config']['host']
         self._ftp_user = config_dict['ftp_config']['user']
@@ -60,6 +61,7 @@ class ProductFeed(object):
         for i in range(0, len(statements)):
             full_script.append(statements[i])
 
+        # need to escape the backslash for python and then also for mySQL
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\n' %s" % (f, table, fields)
         full_script.append(statement)
 

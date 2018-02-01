@@ -163,8 +163,8 @@ class EProductSearch(FacetedSearch):
             q_faves = Q()
 
 
-        collapse_dict = {"field": "product_name.keyword","inner_hits": {"name": "collapsed_by_product_name","from": 1}}
-        cardinality_dict = {"unique_count" : {"cardinality" : {"field" : "product_name.keyword"}}}
+        collapse_dict = {"field": "raw_product_url.keyword","inner_hits": {"name": "collapsed_by_product_name","from": 1}}
+        cardinality_dict = {"unique_count" : {"cardinality" : {"field" : "raw_product_url.keyword"}}}
 
         if self._card_count:
             return search.query(main_q).query(q_faves).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)

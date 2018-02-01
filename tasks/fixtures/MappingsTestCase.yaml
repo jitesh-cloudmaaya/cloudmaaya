@@ -1,0 +1,21 @@
+# Network
+-   model: product_api.Network
+    pk: 1
+    fields: {name: 'Test Network', active: 1}
+# Merchant
+-   model: product_api.Merchant
+    pk: 1
+    fields: {external_merchant_id: 3812, name: McDonald's, network: 1, active: 1}
+# ColorMap
+-   model: product_api.ColorMap
+    pk: 1
+    fields: {external_color: 'mahogany', allume_color: 'brown'}
+# CategoryMap
+-   model: product_api.CategoryMap
+    pk: 1
+    fields: {external_cat1: 'Shirts', external_cat2: 'T-Shirts', allume_category: 1,
+            active: 1, pending_review: 0}
+# AllumeCategory
+-   model: product_api.AllumeCategory
+    pk: 1
+    fields: {name: 'Test Allume Category', active: 1}
