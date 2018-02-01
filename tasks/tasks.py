@@ -12,6 +12,17 @@ def pepper_jam_get_merchants():
     get_merchants()
 
 @task(base=QueueOnce)
+def pepperjam_pull():
+    pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/pepperjam.yaml'))
+    print("Creating temp directory for cleaned files")
+    pf.make_temp_dir()
+    print("Pulling and cleaning product data")
+    pf.clean_data()
+    print("Update API products table")
+    pf.load_cleaned_data()
+    print("Successfully updated API products table")
+
+@task(base=QueueOnce)
 def ran_delta_pull():
     pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/ran_delta.yaml'))
     print("Pulling delta files from FTP")
@@ -36,6 +47,7 @@ def ran_full_pull():
     print("Update API products table")
     pf.load_cleaned_data()
     print("Successfully updated API products table")
+
 
 @task(base=QueueOnce)
 def build_client_360():

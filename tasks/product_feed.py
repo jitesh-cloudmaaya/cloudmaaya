@@ -45,17 +45,10 @@ class ProductFeed(object):
         start = time.time()
         cursor = connection.cursor()
 
-        # filepath to pd_temp/ran/cleaned/flat_file.csv ?
-        # file_list = os.listdir(self._local_temp_dir_cleaned)
-        # f = file_list[0] # corresponds to flat_file.csv
-        # f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
-        # table = self._table
-        # fields = self._fields
-
         # change the way file list is generated temporarily for pepperjam
-        file_list = os.listdir('temp')
+        file_list = os.listdir(self._local_temp_dir_cleaned)
         f = file_list[0]
-        f = os.path.join(os.getcwd(), 'temp', f)
+        f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
         table = self._table
         fields = " (%s) " % (self._fields)
 
