@@ -5,6 +5,7 @@ import json
 import urllib2
 import urlparse
 import csv
+import time
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
@@ -31,7 +32,8 @@ def get_merchants(status='joined'):
 
     # Get Merchants
     print 'Getting merchants using API call'
-    merchants = json.load(urllib2.urlopen(pepper_jam_api_merchant_url))
+    json_data = open_w_timeout_retry(pepper_jam_api_merchant_url, 4, 60, 3, 2)
+    merchants = json.load(json_data)
     
     # Create some variables to count process metrics
     new_merchants = 0
@@ -96,8 +98,8 @@ def get_data(local_temp_dir, cleaned_fieldnames):
             print("Getting Data")
 
             print(pepper_jam_api_product_url)
-            product_feed = json.load(urllib2.urlopen(pepper_jam_api_product_url))
-
+            json_data = open_w_timeout_retry(pepper_jam_api_product_url, 4, 60, 3, 2)
+            product_feed = json.load(json_data)
 
             ## Dev Only
             # print("Getting Data")
@@ -315,6 +317,25 @@ def generate_product_id(SKU, merchant_id):
     product_id = product_id[:19]
 
     return product_id
+
+# simple timeout and retry
+def open_w_timeout_retry(url, tries, timeout, delay, backoff):
+    """
+    Attempts to open the provided URL within the specified timeout.
+    Retries on error for tries amount of times, with a delay in seconds.
+    Timeout is extended by multiplicative constant backoff until tries expire.
+    """
+    if tries > 0:
+        try:
+            return urllib2.urlopen(url, timeout = timeout)
+        except urllib2.URLError as e:
+            print(e)
+            print("Retrying in %s seconds" % (delay))
+            time.sleep(delay)
+            print("Retrying!")
+            return open_w_timeout_retry(url, tries - 1, timeout * backoff, delay, backoff)
+    else:
+        raise urllib2.URLError("URL causes significant problems, restart process")
 
 """
 
