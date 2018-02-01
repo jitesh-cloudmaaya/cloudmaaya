@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from tasks.product_feed import ProductFeed
 
 class Command(BaseCommand):
-    help = 'Used to Pull PepperJam Data Feeds - Warning Very Slow (Hours)!'
+    help = 'Used to Pull PepperJam Data Feeds - Warning Very Slow (1-2 Hours)!'
 
     def handle(self, *args, **options):
         try:
