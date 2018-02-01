@@ -33,7 +33,14 @@ def get_merchants(status='joined'):
     # Get Merchants
     ## Prod & Staging Only
     print 'Getting merchants using API call'
-    json_data = open_w_timeout_retry(pepper_jam_api_merchant_url, 4, 60, 3, 2)
+
+    # set api call variables
+    numTries = 4 # total number of tries
+    timeout = 60 # in seconds
+    delay = 3 # pause in seconds between retries
+    backoff = 2 # multiplier on timeout between retries
+
+    json_data = open_w_timeout_retry(pepper_jam_api_merchant_url, numTries, timeout, delay, backoff)
     merchants = json.load(json_data)
     
     # Create some variables to count process metrics
@@ -98,8 +105,14 @@ def get_data(local_temp_dir, cleaned_fieldnames):
             print 'Getting data using the API calls'
             print("Getting Data")
 
+            # set api call variables
+            numTries = 4 # total number of tries
+            timeout = 60 # in seconds
+            delay = 3 # pause in seconds between retries
+            backoff = 2 # multiplier on timeout between retries
+
             print(pepper_jam_api_product_url)
-            json_data = open_w_timeout_retry(pepper_jam_api_product_url, 4, 60, 3, 2)
+            json_data = open_w_timeout_retry(pepper_jam_api_product_url, numTries, timeout, delay, backoff)
             product_feed = json.load(json_data)
 
             ## Dev Only
