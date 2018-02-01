@@ -368,7 +368,7 @@ var look_builder = {
       $('#client-look-id-' + link.data('lookid')).remove();
       $.ajax({
         success:function(r){
-          console.log(r)
+          //console.log(r)
         },
         type: 'DELETE',
         url: '/shopping_tool_api/look/' + link.data('lookid') + '/'
@@ -651,7 +651,7 @@ var look_builder = {
         var t = rome.find(document.getElementById('send-later'))
         var tz = $('#send-later').data('tz')
         var reg_str = t.getMoment().format('YYYY-MM-DD HH:MM');
-        console.log(reg_str)
+        //console.log(reg_str)
         var send_string = moment.tz(reg_str, tz).format('X');
         lookbook.send_at = send_string;
       }
@@ -992,13 +992,13 @@ var look_builder = {
               if(dims != null){
                 obj.cropped_dimensions = dims;
               }
-              console.log(obj)
+              //console.log(obj)
               $.ajax({
                 contentType : 'application/json',
                 data: JSON.stringify(obj),
                 success:function(response){
-                  console.log(response)
-                  console.log(obj.product)
+                  //console.log(response)
+                  //console.log(obj.product)
                   var elem = $(el);
                   elem.data('lookitemid', response.id)
                   elem.data('isnew', 'yes');
@@ -1015,7 +1015,7 @@ var look_builder = {
                   /* get the elastic search data for the product */
                   $.ajax({
                     success: function(results){
-                      console.log(results)
+                      //console.log(results)
                       if((results.data != undefined)&&(results.data.length > 0)){
                         var payload = {sites: { merchant: {} } };
                         var tmp = {color_names: [], color_objects: {}};
