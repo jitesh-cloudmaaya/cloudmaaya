@@ -44,43 +44,41 @@ class ProductFeed(object):
     # how to get filename of flat_file.csv
     def load_cleaned_data(self): # eventually rename
         start = time.time()
-        
+        cursor = connection.cursor()
+
+        # change the way file list is generated temporarily for pepperjam
         file_list = os.listdir(self._local_temp_dir_cleaned)
+        f = file_list[0]
+        f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
+        table = self._table
+        fields = " (%s) " % (self._fields)
 
-        for flat_file in file_list:
-            cursor = connection.cursor()
-            f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, flat_file)
-            table = self._table
-            fields = self._fields
-            fields = " (%s) " % (self._fields)
+        full_script = []
 
-            full_script = []
+        sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
+        statement = sql_script.read()
+        statements = statement.split(';')
+        for i in range(0, len(statements)):
+            full_script.append(statements[i])
 
-            sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
-            statement = sql_script.read()
-            statements = statement.split(';')
-            for i in range(0, len(statements)):
-                full_script.append(statements[i])
+        # need to escape the backslash for python and then also for mySQL
+        statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\n' %s" % (f, table, fields)
+        full_script.append(statement)
 
-            # need to escape the backslash for python and then also for mySQL
-            statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\n' %s" % (f, table, fields)
+        sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
+        statement = sql_script.read()
+        statements = statement.split(';')
+        for i in range(0, len(statements)):
+            full_script.append(statements[i])
 
-            full_script.append(statement)
-
-            sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
-            statement = sql_script.read()
-            statements = statement.split(';')
-            for i in range(0, len(statements)):
-                full_script.append(statements[i])
-
-            try:
-                with transaction.atomic():
-                    for i in range(0, len(full_script)):
-                        statement = full_script[i]
-                        if statement.strip(): # avoid 'query was empty' operational error
-                            cursor.execute(statement)
-            finally:
-                cursor.close()
+        try:
+            with transaction.atomic():
+                for i in range(0, len(full_script)):
+                    statement = full_script[i]
+                    if statement.strip(): # avoid 'query was empty' operational error
+                        cursor.execute(statement)
+        finally:
+            cursor.close()
 
         print "Process takes %s seconds" % (time.time() - start)
 
