@@ -60,9 +60,9 @@ if(collage_cropped_images.length > 0){
 window.status = 'waiting'
 var loading = look.look_products.length;
 for(var i = 0, l = look.look_products.length; i<l; i++){
-  let img = imgs_to_load[i];
-  let loadTimer;
-  let imgObject = new Image();
+  var img = imgs_to_load[i];
+  var loadTimer;
+  var imgObject = new Image();
   imgObject.src = img;          
   imgObject.onLoad = onImgLoaded();
   function onImgLoaded() {

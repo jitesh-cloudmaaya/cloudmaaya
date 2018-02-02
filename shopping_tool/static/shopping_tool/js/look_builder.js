@@ -619,7 +619,7 @@ var look_builder = {
           step_div.html(
             '<h5>Looks</h5><div class="look-summary-section">' +
             look_summary.join('') + '</div>' +
-            '<h5>Email</h5>' + email_at +
+            '<h5>Text</h5>' + email_at +
             '<div class="summary-email">' + email_text +
             '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
           );
@@ -656,12 +656,17 @@ var look_builder = {
         lookbook.send_at = send_string;
       }
       //console.log(lookbook)
-      $.ajax({
+      $.ajax({       
         contentType : 'application/json',
+        crossDomain: true,
         data: JSON.stringify(lookbook),
         type: 'POST',
-        url: 'https://styling-service-stage.allume.co/publish_looks/'
+        url: 'https://styling-service-stage.allume.co/publish_looks/',
+        xhrFields: {
+          withCredentials: true
+        }
       });
+      $('#publish-lookbook-overlay').fadeOut();
     })     
   },
   /**
