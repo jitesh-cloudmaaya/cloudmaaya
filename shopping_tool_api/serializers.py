@@ -41,7 +41,7 @@ class LookProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LookProduct
-        fields = ['look', 'created_at','updated_at', 'product_clipped_stylist_id', 'cropped_dimensions', 'layout_position', 'product']
+        fields = ['id', 'look', 'created_at','updated_at', 'product_clipped_stylist_id', 'cropped_dimensions', 'layout_position', 'product']
 
 class LookProductCreateSerializer(serializers.ModelSerializer):
 
