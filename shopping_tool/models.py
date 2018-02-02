@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from product_api.models import Product
 import uuid
 
+from catalogue_service.settings_local import COLLAGE_IMAGE_ROOT
 
 # Create your models here.
 class StylistManager(models.Manager):
@@ -558,6 +559,7 @@ class StyleOccasion(models.Model):
 @receiver(pre_save, sender=Look)
 def set_look_client_id(sender, instance, *args, **kwargs):
     instance.wp_client_id = instance.allume_styling_session.client.id
+    instance.collage = "%s/%s.jpg" % (COLLAGE_IMAGE_ROOT, instance.id)
 
 @receiver(pre_save, sender=LookProduct)
 def set_product_clipped_stylist_id(sender, instance, *args, **kwargs):
