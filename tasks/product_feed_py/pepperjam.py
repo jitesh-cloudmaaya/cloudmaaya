@@ -67,7 +67,21 @@ def get_merchants(status='joined'):
 # if it was not updated or inserted by the last call, we should set is_deleted = True
 # how would we know if it was not updated or inserted by the last call:
     # comparison on current time vs updated_at (freshness)
-    # get product_ids that were upserted and set is_deleted for those are not in
+    # get product_ids that were upserted and set is_deleted for those are not in\
+# could be done in sql, could it be done w django?
+
+# attempt at writing is_deleted in django
+from product_api.models import Network, Merchant, Product
+def update_pepperjam():
+    # id of the pepperjam network for use in merchants' network_id
+    pepperjam_id = Network.objects.get(name='PepperJam').id
+    # get the pepperjam merchants that were active (and hence were just updated)
+    merchants = Merchant.objects.filter(active=True, network_id = pepperjam_id) # multiple arguments over chaining for performance
+    merchant_ids = merchants.values_list('external_merchant_id')
+    # get the products of these merchants
+    products = Product.objects.filter(merchant_id__in = merchant_ids)
+    # get the products that were not updated by comparing the most recent updated_at
+    # maybe set is_deleted the products who were updated more than an hour ago?
 
 def get_data(local_temp_dir, cleaned_fieldnames):
 
