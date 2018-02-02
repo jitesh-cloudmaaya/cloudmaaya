@@ -1066,7 +1066,6 @@ var look_builder = {
                         var color = tmp.color_names[i];
                         var obj = {
                           dep: { size: [] },
-                          image: matching_object.product_image_url,
                           price: matching_object.current_price,
                           tex: color,
                           value: color
