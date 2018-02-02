@@ -31,14 +31,14 @@ for(var i = 0, l = look.look_layout.layout_json.length; i<l; i++){
       var src = prod.product.product_image_url;
       if(prod.cropped_dimensions != null){
         var crop = {
-          id: 'complook-' + look.id + '-item-' + prod.id,
+          id: 'complook-' + look.id + '-item-' + prod.product.id,
           src: look_proxy + '' + src,
           dims: prod.cropped_dimensions
         }
         collage_cropped_images.push(crop);
       }
       product_markup.push(
-        '<div class="item"><span id="complook-' + look.id + '-item-' + prod.id + 
+        '<div class="item"><span id="complook-' + look.id + '-item-' + prod.product.id + 
         '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></div>'
       );
     }
@@ -60,9 +60,9 @@ if(collage_cropped_images.length > 0){
 window.status = 'waiting'
 var loading = look.look_products.length;
 for(var i = 0, l = look.look_products.length; i<l; i++){
-  var img = imgs_to_load[i];
-  var loadTimer;
-  var imgObject = new Image();
+  let img = imgs_to_load[i];
+  let loadTimer;
+  let imgObject = new Image();
   imgObject.src = img;          
   imgObject.onLoad = onImgLoaded();
   function onImgLoaded() {
@@ -77,7 +77,6 @@ for(var i = 0, l = look.look_products.length; i<l; i++){
         /* when all images are loaded set page_ready flag to true */
         page_ready = true;
         window.status = 'ready'
-
       }
     }
   }
