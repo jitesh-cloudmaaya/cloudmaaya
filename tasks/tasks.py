@@ -4,6 +4,7 @@ from django.db import connection, transaction
 import os
 from catalogue_service.settings import BASE_DIR
 from celery_once import QueueOnce
+from product_api.models import Product
 from tasks.product_feed import ProductFeed
 from tasks.product_feed_py.pepperjam import get_data, get_merchants
 
@@ -94,3 +95,10 @@ def build_lookmetrics():
                     cursor.execute(statements[i])
     finally:
         cursor.close()
+
+@task(base=QueueOnce)
+def delete_products_from_index():
+    # poll products_api_product for products where is_deleted = true
+    deleted_product_ids = Product.objects.filter(is_deleted = True).values_list('id')
+    # issue command on es index to delete those ids
+
