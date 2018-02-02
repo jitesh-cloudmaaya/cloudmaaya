@@ -20,6 +20,11 @@ def pepperjam_pull():
     pf.clean_data()
     print("Update API products table")
     pf.load_cleaned_data()
+
+    # insert logic here that would update the pap table for deleted pepperjam products.
+    # how to know which merchants received updates....
+    # update_pepperjam_records()
+
     print("Successfully updated API products table")
 
 @task(base=QueueOnce)
