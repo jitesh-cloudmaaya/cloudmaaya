@@ -1083,7 +1083,7 @@ var look_builder = {
                         crossDomain: true,
                         data: $.param({look_product_id: response.id, product: payload}),
                         type: 'POST',
-                        url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/',
+                        url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_product_from_affiliate_feeds_and_link_to_look/',
                         xhrFields: {
                           withCredentials: true
                         }
