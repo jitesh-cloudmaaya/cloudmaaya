@@ -31,14 +31,14 @@ for(var i = 0, l = look.look_layout.layout_json.length; i<l; i++){
       var src = prod.product.product_image_url;
       if(prod.cropped_dimensions != null){
         var crop = {
-          id: 'complook-' + look.id + '-item-' + prod.product.id,
+          id: 'complook-' + look.id + '-item-' + prod.id,
           src: look_proxy + '' + src,
           dims: prod.cropped_dimensions
         }
         collage_cropped_images.push(crop);
       }
       product_markup.push(
-        '<div class="item"><span id="complook-' + look.id + '-item-' + prod.product.id + 
+        '<div class="item"><span id="complook-' + look.id + '-item-' + prod.id + 
         '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></div>'
       );
     }
