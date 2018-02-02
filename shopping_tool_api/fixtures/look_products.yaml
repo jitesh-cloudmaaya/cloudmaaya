@@ -1,24 +1,24 @@
 -   model: shopping_tool.lookproduct
     pk: 1
-    fields: {look: 1, wp_product_id: -1, sequence: -1, created_at: !!timestamp '2018-01-16
+    fields: {look: 1, wp_product_id: -1, created_at: !!timestamp '2018-01-16
             23:23:22.432965+00:00', updated_at: !!timestamp '2018-01-16 23:23:22.433026+00:00',
         product_clipped_stylist_id: -1, cropped_dimensions: null, layout_position: 1,
         product: 1}
 -   model: shopping_tool.lookproduct
     pk: 2
-    fields: {look: 1, wp_product_id: -1, sequence: -1, created_at: !!timestamp '2018-01-16
+    fields: {look: 1, wp_product_id: -1, created_at: !!timestamp '2018-01-16
             23:23:30.911944+00:00', updated_at: !!timestamp '2018-01-16 23:23:30.912015+00:00',
         product_clipped_stylist_id: -1, cropped_dimensions: null, layout_position: 2,
         product: 2}
 -   model: shopping_tool.lookproduct
     pk: 3
-    fields: {look: 1, wp_product_id: -1, sequence: -1, created_at: !!timestamp '2018-01-16
+    fields: {look: 1, wp_product_id: -1, created_at: !!timestamp '2018-01-16
             23:32:19.314900+00:00', updated_at: !!timestamp '2018-01-16 23:32:19.314971+00:00',
         product_clipped_stylist_id: 997, cropped_dimensions: null, layout_position: 3,
         product: 3}
 -   model: shopping_tool.lookproduct
     pk: 4
-    fields: {look: 1, wp_product_id: -1, sequence: -1, created_at: !!timestamp '2018-01-17
+    fields: {look: 1, wp_product_id: -1, created_at: !!timestamp '2018-01-17
             07:14:30.312746+00:00', updated_at: !!timestamp '2018-01-17 07:15:23.593724+00:00',
         product_clipped_stylist_id: 997, cropped_dimensions: '790,889,332,278', layout_position: 4,
         product: 4}
