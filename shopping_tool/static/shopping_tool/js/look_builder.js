@@ -1072,7 +1072,7 @@ var look_builder = {
                         var obj = {
                           dep: { size: [] },
                           price: matching_object.current_price,
-                          tex: color,
+                          text: color,
                           value: color
                         }
                         for(var ix = 0, il = tmp.color_objects[color].sizes.length; ix<il; ix++){
