@@ -619,7 +619,7 @@ var look_builder = {
           step_div.html(
             '<h5>Looks</h5><div class="look-summary-section">' +
             look_summary.join('') + '</div>' +
-            '<h5>Email</h5>' + email_at +
+            '<h5>Text</h5>' + email_at +
             '<div class="summary-email">' + email_text +
             '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
           );
@@ -656,12 +656,17 @@ var look_builder = {
         lookbook.send_at = send_string;
       }
       //console.log(lookbook)
-      $.ajax({
+      $.ajax({       
         contentType : 'application/json',
+        crossDomain: true,
         data: JSON.stringify(lookbook),
         type: 'POST',
-        url: 'https://styling-service-stage.allume.co/publish_looks/'
+        url: 'https://styling-service-stage.allume.co/publish_looks/',
+        xhrFields: {
+          withCredentials: true
+        }
       });
+      $('#publish-lookbook-overlay').fadeOut();
     })     
   },
   /**
@@ -1066,7 +1071,6 @@ var look_builder = {
                         var color = tmp.color_names[i];
                         var obj = {
                           dep: { size: [] },
-                          image: matching_object.product_image_url,
                           price: matching_object.current_price,
                           tex: color,
                           value: color
@@ -1084,7 +1088,7 @@ var look_builder = {
                         crossDomain: true,
                         data: $.param({look_product_id: response.id, product: payload}),
                         type: 'POST',
-                        url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/',
+                        url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_product_from_affiliate_feeds_and_link_to_look/',
                         xhrFields: {
                           withCredentials: true
                         }
