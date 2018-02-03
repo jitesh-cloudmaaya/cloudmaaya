@@ -563,3 +563,4 @@ def set_look_client_id(sender, instance, *args, **kwargs):
 @receiver(pre_save, sender=LookProduct)
 def set_product_clipped_stylist_id(sender, instance, *args, **kwargs):
     instance.product_clipped_stylist_id = instance.look.stylist.id
+
