@@ -1037,13 +1037,17 @@ var look_builder = {
                             tmp.color_names.push(clr);
                             tmp.color_objects[clr] = { sizes: [], size_data : {}};
                           }
-                          if(tmp.color_objects[clr].sizes.indexOf(product.size) == -1){
-                            tmp.color_objects[clr].sizes.push(product.size);
-                            tmp.color_objects[clr].size_data[product.size] = {
-                              image: product.raw_product_url,
-                              price: product.current_price,
-                              text: product.size,
-                              value: product.size
+                          var all_sizes = product.size.split(',')
+                          for(var ix = 0, lx = all_sizes.length; ix < lx; ix++){
+                            var size = all_sizes[ix];
+                            if(tmp.color_objects[clr].sizes.indexOf(size) == -1){
+                              tmp.color_objects[clr].sizes.push(size);
+                              tmp.color_objects[clr].size_data[size] = {
+                                image: product.raw_product_url,
+                                price: product.current_price,
+                                text: size,
+                                value: size
+                              }
                             }
                           }
                         }
