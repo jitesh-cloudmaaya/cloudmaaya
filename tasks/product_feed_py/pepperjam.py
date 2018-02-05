@@ -9,7 +9,8 @@ import time
 from django.db import connection
 from . import mappings
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
-from product_api.models import CategoryMap
+from product_api.models import CategoryMap, Network, Merchant, Product
+from datetime import datetime, timedelta
 
 # Set Up PepeprJam URL
 PEPPER_JAM_API_BASE_URL = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_API_VERSION)
@@ -69,9 +70,6 @@ def get_merchants(status='joined'):
     # comparison on current time vs updated_at (freshness)
     # get product_ids that were upserted and set is_deleted for those are not in\
 # could be done in sql, could it be done w django?
-
-# attempt at writing is_deleted in django
-from product_api.models import Network, Merchant, Product
 def update_pepperjam():
     # id of the pepperjam network for use in merchants' network_id
     pepperjam_id = Network.objects.get(name='PepperJam').id
@@ -79,9 +77,12 @@ def update_pepperjam():
     merchants = Merchant.objects.filter(active=True, network_id = pepperjam_id) # multiple arguments over chaining for performance
     merchant_ids = merchants.values_list('external_merchant_id')
     # get the products of these merchants
-    products = Product.objects.filter(merchant_id__in = merchant_ids)
-    # get the products that were not updated by comparing the most recent updated_at
-    # maybe set is_deleted the products who were updated more than an hour ago?
+    products = Product.objects.filter(merchant_id__in = merchant_ids) # up to here is confirmed what we want
+    datetime_threshold = datetime.now() - timedelta(hours = 12) # comparison threshold is 12 hours ago or more
+    deleted_products = products.filter(updated_at__lte = datetime_threshold)
+    # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
+    deleted_products.update(is_deleted = True)
+
 
 def get_data(local_temp_dir, cleaned_fieldnames):
 
