@@ -1065,7 +1065,7 @@ var look_builder = {
                         payload.sites[merchant_node].add_to_cart[product_node].description = matching_object.long_product_description;
                         payload.sites[merchant_node].add_to_cart[product_node].required_field_names = ["color", "size", "quantity"];
                         payload.sites[merchant_node].add_to_cart[product_node].required_field_values = {};
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.colors = [];
+                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color = [];
                         payload.sites[merchant_node].add_to_cart[product_node].url = matching_object.product_url;
                         payload.sites[merchant_node].add_to_cart[product_node].status = "done";
                         payload.sites[merchant_node].add_to_cart[product_node].original_url = matching_object.raw_product_url;
@@ -1085,7 +1085,7 @@ var look_builder = {
                           size.dep = {}
                           obj.dep.size.push(size);
                         }
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.colors.push(obj);
+                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color.push(obj);
                       }
                       $.ajax({
                         contentType: 'application/x-www-form-urlencoded',
