@@ -61,15 +61,6 @@ def get_merchants(status='joined'):
     merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
     return merchant_mapping
 
-
-# perform the upsert process as normal for pepperjam products.
-# if the merchant in question was active for the upsert
-# we should check records belonging to the merchant of the pepperjam network id in the pap table,
-# if it was not updated or inserted by the last call, we should set is_deleted = True
-# how would we know if it was not updated or inserted by the last call:
-    # comparison on current time vs updated_at (freshness)
-    # get product_ids that were upserted and set is_deleted for those are not in\
-# could be done in sql, could it be done w django?
 def update_pepperjam():
     # id of the pepperjam network for use in merchants' network_id
     pepperjam_id = Network.objects.get(name='PepperJam').id
@@ -82,9 +73,6 @@ def update_pepperjam():
     deleted_products = products.filter(updated_at__lte = datetime_threshold)
     # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
     deleted_products.update(is_deleted = True)
-
-# attempt using sql?
-
 
 def get_data(local_temp_dir, cleaned_fieldnames):
 
