@@ -1066,9 +1066,9 @@ var look_builder = {
                         payload.sites[merchant_node].add_to_cart[product_node].required_field_names = ["color", "size", "quantity"];
                         payload.sites[merchant_node].add_to_cart[product_node].required_field_values = {};
                         payload.sites[merchant_node].add_to_cart[product_node].required_field_values.colors = [];
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.url = matching_object.product_url;
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.status = "done";
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.original_url = matching_object.raw_product_url;
+                        payload.sites[merchant_node].add_to_cart[product_node].url = matching_object.product_url;
+                        payload.sites[merchant_node].add_to_cart[product_node].status = "done";
+                        payload.sites[merchant_node].add_to_cart[product_node].original_url = matching_object.raw_product_url;
                       }
                       /* create the colors array objects */
                       for(var i = 0, l = tmp.color_names.length; i<l; i++){
