@@ -5,7 +5,7 @@ import os
 from catalogue_service.settings import BASE_DIR
 from celery_once import QueueOnce
 from tasks.product_feed import ProductFeed
-from tasks.product_feed_py.pepperjam import get_data, get_merchants
+from tasks.product_feed_py.pepperjam import get_merchants
 
 @task(base=QueueOnce)
 def pepper_jam_get_merchants():
@@ -20,11 +20,6 @@ def pepperjam_pull():
     pf.clean_data()
     print("Update API products table")
     pf.load_cleaned_data()
-
-    # insert logic here that would update the pap table for deleted pepperjam products.
-    # how to know which merchants received updates....
-    # update_pepperjam_records()
-
     print("Successfully updated API products table")
 
 @task(base=QueueOnce)

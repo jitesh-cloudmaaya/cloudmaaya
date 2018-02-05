@@ -83,6 +83,8 @@ def update_pepperjam():
     # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
     deleted_products.update(is_deleted = True)
 
+# attempt using sql?
+
 
 def get_data(local_temp_dir, cleaned_fieldnames):
 
@@ -295,6 +297,10 @@ def get_data(local_temp_dir, cleaned_fieldnames):
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
     # print('Added %s new merchants' % new_merchants)
     # new_merchants ?
+
+    # call update_pepperjam here?
+    print('Updating non-upserted records')
+    update_pepperjam()
 
 def generate_product_id(SKU, merchant_id):
     """
