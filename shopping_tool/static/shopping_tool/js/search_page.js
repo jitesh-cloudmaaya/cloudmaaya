@@ -171,8 +171,8 @@ var search_page = {
                   checked = "checked";
                 }
               }else if((pretty_name == 'price_range')&&(cs.clientsettings == true)){
-                var spend = cs.clientspend;
-                if(spend == facet.key){
+                var spend = cs.clientspend.split('|');
+                if(spend.indexOf(facet.key) > -1){
                   checked = "checked";
                 }
               }
@@ -311,10 +311,11 @@ var search_page = {
         var spend = [];
         var sizes = [];
         var cleaned_sizes = [];
+        var cleaned_spend = [];
         if(["Dresses", "Jackets"].indexOf(category) > -1){
-          spend.push(client_360.categories[category].spend);        
+          spend = client_360.categories[category].spend.split(', ');       
         }else if(["Jeans", "Shoes", "Tops", "Pants"].indexOf(category) > -1){
-          spend.push(client_360.categories[category].spend);
+          spend = client_360.categories[category].spend.split(', ');
           sizes = client_360.categories[category].size.split(',');   
         }
         for(i = 0, l = sizes.length; i<l; i++){
@@ -331,16 +332,24 @@ var search_page = {
             '&size=' + encodeURIComponent(cleaned_sizes.join('|'))
           );
         }
-        if(spend.length > 0){
+        for(i = 0, l = spend.length; i<l; i++){
+          var range = spend[i].replace(/\$/g, '').split(' - ');
+          var propper_range = '$' + range[0] + ' - $' + range[1];
+          if(range[0] == '200+'){
+            propper_range = '$200+';
+          }
+          cleaned_spend.push(propper_range);
           selection_markup.push(
             '<a href="#" class="remove-facet" data-qparam="price_range" data-facet="' + 
-            spend.join('') + '">' + spend.join('') + '<i class="fa fa-times-circle"></i></a>'
-          );          
-          facets.push(
-            '&price_range=' + encodeURIComponent(spend.join(''))
+            propper_range + '">' + propper_range + '<i class="fa fa-times-circle"></i></a>'
           );
         }
-        search_box.data('clientsize', cleaned_sizes.join('|')).data('clientspend', spend.join('')).data('clientsettings', true);
+        if(cleaned_spend.length > 0){
+          facets.push(
+            '&price_range=' + encodeURIComponent(cleaned_spend.join('|'))
+          );
+        }
+        search_box.data('clientsize', cleaned_sizes.join('|')).data('clientspend', cleaned_spend.join('|')).data('clientsettings', true);
       }
     }
     if(new_search == false){
