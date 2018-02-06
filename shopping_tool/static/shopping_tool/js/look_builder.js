@@ -1069,34 +1069,34 @@ var look_builder = {
                         payload.sites[merchant_node].add_to_cart[product_node].url = matching_object.product_url;
                         payload.sites[merchant_node].add_to_cart[product_node].status = "done";
                         payload.sites[merchant_node].add_to_cart[product_node].original_url = matching_object.raw_product_url;
+                        /* create the colors array objects */
+                        for(var i = 0, l = tmp.color_names.length; i<l; i++){
+                          var color = tmp.color_names[i];
+                          var obj = {
+                            dep: { size: [] },
+                            price: matching_object.current_price,
+                            text: color,
+                            value: color
+                          }
+                          for(var ix = 0, il = tmp.color_objects[color].sizes.length; ix<il; ix++){
+                            var size_name = tmp.color_objects[color].sizes[ix];
+                            var size = tmp.color_objects[color].size_data[size_name];
+                            size.dep = {}
+                            obj.dep.size.push(size);
+                          }
+                          payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color.push(obj);
+                        }
+                        $.ajax({
+                          contentType: 'application/x-www-form-urlencoded',
+                          crossDomain: true,
+                          data: $.param({look_product_id: response.id, product: payload}),
+                          type: 'POST',
+                          url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_product_from_affiliate_feeds_and_link_to_look/',
+                          xhrFields: {
+                            withCredentials: true
+                          }
+                        });
                       }
-                      /* create the colors array objects */
-                      for(var i = 0, l = tmp.color_names.length; i<l; i++){
-                        var color = tmp.color_names[i];
-                        var obj = {
-                          dep: { size: [] },
-                          price: matching_object.current_price,
-                          text: color,
-                          value: color
-                        }
-                        for(var ix = 0, il = tmp.color_objects[color].sizes.length; ix<il; ix++){
-                          var size_name = tmp.color_objects[color].sizes[ix];
-                          var size = tmp.color_objects[color].size_data[size_name];
-                          size.dep = {}
-                          obj.dep.size.push(size);
-                        }
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color.push(obj);
-                      }
-                      $.ajax({
-                        contentType: 'application/x-www-form-urlencoded',
-                        crossDomain: true,
-                        data: $.param({look_product_id: response.id, product: payload}),
-                        type: 'POST',
-                        url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_product_from_affiliate_feeds_and_link_to_look/',
-                        xhrFields: {
-                          withCredentials: true
-                        }
-                      });
                     },
                     type: "GET",
                     url: '/product_api/get_product/' + response.product  + '/',
