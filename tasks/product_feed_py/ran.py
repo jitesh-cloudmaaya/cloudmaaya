@@ -103,7 +103,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         try:
                             raw_product_url = product_feed_helpers.parse_raw_product_url(product_url, 'murl')
                             # raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
-                        except:
+                        except Exception as e:
+                            print e
                             raw_product_url = u'' # there was an error of some kind
 
                         product_image_url = datum['product_image_url']

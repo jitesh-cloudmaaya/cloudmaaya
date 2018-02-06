@@ -158,7 +158,11 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     record['short_product_description'] = product['description_short']
                     buy_url = product['buy_url']
                     record['product_url'] = buy_url # product_url == buy_url?
-                    record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(product_url, 'url')
+                    try:
+                        record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(product_url, 'url')
+                    except Exception as e:
+                        print e
+                        record['raw_product_url'] = u''
                     # record['raw_product_url'] = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
                     record['product_image_url'] = product['image_url']
                     record['buy_url'] = buy_url
