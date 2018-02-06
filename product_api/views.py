@@ -21,7 +21,7 @@ import urllib
 import datetime
 import urllib
 from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite
-from models import Product
+from models import Product, Merchant
 
 
 from elasticsearch_dsl.connections import connections
@@ -125,6 +125,12 @@ def get_product(self, product_id):
 
     print product.brand
 
+    # using the product we are looking for
+    product_merchant_id = product.merchant_id
+    # retrieve the merchant from the pam table
+    merchant = Merchant.objects.get(external_merchant_id = product_merchant_id)
+    # and grab the id used in the internal db representation
+    merchant_id = merchant.id
 
     s = Search(index="products")
 
@@ -140,6 +146,8 @@ def get_product(self, product_id):
 
     results_dict = results.to_dict()
     #results = results_dict['hits']
+    # grab and add_source field dict to add field for API call
+    results_dict['hits']['hits'][0]['_source']['product_api_merchant'] = merchant_id
 
     total_count = s.count()
     page = 1
