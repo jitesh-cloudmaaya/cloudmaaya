@@ -8,6 +8,7 @@ import csv
 import time
 from django.db import connection
 from . import mappings
+from . import product_feed_helpers
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
 from product_api.models import CategoryMap
 
@@ -157,7 +158,8 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     record['short_product_description'] = product['description_short']
                     buy_url = product['buy_url']
                     record['product_url'] = buy_url # product_url == buy_url?
-                    record['raw_product_url'] = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
+                    record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(product_url, 'url')
+                    # record['raw_product_url'] = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
                     record['product_image_url'] = product['image_url']
                     record['buy_url'] = buy_url
                     record['manufacturer_name'] = product['manufacturer']

@@ -5,6 +5,7 @@ import urlparse
 import csv
 from django.db import connection
 from . import mappings
+from . import product_feed_helpers
 from catalogue_service.settings import BASE_DIR
 from product_api.models import Merchant, CategoryMap
 
@@ -100,8 +101,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         product_url = datum['product_url']
 
                         try:
-                            raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
-                            # raw_product_url = raw_product_url.replace('|', '7%C')
+                            raw_product_url = product_feed_helpers.parse_raw_product_url(product_url, 'murl')
+                            # raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
                         except:
                             raw_product_url = u'' # there was an error of some kind
 
