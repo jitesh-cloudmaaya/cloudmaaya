@@ -653,7 +653,7 @@ var look_builder = {
         var reg_str = t.getMoment().format('YYYY-MM-DD HH:MM');
         //console.log(reg_str)
         var send_string = moment.tz(reg_str, tz).format('X');
-        lookbook.send_at = send_string;
+        lookbook.send_at = parseInt(send_string);
       }
       //console.log(lookbook)
       $.ajax({       
