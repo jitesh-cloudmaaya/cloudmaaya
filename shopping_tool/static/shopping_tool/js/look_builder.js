@@ -1052,7 +1052,7 @@ var look_builder = {
                           }
                         }
                         /* create payload object */
-                        var merchant_node = matching_object.merchant_id.toString();
+                        var merchant_node = matching_object.product_api_merchant.toString();
                         var product_node = response.product.toString();
                         payload.sites[merchant_node] = {}
                         payload.sites[merchant_node].add_to_cart = {}
