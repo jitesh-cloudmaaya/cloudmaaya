@@ -235,8 +235,8 @@ var utils = {
     }
     return '<div class="client-note" id="client-note-id-' + note.id + '"><p>' + note.notes+ '</p>' +
       '<span class="date">' + moment(note.last_modified).format('MMMM Do, YYYY h:mm a') + 
-      '</span><span class="tail"></span><span class="name">Stylist name</span>' +
-      delete_link + '</div>';
+      '</span><span class="tail"></span><span class="name">' + note.stylist.first_name + 
+      ' ' + note.stylist.last_name + '</span>' + delete_link + '</div>';
   },
   /**
   * @description processing and template for pagination of results
