@@ -597,7 +597,7 @@ var rack_builder = {
           '<div id="color-options">' + color_options.join('') + '</div>' +
           '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
           '<span class="general"><em>category:</em>' + product.allume_category  + 
-          '</span></td></tr></table><span class="shopping-for">shopping for:</span>' + 
+          '</span></td></tr></table><span class="shopping-for">styling for:</span>' + 
           $('#client-details-template').html() + '</div></div>'
         );
         inspect.html(markup.join(''));

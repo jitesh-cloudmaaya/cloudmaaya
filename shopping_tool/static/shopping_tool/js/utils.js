@@ -57,7 +57,7 @@ var utils = {
       var proc_bday = moment(bday.month +'/' + bday.day +'/' + bday.year, 'M/D/YYYY');
       var now = moment();
       var diff = now.diff(proc_bday, 'years')
-      var bd_display = '<em>age:</em>' + diff + ' years old &nbsp;&nbsp;(' + proc_bday.format('MMMM Do, YYYY') + ')';
+      var bd_display = '<em>age:</em>' + diff + ' years old';
       bd.html(bd_display);
       $('#prev-client-birthday').html(bd_display);
     }
