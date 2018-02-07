@@ -75,7 +75,7 @@ def styling_session_note(request, pk=None):
         except AllumeUserStylistNotes.DoesNotExist:
             return HttpResponse(status=404)
 
-        serializer = AllumeUserStylistNotesSerializer(note)
+        serializer = AllumeUserStylistNotesSerializerReadOnly(note)
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'PUT':
@@ -118,7 +118,7 @@ def styling_session_notes(request, pk=None):
     except AllumeUserStylistNotes.DoesNotExist:
         return HttpResponse(status=404)
 
-    serializer = AllumeUserStylistNotesSerializer(notes, many=True)
+    serializer = AllumeUserStylistNotesSerializerReadOnly(notes, many=True)
     return JsonResponse(serializer.data, safe=False)
 
 

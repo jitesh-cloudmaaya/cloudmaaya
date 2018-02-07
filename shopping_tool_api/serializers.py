@@ -11,6 +11,7 @@ class WpUsersNoteUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = WpUsers
         fields = ['first_name', 'last_name']
+        # fields = '__all__'
 
 class LookLayoutSerializer(serializers.ModelSerializer):
     #layout_json = serializers.JSONField()
@@ -118,11 +119,18 @@ class AllumeClient360Serializer(serializers.ModelSerializer):
         model = AllumeClient360
         fields = '__all__'#
 
-class AllumeUserStylistNotesSerializer(serializers.ModelSerializer):
-    #stylist = WpUsersNoteUserSerializer(many=False, read_only=True)
+class AllumeUserStylistNotesSerializerReadOnly(serializers.ModelSerializer):
+    stylist = WpUsersNoteUserSerializer(many=False, read_only=True)
 
     class Meta:
         model = AllumeUserStylistNotes
         fields = '__all__'#
+
+class AllumeUserStylistNotesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AllumeUserStylistNotes
+        fields = '__all__'#
+
 
 
