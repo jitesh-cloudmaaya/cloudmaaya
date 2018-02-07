@@ -973,6 +973,15 @@ body.explore-page #user-card{position:absolute;}
   width:0;
   z-index:2; 
 }
+#user-card div.details span.goal {
+  border-bottom: 1px solid #ddd;
+  display: block;
+  font-size: 18px;
+  font-weight: 100;
+  line-height: 24px;
+  padding: 5px 10px 10px;
+}
+#user-card div.details span.goal em {display:block;}
 
 #user-card.show #user-clip.ready {
   background:#000;
@@ -1131,6 +1140,7 @@ body.explore-page #user-card{position:absolute;}
   margin:0 1px;
   padding:10px 9px;
 }
+#user-card div.client-section span.client-breaker {color:#ed8365;font-weight:500;}
 #user-card #client-weather-locale {border:0; color:#999; font-weight:300; padding-bottom:15px;}
 #user-card div.client-section span.client-details{
   border-top:1px solid #eee;
@@ -1141,16 +1151,14 @@ body.explore-page #user-card{position:absolute;}
   margin:0 1px;
   overflow:auto;
   padding:5px 9px;
-  text-align: right;
 }
 #user-card div.client-section span.client-details.non {border:0;}
 #user-card div.client-section span.client-details:nth-child(even) {background:#fafafa;}
 #user-card div.client-section span.client-details:nth-of-type(1) {border:0;}
 #user-card div.client-section span.client-breaker.one {border: 0; padding-top:5px; } 
-#user-card div.client-section  span.client-details em {
-  float:left; 
-  font-weight:300; 
-  padding-right:15px; 
+#user-card div.client-section  span.client-details em { 
+  font-weight:500; 
+  padding-right:8px; 
   text-align:left;
 }
 

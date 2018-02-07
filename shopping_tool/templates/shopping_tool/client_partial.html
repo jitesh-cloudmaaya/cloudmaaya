@@ -2,18 +2,17 @@
   <a id="user-clip" href="#" data-userid="{{ client.id }}" data-username="{{ client.first_name }} {{ client.last_name }}">
   <span class="name"><em>now styling:</em>{{ client.first_name }} {{ client.last_name }}</span>
   <span class="expanded locale" id="client-locale" data-cs="{{ client.client_360.where_live }}"></span>
-  <span class="expanded style" id="client-birthday" data-bd="{{ client.client_360.birthday }}"><em></span>  
+  <span class="expanded style" id="client-birthday" data-bd="{{ client.client_360.birthday }}"></span>  
   <span class="expanded style"><em>occupation:</em>{{ client.client_360.occupation }}</span>
-  <span class="expanded style"><em>goal:</em>{{ client.client_360.looks_goal }}</span>
   <img class="client" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/></a>
   <div class="details">
+    <span class="goal"><em>goal:</em>{{ client.client_360.looks_goal }}</span>
     <div class="social" id="client-social">
     	<span>social media:</span>
       <a href="https://www.instagram.com/{{ client.client_360.instagram }}" class="instagram" target="_blank"><i class="fa fa-instagram"></i></a>
       <a href="{{ client.client_360.pinterest }}" class="pinterest" target="_blank"><i class="fa fa-pinterest"></i></a>
       <a href="{{ client.client_360.linkedin }}" class="linkedin" target="_blank"><i class="fa fa-linkedin"></i></a>
     </div>
-
     <div id="client-tabs">
     	<a href="#client-bio" class="on">Sizing</a>
     	<a href="#client-spend">Spending</a>
@@ -93,7 +92,6 @@
     	</div>
       <div id="client-extras" class="client-section">
         <span class="client-breaker one">Goals:</span>
-        <span class="client-details"><em>Look goals:</em>{{ client.client_360.looks_goal }}</span>
         <span class="client-details"><em>Other goals:</em>{{ client.client_360.other_goals }}</span>
         <span class="client-details"><em>Spends free time:</em>{{ client.client_360.spend_free_time }}</span>
         <span class="client-breaker">Focus:</span>

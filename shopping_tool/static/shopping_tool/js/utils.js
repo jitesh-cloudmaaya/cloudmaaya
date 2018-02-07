@@ -89,6 +89,9 @@ var utils = {
       var link = $(this);
       var href = link.attr('href')
       var div = $(href);
+      /* calculate the correct max height of tab sections */
+      var h = 625 - ($('#client-tabs').outerHeight() + $('#user-card div.social').outerHeight() + $('#user-card span.goal').outerHeight());
+      div.css('maxHeight', h + 'px')
       if(link.hasClass('on') == false){
         link.addClass('on').siblings('a').removeClass('on');
         div.addClass('show').siblings('div.client-section').removeClass('show'); 
