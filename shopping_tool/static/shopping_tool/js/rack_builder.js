@@ -106,7 +106,7 @@ var rack_builder = {
         success:function(response){
           var itm = rack_builder.itemTemplate(details, 'rack', idx, response.id);
           var categories = [];
-          var sanitized_cat = details.primary_category.replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
+          var sanitized_cat = details.allume_category .replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
           $.each(rack.find('div.block'), function(idx){
             categories.push($(this).data('category'));
           });
@@ -115,7 +115,7 @@ var rack_builder = {
             categories.sort();
             var rackidx = categories.indexOf(sanitized_cat);
             var new_category = '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
-              details.primary_category + '</a><div class="block" data-category="' + sanitized_cat + 
+              details.allume_category + '</a><div class="block" data-category="' + sanitized_cat + 
               '"></div>';
             if(rackidx == 0){
               rack.find('.close-all-rack-sections').after(new_category);
@@ -270,8 +270,8 @@ var rack_builder = {
     /* set initital rack products */
     var rack_list = $('#rack-list');
     initial_rack.sort(function(a,b){
-      if(a.primary_category.toLowerCase() > b.primary_category.toLowerCase()){ return 1}
-      if(a.primary_category.toLowerCase() < b.primary_category.toLowerCase()){ return -1}
+      if(a.allume_category.toLowerCase() > b.allume_category.toLowerCase()){ return 1}
+      if(a.allume_category.toLowerCase() < b.allume_category.toLowerCase()){ return -1}
       return 0;
     });
     if(initial_rack.length > 0){
@@ -284,12 +284,12 @@ var rack_builder = {
     for(var i = 0, l = initial_rack.length; i<l; i++){
       var obj = initial_rack[i];
       var itm = rack_builder.itemTemplate(obj, 'rack', '', obj.rack_id);
-      var sanitized_cat = obj.primary_category.replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
+      var sanitized_cat = obj.allume_category.replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
       var category_exists = rack_list.find('div.block[data-category="' + sanitized_cat + '"]').length;
       if(category_exists == 0){
         rack_list.append(
           '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
-          obj.primary_category + '</a><div class="block" data-category="' + sanitized_cat + 
+          obj.allume_category + '</a><div class="block" data-category="' + sanitized_cat + 
           '"></div>'
         );
       }
@@ -596,7 +596,7 @@ var rack_builder = {
           '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
           '<div id="color-options">' + color_options.join('') + '</div>' +
           '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
-          '<span class="general"><em>category:</em>' + product.primary_category + 
+          '<span class="general"><em>category:</em>' + product.allume_category  + 
           '</span></td></tr></table></div></div>'
         );
         inspect.html(markup.join(''));

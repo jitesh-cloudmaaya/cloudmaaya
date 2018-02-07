@@ -290,7 +290,7 @@ var look_builder = {
               prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
               prod.product.short_product_description + '</p>' + price_display +
               '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
-              '<span class="general"><em>category:</em>' + prod.product.primary_category + 
+              '<span class="general"><em>category:</em>' + prod.product.allume_category + 
               '</span></td>' + other_details + '</tr>'
             );
           }
