@@ -623,7 +623,8 @@ var look_builder = {
           var email_text = $('#publish-email').val();
           email_text = email_text.replace(
             /\[Link to Lookbook\]/g, 
-            '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +'">Your Lookbook</a>'
+            '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +
+            '" target="_blank">Your Lookbook</a>'
           );
 
           step_div.html(
@@ -654,7 +655,7 @@ var look_builder = {
         send_at: null,
         text_content: $('#publish-email').val().replace(
           /\[Link to Lookbook\]/g, 
-          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +'">Your Lookbook</a>'
+          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
         )
       }
       if($('#send-toggle').prop('checked') == true){
