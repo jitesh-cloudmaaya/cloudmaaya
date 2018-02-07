@@ -120,14 +120,14 @@ class AllumeClient360Serializer(serializers.ModelSerializer):
         model = AllumeClient360
         fields = '__all__'#
 
-class AllumeUserStylistNotesSerializerReadOnly(serializers.ModelSerializer):
+class AllumeUserStylistNotesSerializer(serializers.ModelSerializer):
     stylist = WpUsersNoteUserSerializer(many=False, read_only=True)
 
     class Meta:
         model = AllumeUserStylistNotes
         fields = '__all__'#
 
-class AllumeUserStylistNotesSerializer(serializers.ModelSerializer):
+class AllumeUserStylistNotesCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AllumeUserStylistNotes
