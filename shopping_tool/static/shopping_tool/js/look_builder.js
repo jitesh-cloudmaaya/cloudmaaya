@@ -514,7 +514,6 @@ var look_builder = {
               '<div id="pub-section1-errors"></div>' + 
               markup.join('')
             );
-
             /* settings the styles/occasions if they exist */
             for(var i = 0, l = response.looks.length; i<l; i++){
               var look = response.looks[i];
@@ -614,10 +613,10 @@ var look_builder = {
             )
           });
           var step_div = $(link.attr('href'));
-          var email_at = '<span class="summary-sent">Email will be sent <strong>now</strong>.</span>';
+          var email_at = '<span class="summary-sent">Text will be sent <strong>now</strong>.</span>';
           if($('#send-toggle').prop('checked')){
             var t = rome.find(document.getElementById('send-later'))
-            email_at = '<span class="summary-sent">Email will be sent <strong>' + 
+            email_at = '<span class="summary-sent">Text will be sent <strong>' + 
             t.getMoment().format('MMMM Do, YYYY h:mm a') + 
             ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
           }
