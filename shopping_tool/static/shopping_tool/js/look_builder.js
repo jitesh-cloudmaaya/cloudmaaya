@@ -435,7 +435,6 @@ var look_builder = {
         var lookup = {
           "client": parseInt($('#user-clip').data('userid')),
           "allume_styling_session": rack_builder.session_id,
-          "stylist": parseInt($('#stylist').data('stylistid')),
           "page": 1
         }
         $.ajax({
@@ -515,6 +514,22 @@ var look_builder = {
               '<div id="pub-section1-errors"></div>' + 
               markup.join('')
             );
+
+            /* settings the styles/occasions if they exist */
+            for(var i = 0, l = response.looks.length; i<l; i++){
+              var look = response.looks[i];
+              var styles = look.look_style_types;
+              var occasions = look.look_style_occasions;
+              var div = $('#pub-section1 div.pub-look[data-lookid="' + look.id + '"]');
+              for(var ix = 0, lx = styles.length; ix<lx; ix++){
+                var style_type = styles[ix];
+                div.find('input.style[value="' + style_type.id + '"]').prop('checked', true);
+              }
+              for(var ix = 0, lx = occasions.length; ix<lx; ix++){
+                var style_occ = occasions[ix];
+                div.find('input.occ[value="' + style_occ.id + '"]').prop('checked', true);                
+              }              
+            }
             if(cropped_images.length > 0){
               for(var i = 0, l = cropped_images.length; i<l; i++){
                 look_builder.getCroppedImage(cropped_images[i], '#pub-section1');
@@ -592,7 +607,7 @@ var look_builder = {
               occs.push($(this).data('display'));
             });
             look_summary.push(
-              '<div class="look-summary"><span class="name">' +div.data('lookname') + 
+              '<div class="look-summary"><span class="name">' + div.data('lookname') + 
               '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
               '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
               '</span></div>'
