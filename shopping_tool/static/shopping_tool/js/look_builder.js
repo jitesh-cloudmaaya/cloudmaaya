@@ -16,7 +16,7 @@ var look_builder = {
   * @param {integer} at_load - id of currently being edited look or null
   */  
   editableLooksMarkup: function(looks){
-    //console.log(looks)
+    console.log(looks)
     var at_load = utils.readURLParams('look');
     var comp_looks = $('#compare-looks div.other-looks');
     var markup = [];
@@ -139,10 +139,6 @@ var look_builder = {
        "description": '',
        "allume_styling_session": look_builder.session_id,
        "stylist": look_builder.stylist_id        
-      }
-      if(look_obj.name == ''){ 
-        pre++; 
-        msg.push('provide a look name'); 
       }
       if(isNaN(look_obj.look_layout)){ 
         pre++; 

@@ -143,6 +143,21 @@ I can also help you with choosing which pieces to try. Just a heads up that piec
 /* before initializing page get stylist's favorites */
 utils.menu();
 utils.client();
+/* get the session looks */
+$.ajax({
+  contentType : 'application/json',
+  data: JSON.stringify({
+    "client": parseInt($('#user-clip').data('userid')),
+    "allume_styling_session": $('body').data('stylesession'),
+    "page": 1        
+  }),
+  success:function(response){
+    look_builder.editableLooksMarkup(response.looks);
+  },
+  type: 'POST',
+  url: '/shopping_tool_api/look_list/'
+});
+/* get favorites */
 $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
   for(var i = 0, l = result.length;i<l;i++){
     var fave = result[i];
