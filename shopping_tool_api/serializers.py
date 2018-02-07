@@ -10,7 +10,7 @@ from shopping_tool.models import *
 class WpUsersNoteUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = WpUsers
-        fields = ['first_name', 'last_name']
+        fields = ['id', 'first_name', 'last_name']
         # fields = '__all__'
 
 class LookLayoutSerializer(serializers.ModelSerializer):
