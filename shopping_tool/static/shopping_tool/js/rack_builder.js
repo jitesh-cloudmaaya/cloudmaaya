@@ -518,7 +518,7 @@ var rack_builder = {
           '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
         '<div class="loader">' +
         '<span class="pulse_loader"></span>' +
-        '<span class="pulse_message">Finding your requested item and all of its sizes...</span>' +
+        '<span class="pulse_message">Finding your requested item...</span>' +
         '</div></div>'
         ).fadeIn();
       },
@@ -588,16 +588,17 @@ var rack_builder = {
           '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
           '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
           '<tr><td class="img" rowspan="2"><img src="' + product.product_image_url + '"/>' + 
-          fave_link + '' + rack_link + '</td>' +
-          '<td class="details"><a href="' + product.product_url + '" target="_blank" class="name">' + 
-          product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
+          fave_link + '' + rack_link + '<a href="' + product.product_url + '" target="_blank" class="link-to-store">' + 
+          '<i class="fa fa-search"></i>view at store</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
+          merch + '' + manu + '<p class="item-desc"> '+ 
           product.short_product_description + '</p>' + price_display +
           '<span class="general"><em>sku:</em>' + product.sku + '</span>' +
           '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
           '<div id="color-options">' + color_options.join('') + '</div>' +
           '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
           '<span class="general"><em>category:</em>' + product.allume_category  + 
-          '</span></td></tr></table></div></div>'
+          '</span></td></tr></table><span class="shopping-for">shopping for:</span>' + 
+          $('#client-details-template').html() + '</div></div>'
         );
         inspect.html(markup.join(''));
         /* add info to each link */

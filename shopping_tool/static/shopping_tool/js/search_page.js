@@ -263,14 +263,14 @@ var search_page = {
       details.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
     }
     return '<div class="item"><div class="image">' + fave_link + 
-      '<img src="' + details.product_image_url + '"></div><a href="' + details.product_url + 
+      '<a href="#" class="item-detail" data-name="' + details.product_name + 
+      '" data-brand="' + details.manufacturer_name + 
+      '" data-productid="' + details.id + '"><img src="' + 
+      details.product_image_url + '"></a></div>' +
+      '<a href="' + details.product_url + '"  title="' + details.product_name + 
       '" target="_blank" class="name">' + details.product_name + '</a>' + 
-      '<a href="#" class="add-to-rack" data-productid="' + details.id + 
-      '"><i class="icon-hanger"></i>add to rack</a>' + merch + 
-      '' + manu + '<a href="#" class="info-toggle"><i class="fa fa-info-circle"></i></a>' + 
-      price_display + '<div class="tt"><span><em>size:</em>' + 
-      details.size + '</span><span><em>description:</em>' + details.short_product_description + 
-      '</span></div></div>';
+      price_display + '<a href="#" class="add-to-rack" data-productid="' + 
+      details.id + '"><i class="icon-hanger"></i>add to rack</a></div>';
   },
   /**
   * @description ajax call to get search results
