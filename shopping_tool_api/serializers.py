@@ -75,6 +75,7 @@ class LookSerializer(serializers.ModelSerializer):
     look_metrics = LookMetricsSerializer(source='metric_set', many=True, read_only=True)
     look_style_occasions = StyleOccasionSerializer(source='styleoccasion_set', many=True, read_only=True)
     look_style_types = StyleTypeSerializer(source='styletype_set', many=True, read_only=True)
+    stylist = WpUsersNoteUserSerializer(many=False, read_only=True)
 
     class Meta:
         model = Look
