@@ -107,7 +107,7 @@ def index_cleanup1():
     Handled using only elasticsearch_dsl.
     """
     print('Finding all deleted products')
-    deleted_products = Search().query("match", is_deleted = True)
+    deleted_products = Search(index="products").query("match", is_deleted = True)
     print('Removing deleted products from the search index')
     deleted_products.delete()
     # response = deleted_products.execute()
@@ -128,7 +128,7 @@ def index_cleanup2():
         product_id = str(deleted_product[0])
         merchant_id = str(deleted_product[1])
         # delete by query from index
-        deleted_product = Search().query("match", product_id = product_id, merchant_id = merchant_id)
+        deleted_product = Search(index="products").query("match", product_id = product_id, merchant_id = merchant_id)
         deleted_product.delete()
 
     # faster ways that don't involve calling ES for every product_id?
