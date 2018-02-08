@@ -104,40 +104,20 @@ var look_builder = {
       e.preventDefault();
       $('#new-look-error').html('');
       $('#new-look-name').val('');
-      $('#new-look-layout')[0].selectize.setValue('',true);
+      $('#look-layouts-container').find('input').prop('checked', false).end()
+      .find('label').removeClass('selected');
       $('#create-look').fadeIn();
-    });
-    /* new look create form */
-    $('#new-look-layout').selectize({
-      valueField: 'id',
-      labelField: 'name',
-      searchField: 'name',
-      options: look_layouts,
-      create: false,
-      render: {
-        option: function(item, escape) {
-          /* create look option grid display */
-          var markup = ['<div class="grid-display-wrapper"><div class="grid-skew">'];
-          for(var i = 0, l = item.display.length; i<l; i++){
-            var block = item.display[i];
-            markup.push(
-              '<span class="layout-block" style="height:' + (block.height - 2) + 'px;' +
-              'width:' + (block.width - 2) + 'px;top:' + block.y + 'px;left:' + block.x + 
-              'px"></span>'
-            )
-          }
-          markup.push('</div></div>');
-          return '<div class="layout-option">' +
-            '<div class="layout-grid">' + markup.join('')+ '</div>' +
-            '<span class="name">' + escape(item.name) + '</span>' +
-            '</div>';
-        }
-      }
     });
     $('#cancel-new-look').click(function(e){
       e.preventDefault()
       $('#create-look').fadeOut();
-    });   
+    });
+    $('#look-layouts-container').on('click', 'label.layout-check', function(e){
+      var box = $(this);
+      if(box.hasClass('selected') == false){
+        box.addClass('selected').siblings('label.layout-check').removeClass('selected');
+      }
+    });
     $('#create-new-look').click(function(e){
       $('#new-look-error').html('');
       e.preventDefault();
@@ -145,7 +125,7 @@ var look_builder = {
       var msg = [];
       var look_obj = {
        "name": $('#new-look-name').val(),
-       "look_layout": parseInt($('#new-look-layout').val()),
+       "look_layout": parseInt($('#look-layouts-container input:checked').val()),
        "description": '',
        "allume_styling_session": look_builder.session_id,
        "stylist": look_builder.stylist_id        
@@ -551,6 +531,7 @@ var look_builder = {
             }
             $('#pub-section1').html(
               '<div id="pub-section1-errors"></div>' + 
+              '<a href="#" class="next-tab">next<i class="fa fa-chevron-right"></i></a>' +
               markup.join('')
             );
             /* settings the styles/occasions if they exist */
@@ -606,77 +587,27 @@ var look_builder = {
       $('#preview-lookbook-overlay').fadeOut();
     }); 
     /* wizard tabs, their status checking and other functionality for publish lookbook */
+    $('#pub-section1').on('click', 'a.next-tab', function(e){
+      e.preventDefault();
+      look_builder.toTabTwo($('#pub-wizard-step2'));     
+    })    
     $('#pub-wizard-step1').click(function(e){
       e.preventDefault();
       var link = $(this);
       link.addClass('on').siblings('a').removeClass('on');
       $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
-    })      
+    });
     $('#pub-wizard-step2').click(function(e){
       e.preventDefault();
-      var link = $(this);
-      var loading_check = $('#pub-section1 div.publish-loading').length;
-      if(loading_check == 0){
-        var step = look_builder.publishCheck1();
-        if(step == 'pass'){
-          link.addClass('on').siblings('a').removeClass('on');
-          $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
-          look_builder.updateLookCategories();
-        }
-      }
+      look_builder.toTabTwo($(this)); 
     });
+    $('#pub-section2').on('click', 'a.next-tab', function(e){
+      e.preventDefault();
+      look_builder.toTabThree($('#pub-wizard-step3'));     
+    })        
     $('#pub-wizard-step3').click(function(e){
       e.preventDefault();
-      var link = $(this);
-      var loading_check = $('#pub-section1 div.publish-loading').length;
-      if(loading_check == 0){
-        var step = look_builder.publishCheck1();
-        if(step == 'pass'){
-          look_builder.updateLookCategories();
-          var look_summary = [];
-          $.each($('#pub-section1 div.pub-look'), function(idx){
-            var div = $(this);
-            var styles = [];
-            var occs = [];
-            $.each(div.find('input.style:checked'), function(num){
-              styles.push($(this).data('display'));
-            });
-            $.each(div.find('input.occ:checked'), function(num){
-              occs.push($(this).data('display'));
-            });
-            look_summary.push(
-              '<div class="look-summary"><span class="name">' + div.data('lookname') + 
-              '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
-              '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
-              '</span></div>'
-            )
-          });
-          var step_div = $(link.attr('href'));
-          var email_at = '<span class="summary-sent">Text will be sent <strong>now</strong>.</span>';
-          if($('#send-toggle').prop('checked')){
-            var t = rome.find(document.getElementById('send-later'))
-            email_at = '<span class="summary-sent">Text will be sent <strong>' + 
-            t.getMoment().format('MMMM Do, YYYY h:mm a') + 
-            ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
-          }
-          var email_text = $('#publish-email').val();
-          email_text = email_text.replace(
-            /\[Link to Lookbook\]/g, 
-            '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +
-            '" target="_blank">Your Lookbook</a>'
-          );
-
-          step_div.html(
-            '<h5>Looks</h5><div class="look-summary-section">' +
-            look_summary.join('') + '</div>' +
-            '<h5>Text</h5>' + email_at +
-            '<div class="summary-email">' + email_text +
-            '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
-          );
-          link.addClass('on').siblings('a').removeClass('on');
-          step_div.addClass('on').siblings('div').removeClass('on');
-        }
-      }
+      look_builder.toTabThree($(this));
     });
     $('#send-toggle').change(function(e){
       var box = $(this);
@@ -787,6 +718,29 @@ var look_builder = {
     if(at_load_look != null){
       look_builder.setUpBuilder(at_load_look);
     }
+    /* add the layout options to create look overlay */
+    var layout_markup = [];
+    for(var i = 0, l = look_layouts.length; i<l; i++){
+      var layout = look_layouts[i];
+      var markup = ['<div class="grid-display-wrapper"><div class="grid-skew">'];
+      for(var ix = 0, lx = layout.display.length; ix<lx; ix++){
+        var block = layout.display[ix];
+        markup.push(
+          '<span class="layout-block" style="height:' + (block.height - 2) + 'px;' +
+          'width:' + (block.width - 2) + 'px;top:' + block.y + 'px;left:' + block.x + 
+          'px"></span>'
+        );
+      }
+      markup.push('</div></div>');
+      layout_markup.push(
+        '<label class="layout-check"><div class="layout-block">' +
+        '<div class="layout-grid">' + markup.join('') + '</div>' +
+        '<span class="name">' + layout.name + '</span>' +
+        '<input type="radio" name="layout" value="' + layout.id + 
+        '"/><i class="fa fa-check"/></div></label>'
+      );
+    }
+    $('#look-layouts-container').html(layout_markup.join(''))
   },
   /**
   * @description helper template function to generate look markup
@@ -1226,6 +1180,76 @@ var look_builder = {
       sort: true,
       draggable: ".item"
     });  
+  },
+  /**
+  * @description switching to tab two in publish look book flow
+  * @param {DOM Object} link - the link that trigger the navigation
+  */
+  toTabTwo: function(link) {
+    var loading_check = $('#pub-section1 div.publish-loading').length;
+    if(loading_check == 0){
+      var step = look_builder.publishCheck1();
+      if(step == 'pass'){
+        link.addClass('on').siblings('a').removeClass('on');
+        $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
+        look_builder.updateLookCategories();
+      }
+    } 
+  },
+  /**
+  * @description switching to tab three in publish look book flow
+  * @param {DOM Object} link - the link that trigger the navigation
+  */  
+  toTabThree: function(link){
+    var loading_check = $('#pub-section1 div.publish-loading').length;
+    if(loading_check == 0){
+      var step = look_builder.publishCheck1();
+      if(step == 'pass'){
+        look_builder.updateLookCategories();
+        var look_summary = [];
+        $.each($('#pub-section1 div.pub-look'), function(idx){
+          var div = $(this);
+          var styles = [];
+          var occs = [];
+          $.each(div.find('input.style:checked'), function(num){
+            styles.push($(this).data('display'));
+          });
+          $.each(div.find('input.occ:checked'), function(num){
+            occs.push($(this).data('display'));
+          });
+          look_summary.push(
+            '<div class="look-summary"><span class="name">' + div.data('lookname') + 
+            '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
+            '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
+            '</span></div>'
+          )
+        });
+        var step_div = $(link.attr('href'));
+        var email_at = '<span class="summary-sent">Text will be sent <strong>now</strong>.</span>';
+        if($('#send-toggle').prop('checked')){
+          var t = rome.find(document.getElementById('send-later'))
+          email_at = '<span class="summary-sent">Text will be sent <strong>' + 
+          t.getMoment().format('MMMM Do, YYYY h:mm a') + 
+          ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
+        }
+        var email_text = $('#publish-email').val();
+        email_text = email_text.replace(
+          /\[Link to Lookbook\]/g, 
+          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +
+          '" target="_blank">Your Lookbook</a>'
+        );
+
+        step_div.html(
+          '<h5>Looks</h5><div class="look-summary-section">' +
+          look_summary.join('') + '</div>' +
+          '<h5>Text</h5>' + email_at +
+          '<div class="summary-email">' + email_text +
+          '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
+        );
+        link.addClass('on').siblings('a').removeClass('on');
+        step_div.addClass('on').siblings('div').removeClass('on');
+      }
+    }    
   },
   /**
   * @description update a look with any changes to its fields
