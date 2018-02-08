@@ -358,7 +358,7 @@ def update_look_position(request, pk=None):
     except Look.DoesNotExist:
         return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
-    print("Setting new position")
+    # print("Setting new position")
     look.position = request.data['position']
 
     look.save()
