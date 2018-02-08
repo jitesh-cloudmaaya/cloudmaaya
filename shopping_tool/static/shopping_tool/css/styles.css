@@ -1555,6 +1555,13 @@ div.indepth-loading span.pulse_loader {margin:45px 0 0 75px;}
   margin:-10px -5px 0;
   padding:10px;
 }
+/*
+#compare-looks div.comp-look h3 {
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;   
+}*/
 #compare-looks div.comp-look span.layout,
 #looks-list div.rack-look span.layout,
 #fave-looks div.rack-look span.layout {

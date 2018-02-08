@@ -35,6 +35,16 @@ var look_builder = {
       if(at_load != null){
         $('#compare-looks div.comp-look:not(".editing")').addClass('off');
       }
+      /* COMMENTING OUT UNTIL BACKEND HAS POSITION ATTRiBUTE
+      add ordering of the looks 
+      new Sortable(document.getElementById('look-builder-session-looks'), {
+          handle: ".look-name-header",
+          draggable: ".comp-look",
+          onUpdate: function (evt){
+            // saving the new look position will go here
+          }
+        }
+      );*/
       /* afix cropped images if present */
       if(cropped_images.length > 0){
         for(var i = 0, l = cropped_images.length; i<l; i++){
@@ -824,7 +834,7 @@ var look_builder = {
       return ['<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
         '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
         look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="delete-look-btn" data-lookid="' + 
-        look.id + '"><i class="fa fa-times"></i></a><h3>' + look.name + '</h3>' +
+        look.id + '"><i class="fa fa-times"></i></a><h3 class="look-name-header">' + look.name + '</h3>' +
         '<span class="layout"><em>stylist: </em>' + look.stylist.first_name + ' ' + look.stylist.last_name + '</span>' +
         '<div class="comp-look-display">' + look_products_markup.join('') + '</div>' + desc + 
         '<div class="editing">editing look...</div></div>', cropped_images];
