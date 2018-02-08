@@ -8,6 +8,8 @@ from product_api.models import Product
 from tasks.product_feed import ProductFeed
 from tasks.product_feed_py.pepperjam import get_data, get_merchants
 from datetime import datetime, timedelta
+from elasticsearch_dsl import Search
+from catalogue_service.settings import * # for the ES connection
 
 @task(base=QueueOnce)
 def pepper_jam_get_merchants():
@@ -98,8 +100,6 @@ def build_lookmetrics():
         cursor.close()
 
 
-from elasticsearch_dsl import Search
-from catalogue_service.settings import * # for the ES connection
 ###### A COUPLE TRIES AT index cleanup
 # @task(base=QueueOnce)
 # def index_cleanup1():
