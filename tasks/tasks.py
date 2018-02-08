@@ -100,18 +100,18 @@ def build_lookmetrics():
 from elasticsearch_dsl import Search
 from catalogue_service.settings import * # for the ES connection
 ###### A COUPLE TRIES AT index cleanup
-@task(base=QueueOnce)
-def index_cleanup1():
-    """
-    Defines one Search that matches where is_deleted = True and then issues a delete command.
-    Handled using only elasticsearch_dsl.
-    """
-    print('Finding all deleted products')
-    deleted_products = Search(index="products").query("match", is_deleted = True)
-    print('Removing deleted products from the search index')
-    deleted_products.delete()
-    # response = deleted_products.execute()
-    # print response.to_dict()
+# @task(base=QueueOnce)
+# def index_cleanup1():
+#     """
+#     Defines one Search that matches where is_deleted = True and then issues a delete command.
+#     Handled using only elasticsearch_dsl.
+#     """
+#     print('Finding all deleted products')
+#     deleted_products = Search(index="products").query("match", is_deleted = True)
+#     print('Removing deleted products from the search index')
+#     deleted_products.delete()
+#     # response = deleted_products.execute()
+#     # print response.to_dict()
 
 @task(base=QueueOnce)
 def index_cleanup2():
