@@ -61,7 +61,12 @@ def get_merchants(status='joined'):
     merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
     return merchant_mapping
 
-def update_pepperjam():
+def set_deleted_pepperjam_products():
+    """
+    Helper method for use in the main get_data method. Collects a list of Pepperjam products
+    that should have been upserted in the current run. For those that were not upserted, determined
+    by a settable time threshold, set those products to a status of is_deleted = True.
+    """
     # id of the pepperjam network for use in merchants' network_id
     pepperjam_id = Network.objects.get(name='PepperJam').id
     # get the pepperjam merchants that were active (and hence were just updated)
@@ -288,7 +293,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
 
     # call update_pepperjam here?
     print('Updating non-upserted records')
-    update_pepperjam()
+    set_deleted_pepperjam_products()
 
 def generate_product_id(SKU, merchant_id):
     """
