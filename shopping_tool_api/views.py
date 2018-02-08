@@ -354,7 +354,8 @@ def rack_item(request, pk=None):
 
         {
           "product": 393223,
-          "allume_styling_session": 3
+          "allume_styling_session": 3,
+          "stylist": 1
         }
 
     delete:
