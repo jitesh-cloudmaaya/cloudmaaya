@@ -1393,6 +1393,7 @@ div.indepth-loading {
 }
 #preview-lookbook-overlay div.preview-container div.client-details img,
 #inspect-item div.client-details img {
+  border-radius:5px;
   float:left;
   margin:0 15px 0 0;
   height:150px;
@@ -1825,7 +1826,8 @@ div.lookbook-btns a:active,
   vertical-align: top;
   width:30%;
 }
-#look-indepth div.stage div.products table td.desc p.desc {
+#look-indepth div.stage div.products table td.desc p.desc,
+#look-indepth div.stage div.products table td.desc p.extras {
   color:#777;
   font-size:14px;
   font-weight:300;
@@ -1833,7 +1835,9 @@ div.lookbook-btns a:active,
   margin:0 15px;
   white-space: pre-wrap;
 }
+#look-indepth div.stage div.products table td.desc div.look-meta {position:fixed;}
 #look-indepth div.stage div.products table td.desc p.desc em {display:block; font-weight:500;}
+#look-indepth div.stage div.products table td.desc p.extras em {font-weight:500;}
 #look-indepth div.stage div.products table a.name,
 #inspect-item div.stage table a.name,
 #inspect-item div.stage table h4.name{
@@ -2810,23 +2814,22 @@ div.lookbook-btns a#publish-lookbook:active{
   font-weight:200;
   margin:0 0 15px 9px;
   padding:8px;
-  width:530px; 
+  width: calc(100% - 235px);
 }
 #look-drop #look-desc {
   height:115px;
   margin-bottom: 0;
   max-height:115px;
   min-height:115px;  
-  max-width:530px;
-  min-width:530px;
+  max-width:calc(100% - 235px);
+  min-width:calc(100% - 235px);
 }
 #finish-editing-look {
-  bottom:84px;
+  clear:right;
+  float:right;
   font-size:16px;
-  margin:0;
+  margin:15px 9px 0 0;
   padding:8px 0 10px;
-  position:absolute;
-  right:9px;
   text-align:center;
   width:188px;
 }

@@ -250,6 +250,7 @@ var look_builder = {
           return 0;
         });
         var cropped_images = [];
+        var merchants = []
         for(var i = 0, l = result.look_products.length; i<l; i++){
           var prod = result.look_products[i];
           if(prod.product != undefined){
@@ -257,7 +258,8 @@ var look_builder = {
             var sale = prod.product.sale_price;
             var price_display = '';
             var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
-            var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>';    
+            var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>';   
+            merchants.push(prod.product.merchant_name); 
             if((sale >= retail)||(sale == 0)){
               price_display = '<span class="price"><em class="label">price:</em>' + 
                 numeral(retail).format('$0,0.00') + '</span>';
@@ -275,10 +277,31 @@ var look_builder = {
               }
               cropped_images.push(crop);
             }
-            var other_details = '';
-            if(i == 0){
-              other_details = '<td class="desc" rowspan="' + l + '"><p class="desc"><em>description:</em>' + 
-                result.description + '</td>';
+            var other_details = [];
+            if(i == 0){  
+              other_details.push('<td class="desc" rowspan="' + l + '"><div class="look-meta">');
+              if(result.look_style_types != undefined && result.look_style_types.length > 0){
+                other_details.push('<p class="extras"><em>Style:</em> ' + 
+                  result.look_style_types.map(function(x, i){ return x.name}).join(', ') + 
+                  '</p>'
+                );
+              }
+              if(result.look_style_occasions != undefined && result.look_style_occasions.length > 0){
+                other_details.push('<p class="extras"><em>Occasions:</em> ' + 
+                  result.look_style_occasions.map(function(x, i){ return x.name}).join(', ') + 
+                  '</p>'
+                );
+              }      
+              if(result.look_metrics[0] != undefined){
+                var total_price = numeral(parseFloat(result.look_metrics[0].total_look_price)).format('$0,0.00');
+                var avg_price = numeral(parseFloat(result.look_metrics[0].average_item_price)).format('$0,0.00');
+                other_details.push(
+                  '<p class="extras"><em>Total price:</em> ' + total_price + 
+                  '</p><p class="extras"><em>Average item price:</em> ' + 
+                  avg_price + '</p>'
+                );
+              }
+              other_details.push('<p class="desc"><em>Description:</em>' + result.description + '</p></div></td>');
             }
             markup.push(
               '<tr><td class="img"><a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
@@ -291,7 +314,7 @@ var look_builder = {
               prod.product.short_product_description + '</p>' + price_display +
               '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
               '<span class="general"><em>category:</em>' + prod.product.allume_category + 
-              '</span></td>' + other_details + '</tr>'
+              '</span></td>' + other_details.join('') + '</tr>'
             );
           }
         }
@@ -301,9 +324,15 @@ var look_builder = {
           '<h2>' + result.name + '</h2><p class="layout">' +
           '<a href="https://shopping-tool-web-stage.allume.co/collage_image/' + result.id + 
           '.jpg" id="collage-preview" target="_blank">preview collage</a>' +
-          '<em>layout: </em>' + result.look_layout.display_name + 
+          '<em>stylist: </em>' + result.stylist.first_name + ' ' + result.stylist.last_name + 
           '</p><div class="products">' + markup.join('') + '</div></div>'
         );
+        if(merchants.length > 0){
+          merchants = [...new Set(merchants)];
+          $('#look-indepth div.look-meta').prepend(
+            '<p class="desc"><em>Stores:</em>' + merchants.join(', ') + '</p>'
+          );
+        }
         if(cropped_images.length > 0){
           for(var i = 0, l = cropped_images.length; i<l; i++){
             look_builder.getCroppedImage(cropped_images[i], '#look-indepth');
@@ -796,7 +825,7 @@ var look_builder = {
         '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
         look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="delete-look-btn" data-lookid="' + 
         look.id + '"><i class="fa fa-times"></i></a><h3>' + look.name + '</h3>' +
-        '<span class="layout"><em>layout: </em>' + look.look_layout.display_name + '</span>' +
+        '<span class="layout"><em>stylist: </em>' + look.stylist.first_name + ' ' + look.stylist.last_name + '</span>' +
         '<div class="comp-look-display">' + look_products_markup.join('') + '</div>' + desc + 
         '<div class="editing">editing look...</div></div>', cropped_images];
   },
@@ -921,7 +950,7 @@ var look_builder = {
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
       $('#creating-look').hide();
-      if((result.allume_styling_session == look_builder.session_id)&&(result.stylist == look_builder.stylist_id)){
+      if(result.allume_styling_session == look_builder.session_id){
         var look_drop = $('#look-drop');
         var cropped_images = [];
         var markup = [];
@@ -967,11 +996,12 @@ var look_builder = {
           '<i class="fa fa-search"></i>look details</a>' +
           '<p class="look-drop-info">&bull; Drag items from the left into ' +
           'the look layout, or items from the look to trash to remove.</p>' + markup.join('') + 
-          '<div id="look-trash"></div><label style="margin-top:10px">Name</label><input id="look-name" value="' + 
+          '<div id="look-trash"></div><a href="#" id="finish-editing-look" data-lookid="' + id + 
+          '"><i class="fa fa-check"></i>done editing</a>' +
+          '<label style="margin-top:10px">Name</label><input id="look-name" value="' + 
           result.name + '"/><label>Description</label><textarea id="look-desc">' + 
           result.description + '</textarea><input type="hidden" id="look-layoutid" value="' + 
-          result.look_layout.id + '"/><input type="hidden" id="look-id" value="' + id + '"/>' +
-          '<a href="#" id="finish-editing-look" data-lookid="' + id + '"><i class="fa fa-check"></i>done editing</a>'
+          result.look_layout.id + '"/><input type="hidden" id="look-id" value="' + id + '"/>'
         );
         if(cropped_images.length > 0){
           for(var i = 0, l = cropped_images.length; i<l; i++){
