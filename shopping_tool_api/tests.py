@@ -224,7 +224,7 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(201, response.status_code)
         self.assertEqual(AllumeUserStylistNotes.objects.count(), 3)
         self.assertEqual(AllumeUserStylistNotes.objects.get(id = response_data['id']).notes, 'Api Test Note')
-        
+
 
     def test_get_note(self):
         """
@@ -274,6 +274,31 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(201, response.status_code)
         self.assertEqual(AllumeUserStylistNotes.objects.count(), 2)
         self.assertEqual(AllumeUserStylistNotes.objects.get(id = note_instance.id).notes, 'Api Test Update Note')
+
+
+    def test_delete_note(self):
+        """
+        Test to verify deleting a styling session note
+        """
+        # successful delete
+        url = reverse("shopping_tool_api:styling_session_note", kwargs={'pk': 1})
+
+        self.assertEqual(2, AllumeUserStylistNotes.objects.count())
+
+        response = self.client.delete(url)
+        response_data = json.loads(response.content)
+
+        self.assertTrue(response_data['Success'])
+        self.assertEqual(201, response.status_code)
+        self.assertEqual(1, AllumeUserStylistNotes.objects.count())
+
+        # unsuccessful delete
+        response = self.client.delete(url)
+        response_data = json.loads(response.content)
+
+        self.assertFalse(response_data['Success'])
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(1, AllumeUserStylistNotes.objects.count())
 
 
     def test_update_look(self):

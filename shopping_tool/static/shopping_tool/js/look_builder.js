@@ -16,7 +16,7 @@ var look_builder = {
   * @param {integer} at_load - id of currently being edited look or null
   */  
   editableLooksMarkup: function(looks){
-    //console.log(looks)
+    console.log(looks)
     var at_load = utils.readURLParams('look');
     var comp_looks = $('#compare-looks div.other-looks');
     var markup = [];
@@ -35,6 +35,16 @@ var look_builder = {
       if(at_load != null){
         $('#compare-looks div.comp-look:not(".editing")').addClass('off');
       }
+      /* COMMENTING OUT UNTIL BACKEND HAS POSITION ATTRiBUTE
+      add ordering of the looks 
+      new Sortable(document.getElementById('look-builder-session-looks'), {
+          handle: ".look-name-header",
+          draggable: ".comp-look",
+          onUpdate: function (evt){
+            // saving the new look position will go here
+          }
+        }
+      );*/
       /* afix cropped images if present */
       if(cropped_images.length > 0){
         for(var i = 0, l = cropped_images.length; i<l; i++){
@@ -139,10 +149,6 @@ var look_builder = {
        "description": '',
        "allume_styling_session": look_builder.session_id,
        "stylist": look_builder.stylist_id        
-      }
-      if(look_obj.name == ''){ 
-        pre++; 
-        msg.push('provide a look name'); 
       }
       if(isNaN(look_obj.look_layout)){ 
         pre++; 
@@ -254,6 +260,7 @@ var look_builder = {
           return 0;
         });
         var cropped_images = [];
+        var merchants = []
         for(var i = 0, l = result.look_products.length; i<l; i++){
           var prod = result.look_products[i];
           if(prod.product != undefined){
@@ -261,7 +268,8 @@ var look_builder = {
             var sale = prod.product.sale_price;
             var price_display = '';
             var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
-            var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>';    
+            var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>';   
+            merchants.push(prod.product.merchant_name); 
             if((sale >= retail)||(sale == 0)){
               price_display = '<span class="price"><em class="label">price:</em>' + 
                 numeral(retail).format('$0,0.00') + '</span>';
@@ -279,10 +287,31 @@ var look_builder = {
               }
               cropped_images.push(crop);
             }
-            var other_details = '';
-            if(i == 0){
-              other_details = '<td class="desc" rowspan="' + l + '"><p class="desc"><em>description:</em>' + 
-                result.description + '</td>';
+            var other_details = [];
+            if(i == 0){  
+              other_details.push('<td class="desc" rowspan="' + l + '"><div class="look-meta">');
+              if(result.look_style_types != undefined && result.look_style_types.length > 0){
+                other_details.push('<p class="extras"><em>Style:</em> ' + 
+                  result.look_style_types.map(function(x, i){ return x.name}).join(', ') + 
+                  '</p>'
+                );
+              }
+              if(result.look_style_occasions != undefined && result.look_style_occasions.length > 0){
+                other_details.push('<p class="extras"><em>Occasions:</em> ' + 
+                  result.look_style_occasions.map(function(x, i){ return x.name}).join(', ') + 
+                  '</p>'
+                );
+              }      
+              if(result.look_metrics[0] != undefined){
+                var total_price = numeral(parseFloat(result.look_metrics[0].total_look_price)).format('$0,0.00');
+                var avg_price = numeral(parseFloat(result.look_metrics[0].average_item_price)).format('$0,0.00');
+                other_details.push(
+                  '<p class="extras"><em>Total price:</em> ' + total_price + 
+                  '</p><p class="extras"><em>Average item price:</em> ' + 
+                  avg_price + '</p>'
+                );
+              }
+              other_details.push('<p class="desc"><em>Description:</em>' + result.description + '</p></div></td>');
             }
             markup.push(
               '<tr><td class="img"><a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
@@ -294,8 +323,8 @@ var look_builder = {
               prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
               prod.product.short_product_description + '</p>' + price_display +
               '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
-              '<span class="general"><em>category:</em>' + prod.product.primary_category + 
-              '</span></td>' + other_details + '</tr>'
+              '<span class="general"><em>category:</em>' + prod.product.allume_category + 
+              '</span></td>' + other_details.join('') + '</tr>'
             );
           }
         }
@@ -305,9 +334,15 @@ var look_builder = {
           '<h2>' + result.name + '</h2><p class="layout">' +
           '<a href="https://shopping-tool-web-stage.allume.co/collage_image/' + result.id + 
           '.jpg" id="collage-preview" target="_blank">preview collage</a>' +
-          '<em>layout: </em>' + result.look_layout.display_name + 
+          '<em>stylist: </em>' + result.stylist.first_name + ' ' + result.stylist.last_name + 
           '</p><div class="products">' + markup.join('') + '</div></div>'
         );
+        if(merchants.length > 0){
+          merchants = [...new Set(merchants)];
+          $('#look-indepth div.look-meta').prepend(
+            '<p class="desc"><em>Stores:</em>' + merchants.join(', ') + '</p>'
+          );
+        }
         if(cropped_images.length > 0){
           for(var i = 0, l = cropped_images.length; i<l; i++){
             look_builder.getCroppedImage(cropped_images[i], '#look-indepth');
@@ -439,7 +474,6 @@ var look_builder = {
         var lookup = {
           "client": parseInt($('#user-clip').data('userid')),
           "allume_styling_session": rack_builder.session_id,
-          "stylist": parseInt($('#stylist').data('stylistid')),
           "page": 1
         }
         $.ajax({
@@ -519,6 +553,21 @@ var look_builder = {
               '<div id="pub-section1-errors"></div>' + 
               markup.join('')
             );
+            /* settings the styles/occasions if they exist */
+            for(var i = 0, l = response.looks.length; i<l; i++){
+              var look = response.looks[i];
+              var styles = look.look_style_types;
+              var occasions = look.look_style_occasions;
+              var div = $('#pub-section1 div.pub-look[data-lookid="' + look.id + '"]');
+              for(var ix = 0, lx = styles.length; ix<lx; ix++){
+                var style_type = styles[ix];
+                div.find('input.style[value="' + style_type.id + '"]').prop('checked', true);
+              }
+              for(var ix = 0, lx = occasions.length; ix<lx; ix++){
+                var style_occ = occasions[ix];
+                div.find('input.occ[value="' + style_occ.id + '"]').prop('checked', true);                
+              }              
+            }
             if(cropped_images.length > 0){
               for(var i = 0, l = cropped_images.length; i<l; i++){
                 look_builder.getCroppedImage(cropped_images[i], '#pub-section1');
@@ -596,24 +645,25 @@ var look_builder = {
               occs.push($(this).data('display'));
             });
             look_summary.push(
-              '<div class="look-summary"><span class="name">' +div.data('lookname') + 
+              '<div class="look-summary"><span class="name">' + div.data('lookname') + 
               '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
               '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
               '</span></div>'
             )
           });
           var step_div = $(link.attr('href'));
-          var email_at = '<span class="summary-sent">Email will be sent <strong>now</strong>.</span>';
+          var email_at = '<span class="summary-sent">Text will be sent <strong>now</strong>.</span>';
           if($('#send-toggle').prop('checked')){
             var t = rome.find(document.getElementById('send-later'))
-            email_at = '<span class="summary-sent">Email will be sent <strong>' + 
+            email_at = '<span class="summary-sent">Text will be sent <strong>' + 
             t.getMoment().format('MMMM Do, YYYY h:mm a') + 
             ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
           }
           var email_text = $('#publish-email').val();
           email_text = email_text.replace(
             /\[Link to Lookbook\]/g, 
-            '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +'">Your Lookbook</a>'
+            '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +
+            '" target="_blank">Your Lookbook</a>'
           );
 
           step_div.html(
@@ -644,7 +694,7 @@ var look_builder = {
         send_at: null,
         text_content: $('#publish-email').val().replace(
           /\[Link to Lookbook\]/g, 
-          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +'">Your Lookbook</a>'
+          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
         )
       }
       if($('#send-toggle').prop('checked') == true){
@@ -784,8 +834,8 @@ var look_builder = {
       return ['<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
         '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
         look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="delete-look-btn" data-lookid="' + 
-        look.id + '"><i class="fa fa-times"></i></a><h3>' + look.name + '</h3>' +
-        '<span class="layout"><em>layout: </em>' + look.look_layout.display_name + '</span>' +
+        look.id + '"><i class="fa fa-times"></i></a><h3 class="look-name-header">' + look.name + '</h3>' +
+        '<span class="layout"><em>stylist: </em>' + look.stylist.first_name + ' ' + look.stylist.last_name + '</span>' +
         '<div class="comp-look-display">' + look_products_markup.join('') + '</div>' + desc + 
         '<div class="editing">editing look...</div></div>', cropped_images];
   },
@@ -910,7 +960,7 @@ var look_builder = {
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
       $('#creating-look').hide();
-      if((result.allume_styling_session == look_builder.session_id)&&(result.stylist == look_builder.stylist_id)){
+      if(result.allume_styling_session == look_builder.session_id){
         var look_drop = $('#look-drop');
         var cropped_images = [];
         var markup = [];
@@ -956,11 +1006,12 @@ var look_builder = {
           '<i class="fa fa-search"></i>look details</a>' +
           '<p class="look-drop-info">&bull; Drag items from the left into ' +
           'the look layout, or items from the look to trash to remove.</p>' + markup.join('') + 
-          '<div id="look-trash"></div><label style="margin-top:10px">Name</label><input id="look-name" value="' + 
+          '<div id="look-trash"></div><a href="#" id="finish-editing-look" data-lookid="' + id + 
+          '"><i class="fa fa-check"></i>done editing</a>' +
+          '<label style="margin-top:10px">Name</label><input id="look-name" value="' + 
           result.name + '"/><label>Description</label><textarea id="look-desc">' + 
           result.description + '</textarea><input type="hidden" id="look-layoutid" value="' + 
-          result.look_layout.id + '"/><input type="hidden" id="look-id" value="' + id + '"/>' +
-          '<a href="#" id="finish-editing-look" data-lookid="' + id + '"><i class="fa fa-check"></i>done editing</a>'
+          result.look_layout.id + '"/><input type="hidden" id="look-id" value="' + id + '"/>'
         );
         if(cropped_images.length > 0){
           for(var i = 0, l = cropped_images.length; i<l; i++){

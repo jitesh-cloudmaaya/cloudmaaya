@@ -26,7 +26,7 @@
       <a href="#" id="preview-lookbook">preview lookbook</a>
       <a href="#" id="publish-lookbook">publish lookbook</a>
     </div>
-    <div class="other-looks">
+    <div class="other-looks" id="look-builder-session-looks">
       <div class="empty">loading looks...</div>
     </div>
     <a href="#" id="add-new-look-to-lookbook"><i class="fa fa-plus"></i> add look</a>
@@ -101,7 +101,7 @@
       <div class="publish-section" id="pub-section2">
         <label class="toggle" id="send-email"><em class="left">send now</em><input id="send-toggle" type="checkbox"/><span><small></small></span><em>send later</em></label>
         <div id="send-later-wrapper">
-          <label>Please select a date and time to send the email:</label>
+          <label>Please select a date and time to send the text:</label>
           <div id="send-later" data-tz="{{client.timezone}}"></div>
           <label style="margin-top:10px">{{ client.first_name }} {{ client.last_name }} timezone: <strong>{{client.timezone}}</strong></label>
         </div>
@@ -143,6 +143,21 @@ I can also help you with choosing which pieces to try. Just a heads up that piec
 /* before initializing page get stylist's favorites */
 utils.menu();
 utils.client();
+/* get the session looks */
+$.ajax({
+  contentType : 'application/json',
+  data: JSON.stringify({
+    "client": parseInt($('#user-clip').data('userid')),
+    "allume_styling_session": $('body').data('stylesession'),
+    "page": 1        
+  }),
+  success:function(response){
+    look_builder.editableLooksMarkup(response.looks);
+  },
+  type: 'POST',
+  url: '/shopping_tool_api/look_list/'
+});
+/* get favorites */
 $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
   for(var i = 0, l = result.length;i<l;i++){
     var fave = result[i];

@@ -10,7 +10,8 @@ from shopping_tool.models import *
 class WpUsersNoteUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = WpUsers
-        fields = ['first_name', 'last_name']
+        fields = ['id', 'first_name', 'last_name']
+        # fields = '__all__'
 
 class LookLayoutSerializer(serializers.ModelSerializer):
     #layout_json = serializers.JSONField()
@@ -74,6 +75,7 @@ class LookSerializer(serializers.ModelSerializer):
     look_metrics = LookMetricsSerializer(source='metric_set', many=True, read_only=True)
     look_style_occasions = StyleOccasionSerializer(source='styleoccasion_set', many=True, read_only=True)
     look_style_types = StyleTypeSerializer(source='styletype_set', many=True, read_only=True)
+    stylist = WpUsersNoteUserSerializer(many=False, read_only=True)
 
     class Meta:
         model = Look
@@ -119,10 +121,17 @@ class AllumeClient360Serializer(serializers.ModelSerializer):
         fields = '__all__'#
 
 class AllumeUserStylistNotesSerializer(serializers.ModelSerializer):
-    #stylist = WpUsersNoteUserSerializer(many=False, read_only=True)
+    stylist = WpUsersNoteUserSerializer(many=False, read_only=True)
 
     class Meta:
         model = AllumeUserStylistNotes
         fields = '__all__'#
+
+class AllumeUserStylistNotesCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AllumeUserStylistNotes
+        fields = '__all__'#
+
 
 

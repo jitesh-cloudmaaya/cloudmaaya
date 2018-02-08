@@ -43,7 +43,7 @@ def facets(self):
         
     """
     text_query = self.query_params.get('text', '*')
-    num_per_page = int(self.query_params.get('num_per_page', 48))
+    num_per_page = int(self.query_params.get('num_per_page', 100))
     page = int(self.query_params.get('page', 1))
 
     filter_favs = self.query_params.get('favs')
