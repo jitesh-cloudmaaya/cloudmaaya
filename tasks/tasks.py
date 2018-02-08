@@ -96,9 +96,53 @@ def build_lookmetrics():
     finally:
         cursor.close()
 
+
+from elasticsearch_dsl import Search
+from catalogue_service.settings import * # for the ES connection
+###### A COUPLE TRIES AT index cleanup
 @task(base=QueueOnce)
-def delete_products_from_index():
+def index_cleanup1():
+    """
+    Defines one Search that matches where is_deleted = True and then issues a delete command.
+    Handled using only elasticsearch_dsl.
+    """
+    print('Finding all deleted products')
+    deleted_products = Search().query("match", is_deleted = True)
+    print('Removing deleted products from the search index')
+    deleted_products.delete()
+    # response = deleted_products.execute()
+    # print response.to_dict()
+
+@task(base=QueueOnce)
+def index_cleanup2():
+    """
+    Creates a list of (product_id, merchant_id) tuples, which uniquely identify a record in the Product table.
+    Then, creates a Search object for each tuple and issues the delete command for each one. Uses both Django's
+    ORM and elasticsearch_dsl and seems less efficient than method 1.
+    """
     # poll products_api_product for products where is_deleted = true
-    deleted_product_ids = Product.objects.filter(is_deleted = True).values_list('id')
+    deleted_products = Product.objects.filter(is_deleted = True).values_list('product_id', 'merchant_id') # ids are longs
     # issue command on es index to delete those ids
+    i = 0
+    for deleted_product in deleted_products:
+        product_id = str(deleted_product[0])
+        merchant_id = str(deleted_product[1])
+        # delete by query from index
+        deleted_product = Search().query("match", product_id = product_id, merchant_id = merchant_id)
+        deleted_product.delete()
+
+    # faster ways that don't involve calling ES for every product_id?
+    # delete on is_deleted = True matches in product index?
+    # s = Search().query("match", is_deleted = True)
+    # s.delete()
+
+    # thoughts
+    # talking to ES API...?
+    # https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html
+    # for product_id in deleted_product_ids:
+    # REST_API = 'DELETE products/' + str(product_id)
+    # issue(REST_API)
+
+    # using elasticsearch (aka elasticsearch-py client and not dsl, we have both)
+    # use the delete(*args, **kwargs) method
 
