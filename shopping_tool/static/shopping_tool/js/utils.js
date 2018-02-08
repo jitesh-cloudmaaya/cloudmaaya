@@ -194,6 +194,23 @@ var utils = {
     });
   },
   /**
+  * @description create function which sets document cookies
+  * @param {string} name - name of teh cookie
+  * @param {string} value - content to be stored in the cookie
+  * @param {integer} days - number of days to keep th ecookie fresh
+  */
+  createCookie: function(name, value, days) {
+    var expires;
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days*24*60*60*1000));
+      expires = "; expires=" + date.toGMTString();
+    } else {
+      expires = "";
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
+  },  
+  /**
   * @description make a groups of DOM objects all the same height
   * @params {DOM Array} - array of DOM objects
   */
@@ -207,6 +224,13 @@ var utils = {
     });
     group.height(tallest);
   },
+  /**
+  * @description helper function to set cookie to no value
+  * @param {string} name - name of cookie to erase
+  */
+  eraseCookie: function(name) {
+    utils.createCookie(name, "", -1);
+  },  
   /**
   * @description menu button functionality
   */
@@ -252,7 +276,7 @@ var utils = {
     /* create pager message string */
     var showing_low = numeral(((page * per_page) - per_page + 1)).format('0,0');
     var showing_high = numeral(page * per_page).format('0,0');
-    if(total < per_page){
+    if((page * per_page) > total){
       showing_high = numeral(total).format('0,0');
     }
     var result_total = numeral(total).format('0,0');
@@ -373,6 +397,39 @@ var utils = {
     $('#pager').html(markup.join(''));
   },
   /**
+  * @description parses a query string into a json object
+  * @param {string} queryString - the query string
+  * @returns {object} - key/value pairs of param/value(s) as JSON
+  */
+  parseQuery: function(queryString) {
+    var query = {};
+    var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+      var pair = pairs[i].split('=');
+      query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+    }
+    return query;
+  },
+  /**
+  * @description read the value of a give cookie name
+  * @param {string} name - the name of the cookie
+  * @returns {string|null}
+  */
+  readCookie: function(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+      var c = ca[i];
+      while (c.charAt(0) === ' ') {
+        c = c.substring(1,c.length);
+      }
+      if (c.indexOf(nameEQ) === 0) {
+        return c.substring(nameEQ.length,c.length);
+      }
+    }
+    return null;
+  },
+  /**
   * @description read url params value from window.location.search
   * @param {string} param - parameter we are checking for
   * @returns {string | null} returns param value or null if not present
@@ -380,5 +437,5 @@ var utils = {
   readURLParams: function(param){
     var match = RegExp('[?&]' + param + '=([^&]*)').exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-  } 
+  }
 }

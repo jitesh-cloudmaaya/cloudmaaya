@@ -10,43 +10,19 @@ var search_page = {
   * @description init function applying the functionality to the page elements
   */
   init: function(){
-    rack_builder.init();
-    /* facets functionality */
-    $('#facets').on('click', 'a.facet-group', function(e){
+    /* cache the session id */
+    search_page.session_id = $('body').data('stylesession');
+    /* search functionality */
+    $('#search-btn').click(function(e){
       e.preventDefault();
-      var link = $(this);
-      if(link.hasClass('on')){
-        link.removeClass('on').find('span').html('+');
-      }else{
-        link.addClass('on').find('span').html('-');
-      }
-      link.next('div').slideToggle();
-    }).on('change','input.facet-box',function(e){
-      e.preventDefault();
-      var box = $(this);
-      var facet_links = $('#search-form-selections');
-       search_page.performSearch(1);
+      search_page.performSearch(1, false, null);
     });
-    $('#search-form-selections').on('click', 'a', function(e){
-      e.preventDefault();
-      var link = $(this);
-      if(link.hasClass('remove-search')){
-        $('#search-field').val('');
-        search_page.performSearch(1);
-      }else if(link.hasClass('remove-category')){
-        $('#search-categories')[0].selectize.setValue('',true);
-        search_page.performSearch(1);
-      }else{
-        var facets = $('#facets');
-        var facet = link.data('facet');
-        var group = link.data('qparam');
-        var group_div = facets.find('div[data-qparam="' + group + '"]');
-        var facet_link = group_div.find('input[value="' + facet + '"]');
-        facet_link.prop('checked', false);
-        search_page.performSearch(1);
+    $("#search-field").val('').keyup(function(event) {
+      if (event.keyCode === 13) {
+        search_page.performSearch(1, false, null);
       }
     });
-    $('#search-categories').change(function(){
+    $('#search-categories').val('').selectize({ create: false, sortField: 'text'}).change(function(){
       var dd = $(this);
       var val = dd.val();
       var def_div = $('#client-defaults');
@@ -79,9 +55,51 @@ var search_page = {
         def_div.html('');
       }
     });
-    $('#facet-show-faves').prop('checked', false).click(function(e){
-      search_page.performSearch(1);
+    /* facets functionality */
+    $('#facets').on('click', 'a.facet-group', function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('on')){
+        link.removeClass('on').find('span').html('+');
+      }else{
+        link.addClass('on').find('span').html('-');
+      }
+      link.next('div').slideToggle();
+    }).on('change','input.facet-box',function(e){
+      e.preventDefault();
+      var box = $(this);
+      var facet_links = $('#search-form-selections');
+       search_page.performSearch(1, false, null);
     });
+    $('#search-form-selections').on('click', 'a', function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('remove-search')){
+        $('#search-field').val('');
+        search_page.performSearch(1, false. null);
+      }else if(link.hasClass('remove-category')){
+        $('#search-categories')[0].selectize.setValue('',true);
+        search_page.performSearch(1, false, null);
+      }else{
+        var facets = $('#facets');
+        var facet = link.data('facet');
+        var group = link.data('qparam');
+        var group_div = facets.find('div[data-qparam="' + group + '"]');
+        var facet_link = group_div.find('input[value="' + facet + '"]');
+        facet_link.prop('checked', false);
+        search_page.performSearch(1, false, null);
+      }
+    });
+    $('#facet-show-faves').prop('checked', false).click(function(e){
+      search_page.performSearch(1, false, null);
+    });
+    /* pager functionality */
+    $('#pager').on('click','a.page',function(e){
+      e.preventDefault();
+      var link = $(this);
+      search_page.performSearch(parseInt(link.data('page')), false, null);
+      $('html,body').animate({ scrollTop: 0 }, 300);
+    }); 
     /* results functionality */
     $('#results').on('click','a.favorite',function(e){
       e.preventDefault();
@@ -91,30 +109,24 @@ var search_page = {
       e.preventDefault();
       var link = $(this);
       rack_builder.addToRack(link, 'search', false);
-    }).on('mouseenter', 'a.info-toggle', function(e){
-      var link = $(this);
-      var tt = link.siblings('div.tt');
-      tt.addClass('check')
-      var h = tt.height()
-      tt.removeClass('check');
-      var pos = link.position();
-      tt.css({top: (pos.top - (h + 20)) +'px', left: (pos.left - 174) + 'px'}).fadeIn()
-    }).on('mouseleave', 'a.info-toggle', function(e){
-      var link = $(this);
-      var tt = link.siblings('div.tt'); 
-      tt.fadeOut();  
     }).on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
       rack_builder.inspectItem(link, 'rack');
-    });
-    /* pager functionality */
-    $('#pager').on('click','a.page',function(e){
-      e.preventDefault();
-      var link = $(this);
-      search_page.performSearch(parseInt(link.data('page')));
-      $('html,body').animate({ scrollTop: 0 }, 300);
-    });
+    });       
+    /* check last search cookie and load if exists */
+    var search_cookie = utils.readCookie('lastShoppingToolSearch' + search_page.session_id);
+    if(search_cookie != null){
+      var last_search = utils.parseQuery(search_cookie);
+      var search_box = $('#search-field');
+      var category = $('#search-categories');
+      search_box.val(last_search.text);
+      category[0].selectize.setValue(last_search.primary_category, false);
+      if(last_search.favs != undefined){
+        $('#facet-show-faves').prop('checked', true);
+      }
+      search_page.performSearch(last_search.page, true, last_search);
+    }
   },
   /**
   * @description processing and template for facets
@@ -275,8 +287,10 @@ var search_page = {
   /**
   * @description ajax call to get search results
   * @param {integer} page - the page to fetch
+  * @param {boolean} lastSearch - boolen is performSearh is being called via cookie
+  * @param {object} additionalCriteria - other searcj settings if from cookie
   */
-  performSearch: function(page){
+  performSearch: function(page, lastSearch, additionalCriteria){
     $('#facet-bar').removeClass('show');
     /* generate the query string */
     var selection_markup = [];
@@ -300,6 +314,12 @@ var search_page = {
       new_search = true;
       search_box.data('cat', category)
     }
+    /**
+    * if this a search instantiated from the cookie, we need
+    * to set new_search to false so we can prevent categories with
+    * client data from poluting the query param from the cookie
+    */
+    if(lastSearch == true){ new_search = false; }
     if(category != ''){
       facets.push('&primary_category=' + category);
       selection_markup.push(
@@ -307,6 +327,10 @@ var search_page = {
         'data-facet="' + category + '">' + category + 
         '<i class="fa fa-times-circle"></i></a>'
       );
+      /**
+      * if it is a new search we need to see if we have any client
+      * data to prepopulate some of our facets with
+      */
       if(new_search == true){
         var spend = [];
         var sizes = [];
@@ -372,8 +396,33 @@ var search_page = {
         }
       });
     }
+    /**
+    * if this is a search from the cookie,
+    * set new_search back to true and process the query param
+    * facets from the cookie
+    */
+    if(lastSearch == true){
+      new_search = true;
+      var keys = Object.keys(additionalCriteria);
+      for(var i = 0, l = keys.length; i<l; i++){
+        var key = keys[i];
+        if(['page', 'text', 'primary_category'].indexOf(key) == -1){
+          facets.push(
+            '&' + key+ '=' + encodeURIComponent(additionalCriteria[key])
+          );
+          var terms = additionalCriteria[key].split('|');
+          for(var ix = 0, lx = terms.length; ix < lx; ix++){
+            var term = terms[ix];
+            selection_markup.push(
+              '<a href="#" class="remove-facet" data-qparam="' + key + 
+              '" data-facet="' + term + '">' + term + 
+              '<i class="fa fa-times-circle"></i></a>'
+            );
+          }
+        }
+      }
+    }
     q += '&page=' + page + '' + facets.join('');
-
     var faves = $('#facet-show-faves').prop('checked');
     if(faves == true){
       q += '&favs=' + parseInt($('#stylist').data('stylistid'));
@@ -382,6 +431,8 @@ var search_page = {
     if(selection_markup.length > 0){
       $('#facet-bar').addClass('show');
     }
+    /* set the session search cookie so search will persist */
+    utils.createCookie('lastShoppingToolSearch' + search_page.session_id, q, 1);
     $.ajax({
       beforeSend: function(){
         $('#results').html(
@@ -400,13 +451,30 @@ var search_page = {
       url: '/product_api/facets?',
       data: q,
       success: function(results){
-        //console.log(results)
         if(results.data != undefined && results.data.length > 0){
           utils.pagerTemplate(results.page, results.total_items, results.num_per_page);
         }
         search_page.resultTemplate(results.data);
         if(new_search == true){
           search_page.facetTemplate(results.facets);
+          /**
+          * if search from cookie we need to correctly 'check'
+          * the facet values to mirror those in the cookie
+          */
+          if(lastSearch == true){
+            var keys = Object.keys(additionalCriteria);
+            for(var i = 0, l = keys.length; i<l; i++){
+              var key = keys[i];
+              if(['page', 'text', 'primary_category'].indexOf(key) == -1){
+                var facet_block = $('#facets div.facet-list[data-qparam="' + key + '"]');
+                var terms = additionalCriteria[key].split('|');
+                for(var ix = 0, lx = terms.length; ix < lx; ix++){
+                  var term = terms[ix];
+                  facet_block.find('input[value="' + term + '"]').prop('checked', true);
+                }
+              }
+            }
+          }
         }
       }
     });
