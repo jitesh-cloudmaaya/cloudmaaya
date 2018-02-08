@@ -78,7 +78,7 @@ def set_deleted_pepperjam_products(threshold = 12):
     merchant_ids = merchants.values_list('external_merchant_id')
     # get the products of these merchants
     products = Product.objects.filter(merchant_id__in = merchant_ids) # up to here is confirmed what we want
-    datetime_threshold = datetime.now() - timedelta(threshold = 12) # comparison threshold is 12 hours ago or more
+    datetime_threshold = datetime.now() - timedelta(hours = threshold) # comparison threshold is 12 hours ago or more
     deleted_products = products.filter(updated_at__lte = datetime_threshold)
     # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
     deleted_products.update(is_deleted = True)
