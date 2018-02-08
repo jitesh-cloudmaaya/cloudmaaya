@@ -122,6 +122,12 @@ def get_data(local_temp_dir, cleaned_fieldnames):
         more_pages = True
 
         while more_pages:
+            ## Dev Only
+            # print("Getting Data")
+            # print(pepper_jam_api_product_url)
+            # json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
+            # product_feed = json.load(json_data)
+            # json_data.close()
 
             # commenting out because API only has X amount of access allowed in a day
             ## Prod & Staging Only
@@ -138,12 +144,6 @@ def get_data(local_temp_dir, cleaned_fieldnames):
             json_data = open_w_timeout_retry(pepper_jam_api_product_url, numTries, timeout, delay, backoff)
             product_feed = json.load(json_data)
 
-            ## Dev Only
-            # print("Getting Data")
-            # print(pepper_jam_api_product_url)
-            # json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
-            # product_feed = json.load(json_data)
-            # json_data.close()
 
             if 'next' in product_feed['meta']['pagination']:
                 pepper_jam_api_product_url = product_feed['meta']['pagination']['next']['href']
