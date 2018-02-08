@@ -61,11 +61,15 @@ def get_merchants(status='joined'):
     merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
     return merchant_mapping
 
-def set_deleted_pepperjam_products():
+def set_deleted_pepperjam_products(threshold = 12):
     """
     Helper method for use in the main get_data method. Collects a list of Pepperjam products
     that should have been upserted in the current run. For those that were not upserted, determined
     by a settable time threshold, set those products to a status of is_deleted = True.
+
+    Args:
+        threshold (int): The time threshold in hours. If the updated_at value of a record is threshold
+        or more hours old, conclude it was not updated in the current upsert and set to deleted. 
     """
     # id of the pepperjam network for use in merchants' network_id
     pepperjam_id = Network.objects.get(name='PepperJam').id
@@ -74,7 +78,7 @@ def set_deleted_pepperjam_products():
     merchant_ids = merchants.values_list('external_merchant_id')
     # get the products of these merchants
     products = Product.objects.filter(merchant_id__in = merchant_ids) # up to here is confirmed what we want
-    datetime_threshold = datetime.now() - timedelta(hours = 12) # comparison threshold is 12 hours ago or more
+    datetime_threshold = datetime.now() - timedelta(threshold = 12) # comparison threshold is 12 hours ago or more
     deleted_products = products.filter(updated_at__lte = datetime_threshold)
     # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
     deleted_products.update(is_deleted = True)
