@@ -37,10 +37,10 @@ def create_category_mapping():
     """
     category_mapping = {}
 
-    category_maps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'active')
+    category_maps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'active', 'id')
     for category_map in category_maps:
         key_tup = (category_map[0], category_map[1])
-        val_tup = (category_map[2], category_map[3])
+        val_tup = (category_map[2], category_map[3], category_map[4])
         category_mapping[key_tup] = val_tup
 
     return category_mapping
@@ -71,6 +71,12 @@ def add_category_map(external_cat1, external_cat2, merchant_name, allume_categor
     CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
                                allume_category = None, active = active, pending_review=pending_review)
 
+def backfill_category_map():
+    """
+    Helper function that backfills a blank merchant_name field of a CategoryMap with the
+    merchant name of the current merchant in the data process.
+    """
+
 def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     """
     Takes in as arguments a str merchant_id, a string merchant_name, a network
@@ -90,7 +96,7 @@ def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
         if merchant_mapping[merchant_id]:
             return True
         return False
-    except:
+    except KeyError:
         return False
 
 def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name):
@@ -102,15 +108,25 @@ def are_categories_active(primary_category, secondary_category, category_mapping
     as well as the allume category level. Returns the allume category if so and
     False otherwise.
     """
+    # print category_mapping
     try:
         identifier = (primary_category, secondary_category)
         if identifier not in category_mapping.keys():
             add_category_map(primary_category, secondary_category, merchant_name, None, False, True)
             # edit the mapping instance
-            category_mapping[identifier] = (None, False)
+            category_mapping[identifier] = (None, False, -1)
             # print discovered categories pair
             print identifier
-        allume_category_id, categories_are_active = category_mapping[identifier]
+        allume_category_id, categories_are_active, category_map_id = category_mapping[identifier]
+        # if id == -1, then category is newly added with merchant_name, no need to backfill
+        if category_map_id != -1:
+            # check if the merchant_name for this category exists
+            cm = CategoryMap.objects.get(pk=category_map_id)
+            # if it does not
+            if cm.merchant_name == None:
+                # print 'backfilling occurs'
+                cm.merchant_name = merchant_name
+                cm.save()
         if allume_category_id == None:
             # allume_category_id is None because it is either a newly discovered category
             # or a category that is still pending review post-discovery
@@ -123,12 +139,5 @@ def are_categories_active(primary_category, secondary_category, category_mapping
         if not allume_category_is_active:
             return False
         return allume_category
-    except:
+    except KeyError:
         return False
-
-# when you addd a category to a map, we should also add the name of the merchant the category came from
-
-# also update the checking process so that if the merchant field name is blank when you do the lookup when
-# processing a product feed the field is updated, otherwise we will never be able to backfill
-
-
