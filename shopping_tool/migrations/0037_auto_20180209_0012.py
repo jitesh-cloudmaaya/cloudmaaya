@@ -13,13 +13,9 @@ class Migration(migrations.Migration):
         ('shopping_tool', '0036_update_look_products_position_field'),
     ]
 
-    if 'test' in sys.argv or DEBUG:
-        operations = [
-            migrations.AlterModelOptions(
-                name='look',
-                options={'managed': True, 'ordering': ['-updated_at']},
-            ),
-        ]
-    else:
-        operations = [
-        ]
+    operations = [
+        migrations.AlterModelOptions(
+            name='look',
+            options={'managed': True, 'ordering': ['-updated_at']},
+        ),
+    ]

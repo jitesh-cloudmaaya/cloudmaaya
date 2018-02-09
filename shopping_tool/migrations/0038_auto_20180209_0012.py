@@ -15,14 +15,10 @@ class Migration(migrations.Migration):
         ('shopping_tool', '0037_auto_20180209_0012'),
     ]
 
-    if 'test' in sys.argv or DEBUG:
-        operations = [
-            migrations.AddField(
-                model_name='look',
-                name='position',
-                field=models.IntegerField(default=100),
-            ),
-        ]
-    else:
-        operations = [
-        ]
+    operations = [
+        migrations.AddField(
+            model_name='look',
+            name='position',
+            field=models.IntegerField(default=100),
+        ),
+    ]
