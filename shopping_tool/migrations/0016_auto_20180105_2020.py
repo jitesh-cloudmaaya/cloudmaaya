@@ -41,5 +41,5 @@ class Migration(migrations.Migration):
             field=models.TextField(blank=True, null=True),
         ),
         # line removed to prevent conflict with effects 0037-0039_auto_20180208_222x during localtests and circleCI
-        migrations.RunPython(clean_up_old_layouts),
+        # migrations.RunPython(clean_up_old_layouts),
     ]
