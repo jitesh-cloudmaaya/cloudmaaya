@@ -67,8 +67,8 @@ def add_new_merchant(external_merchant_id, name, network, active = False):
 def get_network(network_name):
     return Network.objects.get(name = network_name)
 
-def add_category_map(external_cat1, external_cat2, allume_category, active = False, pending_review=True):
-    CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, 
+def add_category_map(external_cat1, external_cat2, merchant_name, allume_category, active = False, pending_review=True):
+    CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
                                allume_category = None, active = active, pending_review=pending_review)
 
 def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
@@ -93,7 +93,7 @@ def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     except:
         return False
 
-def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping):
+def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name):
     """
     Takes in a primary category and a secondary category as strings and a
     category_mapping dictionary and checks to see if they constitute an
@@ -105,7 +105,7 @@ def are_categories_active(primary_category, secondary_category, category_mapping
     try:
         identifier = (primary_category, secondary_category)
         if identifier not in category_mapping.keys():
-            add_category_map(primary_category, secondary_category, None, False, True)
+            add_category_map(primary_category, secondary_category, merchant_name, None, False, True)
             # edit the mapping instance
             category_mapping[identifier] = (None, False)
             # print discovered categories pair
@@ -125,3 +125,10 @@ def are_categories_active(primary_category, secondary_category, category_mapping
         return allume_category
     except:
         return False
+
+# when you addd a category to a map, we should also add the name of the merchant the category came from
+
+# also update the checking process so that if the merchant field name is blank when you do the lookup when
+# processing a product feed the field is updated, otherwise we will never be able to backfill
+
+
