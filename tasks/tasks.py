@@ -136,6 +136,139 @@ def build_lookmetrics():
 #     # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
 #     deleted_products.update(is_deleted = True)
 
+def test_for_es(days_threshold = 5):
+    datetime_threshold = datetime.now() -  timedelta(days = days_threshold) # query products as far as days_threshold back
+    deleted_products = Product.objects.filter(updated_at__gte = datetime_threshold, is_deleted = True)
+    deleted_products = deleted_products.values_list('product_id', 'merchant_id') # ids are longs
+    # issue command on es index to delete those ids
+    print len(deleted_products)
+
+    deleted_products = Product.objects.filter(is_deleted = True)
+    deleted_products = deleted_products.values_list('product_id', 'merchant_id')
+    print len(deleted_products)
+
+    return
+
+    for deleted_product in deleted_products:
+        product_id = str(deleted_product[0])
+        merchant_id = str(deleted_product[1])
+        # delete by query from index
+        deleted_product = Search(index="products").query("match", product_id = product_id) \
+            .query("match", merchant_id = merchant_id)
+        response = deleted_product.execute()
+        print response.to_dict()
+
+# if we want to use bulk
+# my understanding is that we would have to get a the collection of documents
+# and then issue a delete on those
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
+from catalogue_service.settings import client # es connection moved to elasticsearch-py as client var
+
+# the following example inserts the JSON document to the "products" index, under a type called "_doc"
+# with an id of 1
+# PUT twitter/_doc/1
+# {
+#     "user" : "kimchy",
+#     "post_date" : "2009-11-15T14:12:12",
+#     "message" : "trying out Elasticsearch"
+# }
+
+def attempt_to_add_a_doc():
+    client.index(index='products', doc_type='product', id = 33000000, body={
+      "long_product_description": "this the the longer",
+      "end_date": None,
+      "product_url": "http://example.com",
+      "color": "blue",
+      "gender": "MEN",
+      "keywords": "",
+      "begin_date": None,
+      "discount": 0,
+      "created_at": None,
+      "merchant_id": 40090,
+      "product_image_url": "lol",
+      "availability": "in-stock",
+      "retail_price": 388,
+      "is_trending": False,
+      "is_deleted": False,
+      "updated_at": "2018-01-30T04:42:37.000Z",
+      "primary_category": "Apparel & Accessories",
+      "product_id": 112323564564534,
+      "short_product_description": "shorter",
+      "@version": "1",
+      "currency": "USD",
+      "id": 230000000,
+      "sku": "13058br9nch9mp",
+      "brand": "Reformation",
+      "is_best_seller": False,
+      "shipping_price": 0,
+      "merchant_color": "August",
+      "raw_product_url": "derived",
+      "buy_url": "",
+      "merchant_name": "Reformation",
+      "allume_size": None,
+      "manufacturer_name": "Reformation",
+      "discount_type": "amount",
+      "product_name": "Thistle Dress Mk35",
+      "sale_price": 0,
+      "secondary_category": "Clothing~~Dresses",
+      "product_type": "",
+      "@timestamp": "2018-02-08T04:18:02.210Z",
+      "size": "4P",
+      "material": "",
+      "manufacturer_part_number": "1301882CHR",
+      "style": "",
+      "current_price": 388,
+      "allume_category": "Dresses",
+      "allume_score": 0,
+      "age": "ADULT"
+        })
+
+def attempt_delete_a_doc():
+    client.delete(index='products', doc_type='product', id=33000000)
+
+# index example
+# es.index(index='test_index', doc_type='post', id=1, body={
+#   'author': 'John Doe',
+#   'blog': 'Learning Elasticsearch',
+#   'title': 'Using Python with Elasticsearch',
+#   'tags': ['python', 'elasticsearch', 'tips'],
+# })
+
+# create fake index maybe loool?
+
+def understand_documents():
+# document get example
+# es.get(index='test_index', id='1')
+    response = client.get(index="products", id='33000000')
+    print response
+
+
+
+def attempt_using_espy():
+
+    response = client.search(
+        index="products",
+        body={
+          "query": {
+            "bool": {
+              "must": [
+              { "match": { "product_id": "3355592380" }},
+              { "match": { "merchant_id": "41754" }}
+              ]
+            }
+          }
+        }
+    )
+
+    # attempt at using bulk
+    # actions = ? 
+    bulk(client, actions)
+
+    print response
+
+    for hit in response['hits']['hits']:
+        print hit
 
 
 @task(base=QueueOnce)
