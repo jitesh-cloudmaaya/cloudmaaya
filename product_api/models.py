@@ -118,6 +118,7 @@ class CategoryMap(models.Model):
     pending_review = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+    merchant_name = models.CharField(max_length=128, blank=True, null=True)
 
     def __str__(self):
         return self.external_cat1 + ": " + self.external_cat2
