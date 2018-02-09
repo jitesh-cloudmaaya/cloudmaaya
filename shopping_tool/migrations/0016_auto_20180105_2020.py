@@ -9,7 +9,7 @@ from shopping_tool.models import *
 def clean_up_old_layouts(apps, schema_editor):
     UserLookFavorite.objects.all().delete()
     LookProduct.objects.all().delete()
-    Look.objects.all().delete()
+    # Look.objects.all().delete()
     LookLayout.objects.all().delete()
 
 class Migration(migrations.Migration):

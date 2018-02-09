@@ -420,6 +420,7 @@ class AllumeLooks(models.Model):
     last_modified = models.DateTimeField()
     is_legacy = models.IntegerField()
     layout_id = models.IntegerField()
+    position = models.IntegerField()
 
     class Meta:
         managed = False
