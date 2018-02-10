@@ -71,12 +71,6 @@ def add_category_map(external_cat1, external_cat2, merchant_name, allume_categor
     CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
                                allume_category = None, active = active, pending_review=pending_review)
 
-def backfill_category_map():
-    """
-    Helper function that backfills a blank merchant_name field of a CategoryMap with the
-    merchant name of the current merchant in the data process.
-    """
-
 def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     """
     Takes in as arguments a str merchant_id, a string merchant_name, a network
