@@ -120,6 +120,7 @@ def collage_image(request, look_id=None):
         look = Look.objects.get(id = look_id) 
         img_src = imgkit.from_url('%s/collage/%s' % (IMGKIT_URL, look_id), False, options = IMGKIT_OPTIONS)
         response = HttpResponse(img_src, content_type="image/jpeg")
+        response['Cache-Control'] = 'max-age=0'
         return response
     except Look.DoesNotExist:
         return HttpResponse(status=404)
@@ -164,13 +165,9 @@ def image_proxy(request):
     
     url = request.GET.get('image_url')
 
-    #image_data = requests.get(url, stream=True)
-    #image_data.raw.decode_content = True
-    #im = Image.open(image_data.raw)
-    image_data = requests.get(url, stream=True).raw
-    print image_data
-    im = Image.open(image_data)
-
+    image_data = requests.get(url, stream=True)
+    image_data.raw.decode_content = True
+    im = Image.open(image_data.raw)
     response = HttpResponse(content_type="image/png")
     im.save(response, "PNG")
 

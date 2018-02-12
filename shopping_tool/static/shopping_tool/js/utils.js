@@ -57,7 +57,7 @@ var utils = {
       var proc_bday = moment(bday.month +'/' + bday.day +'/' + bday.year, 'M/D/YYYY');
       var now = moment();
       var diff = now.diff(proc_bday, 'years')
-      var bd_display = '<em>age:</em>' + diff + ' years old &nbsp;&nbsp;(' + proc_bday.format('MMMM Do, YYYY') + ')';
+      var bd_display = '<em>age:</em>' + diff + ' years old';
       bd.html(bd_display);
       $('#prev-client-birthday').html(bd_display);
     }
@@ -77,8 +77,8 @@ var utils = {
     var city_state = locale.data('cs');
     if((city_state != undefined)&&(typeof city_state == 'object')){
       var cs_display = city_state.city + ', ' + city_state.state;
-      locale.html(cs_display);
-      $('#prev-client-locale').html(cs_display)
+      locale.html('<em>location:</em>' + cs_display);
+      $('#prev-client-locale').html('<em>location:</em>' + cs_display)
       $('#client-weather-locale').html('Seasonal norms for ' + cs_display + ':');
     }    
     /* if link idex is 0, no social links are valid thus hide the whole social div */
@@ -89,6 +89,9 @@ var utils = {
       var link = $(this);
       var href = link.attr('href')
       var div = $(href);
+      /* calculate the correct max height of tab sections */
+      var h = 625 - ($('#client-tabs').outerHeight() + $('#user-card div.social').outerHeight() + $('#user-card span.goal').outerHeight());
+      div.css('maxHeight', h + 'px')
       if(link.hasClass('on') == false){
         link.addClass('on').siblings('a').removeClass('on');
         div.addClass('show').siblings('div.client-section').removeClass('show'); 
@@ -191,6 +194,23 @@ var utils = {
     });
   },
   /**
+  * @description create function which sets document cookies
+  * @param {string} name - name of teh cookie
+  * @param {string} value - content to be stored in the cookie
+  * @param {integer} days - number of days to keep th ecookie fresh
+  */
+  createCookie: function(name, value, days) {
+    var expires;
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days*24*60*60*1000));
+      expires = "; expires=" + date.toGMTString();
+    } else {
+      expires = "";
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
+  },  
+  /**
   * @description make a groups of DOM objects all the same height
   * @params {DOM Array} - array of DOM objects
   */
@@ -204,6 +224,13 @@ var utils = {
     });
     group.height(tallest);
   },
+  /**
+  * @description helper function to set cookie to no value
+  * @param {string} name - name of cookie to erase
+  */
+  eraseCookie: function(name) {
+    utils.createCookie(name, "", -1);
+  },  
   /**
   * @description menu button functionality
   */
@@ -232,8 +259,8 @@ var utils = {
     }
     return '<div class="client-note" id="client-note-id-' + note.id + '"><p>' + note.notes+ '</p>' +
       '<span class="date">' + moment(note.last_modified).format('MMMM Do, YYYY h:mm a') + 
-      '</span><span class="tail"></span><span class="name">Stylist name</span>' +
-      delete_link + '</div>';
+      '</span><span class="tail"></span><span class="name">' + note.stylist.first_name + 
+      ' ' + note.stylist.last_name + '</span>' + delete_link + '</div>';
   },
   /**
   * @description processing and template for pagination of results
@@ -249,7 +276,7 @@ var utils = {
     /* create pager message string */
     var showing_low = numeral(((page * per_page) - per_page + 1)).format('0,0');
     var showing_high = numeral(page * per_page).format('0,0');
-    if(total < per_page){
+    if((page * per_page) > total){
       showing_high = numeral(total).format('0,0');
     }
     var result_total = numeral(total).format('0,0');
@@ -370,6 +397,39 @@ var utils = {
     $('#pager').html(markup.join(''));
   },
   /**
+  * @description parses a query string into a json object
+  * @param {string} queryString - the query string
+  * @returns {object} - key/value pairs of param/value(s) as JSON
+  */
+  parseQuery: function(queryString) {
+    var query = {};
+    var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+      var pair = pairs[i].split('=');
+      query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+    }
+    return query;
+  },
+  /**
+  * @description read the value of a give cookie name
+  * @param {string} name - the name of the cookie
+  * @returns {string|null}
+  */
+  readCookie: function(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+      var c = ca[i];
+      while (c.charAt(0) === ' ') {
+        c = c.substring(1,c.length);
+      }
+      if (c.indexOf(nameEQ) === 0) {
+        return c.substring(nameEQ.length,c.length);
+      }
+    }
+    return null;
+  },
+  /**
   * @description read url params value from window.location.search
   * @param {string} param - parameter we are checking for
   * @returns {string | null} returns param value or null if not present
@@ -377,5 +437,5 @@ var utils = {
   readURLParams: function(param){
     var match = RegExp('[?&]' + param + '=([^&]*)').exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-  } 
+  }
 }

@@ -55,30 +55,18 @@
 <script src="{% sstatic 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
 {% include "shopping_tool/js_arrays.html" %}
-/* before initializing page get stylist's favorites */
-/* cache the session id */
-search_page.session_id = $('body').data('stylesession');
-/* search functionality */
-$('#search-btn').click(function(e){
-  e.preventDefault();
-  search_page.performSearch(1);
-});
-$("#search-field").val('').keyup(function(event) {
-  if (event.keyCode === 13) {
-    search_page.performSearch(1);
-  }
-});
-$('#search-categories').val('').selectize({ create: false, sortField: 'text'});
 utils.menu();
 utils.client();
+/* call the search page init function to set up the page */
+search_page.init();
+/* before setting up rack get stylist's favorites */
 $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
   for(var i = 0, l = result.length;i<l;i++){
     var fave = result[i];
     rack_builder.favorites_product_ids.push(fave.product);
     rack_builder.favorites.push(fave);
   }
-  /* call the search page init function to set up the page */
-  search_page.init();
+  rack_builder.init();
 })
 
 </script>

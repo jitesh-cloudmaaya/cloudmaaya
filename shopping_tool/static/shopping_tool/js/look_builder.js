@@ -16,7 +16,7 @@ var look_builder = {
   * @param {integer} at_load - id of currently being edited look or null
   */  
   editableLooksMarkup: function(looks){
-    //console.log(looks)
+    console.log(looks)
     var at_load = utils.readURLParams('look');
     var comp_looks = $('#compare-looks div.other-looks');
     var markup = [];
@@ -35,6 +35,16 @@ var look_builder = {
       if(at_load != null){
         $('#compare-looks div.comp-look:not(".editing")').addClass('off');
       }
+      /* COMMENTING OUT UNTIL BACKEND HAS POSITION ATTRiBUTE
+      add ordering of the looks 
+      new Sortable(document.getElementById('look-builder-session-looks'), {
+          handle: ".look-name-header",
+          draggable: ".comp-look",
+          onUpdate: function (evt){
+            // saving the new look position will go here
+          }
+        }
+      );*/
       /* afix cropped images if present */
       if(cropped_images.length > 0){
         for(var i = 0, l = cropped_images.length; i<l; i++){
@@ -94,40 +104,20 @@ var look_builder = {
       e.preventDefault();
       $('#new-look-error').html('');
       $('#new-look-name').val('');
-      $('#new-look-layout')[0].selectize.setValue('',true);
+      $('#look-layouts-container').find('input').prop('checked', false).end()
+      .find('label').removeClass('selected');
       $('#create-look').fadeIn();
-    });
-    /* new look create form */
-    $('#new-look-layout').selectize({
-      valueField: 'id',
-      labelField: 'name',
-      searchField: 'name',
-      options: look_layouts,
-      create: false,
-      render: {
-        option: function(item, escape) {
-          /* create look option grid display */
-          var markup = ['<div class="grid-display-wrapper"><div class="grid-skew">'];
-          for(var i = 0, l = item.display.length; i<l; i++){
-            var block = item.display[i];
-            markup.push(
-              '<span class="layout-block" style="height:' + (block.height - 2) + 'px;' +
-              'width:' + (block.width - 2) + 'px;top:' + block.y + 'px;left:' + block.x + 
-              'px"></span>'
-            )
-          }
-          markup.push('</div></div>');
-          return '<div class="layout-option">' +
-            '<div class="layout-grid">' + markup.join('')+ '</div>' +
-            '<span class="name">' + escape(item.name) + '</span>' +
-            '</div>';
-        }
-      }
     });
     $('#cancel-new-look').click(function(e){
       e.preventDefault()
       $('#create-look').fadeOut();
-    });   
+    });
+    $('#look-layouts-container').on('click', 'label.layout-check', function(e){
+      var box = $(this);
+      if(box.hasClass('selected') == false){
+        box.addClass('selected').siblings('label.layout-check').removeClass('selected');
+      }
+    });
     $('#create-new-look').click(function(e){
       $('#new-look-error').html('');
       e.preventDefault();
@@ -135,14 +125,10 @@ var look_builder = {
       var msg = [];
       var look_obj = {
        "name": $('#new-look-name').val(),
-       "look_layout": parseInt($('#new-look-layout').val()),
+       "look_layout": parseInt($('#look-layouts-container input:checked').val()),
        "description": '',
        "allume_styling_session": look_builder.session_id,
        "stylist": look_builder.stylist_id        
-      }
-      if(look_obj.name == ''){ 
-        pre++; 
-        msg.push('provide a look name'); 
       }
       if(isNaN(look_obj.look_layout)){ 
         pre++; 
@@ -254,6 +240,7 @@ var look_builder = {
           return 0;
         });
         var cropped_images = [];
+        var merchants = []
         for(var i = 0, l = result.look_products.length; i<l; i++){
           var prod = result.look_products[i];
           if(prod.product != undefined){
@@ -261,7 +248,8 @@ var look_builder = {
             var sale = prod.product.sale_price;
             var price_display = '';
             var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
-            var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>';    
+            var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>';   
+            merchants.push(prod.product.merchant_name); 
             if((sale >= retail)||(sale == 0)){
               price_display = '<span class="price"><em class="label">price:</em>' + 
                 numeral(retail).format('$0,0.00') + '</span>';
@@ -279,10 +267,31 @@ var look_builder = {
               }
               cropped_images.push(crop);
             }
-            var other_details = '';
-            if(i == 0){
-              other_details = '<td class="desc" rowspan="' + l + '"><p class="desc"><em>description:</em>' + 
-                result.description + '</td>';
+            var other_details = [];
+            if(i == 0){  
+              other_details.push('<td class="desc" rowspan="' + l + '"><div class="look-meta">');
+              if(result.look_style_types != undefined && result.look_style_types.length > 0){
+                other_details.push('<p class="extras"><em>Style:</em> ' + 
+                  result.look_style_types.map(function(x, i){ return x.name}).join(', ') + 
+                  '</p>'
+                );
+              }
+              if(result.look_style_occasions != undefined && result.look_style_occasions.length > 0){
+                other_details.push('<p class="extras"><em>Occasions:</em> ' + 
+                  result.look_style_occasions.map(function(x, i){ return x.name}).join(', ') + 
+                  '</p>'
+                );
+              }      
+              if(result.look_metrics[0] != undefined){
+                var total_price = numeral(parseFloat(result.look_metrics[0].total_look_price)).format('$0,0.00');
+                var avg_price = numeral(parseFloat(result.look_metrics[0].average_item_price)).format('$0,0.00');
+                other_details.push(
+                  '<p class="extras"><em>Total price:</em> ' + total_price + 
+                  '</p><p class="extras"><em>Average item price:</em> ' + 
+                  avg_price + '</p>'
+                );
+              }
+              other_details.push('<p class="desc"><em>Description:</em>' + result.description + '</p></div></td>');
             }
             markup.push(
               '<tr><td class="img"><a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
@@ -294,8 +303,8 @@ var look_builder = {
               prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
               prod.product.short_product_description + '</p>' + price_display +
               '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
-              '<span class="general"><em>category:</em>' + prod.product.primary_category + 
-              '</span></td>' + other_details + '</tr>'
+              '<span class="general"><em>category:</em>' + prod.product.allume_category + 
+              '</span></td>' + other_details.join('') + '</tr>'
             );
           }
         }
@@ -305,9 +314,15 @@ var look_builder = {
           '<h2>' + result.name + '</h2><p class="layout">' +
           '<a href="https://shopping-tool-web-stage.allume.co/collage_image/' + result.id + 
           '.jpg" id="collage-preview" target="_blank">preview collage</a>' +
-          '<em>layout: </em>' + result.look_layout.display_name + 
+          '<em>stylist: </em>' + result.stylist.first_name + ' ' + result.stylist.last_name + 
           '</p><div class="products">' + markup.join('') + '</div></div>'
         );
+        if(merchants.length > 0){
+          merchants = [...new Set(merchants)];
+          $('#look-indepth div.look-meta').prepend(
+            '<p class="desc"><em>Stores:</em>' + merchants.join(', ') + '</p>'
+          );
+        }
         if(cropped_images.length > 0){
           for(var i = 0, l = cropped_images.length; i<l; i++){
             look_builder.getCroppedImage(cropped_images[i], '#look-indepth');
@@ -439,7 +454,6 @@ var look_builder = {
         var lookup = {
           "client": parseInt($('#user-clip').data('userid')),
           "allume_styling_session": rack_builder.session_id,
-          "stylist": parseInt($('#stylist').data('stylistid')),
           "page": 1
         }
         $.ajax({
@@ -517,8 +531,24 @@ var look_builder = {
             }
             $('#pub-section1').html(
               '<div id="pub-section1-errors"></div>' + 
+              '<a href="#" class="next-tab">next<i class="fa fa-chevron-right"></i></a>' +
               markup.join('')
             );
+            /* settings the styles/occasions if they exist */
+            for(var i = 0, l = response.looks.length; i<l; i++){
+              var look = response.looks[i];
+              var styles = look.look_style_types;
+              var occasions = look.look_style_occasions;
+              var div = $('#pub-section1 div.pub-look[data-lookid="' + look.id + '"]');
+              for(var ix = 0, lx = styles.length; ix<lx; ix++){
+                var style_type = styles[ix];
+                div.find('input.style[value="' + style_type.id + '"]').prop('checked', true);
+              }
+              for(var ix = 0, lx = occasions.length; ix<lx; ix++){
+                var style_occ = occasions[ix];
+                div.find('input.occ[value="' + style_occ.id + '"]').prop('checked', true);                
+              }              
+            }
             if(cropped_images.length > 0){
               for(var i = 0, l = cropped_images.length; i<l; i++){
                 look_builder.getCroppedImage(cropped_images[i], '#pub-section1');
@@ -557,76 +587,27 @@ var look_builder = {
       $('#preview-lookbook-overlay').fadeOut();
     }); 
     /* wizard tabs, their status checking and other functionality for publish lookbook */
+    $('#pub-section1').on('click', 'a.next-tab', function(e){
+      e.preventDefault();
+      look_builder.toTabTwo($('#pub-wizard-step2'));     
+    })    
     $('#pub-wizard-step1').click(function(e){
       e.preventDefault();
       var link = $(this);
       link.addClass('on').siblings('a').removeClass('on');
       $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
-    })      
+    });
     $('#pub-wizard-step2').click(function(e){
       e.preventDefault();
-      var link = $(this);
-      var loading_check = $('#pub-section1 div.publish-loading').length;
-      if(loading_check == 0){
-        var step = look_builder.publishCheck1();
-        if(step == 'pass'){
-          link.addClass('on').siblings('a').removeClass('on');
-          $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
-          look_builder.updateLookCategories();
-        }
-      }
+      look_builder.toTabTwo($(this)); 
     });
+    $('#pub-section2').on('click', 'a.next-tab', function(e){
+      e.preventDefault();
+      look_builder.toTabThree($('#pub-wizard-step3'));     
+    })        
     $('#pub-wizard-step3').click(function(e){
       e.preventDefault();
-      var link = $(this);
-      var loading_check = $('#pub-section1 div.publish-loading').length;
-      if(loading_check == 0){
-        var step = look_builder.publishCheck1();
-        if(step == 'pass'){
-          look_builder.updateLookCategories();
-          var look_summary = [];
-          $.each($('#pub-section1 div.pub-look'), function(idx){
-            var div = $(this);
-            var styles = [];
-            var occs = [];
-            $.each(div.find('input.style:checked'), function(num){
-              styles.push($(this).data('display'));
-            });
-            $.each(div.find('input.occ:checked'), function(num){
-              occs.push($(this).data('display'));
-            });
-            look_summary.push(
-              '<div class="look-summary"><span class="name">' +div.data('lookname') + 
-              '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
-              '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
-              '</span></div>'
-            )
-          });
-          var step_div = $(link.attr('href'));
-          var email_at = '<span class="summary-sent">Email will be sent <strong>now</strong>.</span>';
-          if($('#send-toggle').prop('checked')){
-            var t = rome.find(document.getElementById('send-later'))
-            email_at = '<span class="summary-sent">Email will be sent <strong>' + 
-            t.getMoment().format('MMMM Do, YYYY h:mm a') + 
-            ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
-          }
-          var email_text = $('#publish-email').val();
-          email_text = email_text.replace(
-            /\[Link to Lookbook\]/g, 
-            '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +'">Your Lookbook</a>'
-          );
-
-          step_div.html(
-            '<h5>Looks</h5><div class="look-summary-section">' +
-            look_summary.join('') + '</div>' +
-            '<h5>Email</h5>' + email_at +
-            '<div class="summary-email">' + email_text +
-            '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
-          );
-          link.addClass('on').siblings('a').removeClass('on');
-          step_div.addClass('on').siblings('div').removeClass('on');
-        }
-      }
+      look_builder.toTabThree($(this));
     });
     $('#send-toggle').change(function(e){
       var box = $(this);
@@ -644,7 +625,7 @@ var look_builder = {
         send_at: null,
         text_content: $('#publish-email').val().replace(
           /\[Link to Lookbook\]/g, 
-          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +'">Your Lookbook</a>'
+          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
         )
       }
       if($('#send-toggle').prop('checked') == true){
@@ -653,15 +634,20 @@ var look_builder = {
         var reg_str = t.getMoment().format('YYYY-MM-DD HH:MM');
         //console.log(reg_str)
         var send_string = moment.tz(reg_str, tz).format('X');
-        lookbook.send_at = send_string;
+        lookbook.send_at = parseInt(send_string);
       }
       //console.log(lookbook)
-      $.ajax({
+      $.ajax({       
         contentType : 'application/json',
+        crossDomain: true,
         data: JSON.stringify(lookbook),
         type: 'POST',
-        url: 'https://styling-service-stage.allume.co/publish_looks/'
+        url: 'https://styling-service-stage.allume.co/publish_looks/',
+        xhrFields: {
+          withCredentials: true
+        }
       });
+      $('#publish-lookbook-overlay').fadeOut();
     })     
   },
   /**
@@ -732,6 +718,29 @@ var look_builder = {
     if(at_load_look != null){
       look_builder.setUpBuilder(at_load_look);
     }
+    /* add the layout options to create look overlay */
+    var layout_markup = [];
+    for(var i = 0, l = look_layouts.length; i<l; i++){
+      var layout = look_layouts[i];
+      var markup = ['<div class="grid-display-wrapper"><div class="grid-skew">'];
+      for(var ix = 0, lx = layout.display.length; ix<lx; ix++){
+        var block = layout.display[ix];
+        markup.push(
+          '<span class="layout-block" style="height:' + (block.height - 2) + 'px;' +
+          'width:' + (block.width - 2) + 'px;top:' + block.y + 'px;left:' + block.x + 
+          'px"></span>'
+        );
+      }
+      markup.push('</div></div>');
+      layout_markup.push(
+        '<label class="layout-check"><div class="layout-block">' +
+        '<div class="layout-grid">' + markup.join('') + '</div>' +
+        '<span class="name">' + layout.name + '</span>' +
+        '<input type="radio" name="layout" value="' + layout.id + 
+        '"/><i class="fa fa-check"/></div></label>'
+      );
+    }
+    $('#look-layouts-container').html(layout_markup.join(''))
   },
   /**
   * @description helper template function to generate look markup
@@ -779,8 +788,8 @@ var look_builder = {
       return ['<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
         '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
         look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="delete-look-btn" data-lookid="' + 
-        look.id + '"><i class="fa fa-times"></i></a><h3>' + look.name + '</h3>' +
-        '<span class="layout"><em>layout: </em>' + look.look_layout.display_name + '</span>' +
+        look.id + '"><i class="fa fa-times"></i></a><h3 class="look-name-header">' + look.name + '</h3>' +
+        '<span class="layout"><em>stylist: </em>' + look.stylist.first_name + ' ' + look.stylist.last_name + '</span>' +
         '<div class="comp-look-display">' + look_products_markup.join('') + '</div>' + desc + 
         '<div class="editing">editing look...</div></div>', cropped_images];
   },
@@ -905,7 +914,7 @@ var look_builder = {
     /* get the look settings to build the drop zone */
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
       $('#creating-look').hide();
-      if((result.allume_styling_session == look_builder.session_id)&&(result.stylist == look_builder.stylist_id)){
+      if(result.allume_styling_session == look_builder.session_id){
         var look_drop = $('#look-drop');
         var cropped_images = [];
         var markup = [];
@@ -951,11 +960,12 @@ var look_builder = {
           '<i class="fa fa-search"></i>look details</a>' +
           '<p class="look-drop-info">&bull; Drag items from the left into ' +
           'the look layout, or items from the look to trash to remove.</p>' + markup.join('') + 
-          '<div id="look-trash"></div><label style="margin-top:10px">Name</label><input id="look-name" value="' + 
+          '<div id="look-trash"></div><a href="#" id="finish-editing-look" data-lookid="' + id + 
+          '"><i class="fa fa-check"></i>done editing</a>' +
+          '<label style="margin-top:10px">Name</label><input id="look-name" value="' + 
           result.name + '"/><label>Description</label><textarea id="look-desc">' + 
           result.description + '</textarea><input type="hidden" id="look-layoutid" value="' + 
-          result.look_layout.id + '"/><input type="hidden" id="look-id" value="' + id + '"/>' +
-          '<a href="#" id="finish-editing-look" data-lookid="' + id + '"><i class="fa fa-check"></i>done editing</a>'
+          result.look_layout.id + '"/><input type="hidden" id="look-id" value="' + id + '"/>'
         );
         if(cropped_images.length > 0){
           for(var i = 0, l = cropped_images.length; i<l; i++){
@@ -1032,18 +1042,22 @@ var look_builder = {
                             tmp.color_names.push(clr);
                             tmp.color_objects[clr] = { sizes: [], size_data : {}};
                           }
-                          if(tmp.color_objects[clr].sizes.indexOf(product.size) == -1){
-                            tmp.color_objects[clr].sizes.push(product.size);
-                            tmp.color_objects[clr].size_data[product.size] = {
-                              image: product.raw_product_url,
-                              price: product.current_price,
-                              text: product.size,
-                              value: product.size
+                          var all_sizes = product.size.split(',')
+                          for(var ix = 0, lx = all_sizes.length; ix < lx; ix++){
+                            var size = all_sizes[ix];
+                            if(tmp.color_objects[clr].sizes.indexOf(size) == -1){
+                              tmp.color_objects[clr].sizes.push(size);
+                              tmp.color_objects[clr].size_data[size] = {
+                                image: product.raw_product_url,
+                                price: product.current_price,
+                                text: size,
+                                value: size
+                              }
                             }
                           }
                         }
                         /* create payload object */
-                        var merchant_node = matching_object.merchant_id.toString();
+                        var merchant_node = matching_object.product_api_merchant.toString();
                         var product_node = response.product.toString();
                         payload.sites[merchant_node] = {}
                         payload.sites[merchant_node].add_to_cart = {}
@@ -1056,35 +1070,38 @@ var look_builder = {
                         payload.sites[merchant_node].add_to_cart[product_node].description = matching_object.long_product_description;
                         payload.sites[merchant_node].add_to_cart[product_node].required_field_names = ["color", "size", "quantity"];
                         payload.sites[merchant_node].add_to_cart[product_node].required_field_values = {};
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.colors = [];
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.url = matching_object.product_url;
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.status = "done";
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.original_url = matching_object.raw_product_url;
-                      }
-                      /* create the colors array objects */
-                      for(var i = 0, l = tmp.color_names.length; i<l; i++){
-                        var color = tmp.color_names[i];
-                        var obj = {
-                          dep: { size: [] },
-                          image: matching_object.product_image_url,
-                          price: matching_object.current_price,
-                          tex: color,
-                          value: color
+                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color = [];
+                        payload.sites[merchant_node].add_to_cart[product_node].url = matching_object.product_url;
+                        payload.sites[merchant_node].add_to_cart[product_node].status = "done";
+                        payload.sites[merchant_node].add_to_cart[product_node].original_url = matching_object.raw_product_url;
+                        /* create the colors array objects */
+                        for(var i = 0, l = tmp.color_names.length; i<l; i++){
+                          var color = tmp.color_names[i];
+                          var obj = {
+                            dep: { size: [] },
+                            price: matching_object.current_price,
+                            text: color,
+                            value: color
+                          }
+                          for(var ix = 0, il = tmp.color_objects[color].sizes.length; ix<il; ix++){
+                            var size_name = tmp.color_objects[color].sizes[ix];
+                            var size = tmp.color_objects[color].size_data[size_name];
+                            size.dep = {}
+                            obj.dep.size.push(size);
+                          }
+                          payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color.push(obj);
                         }
-                        for(var ix = 0, il = tmp.color_objects[color].sizes.length; ix<il; ix++){
-                          var size_name = tmp.color_objects[color].sizes[ix];
-                          var size = tmp.color_objects[color].size_data[size_name];
-                          size.dep = {}
-                          obj.dep.size.push(size);
-                        }
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.colors.push(obj);
+                        $.ajax({
+                          contentType: 'application/x-www-form-urlencoded',
+                          crossDomain: true,
+                          data: $.param({look_product_id: response.id, product: payload}),
+                          type: 'POST',
+                          url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_product_from_affiliate_feeds_and_link_to_look/',
+                          xhrFields: {
+                            withCredentials: true
+                          }
+                        });
                       }
-                      $.ajax({
-                        contentType: 'application/x-www-form-urlencoded',
-                        data: $.param({look_product_id: response.id, product: payload}),
-                        type: 'POST',
-                        url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_client_products_and_link_to_look/'
-                      });
                     },
                     type: "GET",
                     url: '/product_api/get_product/' + response.product  + '/',
@@ -1163,6 +1180,76 @@ var look_builder = {
       sort: true,
       draggable: ".item"
     });  
+  },
+  /**
+  * @description switching to tab two in publish look book flow
+  * @param {DOM Object} link - the link that trigger the navigation
+  */
+  toTabTwo: function(link) {
+    var loading_check = $('#pub-section1 div.publish-loading').length;
+    if(loading_check == 0){
+      var step = look_builder.publishCheck1();
+      if(step == 'pass'){
+        link.addClass('on').siblings('a').removeClass('on');
+        $(link.attr('href')).addClass('on').siblings('div').removeClass('on');
+        look_builder.updateLookCategories();
+      }
+    } 
+  },
+  /**
+  * @description switching to tab three in publish look book flow
+  * @param {DOM Object} link - the link that trigger the navigation
+  */  
+  toTabThree: function(link){
+    var loading_check = $('#pub-section1 div.publish-loading').length;
+    if(loading_check == 0){
+      var step = look_builder.publishCheck1();
+      if(step == 'pass'){
+        look_builder.updateLookCategories();
+        var look_summary = [];
+        $.each($('#pub-section1 div.pub-look'), function(idx){
+          var div = $(this);
+          var styles = [];
+          var occs = [];
+          $.each(div.find('input.style:checked'), function(num){
+            styles.push($(this).data('display'));
+          });
+          $.each(div.find('input.occ:checked'), function(num){
+            occs.push($(this).data('display'));
+          });
+          look_summary.push(
+            '<div class="look-summary"><span class="name">' + div.data('lookname') + 
+            '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
+            '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
+            '</span></div>'
+          )
+        });
+        var step_div = $(link.attr('href'));
+        var email_at = '<span class="summary-sent">Text will be sent <strong>now</strong>.</span>';
+        if($('#send-toggle').prop('checked')){
+          var t = rome.find(document.getElementById('send-later'))
+          email_at = '<span class="summary-sent">Text will be sent <strong>' + 
+          t.getMoment().format('MMMM Do, YYYY h:mm a') + 
+          ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
+        }
+        var email_text = $('#publish-email').val();
+        email_text = email_text.replace(
+          /\[Link to Lookbook\]/g, 
+          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +
+          '" target="_blank">Your Lookbook</a>'
+        );
+
+        step_div.html(
+          '<h5>Looks</h5><div class="look-summary-section">' +
+          look_summary.join('') + '</div>' +
+          '<h5>Text</h5>' + email_at +
+          '<div class="summary-email">' + email_text +
+          '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
+        );
+        link.addClass('on').siblings('a').removeClass('on');
+        step_div.addClass('on').siblings('div').removeClass('on');
+      }
+    }    
   },
   /**
   * @description update a look with any changes to its fields

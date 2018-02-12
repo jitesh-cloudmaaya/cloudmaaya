@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from product_api.models import Product
 import uuid
 
+from catalogue_service.settings_local import COLLAGE_IMAGE_ROOT
 
 # Create your models here.
 class StylistManager(models.Manager):
@@ -493,12 +494,11 @@ class Look(models.Model):
 class LookProduct(models.Model):
     look = models.ForeignKey(Look, related_name='product_set', db_constraint=False, db_column='allume_look_id')
     wp_product_id = models.BigIntegerField(blank=True, null=True, default=-1, db_column='wp_product_id')
-    sequence = models.IntegerField(blank=True, null=True, default=-1)
     created_at = models.DateTimeField(auto_now_add=True, null=True, db_column='date_created')
     updated_at = models.DateTimeField(auto_now=True, null=True, db_column='last_modified')
     product_clipped_stylist_id = models.BigIntegerField(blank=True, null=True, default=-1)
     cropped_dimensions = models.CharField(max_length=200, blank=True, null=True)
-    layout_position = models.IntegerField()
+    layout_position = models.IntegerField(db_column='sequence')
     product = models.ForeignKey(Product, db_column='raw_product_id')
 
     class Meta:
@@ -558,7 +558,9 @@ class StyleOccasion(models.Model):
 @receiver(pre_save, sender=Look)
 def set_look_client_id(sender, instance, *args, **kwargs):
     instance.wp_client_id = instance.allume_styling_session.client.id
+    instance.collage = "%s/%s.jpg" % (COLLAGE_IMAGE_ROOT, instance.id)
 
 @receiver(pre_save, sender=LookProduct)
 def set_product_clipped_stylist_id(sender, instance, *args, **kwargs):
     instance.product_clipped_stylist_id = instance.look.stylist.id
+

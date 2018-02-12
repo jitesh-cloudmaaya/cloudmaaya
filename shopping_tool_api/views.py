@@ -82,9 +82,9 @@ def styling_session_note(request, pk=None):
 
         try:
             note = AllumeUserStylistNotes.objects.get(id=pk)
-            serializer = AllumeUserStylistNotesSerializer(note, data=request.data)
+            serializer = AllumeUserStylistNotesCreateSerializer(note, data=request.data)
         except AllumeUserStylistNotes.DoesNotExist:
-            serializer = AllumeUserStylistNotesSerializer(data=request.data)
+            serializer = AllumeUserStylistNotesCreateSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()

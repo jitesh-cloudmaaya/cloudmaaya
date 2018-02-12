@@ -66,3 +66,5 @@ IMGKIT_OPTIONS = {
 PEPPERJAM_API_VERSION = '20120402'
 PEPPERJAM_API_KEY = ''
 
+COLLAGE_IMAGE_ROOT = 'https://shopping-tool-web-stage.allume.co/collage_image'
+

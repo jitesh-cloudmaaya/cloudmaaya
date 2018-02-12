@@ -106,7 +106,7 @@ var rack_builder = {
         success:function(response){
           var itm = rack_builder.itemTemplate(details, 'rack', idx, response.id);
           var categories = [];
-          var sanitized_cat = details.primary_category.replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
+          var sanitized_cat = details.allume_category .replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
           $.each(rack.find('div.block'), function(idx){
             categories.push($(this).data('category'));
           });
@@ -115,7 +115,7 @@ var rack_builder = {
             categories.sort();
             var rackidx = categories.indexOf(sanitized_cat);
             var new_category = '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
-              details.primary_category + '</a><div class="block" data-category="' + sanitized_cat + 
+              details.allume_category + '</a><div class="block" data-category="' + sanitized_cat + 
               '"></div>';
             if(rackidx == 0){
               rack.find('.close-all-rack-sections').after(new_category);
@@ -201,10 +201,6 @@ var rack_builder = {
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
-        /* if we are on looks builder page use this initial looks call to populate the list */
-        if((window.location.href.indexOf('look_builder') > -1)&&(type == 'regular')){
-          look_builder.editableLooksMarkup(response.looks);
-        }
         var markup = [];
         var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
@@ -274,8 +270,8 @@ var rack_builder = {
     /* set initital rack products */
     var rack_list = $('#rack-list');
     initial_rack.sort(function(a,b){
-      if(a.primary_category.toLowerCase() > b.primary_category.toLowerCase()){ return 1}
-      if(a.primary_category.toLowerCase() < b.primary_category.toLowerCase()){ return -1}
+      if(a.allume_category.toLowerCase() > b.allume_category.toLowerCase()){ return 1}
+      if(a.allume_category.toLowerCase() < b.allume_category.toLowerCase()){ return -1}
       return 0;
     });
     if(initial_rack.length > 0){
@@ -288,12 +284,12 @@ var rack_builder = {
     for(var i = 0, l = initial_rack.length; i<l; i++){
       var obj = initial_rack[i];
       var itm = rack_builder.itemTemplate(obj, 'rack', '', obj.rack_id);
-      var sanitized_cat = obj.primary_category.replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
+      var sanitized_cat = obj.allume_category.replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
       var category_exists = rack_list.find('div.block[data-category="' + sanitized_cat + '"]').length;
       if(category_exists == 0){
         rack_list.append(
           '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
-          obj.primary_category + '</a><div class="block" data-category="' + sanitized_cat + 
+          obj.allume_category + '</a><div class="block" data-category="' + sanitized_cat + 
           '"></div>'
         );
       }
@@ -522,7 +518,7 @@ var rack_builder = {
           '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
         '<div class="loader">' +
         '<span class="pulse_loader"></span>' +
-        '<span class="pulse_message">Finding your requested item and all of its sizes...</span>' +
+        '<span class="pulse_message">Finding your requested item...</span>' +
         '</div></div>'
         ).fadeIn();
       },
@@ -592,16 +588,17 @@ var rack_builder = {
           '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
           '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
           '<tr><td class="img" rowspan="2"><img src="' + product.product_image_url + '"/>' + 
-          fave_link + '' + rack_link + '</td>' +
-          '<td class="details"><a href="' + product.product_url + '" target="_blank" class="name">' + 
-          product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
+          fave_link + '' + rack_link + '<a href="' + product.product_url + '" target="_blank" class="link-to-store">' + 
+          '<i class="fa fa-search"></i>view at store</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
+          merch + '' + manu + '<p class="item-desc"> '+ 
           product.short_product_description + '</p>' + price_display +
           '<span class="general"><em>sku:</em>' + product.sku + '</span>' +
           '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
           '<div id="color-options">' + color_options.join('') + '</div>' +
           '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
-          '<span class="general"><em>category:</em>' + product.primary_category + 
-          '</span></td></tr></table></div></div>'
+          '<span class="general"><em>category:</em>' + product.allume_category  + 
+          '</span></td></tr></table><span class="shopping-for">styling for:</span>' + 
+          $('#client-details-template').html() + '</div></div>'
         );
         inspect.html(markup.join(''));
         /* add info to each link */

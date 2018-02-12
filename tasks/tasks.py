@@ -12,7 +12,6 @@ from elasticsearch_dsl import Search
 from catalogue_service.settings import * # for the ES connection
 from elasticsearch import Elasticsearch, helpers
 
-
 @task(base=QueueOnce)
 def pepper_jam_get_merchants():
     get_merchants()

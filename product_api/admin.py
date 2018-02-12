@@ -15,6 +15,7 @@ class NetworkAdmin(admin.ModelAdmin):
 
 class CategoryMapAdmin(admin.ModelAdmin):
     list_display = ('id', 'external_cat1', 'external_cat2', 'allume_category', 'active', 'pending_review')
+    search_fields = ('external_cat1', 'external_cat2', 'allume_category__name')
 
 #class MerchantCategoryAdmin(admin.ModelAdmin):
 #    list_display = ('name', 'active', 'network')
