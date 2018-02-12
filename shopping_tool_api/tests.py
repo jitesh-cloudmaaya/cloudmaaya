@@ -317,7 +317,7 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         url = reverse("shopping_tool_api:rack_item", kwargs={'pk':0})
 
-        data = {"product": 1, "allume_styling_session": 3}
+        data = {"product": 1, "allume_styling_session": 3, "stylist": 5}
         response = self.client.put(url, data)
 
         self.assertEqual(201, response.status_code)
