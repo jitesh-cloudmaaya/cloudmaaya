@@ -5,7 +5,7 @@ import os
 from catalogue_service.settings import BASE_DIR
 from celery_once import QueueOnce
 from tasks.product_feed import ProductFeed
-from tasks.product_feed_py.pepperjam import get_data, get_merchants
+from tasks.product_feed_py.pepperjam import get_merchants
 
 @task(base=QueueOnce)
 def pepper_jam_get_merchants():
