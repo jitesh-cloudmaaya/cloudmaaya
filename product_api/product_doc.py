@@ -166,15 +166,17 @@ class EProductSearch(FacetedSearch):
         else:
             q_faves = Q()
 
+        #filter for In-Stock
+        q_available = Q({"match": {"availability": {"query": "in-stock", "type": "phrase"}}})
 
         collapse_dict = {"field": "raw_product_url.keyword","inner_hits": {"name": "collapsed_by_product_name","from": 1}}
         cardinality_dict = {"unique_count" : {"cardinality" : {"field" : "raw_product_url.keyword"}}}
 
         if self._card_count:
-            return search.query(main_q).query(q_faves).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
+            return search.query(main_q).query(q_faves).query(q_available).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
         else:
             #search.aggs.bucket("unique_product_name_count", {"cardinality" : {"field" : "product_name.keyword"}})
-            return search.query(main_q).query(q_faves).extra(collapse=collapse_dict)
+            return search.query(main_q).query(q_faves).query(q_available).extra(collapse=collapse_dict)
         #.sort('-p')
 
 def remove_deleted_items(self, days_back = 14):
