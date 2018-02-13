@@ -217,8 +217,6 @@ class ShoppingToolAPITestCase(APITestCase):
 
         response = self.client.get(url)
 
-        product_urls = response_data['product_urls']
-
         self.assertEqual(200, response.status_code)
 
     def test_get_products_failure(self):
