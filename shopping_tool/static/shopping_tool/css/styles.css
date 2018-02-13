@@ -1402,7 +1402,8 @@ div.indepth-loading {
 #preview-lookbook-overlay div.preview-container div.client-details div.bio span,
 #preview-lookbook-overlay div.preview-container div.client-details p span,
 #inspect-item div.client-details div.bio span,
-#inspect-item div.client-details p span {
+#inspect-item div.client-details p span,
+#inspect-item div.client-details p.style {
   color:#000;
   display:block;
   font-size:16px;
@@ -1412,9 +1413,12 @@ div.indepth-loading {
 #preview-lookbook-overlay div.preview-container div.client-details div.bio span em,
 #inspect-item div.client-details div.bio span em,
 #preview-lookbook-overlay div.preview-container div.client-details p span em,
-#inspect-item div.client-details p span em {font-weight:100; padding-right:8px;}
+#inspect-item div.client-details p span em,
+#inspect-item div.client-details p.style em {font-weight:100; padding-right:8px;}
 #preview-lookbook-overlay div.preview-container div.client-details p,
 #inspect-item div.client-details p {float:right;padding-left:25px;}
+#inspect-item div.client-details p.style {float:none; padding-left:0; display:none;}
+#inspect-item div.client-details p.style.first {clear:both; padding-top:15px;}
 #creating-look div.stage,
 div.indepth-loading {
   height:150px; 
