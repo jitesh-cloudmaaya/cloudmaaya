@@ -208,6 +208,15 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(Look.objects.get(id = response_data['id']).name, 'Api Test Look')
         self.assertEqual(Look.objects.get(id = response_data['id']).look_layout.name, 'one_item')
 
+    def test_get_products(self):
+        """
+        Test to verify calling get_products
+        """
+        url = reverse("shopping_tool_api:get_products", kwargs={'product_id': 312, 'merchant_id': 36145})
+
+        response = self.client.get(url)
+
+        self.assertEqual(200, response.status_code)
 
     def test_create_note(self):
         """
