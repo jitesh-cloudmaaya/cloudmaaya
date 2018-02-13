@@ -43,7 +43,7 @@ def facets(self):
         
     """
     text_query = self.query_params.get('text', '*')
-    num_per_page = int(self.query_params.get('num_per_page', 48))
+    num_per_page = int(self.query_params.get('num_per_page', 100))
     page = int(self.query_params.get('page', 1))
 
     filter_favs = self.query_params.get('favs')
@@ -135,7 +135,7 @@ def get_product(self, product_id):
     s = Search(index="products")
 
     s = s.query("match_phrase", product_name=product.product_name)[0:100]
-    s = s.filter("match_phrase", brand=product.brand)
+    s = s.filter("match_phrase", brand=merchant_name.merchant_name)
 
     #Bool(must=[Terms(brand__keyword=[u'Hudson']), Terms(merchant_name__keyword=[u'Bergdorf Goodman (Neiman Marcus)', u'Lord & Taylor'])]) 
 
@@ -147,7 +147,7 @@ def get_product(self, product_id):
     results_dict = results.to_dict()
     #results = results_dict['hits']
     # grab and add_source field dict to add field for API call
-    results_dict['hits']['hits'][0]['_source']['product_api_merchant'] = merchant_id
+    #results_dict['hits']['hits'][0]['_source']['product_api_merchant'] = merchant_id
 
     total_count = s.count()
     page = 1

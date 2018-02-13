@@ -209,8 +209,8 @@ var explore_page = {
       markup.push(
         '<div class="look"><div class="display">' + look_fave_link  +
         '<h3><em data-lookid="' + look.id + '">' + look.name + '</em><span>by ' + 
-        stylist_names[look.stylist] + '</span></h3><div class="items">' +
-        '<div class="explore-look-wrapper"><div class="explore-look-layout">'
+        look.stylist.first_name + ' ' + look.stylist.last_name + '</span></h3>' +
+        '<div class="items"><div class="explore-look-wrapper"><div class="explore-look-layout">'
       );
       for(var ix = 0, lx = look.look_layout.layout_json.length; ix<lx; ix++){
         var block = look.look_layout.layout_json[ix];

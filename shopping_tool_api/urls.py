@@ -20,6 +20,5 @@ urlpatterns = [
     url(r'^style_occasions/$', views.style_occasions, name='style_occasions'),  
     url(r'^style_type/$', views.style_type, name='style_type'),  
     url(r'^update_look_position/(?P<pk>[0-9]+)/$', views.update_look_position, name='update_look_position'),
-
 ]
 

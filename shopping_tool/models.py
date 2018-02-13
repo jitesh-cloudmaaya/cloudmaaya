@@ -405,6 +405,7 @@ class Rack(models.Model):
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+    stylist = models.ForeignKey(WpUsers, db_constraint=False, null=True, to_field='id', on_delete=models.DO_NOTHING)
 
 class AllumeLooks(models.Model):
     id = models.BigAutoField(primary_key=True)

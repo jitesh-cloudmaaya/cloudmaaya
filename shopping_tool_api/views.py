@@ -82,9 +82,9 @@ def styling_session_note(request, pk=None):
 
         try:
             note = AllumeUserStylistNotes.objects.get(id=pk)
-            serializer = AllumeUserStylistNotesSerializer(note, data=request.data)
+            serializer = AllumeUserStylistNotesCreateSerializer(note, data=request.data)
         except AllumeUserStylistNotes.DoesNotExist:
-            serializer = AllumeUserStylistNotesSerializer(data=request.data)
+            serializer = AllumeUserStylistNotesCreateSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
@@ -381,7 +381,8 @@ def rack_item(request, pk=None):
 
         {
           "product": 393223,
-          "allume_styling_session": 3
+          "allume_styling_session": 3,
+          "stylist": 1
         }
 
     delete:
@@ -397,7 +398,14 @@ def rack_item(request, pk=None):
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'PUT':
-        serializer = RackCreateSerializer(data=request.data)
+        item = request.data
+
+        if 'stylist' not in item:
+            item['stylist'] = request.user.id
+
+        serializer = RackCreateSerializer(data=item)
+        
+
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)

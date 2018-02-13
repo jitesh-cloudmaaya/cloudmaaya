@@ -111,13 +111,14 @@ class AllumeCategory(models.Model):
         verbose_name_plural = "Allume Categories"
 
 class CategoryMap(models.Model):
-    external_cat1 = models.CharField(max_length=250, blank=True, null=True)
-    external_cat2 = models.CharField(max_length=250, blank=True, null=True)
+    external_cat1 = models.CharField(max_length=150, blank=True, null=True)
+    external_cat2 = models.CharField(max_length=500, blank=True, null=True)
     allume_category = models.ForeignKey(AllumeCategory, blank=True, null=True)
     active = models.BooleanField(default=False)
     pending_review = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+    merchant_name = models.CharField(max_length=2000, blank=True, null=True)
 
     def __str__(self):
         return self.external_cat1 + ": " + self.external_cat2

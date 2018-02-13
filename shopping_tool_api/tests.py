@@ -208,7 +208,6 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(Look.objects.get(id = response_data['id']).name, 'Api Test Look')
         self.assertEqual(Look.objects.get(id = response_data['id']).look_layout.name, 'one_item')
 
-
     def test_create_note(self):
         """
         Test to verify creating a styling session note
@@ -224,7 +223,7 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(201, response.status_code)
         self.assertEqual(AllumeUserStylistNotes.objects.count(), 3)
         self.assertEqual(AllumeUserStylistNotes.objects.get(id = response_data['id']).notes, 'Api Test Note')
-        
+
 
     def test_get_note(self):
         """
@@ -276,6 +275,31 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(AllumeUserStylistNotes.objects.get(id = note_instance.id).notes, 'Api Test Update Note')
 
 
+    def test_delete_note(self):
+        """
+        Test to verify deleting a styling session note
+        """
+        # successful delete
+        url = reverse("shopping_tool_api:styling_session_note", kwargs={'pk': 1})
+
+        self.assertEqual(2, AllumeUserStylistNotes.objects.count())
+
+        response = self.client.delete(url)
+        response_data = json.loads(response.content)
+
+        self.assertTrue(response_data['Success'])
+        self.assertEqual(201, response.status_code)
+        self.assertEqual(1, AllumeUserStylistNotes.objects.count())
+
+        # unsuccessful delete
+        response = self.client.delete(url)
+        response_data = json.loads(response.content)
+
+        self.assertFalse(response_data['Success'])
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(1, AllumeUserStylistNotes.objects.count())
+
+
     def test_update_look(self):
         """
         Test to verify updating a look
@@ -317,7 +341,7 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         url = reverse("shopping_tool_api:rack_item", kwargs={'pk':0})
 
-        data = {"product": 1, "allume_styling_session": 3}
+        data = {"product": 1, "allume_styling_session": 3, "stylist": 5}
         response = self.client.put(url, data)
 
         self.assertEqual(201, response.status_code)

@@ -16,6 +16,9 @@ DATABASES = {
 from elasticsearch_dsl.connections import connections
 connections.create_connection(hosts=['http://localhost:9200'], timeout=20, http_auth=('elastic:changeme'))
 
+from elasticsearch import Elasticsearch
+CLIENT = Elasticsearch(hosts=['https://localhost:9200'], http_auth='elastic:changme')
+
 DEBUG = True
 
 

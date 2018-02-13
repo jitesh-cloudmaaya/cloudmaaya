@@ -10,7 +10,8 @@ from django.db import connection
 from . import mappings
 from . import product_feed_helpers
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
-from product_api.models import CategoryMap
+from product_api.models import CategoryMap, Network, Merchant, Product
+from datetime import datetime, timedelta
 
 # Set Up PepeprJam URL
 PEPPER_JAM_API_BASE_URL = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_API_VERSION)
@@ -61,6 +62,28 @@ def get_merchants(status='joined'):
     merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
     return merchant_mapping
 
+def set_deleted_pepperjam_products(threshold = 12):
+    """
+    Helper method for use in the main get_data method. Collects a list of Pepperjam products
+    that should have been upserted in the current run. For those that were not upserted, determined
+    by a settable time threshold, set those products to a status of is_deleted = True.
+
+    Args:
+        threshold (int): The time threshold in hours. If the updated_at value of a record is threshold
+        or more hours old, conclude it was not updated in the current upsert and set to deleted. 
+    """
+    # id of the pepperjam network for use in merchants' network_id
+    pepperjam_id = Network.objects.get(name='PepperJam').id
+    # get the pepperjam merchants that were active (and hence were just updated)
+    merchants = Merchant.objects.filter(active=True, network_id = pepperjam_id) # multiple arguments over chaining for performance
+    merchant_ids = merchants.values_list('external_merchant_id')
+    # get the products of these merchants
+    products = Product.objects.filter(merchant_id__in = merchant_ids) # up to here is confirmed what we want
+    datetime_threshold = datetime.now() - timedelta(hours = threshold) # comparison threshold is 12 hours ago or more
+    deleted_products = products.filter(updated_at__lte = datetime_threshold)
+    # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
+    deleted_products.update(is_deleted = True)
+
 def get_data(local_temp_dir, cleaned_fieldnames):
 
      # Set Up PepperJam URL
@@ -100,6 +123,12 @@ def get_data(local_temp_dir, cleaned_fieldnames):
         more_pages = True
 
         while more_pages:
+            ## Dev Only
+            # print("Getting Data")
+            # print(pepper_jam_api_product_url)
+            # json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
+            # product_feed = json.load(json_data)
+            # json_data.close()
 
             # commenting out because API only has X amount of access allowed in a day
             ## Prod & Staging Only
@@ -116,12 +145,6 @@ def get_data(local_temp_dir, cleaned_fieldnames):
             json_data = open_w_timeout_retry(pepper_jam_api_product_url, numTries, timeout, delay, backoff)
             product_feed = json.load(json_data)
 
-            ## Dev Only
-            # print("Getting Data")
-            # print(pepper_jam_api_product_url)
-            # json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
-            # product_feed = json.load(json_data)
-            # json_data.close()
 
             if 'next' in product_feed['meta']['pagination']:
                 pepper_jam_api_product_url = product_feed['meta']['pagination']['next']['href']
@@ -147,7 +170,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
 
                 primary_category = product['category_program']
                 secondary_category = product['category_network']
-                allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping)
+                allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
                 # allume_category = 'allume_category' # include to overrule category activity checks
 
                 if allume_category:
@@ -277,6 +300,10 @@ def get_data(local_temp_dir, cleaned_fieldnames):
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
     # print('Added %s new merchants' % new_merchants)
     # new_merchants ?
+
+    # call update_pepperjam here?
+    print('Updating non-upserted records')
+    set_deleted_pepperjam_products()
 
 def generate_product_id(SKU, merchant_id):
     """
