@@ -208,15 +208,48 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(Look.objects.get(id = response_data['id']).name, 'Api Test Look')
         self.assertEqual(Look.objects.get(id = response_data['id']).look_layout.name, 'one_item')
 
-    def test_get_products(self):
+
+    def test_get_products_success(self):
         """
-        Test to verify calling get_products
+        Simple test to confirm the ability to call API method successfully.
         """
         url = reverse("shopping_tool_api:get_products", kwargs={'product_id': 312, 'merchant_id': 36145})
 
         response = self.client.get(url)
 
+        product_urls = response_data['product_urls']
+
         self.assertEqual(200, response.status_code)
+
+    def test_get_products_failure(self):
+        """
+        Simple test to confirm the ability to call API method ending in a failure.
+        """
+        url = reverse("shopping_tool_api:get_products", kwargs={'product_id': 42, 'merchant_id': 13816})
+
+        response = self.client.get(url)
+
+        self.assertEqual(404, response.status_code)
+
+    def test_get_products_full(self):
+        """
+        Test get_products on a product that returns a list of related products.
+        """
+        url = reverse("shopping_tool_api:get_products", kwargs={'product_id': 711, 'merchant_id': 825})
+
+        response = self.client.get(url)
+        response_data = json.loads(response.content)
+
+        product_urls = response_data['product_urls']
+
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(isinstance(product_urls, list))
+        self.assertEqual(3, len(product_urls))
+
+        # ascertain sku and rpu stuff ?
+        self.assertEqual('purl1', product_urls[0])
+        self.assertEqual('purl2', product_urls[1])
+        self.assertEqual('purl3', product_urls[2])
 
     def test_create_note(self):
         """

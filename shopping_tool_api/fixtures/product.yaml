@@ -195,3 +195,63 @@
         begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
             of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
             00:19:09+00:00'}
+-   model: product_api.product
+    pk: 11
+    fields: {product_id: 711, merchant_id: 825, product_name: 7 For All
+            Mankind Cut Off Short in Clean White, long_product_description: 'White
+            is always in season and with these truly classic and modern styles, white
+            is exciting again! A more authentic white twill, with a 9 oz weight, is
+            perfect for our Cut Off Short. With tonal threads and silver hardware,
+            these are sexier in white.', short_product_description: 'White is always
+            in season and with these truly classic and modern styles, white is exciting
+            again! A more authentic white twill, with a 9 oz weight, is perfect for
+            our Cut Off Short. With tonal threads and silver hardware, these are sexier
+            in white.', product_url: 'purl1',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13231_clean_white_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AU5159495S,
+        sku: '212', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '0.00', retail_price: '139.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00', raw_product_url: 'hmm'}
+-   model: product_api.product
+    pk: 12
+    fields: {product_id: 722, merchant_id: 825, product_name: 7 For All
+            Mankind Cut Off Short in Clean White, long_product_description: 'White
+            is always in season and with these truly classic and modern styles, white
+            is exciting again! A more authentic white twill, with a 9 oz weight, is
+            perfect for our Cut Off Short. With tonal threads and silver hardware,
+            these are sexier in white.', short_product_description: 'White is always
+            in season and with these truly classic and modern styles, white is exciting
+            again! A more authentic white twill, with a 9 oz weight, is perfect for
+            our Cut Off Short. With tonal threads and silver hardware, these are sexier
+            in white.', product_url: 'purl2',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13231_clean_white_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AU5159495S,
+        sku: '212', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '0.00', retail_price: '139.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00', raw_product_url: 'hmm'}
+-   model: product_api.product
+    pk: 13
+    fields: {product_id: 733, merchant_id: 825, product_name: 7 For All
+            Mankind Cut Off Short in Clean White, long_product_description: 'White
+            is always in season and with these truly classic and modern styles, white
+            is exciting again! A more authentic white twill, with a 9 oz weight, is
+            perfect for our Cut Off Short. With tonal threads and silver hardware,
+            these are sexier in white.', short_product_description: 'White is always
+            in season and with these truly classic and modern styles, white is exciting
+            again! A more authentic white twill, with a 9 oz weight, is perfect for
+            our Cut Off Short. With tonal threads and silver hardware, these are sexier
+            in white.', product_url: 'purl3',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13231_clean_white_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AU5159495S,
+        sku: '212', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '0.00', retail_price: '139.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00', raw_product_url: 'hmm'}
