@@ -493,15 +493,51 @@ var rack_builder = {
       var data = color_link.data();
       var color = link.data('color');
       var sizes_list = [...new Set(data.colormap[color])].filter(String);
+      var matching = {};
+      var price_display = '';
+      var fave_link = '';
+      for(var i = 0, l = data.details.length; i<l; i++){
+        var option = data.details[i];
+        if(option._source.color == color){
+          matching = option;
+          var retail =  matching._source.retail_price;
+          var sale =  matching._source.sale_price;
+          if((sale >= retail)||(sale == 0)){
+            price_display = numeral(retail).format('$0,0.00');
+          }else{
+            price_display = '<em>(' + numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00');
+          }
+          fave_link = '<a href="#" class="favorite" data-productid="' + 
+            matching._source.id + '"><i class="fa fa-heart-o"></i></a>';
+          var fave_idx = rack_builder.favorites_product_ids.indexOf(matching._source.id);
+          if(fave_idx > -1){
+            var favorite_object = rack_builder.favorites[fave_idx];
+            fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
+            matching._source.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
+          }
+          break;
+        }
+      }
       color_link.removeClass('on').html(color + '<i class="fa fa-caret-down"></i>');
       link.addClass('selected').siblings('a').removeClass('selected');
       $('#sizes-list').html(sizes_list.join(', '));
+      /* change the display to match new selection */
+      if(matching._source != undefined){
+        $('#inspected-item-img').attr('src', matching._source.product_image_url);
+        var ii = $('#inspect-item')
+        ii.find('a.favorite').remove();
+        ii.find('a.add-to-rack').data('productid', matching._source.product_id).data('details', matching._source)
+        .html('<i class="icon-hanger"></i> add to rack').removeClass('selected').before(fave_link);
+        ii.find('a.link-to-store').attr('href', matching._source.product_url);
+        ii.find('a.favorite').data('details', matching._source);
+        if(price_display != ''){ $('#inspected-item-price').html(price_display); }
+        $('#inspected-item-sku').html('<em>sku:</em>' + matching._source.sku)
+      }
       $('#color-options').hide();
     })
     /* get all looks */
     rack_builder.getRackLooks('regular', '#looks-list');
     rack_builder.getRackLooks('favorites', '#fave-looks');
-
   },
   /**
   * @description inpect item functionality allows for clicking favorites or look items to view fuller details 
@@ -536,17 +572,12 @@ var rack_builder = {
             colors_hash.color_names.push(product.color)
             colors_hash.color_sizes[product.color] = [];
           }
+          console.log(product.product_image_url)
           colors_hash.color_sizes[product.color] = colors_hash.color_sizes[product.color].concat(product.size.split(','));
           if(product.id == id){
             matching = product;
           }
         }
-        /*$.ajax({
-          success:function(response){
-            console.log(response)
-          },
-          url: '/shopping_tool_api/get_product_images/' + matching.id + '/' + matching.merchant_id + '/'
-        })*/
         colors_hash.color_names.sort();
         var product = matching;
         var color_options = [];
@@ -583,9 +614,9 @@ var rack_builder = {
         var merch = '<span class="merch">' + product.merchant_name + '</span>';
         var manu = '<span class="manu">by ' + product.manufacturer_name + '</span>';  
         if((sale >= retail)||(sale == 0)){
-          price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
+          price_display = '<span class="price" id="inspected-item-price">' + numeral(retail).format('$0,0.00') + '</span>';
         }else{
-          price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
+          price_display = '<span class="price" id="inspected-item-price"><em>(' + numeral(retail).format('$0,0.00') + 
             ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
         }
         if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }
@@ -593,12 +624,12 @@ var rack_builder = {
         markup.push(
           '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
           '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
-          '<tr><td class="img" rowspan="2"><img src="' + product.product_image_url + '"/>' + 
+          '<tr><td class="img" rowspan="2"><img id="inspected-item-img" src="' + product.product_image_url + '"/>' + 
           fave_link + '' + rack_link + '<a href="' + product.product_url + '" target="_blank" class="link-to-store">' + 
           '<i class="fa fa-search"></i>view at store</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
           merch + '' + manu + '<p class="item-desc"> '+ 
           product.short_product_description + '</p>' + price_display +
-          '<span class="general"><em>sku:</em>' + product.sku + '</span>' +
+          '<span class="general" id="inspected-item-sku"><em>sku:</em>' + product.sku + '</span>' +
           '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
           '<div id="color-options">' + color_options.join('') + '</div>' +
           '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
@@ -610,7 +641,7 @@ var rack_builder = {
         /* add info to each link */
         inspect.find('a.add-to-rack').data('details', product);
         inspect.find('a.favorite').data('details', product);
-        inspect.find('a#color-toggle').data('colormap', colors_hash.color_sizes);
+        inspect.find('a#color-toggle').data('colormap', colors_hash.color_sizes).data('details', results.data);
       }
     });
   },
