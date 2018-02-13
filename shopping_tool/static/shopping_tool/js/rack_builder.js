@@ -572,7 +572,6 @@ var rack_builder = {
             colors_hash.color_names.push(product.color)
             colors_hash.color_sizes[product.color] = [];
           }
-          console.log(product.product_image_url)
           colors_hash.color_sizes[product.color] = colors_hash.color_sizes[product.color].concat(product.size.split(','));
           if(product.id == id){
             matching = product;
