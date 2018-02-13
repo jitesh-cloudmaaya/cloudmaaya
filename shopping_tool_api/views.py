@@ -57,7 +57,8 @@ def get_products(request, product_id = None, merchant_id = None):
         raw_product_url = product.raw_product_url
         sku = product.sku
         # get the list of related products that have either of these fields the same
-        related_products = Product.objects.filter(Q(raw_product_url = raw_product_url) | Q(sku = sku))
+        related_products = Product.objects.filter(merchant_id = merchant_id)
+        related_products = related_products.filter(Q(raw_product_url = raw_product_url) | Q(sku = sku))
 
         # return de-duplicated list of product_urls
         product_urls = list(related_products.values_list('product_url', flat=True))
