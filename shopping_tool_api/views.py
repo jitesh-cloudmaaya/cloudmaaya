@@ -400,8 +400,8 @@ def rack_item(request, pk=None):
 
     elif request.method == 'PUT':
         item = request.data
-        
-        if item['stylist'] == None:
+
+        if 'stylist' not in item:
             item['stylist'] = request.user.id
 
         serializer = RackCreateSerializer(data=item)
