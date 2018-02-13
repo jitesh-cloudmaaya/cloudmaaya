@@ -18,7 +18,8 @@ urlpatterns = [
     url(r'^styling_session_notes/(?P<pk>[0-9]+)/$', views.styling_session_notes, name='styling_session_notes'),
     url(r'^look_meta_tags/(?P<pk>[0-9]+)/$', views.look_meta_tags, name='look_meta_tags'),
     url(r'^style_occasions/$', views.style_occasions, name='style_occasions'),  
-    url(r'^style_type/$', views.style_type, name='style_type'),  
+    url(r'^style_type/$', views.style_type, name='style_type'),
+    url(r'^get_product_images/(?P<product_id>[0-9]+)/(?P<merchant_id>[0-9]+)/$', views.get_product_images, name='get_product_images')
      
 ]
 
