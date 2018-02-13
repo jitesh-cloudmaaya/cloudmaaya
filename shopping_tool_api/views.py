@@ -42,6 +42,32 @@ def client_360(request, pk=None):
     serializer = AllumeClient360Serializer(client)
     return JsonResponse(serializer.data, safe=client)
 
+@api_view(['GET'])
+@check_login
+@permission_classes((AllowAny, ))
+def get_products(request, product_id = None, merchant_id = None):
+    """
+    get:
+        Given a product_id, returns a list of related products.
+
+        /shopping_tool_api/get_products/{product_id}/{merchant_id}
+    """
+    try:
+        product = Product.objects.get(merchant_id = merchant_id, product_id = product_id)
+        raw_product_url = product.raw_product_url
+        sku = product.sku
+        # get the list of related products that have either of these fields the same
+        related_products = Product.objects.filter(Q(raw_product_url = raw_product_url) | Q(sku = sku))
+
+        # return de-duplicated list of product_urls
+        product_urls = list(related_products.values_list('product_url', flat=True))
+
+        context = {'product_urls': product_urls}
+        return JsonResponse(context, status=status.HTTP_200_OK)
+    except Product.DoesNotExist:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
 @permission_classes((AllowAny, ))
