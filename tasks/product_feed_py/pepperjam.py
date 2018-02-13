@@ -170,7 +170,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
 
                 primary_category = product['category_program']
                 secondary_category = product['category_network']
-                allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping)
+                allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
                 # allume_category = 'allume_category' # include to overrule category activity checks
 
                 if allume_category:
