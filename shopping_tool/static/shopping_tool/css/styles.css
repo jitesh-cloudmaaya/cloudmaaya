@@ -200,11 +200,11 @@ input.search {
   float:left;
   margin:5px 7.5px 10px;
   padding:0 0 8px;
-  width:calc((100% / 5) - 15px);  
+  width:calc((100% / 4) - 15px);  
 }
 #results div.item img {
   display:block;
-  height:150px;
+  height:225px;
   max-width:100%;
   margin:0 auto;
 }
@@ -251,8 +251,9 @@ input.search {
   padding:2px 15px;
 
 }
+#results div.item span.manu,
 #results div.item span.price {text-align: center; font-size:14px; margin:0 0 8px; padding:0 15px;}
-#results div.item span.manu {font-weight:300; color:#676767;}
+#results div.item span.manu {font-weight:300; color:#474747;margin:0 0 5px;}
 #results div.item span.avail {float:right; font-weight:200;}
 #results div.item span.price em {color:#D32F2F; display:inline-block; padding-right: 8px; text-decoration: line-through;}
 
@@ -1374,6 +1375,7 @@ div.indepth-loading {
   overflow:auto;
   padding:15px;
 }
+#inspect-item div.client-details {margin-bottom:20px;}
 #inspect-item span.shopping-for {
   display:block;
   font-size:18px;
@@ -1633,13 +1635,9 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   margin:-10px -5px 0;
   padding:10px;
 }
-/*
 #compare-looks div.comp-look h3 {
-  cursor: move;
-  cursor: grab;
-  cursor: -moz-grab;
-  cursor: -webkit-grab;   
-}*/
+  cursor: move;   
+}
 #compare-looks div.comp-look span.layout,
 #looks-list div.rack-look span.layout,
 #fave-looks div.rack-look span.layout {
@@ -1877,7 +1875,7 @@ a.next-tab:active,
 #look-indepth div.stage div.products table tr:last-child td,
 #inspect-item div.stage table td {border:0;}
 
-#look-indepth div.stage div.products table td.img { padding:15px 10px 10px 0; position:relative; width:200px; }
+#look-indepth div.stage div.products table td.img { padding:15px 10px 10px 0; position:relative; width:400px; }
 #look-indepth div.stage div.products table td.img a.crop-product-image {
   color:#000;
   height:20px;
@@ -1893,15 +1891,18 @@ a.next-tab:active,
 }
 #look-indepth div.stage div.products table td.img a.crop-product-image i{ font-size:18px;}
 #look-indepth div.stage div.products table td.img a.crop-product-image:hover {opacity: 1}
-#inspect-item div.stage table td.img { padding:15px 10px 10px 0; width:300px; }
-#look-indepth div.stage div.products table td.img img,
+#inspect-item div.stage table td.img { padding:15px 10px 10px 0; text-align: center; width:515px; }
+#look-indepth div.stage div.products table td.img img {
+  box-shadow:0 0 3px rgba(0,0,0,0.25);
+  display:block;
+  max-width:calc(100% - 4px);
+}
 #inspect-item div.stage table td.img img {
   box-shadow:0 0 3px rgba(0,0,0,0.25);
   display:block;
-  height:200px;
-  max-width:100%;
+  margin:0 auto;
+  max-width:calc(100% - 4px);
 }
-#inspect-item div.stage table td.img img {height:300px; margin:0;}
 #look-indepth div.stage div.products table td.details,
 #inspect-item div.stage table td.details {padding:15px 10px 10px; position:relative;}
 #inspect-item div.stage table td#inspect-sizes {padding:15px 10px 10px;}
