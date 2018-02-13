@@ -9,7 +9,7 @@ from shopping_tool.models import *
 def clean_up_old_layouts(apps, schema_editor):
     UserLookFavorite.objects.all().delete()
     LookProduct.objects.all().delete()
-    Look.objects.all().delete()
+    # Look.objects.all().delete()
     LookLayout.objects.all().delete()
 
 class Migration(migrations.Migration):
@@ -41,5 +41,5 @@ class Migration(migrations.Migration):
             field=models.TextField(blank=True, null=True),
         ),
         # line removed to prevent conflict with effects 0037-0039_auto_20180208_222x during localtests and circleCI
-        # migrations.RunPython(clean_up_old_layouts),
+        migrations.RunPython(clean_up_old_layouts),
     ]
