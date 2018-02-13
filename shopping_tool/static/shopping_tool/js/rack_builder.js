@@ -541,6 +541,12 @@ var rack_builder = {
             matching = product;
           }
         }
+        /*$.ajax({
+          success:function(response){
+            console.log(response)
+          },
+          url: '/shopping_tool_api/get_product_images/' + matching.id + '/' + matching.merchant_id + '/'
+        })*/
         colors_hash.color_names.sort();
         var product = matching;
         var color_options = [];

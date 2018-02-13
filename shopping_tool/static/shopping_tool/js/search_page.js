@@ -257,7 +257,7 @@ var search_page = {
     var sale = details.sale_price;
     var price_display = '';
     var merch = '<span class="merch">' + details.merchant_name + '</span>';
-    var manu = '<span class="manu">by ' + details.manufacturer_name + '</span>';    
+    var manu = '<span class="manu">' + details.manufacturer_name + '</span>';    
     if((sale >= retail)||(sale == 0)){
       price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
     }else{
@@ -277,11 +277,11 @@ var search_page = {
     return '<div class="item"><div class="image">' + fave_link + 
       '<a href="#" class="item-detail" data-name="' + details.product_name + 
       '" data-brand="' + details.manufacturer_name + 
-      '" data-productid="' + details.id + '"><img src="' + 
-      details.product_image_url + '"></a></div>' +
+      '" data-productid="' + details.id + '" data-merchantid="' + details.merchant_id + 
+      '"><img src="' + details.product_image_url + '"></a></div>' +
       '<a href="' + details.product_url + '"  title="' + details.product_name + 
       '" target="_blank" class="name">' + details.product_name + '</a>' + 
-      price_display + '<a href="#" class="add-to-rack" data-productid="' + 
+      manu + '' + price_display + '<a href="#" class="add-to-rack" data-productid="' + 
       details.id + '"><i class="icon-hanger"></i>add to rack</a></div>';
   },
   /**
