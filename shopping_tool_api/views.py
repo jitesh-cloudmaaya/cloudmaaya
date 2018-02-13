@@ -43,7 +43,7 @@ def client_360(request, pk=None):
     return JsonResponse(serializer.data, safe=client)
 
 @api_view(['GET'])
-#@check_login
+@check_login
 @permission_classes((AllowAny, ))
 def get_product_images(request, product_id = None, merchant_id = None):
     """
