@@ -590,6 +590,22 @@ class ShoppingToolAPITestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
 
+    # test additions, test update_look_position
+    def test_update_look_position(self):
+        """
+        Test to verify updating the position of a look
+        """
+        LOOK_POSITION_DEFAULT = 100
+        url = reverse("shopping_tool_api:update_look_position", kwargs={'pk':1})
+
+        self.assertEqual(LOOK_POSITION_DEFAULT, Look.objects.get(pk=1).position)
+
+        data = {"look_id": 1, "position": 4}
+
+        response = self.client.put(url, data)
+        response_data = json.loads(response.content)
+
+        self.assertEqual(4, Look.objects.get(pk=1).position)
 
 ### Look Favs
 

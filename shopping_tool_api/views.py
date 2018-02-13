@@ -337,6 +337,33 @@ def look_meta_tags(request, pk=None):
 
     return JsonResponse(request.data, safe=False)
 
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
+def update_look_position(request, pk=None):
+    """
+    put:
+        Edit the Position attribute of a Look.
+
+        /shopping_tool_api/update_look_position/{look_id}/
+
+        Sample JSON object
+        {
+          "look_id": 39223,
+          "position": 4
+        }
+    """
+    try:
+        look = Look.objects.get(id=pk)
+    except Look.DoesNotExist:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+    # print("Setting new position")
+    look.position = request.data['position']
+
+    look.save()
+
+    return JsonResponse(request.data, safe=False)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login

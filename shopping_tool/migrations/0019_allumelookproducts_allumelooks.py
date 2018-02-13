@@ -44,6 +44,7 @@ class Migration(migrations.Migration):
                     ('status', models.CharField(max_length=9)),
                     ('date_created', models.DateTimeField()),
                     ('last_modified', models.DateTimeField()),
+                    ('position', models.IntegerField(default=100)),
                 ],
                 options={
                     'db_table': 'allume_looks',
