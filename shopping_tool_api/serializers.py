@@ -26,6 +26,7 @@ class AllumeStylingSessionsSerializer(serializers.ModelSerializer):
 
 class RackSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False, read_only=True)
+    stylist = WpUsersNoteUserSerializer(many=False, read_only=True)
 
     class Meta:
         model = Rack

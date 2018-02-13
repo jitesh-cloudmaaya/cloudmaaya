@@ -399,7 +399,14 @@ def rack_item(request, pk=None):
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'PUT':
-        serializer = RackCreateSerializer(data=request.data)
+        item = request.data
+        
+        if item['stylist'] == None:
+            item['stylist'] = request.user.id
+
+        serializer = RackCreateSerializer(data=item)
+        
+
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
