@@ -21,6 +21,11 @@ var look_builder = {
     var comp_looks = $('#compare-looks div.other-looks');
     var markup = [];
     var cropped_images = [];
+    looks.sort(function(a,b){
+      if(a.position > b.position){ return 1}
+      if(a.position < b.position){ return -1}
+      return 0;
+    });
     for(var i = 0, l = looks.length; i<l; i++){
       var comp = looks[i];
       var content = look_builder.lookMarkupGenerator(comp, 'comp', at_load)
@@ -35,16 +40,27 @@ var look_builder = {
       if(at_load != null){
         $('#compare-looks div.comp-look:not(".editing")').addClass('off');
       }
-      /* COMMENTING OUT UNTIL BACKEND HAS POSITION ATTRiBUTE
-      add ordering of the looks 
+      /* ordering of the looks */
       new Sortable(document.getElementById('look-builder-session-looks'), {
           handle: ".look-name-header",
           draggable: ".comp-look",
           onUpdate: function (evt){
-            // saving the new look position will go here
+            $.each($('#look-builder-session-looks div.comp-look'), function(idx){
+              var look = $(this);
+              var position_obj = {
+                look_id: look.data('lookid'),
+                position: look.index() + 1
+              }
+              $.ajax({
+                contentType : 'application/json',
+                data: JSON.stringify(position_obj),
+                type: 'PUT',
+                url: '/shopping_tool_api/update_look_position/' + look.data('lookid') + '/'
+              });
+            })
           }
         }
-      );*/
+      );
       /* afix cropped images if present */
       if(cropped_images.length > 0){
         for(var i = 0, l = cropped_images.length; i<l; i++){
