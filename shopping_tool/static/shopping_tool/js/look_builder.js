@@ -16,7 +16,7 @@ var look_builder = {
   * @param {integer} at_load - id of currently being edited look or null
   */  
   editableLooksMarkup: function(looks){
-    console.log(looks)
+    //console.log(looks)
     var at_load = utils.readURLParams('look');
     var comp_looks = $('#compare-looks div.other-looks');
     var markup = [];
@@ -1041,6 +1041,7 @@ var look_builder = {
                   /* get the elastic search data for the product */
                   $.ajax({
                     success: function(results){
+                      //console.log(response)
                       //console.log(results)
                       if((results.data != undefined)&&(results.data.length > 0)){
                         var payload = {sites: { } };
@@ -1049,7 +1050,9 @@ var look_builder = {
                         /* loop through results to set up content for payload */
                         for(var i = 0, l = results.data.length; i<l; i++){
                           var product = results.data[i]._source;
-                          if(product.id == response.product){
+                          //console.log(product.product_id + " " + product.id + " " + response.product)
+                          if((product.id == response.product)||(product.product_id == response.product)){
+                            //console.log(product)
                             matching_object = product;
                           }
                           /* create color object for payload */
@@ -1072,6 +1075,7 @@ var look_builder = {
                             }
                           }
                         }
+                        console.log(matching_object)
                         /* create payload object */
                         var merchant_node = matching_object.product_api_merchant.toString();
                         var product_node = response.product.toString();
