@@ -11,7 +11,7 @@ var rack_builder = {
   */
   favorites_product_ids: [],
   /**
-  * @description cache array of racled product ids, used to set correct add to rack link 
+  * @description cache array of racked product ids, used to set correct add to rack link 
   */
   rack_product_ids: [],    
   /** 
@@ -297,7 +297,6 @@ var rack_builder = {
     $.each(rack_list.find('a.remove-from-rack'), function(idx){
       var sku = $(this).data('sku')
       existing_items.push(sku);
-      rack_builder.rack_product_ids.push(sku);
     });
     rack_list.data('skus', existing_items.join(','));
     /* create favorites section and add functionality */

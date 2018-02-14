@@ -1075,8 +1075,9 @@ var look_builder = {
                             }
                           }
                         }
-                        console.log(matching_object)
+                        //console.log(matching_object)
                         /* create payload object */
+                        /** NEED TO CHECK IF matching_object.product_api_merchant EXISTS FIRST?? **/
                         var merchant_node = matching_object.product_api_merchant.toString();
                         var product_node = response.product.toString();
                         payload.sites[merchant_node] = {}
