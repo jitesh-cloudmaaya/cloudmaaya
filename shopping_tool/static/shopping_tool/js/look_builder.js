@@ -16,7 +16,7 @@ var look_builder = {
   * @param {integer} at_load - id of currently being edited look or null
   */  
   editableLooksMarkup: function(looks){
-    console.log(looks)
+    //console.log(looks)
     var at_load = utils.readURLParams('look');
     var comp_looks = $('#compare-looks div.other-looks');
     var markup = [];
@@ -96,15 +96,15 @@ var look_builder = {
         startSize: start_size,
         onUpdate: function(value) {
           var newImg = look_builder.getImagePortion(imgObject, value.width, value.height, value.x, value.y, 1);
+          var crop = value.width + ',' + value.height + ',' +  value.x + ',' + value.y;
           /* place image in appropriate div */
           $('#thumb').html(
             '<h6>crop preview</h6>' +
-            '<img alt="" src="' +newImg+ '"/>' +
-            '<a href="#" class="save-crop" data-look="' + data.look + 
-            '" data-productid="' + data.productid + '" data-lookitemid="'+
-            data.lookitemid + '" data-position="' + data.position + '" data-crop="' + 
-            value.width + ',' + value.height + ',' +  value.x + ',' + value.y + '">save crop</a>'
+            '<img alt="" src="' +newImg+ '"/>'
           );
+          $('#save-crop').show().data('look', data.look).data('productid', data.productid)
+          .data('lookitemid', data.lookitemid).data('position', data.position)
+          .data('crop', crop);
         },
       });
       if(crop_dim[0] != undefined){
@@ -422,7 +422,7 @@ var look_builder = {
       var link = $(this);
       look_builder.cropImage(link);
     });
-    $('#cropper').on('click','a.save-crop',function(e){
+    $('#cropper').on('click','a#save-crop',function(e){
       e.preventDefault();
       var link = $(this);
       var data = link.data();
@@ -434,13 +434,15 @@ var look_builder = {
         "product": data.productid,
         "cropped_dimensions": data.crop
       }
+      $('#look-indepth').fadeOut();
+      $('#cropper').fadeOut();
+      $('#updating-crop').show();
       /* update the look item */
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(update_json),
         success:function(response){
-          $('#look-indepth').fadeOut();
-          $('#cropper').fadeOut();
+          $('#updating-crop').fadeOut();
           /* redraw look builder do we pick up the new crop */
           look_builder.setUpBuilder(data.look);
         },
@@ -1041,6 +1043,7 @@ var look_builder = {
                   /* get the elastic search data for the product */
                   $.ajax({
                     success: function(results){
+                      //console.log(response)
                       //console.log(results)
                       if((results.data != undefined)&&(results.data.length > 0)){
                         var payload = {sites: { } };
@@ -1049,7 +1052,9 @@ var look_builder = {
                         /* loop through results to set up content for payload */
                         for(var i = 0, l = results.data.length; i<l; i++){
                           var product = results.data[i]._source;
-                          if(product.id == response.product){
+                          //console.log(product.product_id + " " + product.id + " " + response.product)
+                          if((product.id == response.product)||(product.product_id == response.product)){
+                            //console.log(product)
                             matching_object = product;
                           }
                           /* create color object for payload */
@@ -1072,7 +1077,9 @@ var look_builder = {
                             }
                           }
                         }
+                        //console.log(matching_object)
                         /* create payload object */
+                        /** NEED TO CHECK IF matching_object.product_api_merchant EXISTS FIRST?? **/
                         var merchant_node = matching_object.product_api_merchant.toString();
                         var product_node = response.product.toString();
                         payload.sites[merchant_node] = {}
