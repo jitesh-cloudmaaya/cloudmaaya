@@ -332,6 +332,7 @@ input.search {
 #facets div.facet-list label.facet input:checked + span + em + em.key {color:#42A5F5;}
 #facets div.facet-list label.facet em.number { 
   color:#777; 
+  display:none;
   float:right; 
   font-weight:200; 
   text-align: right;
