@@ -96,15 +96,15 @@ var look_builder = {
         startSize: start_size,
         onUpdate: function(value) {
           var newImg = look_builder.getImagePortion(imgObject, value.width, value.height, value.x, value.y, 1);
+          var crop = value.width + ',' + value.height + ',' +  value.x + ',' + value.y;
           /* place image in appropriate div */
           $('#thumb').html(
             '<h6>crop preview</h6>' +
-            '<img alt="" src="' +newImg+ '"/>' +
-            '<a href="#" class="save-crop" data-look="' + data.look + 
-            '" data-productid="' + data.productid + '" data-lookitemid="'+
-            data.lookitemid + '" data-position="' + data.position + '" data-crop="' + 
-            value.width + ',' + value.height + ',' +  value.x + ',' + value.y + '">save crop</a>'
+            '<img alt="" src="' +newImg+ '"/>'
           );
+          $('#save-crop').show().data('look', data.look).data('productid', data.productid)
+          .data('lookitemid', data.lookitemid).data('position', data.position)
+          .data('crop', crop);
         },
       });
       if(crop_dim[0] != undefined){
@@ -422,7 +422,7 @@ var look_builder = {
       var link = $(this);
       look_builder.cropImage(link);
     });
-    $('#cropper').on('click','a.save-crop',function(e){
+    $('#cropper').on('click','a#save-crop',function(e){
       e.preventDefault();
       var link = $(this);
       var data = link.data();
@@ -434,13 +434,15 @@ var look_builder = {
         "product": data.productid,
         "cropped_dimensions": data.crop
       }
+      $('#look-indepth').fadeOut();
+      $('#cropper').fadeOut();
+      $('#updating-crop').show();
       /* update the look item */
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(update_json),
         success:function(response){
-          $('#look-indepth').fadeOut();
-          $('#cropper').fadeOut();
+          $('#updating-crop').fadeOut();
           /* redraw look builder do we pick up the new crop */
           look_builder.setUpBuilder(data.look);
         },

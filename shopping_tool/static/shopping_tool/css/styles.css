@@ -774,7 +774,6 @@ div#rack-btns span {
 #cancel-new-look,
 #cancel-edit-look,
 #close-design-look,
-#close-cropper,
 #close-lb,
 #close-lb-pre,
 #look-indepth a.close-indepth,
@@ -797,8 +796,7 @@ div#rack-btns span {
 #look-indepth a.close-indepth:hover,
 #inspect-item a.close-inspect:hover,
 #close-lb:hover,
-#close-lb-pre:hover,
-#close-cropper:hover {color:#474747;}
+#close-lb-pre:hover {color:#474747;}
 #close-rack:active,
 #cancel-new-look:active,
 #close-design-look:active,
@@ -806,8 +804,7 @@ div#rack-btns span {
 #close-lb:active,
 #close-lb-pre:active,
 #look-indepth a.close-indepth:active,
-#inspect-item a.close-inspect:active,
-#close-cropper:active {color:#0090D9;}
+#inspect-item a.close-inspect:active {color:#0090D9;}
 a.add-to-rack {
   border:1px solid #ddd;
   border-radius:3px;
@@ -1313,6 +1310,7 @@ div.layout-option span.name {
 
 #create-look,
 #creating-look,
+#updating-crop,
 #publish-lookbook-overlay,
 #preview-lookbook-overlay,
 div.deletion-confirm {
@@ -1327,6 +1325,7 @@ div.deletion-confirm {
 }
 #create-look div.stage,
 #creating-look div.stage,
+#updating-crop div.stage,
 #publish-lookbook-overlay div.stage,
 #preview-lookbook-overlay div.stage,
 div.deletion-confirm div.stage,
@@ -1420,6 +1419,7 @@ div.indepth-loading {
 #inspect-item div.client-details p.style {float:none; padding-left:0; display:none;}
 #inspect-item div.client-details p.style.first {clear:both; padding-top:15px;}
 #creating-look div.stage,
+#updating-crop div.stage,
 div.indepth-loading {
   height:150px; 
   left:calc(50% - 250px);
@@ -1427,6 +1427,7 @@ div.indepth-loading {
   width:500px;
 }
 #creating-look div.stage span.pulse_loader,
+#updating-crop div.stage span.pulse_loader,
 div.indepth-loading span.pulse_loader {margin:45px 0 0 75px;}
 #create-look div.stage h2,
 #publish-lookbook-overlay h2,
@@ -3326,5 +3327,31 @@ div.rd-time-selected:before { content: "\f017"; display:inline-block; float:left
 div.rd-time-selected:hover {background:#777;color:#fff;}
 div.rd-time-option:hover {background:#eee;color:#000;}
 #client-details-template {display:none;}
+
+#close-cropper,
+#save-crop {
+  background: #f2987e;
+  border-radius: 5px;
+  color: #fff;
+  display: inline-block;
+  float: right;
+  font-size: 18px;
+  font-variant: small-caps;
+  font-weight: 500;
+  margin: 10px 10px 0 0;
+  padding: 2px 15px 4px;
+  text-align: center;
+  text-decoration: none;
+}
+#save-crop {display:none;}
+#close-cropper {background:#222;}
+#save-crop:hover {background:#ed8365;}
+#close-cropper:hover {background:#000;}
+#save-crop:active,
+#close-cropper:active {  
+  background:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+  color:#474747;
+}
 
 
