@@ -475,7 +475,7 @@ class Look(models.Model):
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
     wp_client_id = models.BigIntegerField(blank=True, null=True, default =1 )
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=1000, blank=True, null=True, db_column='descrip')
     collage = models.CharField(max_length=200, blank=True, null=True, db_column='collage')
     status = models.CharField(max_length=11, default='Draft')
