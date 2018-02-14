@@ -980,6 +980,8 @@ var look_builder = {
           'the look layout, or items from the look to trash to remove.</p>' + markup.join('') + 
           '<div id="look-trash"></div><a href="#" id="finish-editing-look" data-lookid="' + id + 
           '"><i class="fa fa-check"></i>done editing</a>' +
+          '<a href="https://shopping-tool-web-stage.allume.co/collage_image/' + id + 
+          '.jpg" id="collage-preview-btn" target="_blank"><i class="fa fa-image"></i>preview collage</a>' +
           '<label style="margin-top:10px">Name</label><input id="look-name" value="' + 
           result.name + '"/><label>Description</label><textarea id="look-desc">' + 
           result.description + '</textarea><input type="hidden" id="look-layoutid" value="' + 

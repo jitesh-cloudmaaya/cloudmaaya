@@ -1765,6 +1765,7 @@ div.rack-look a.look-link,
 div.lookbook-btns a,
 #add-new-look-to-lookbook,
 #finish-editing-look,
+#collage-preview-btn,
 #add-note-toggle,
 #submit-lookbook,
 a.next-tab,
@@ -1801,6 +1802,7 @@ div.rack-look a.look-link:hover,
 #collage-preview:hover,
 #add-new-look-to-lookbook:hover,
 #finish-editing-look:hover,
+#collage-preview-btn:hover,
 #add-note-toggle:hover,
 #submit-lookbook:hover,
 a.next-tab:hover,
@@ -1811,6 +1813,7 @@ div.rack-look a.look-link:active,
 div.lookbook-btns a:active,
 #add-new-look-to-lookbook:active,
 #finish-editing-look:active,
+#collage-preview-btn:active,
 #add-note-toggle:active,
 #submit-note:active,
 a.next-tab:active,
@@ -2665,9 +2668,13 @@ div.publish-looks-layout div.item,
   cursor: -moz-grab;
   cursor: -webkit-grab;    
   display:block; 
-  height:100%; 
+  max-height:100%; 
   margin: 0 auto; 
   overflow:hidden; 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   max-width:100%;
 }
 #compare-looks div.comp-look div.item a.item-details,
@@ -2683,9 +2690,13 @@ div.publish-looks-layout div.layout-block div.item img,
 #looks-list div.rack-look div.rack-looks-layout div.layout-block div.item img,
 #fave-looks div.rack-look div.rack-looks-layout div.layout-block div.item img {
   display:block; 
-  height:100%; 
+  max-height:100%; 
   margin: 0 auto; 
   overflow:hidden; 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   max-width:100%;
 }
 
@@ -2920,7 +2931,8 @@ div.lookbook-btns a#publish-lookbook:active{
   max-width:calc(100% - 235px);
   min-width:calc(100% - 235px);
 }
-#finish-editing-look {
+#finish-editing-look,
+#collage-preview-btn {
   clear:right;
   float:right;
   font-size:16px;
@@ -2929,7 +2941,8 @@ div.lookbook-btns a#publish-lookbook:active{
   text-align:center;
   width:188px;
 }
-#finish-editing-look i {margin-right:5px; font-size:14px;}
+#finish-editing-look i,
+#collage-preview-btn i {margin-right:5px; font-size:14px;}
 /* notes ui */
 #client-notes h3 { color:#000; font-size: 14px; font-weight: 300; padding: 5px 15px 14px; }
 #add-note-toggle {margin:0 15px 0 0;padding:7px 10px;}
