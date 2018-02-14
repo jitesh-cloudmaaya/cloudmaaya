@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 from celery import task
 from django.db import connection, transaction
 import os
+import time
 from catalogue_service.settings import BASE_DIR
 from celery_once import QueueOnce
 from product_api.models import Product, AllumeCategory, CategoryMap, Merchant
@@ -120,30 +121,34 @@ def build_lookmetrics():
 # LEFT JOIN product_api_merchant pam ON pap.merchant_name = pam.name
 # WHERE pac.active = 1 AND pam.active = 1 AND pac.pending_review = 0;
 
+from django.db.models import Q
 def test():
-    print 'beginning'
     start = time.time()
-
-    print 'merchants'
+    # get the products of merchants that are inactive
     merchants = Merchant.objects.filter(active=False).values_list('name')
-    print 'setting priamry'
+    # get the products of allume categories that are inactive
+    allume_categories = AllumeCategory.objects.filter(active=False).values_list('name')
+    # get the products of primary/secondary categories that are inactive
     categories_primary = CategoryMap.objects.filter(active=False).values_list('external_cat1')
-    print 'setting seocndary'
     categories_secondary = CategoryMap.objects.filter(active=False).values_list('external_cat2')
-    print 'filter on merchant'
-    products = Product.objects.filter(merchant_name__in=merchants)
-    print 'filter on primary'
-    products = Product.objects.filter(primary_category__in=categories_primary)
-    print 'filter on secondary'
-    products = Product.objects.filter(secondary_category__in=categories_secondary)
 
-    print 'actual update call'
-    products.update(allume_score = 20)
+    # prepare Q object
+    q = Q(merchant_name__in = merchants) | Q (allume_category__in = allume_categories) | Q(primary_category__in = categories_primary, secondary_category__in = categories_secondary)
 
-    print 'process took %s seconds' % (time.time() - start)
+    # set up filters
+    # merchant_products = Product.objects.filter(merchant_name__in = merchants)
+    # allume_category_products = Product.objects.filter(allume_category__in = allume_categories)
+    # category_products = Product.objects.filter(primary_category__in = categories_primary, secondary_category__in = categories_secondary)
+
+    # union operator selects only distinct values by default
+    # deleted_products = merchant_products.union(allume_category_products, category_products)
+
+    deleted_products = Product.objects.filter(q) # distinct necessary?
+    deleted_products.update(allume_score = 1)
+
+    print 'just this part took %s seconds' % (time.time() - start)
 
 
-import time
 @task(base=QueueOnce)
 def index_deleted_products_cleanup(days_threshold = 5):
     """
@@ -162,16 +167,14 @@ def index_deleted_products_cleanup(days_threshold = 5):
     # get the products of allume categories that are inactive
     allume_categories = AllumeCategory.objects.filter(active=False).values_list('name')
     # get the products of primary/secondary categories that are inactive
-    categories_primary = CategoryMap.objects.filter(active=False).values_list('external_cat1')
-    categories_secondary = CategoryMap.objects.filter(active=False).values_list('external_cat2')
+    categories = CategoryMap.objects.filter(active=False)
+    categories_primary = categories.values_list('external_cat1')
+    categories_secondary = categories.values_list('external_cat2')
 
-    # set up filters
-    merchant_products = Product.objects.filter(merchant_name__in = merchants)
-    allume_category_products = Product.objects.filter(allume_category__in = allume_categories)
-    category_products = Product.objects.filter(primary_category__in = categories_primary, secondary_category__in = categories_secondary)
+    # prepare Q object
+    q = Q(merchant_name__in = merchants) | Q (allume_category__in = allume_categories) | Q(primary_category__in = categories_primary, secondary_category__in = categories_secondary)
 
-    # union operator selects only distinct values by default
-    deleted_products = merchant_products.union(allume_category_products, category_products)
+    deleted_products = Product.objects.filter(q).distinct() # distinct necessary?
     deleted_products.update(is_deleted = 1)
 
     print 'just this part took %s seconds' % (time.time() - start)
