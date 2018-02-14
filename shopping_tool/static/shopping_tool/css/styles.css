@@ -2604,6 +2604,7 @@ div.publish-looks-layout,
   margin-left:-246px;
   width:760px;  
 }
+#compare-looks div.comp-look div.compare-looks-layout,
 div.publish-looks-layout {background:#fff;}
 #looks-list div.rack-look div.rack-looks-layout,
 #fave-looks div.rack-look div.rack-looks-layout {  transform:scale(0.66); margin-left:-129px;margin-top:-70px;}
@@ -2614,7 +2615,7 @@ div.publish-looks-layout {background:#fff;}
   width:324px;
 }
 #all-looks-list div.look div.display div.explore-look-layout {
-  background:#eee;
+  background:#fff;
   height:415px;
   position:relative;
   transform:scale(0.42);
