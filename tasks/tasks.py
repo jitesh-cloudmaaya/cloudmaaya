@@ -99,7 +99,7 @@ def build_lookmetrics():
                     cursor.execute(statements[i])
     finally:
         cursor.close()
-
+# comment and redeploy
 @task(base=QueueOnce)
 def index_deleted_products_cleanup(days_threshold = 5):
     """
