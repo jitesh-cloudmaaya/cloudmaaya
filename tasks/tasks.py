@@ -4,7 +4,7 @@ from django.db import connection, transaction
 import os
 from catalogue_service.settings import BASE_DIR
 from celery_once import QueueOnce
-from product_api.models import Product
+from product_api.models import Product, CategoryMap, Merchant
 from tasks.product_feed import ProductFeed
 from tasks.product_feed_py.pepperjam import get_data, get_merchants
 from datetime import datetime, timedelta
@@ -100,6 +100,26 @@ def build_lookmetrics():
     finally:
         cursor.close()
 
+
+# attempt to write as raw SQL
+# Model._meta._db_name #?
+
+# -- attempt at writing the SQL to do the update
+# -- we want to set inactive products to is_deleted = True
+# -- change this to UPDATE product_api_product SET is_deleted = 1
+# SELECT pap.product_id, pap.product_name, pap.merchant_id, pap.merchant_name FROM product_api_product pap
+# LEFT JOIN product_api_categorymap pac ON pap.primary_category = pac.external_cat1
+# AND pap.secondary_category = pac.external_cat2
+# LEFT JOIN product_api_merchant pam ON pap.merchant_name = pam.name
+# WHERE pac.active = 0 AND pam.active = 0;
+
+
+# SELECT pap.product_id, pap.product_name, pap.merchant_id, pap.merchant_name FROM product_api_product pap
+# LEFT JOIN product_api_categorymap pac ON pap.primary_category = pac.external_cat1
+# AND pap.secondary_category = pac.external_cat2
+# LEFT JOIN product_api_merchant pam ON pap.merchant_name = pam.name
+# WHERE pac.active = 1 AND pam.active = 1 AND pac.pending_review = 0;
+
 @task(base=QueueOnce)
 def index_deleted_products_cleanup(days_threshold = 5):
     """
@@ -112,6 +132,24 @@ def index_deleted_products_cleanup(days_threshold = 5):
         days_threshold (int): An optional parameter that filters the Products to perform an ES query on. Serves
         as the threshold of how far back the updated_at parameter will be checked against. Defaults to 5 days.
     """
+
+    # imports
+    from product_api.models import Merchant
+
+    # get the products of merchants that are inactive
+    merchants = Merchant.objects.filter(active=False)
+    # get these merchants' products # ahhh shit that's an in query?
+    # get the products of allume categories that are inactive
+    # get the products of primary/secondary categories that are inactive
+    categories_primary = CategoryMap.objects.filter(active=False).values_list('external_cat1')
+    categories_secondary = CategoryMap.objects.filter(active=False).values_list('external_cat2')
+    products = Product.objects.filter(primary_category__in=categories_primary)
+
+    # bulk update those to is_deleted = True # ?
+
+    # avoid nested query execution and evaluating queryset multiple times
+
+
     datetime_threshold = datetime.now() - timedelta(days = days_threshold) # query products as far back as days_threshold
     deleted_products = Product.objects.filter(updated_at__gte = datetime_threshold, is_deleted = True)
     deleted_products = deleted_products.values_list('product_id', 'merchant_id') # ids are longs
