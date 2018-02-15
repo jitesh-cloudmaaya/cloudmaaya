@@ -133,8 +133,8 @@ def test():
     categories_secondary = CategoryMap.objects.filter(active=False).values_list('external_cat2')
 
     # prepare Q object
-    q = Q(merchant_name__in = merchants) | Q (allume_category__in = allume_categories) | Q(primary_category__in = categories_primary, secondary_category__in = categories_secondary)
-
+    q = Q(merchant_name__in = merchants) | Q (allume_category__in = allume_categories)
+    q = q | Q(primary_category__in = categories_primary, secondary_category__in = categories_secondary)
     # set up filters
     # merchant_products = Product.objects.filter(merchant_name__in = merchants)
     # allume_category_products = Product.objects.filter(allume_category__in = allume_categories)
@@ -147,6 +147,15 @@ def test():
     deleted_products.update(allume_score = 1)
 
     print 'just this part took %s seconds' % (time.time() - start)
+
+## progress on SQL statement for update
+# UPDATE product_api_product pap
+# LEFT JOIN product_api_categorymap pac ON pap.primary_category = pac.external_cat1
+# AND pap.secondary_category = pac.external_cat2
+# LEFT JOIN product_api_merchant pam ON pap.merchant_name = pam.name
+# LEFT JOIN product_api_allumecategory paa ON pap.allume_category = paa.name
+# SET pap.allume_score = 21
+# WHERE pac.active = 0 OR pam.active = 0 OR paa.active = 0;
 
 
 @task(base=QueueOnce)
@@ -168,6 +177,9 @@ def index_deleted_products_cleanup(days_threshold = 5):
     allume_categories = AllumeCategory.objects.filter(active=False).values_list('name')
     # get the products of primary/secondary categories that are inactive
     categories = CategoryMap.objects.filter(active=False)
+
+
+    # this filtering is actually in correct, we get 400k records when we should only get 8
     categories_primary = categories.values_list('external_cat1')
     categories_secondary = categories.values_list('external_cat2')
 
