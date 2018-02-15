@@ -270,7 +270,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             # write the reconstructed line to the cleaned file using the csvwriter
                             writer.writerow(record)
                             writtenCount += 1
-
                         else:
                             categoriesSkipped += 1
 
