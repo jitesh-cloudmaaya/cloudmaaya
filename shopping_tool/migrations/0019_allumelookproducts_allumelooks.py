@@ -24,6 +24,8 @@ class Migration(migrations.Migration):
                     ('date_created', models.DateTimeField()),
                     ('last_modified', models.DateTimeField()),
                     ('product_clipped_stylist_id', models.BigIntegerField()),
+                    ('cropped_dimensions', models.TextField(blank=True, null=True)),
+                    ('raw_product_id', models.IntegerField(default=100)),
                 ],
                 options={
                     'db_table': 'allume_look_products',
@@ -45,6 +47,7 @@ class Migration(migrations.Migration):
                     ('date_created', models.DateTimeField()),
                     ('last_modified', models.DateTimeField()),
                     ('position', models.IntegerField(default=100)),
+                    ('collage_image_data', models.TextField(blank=True, null=True)),
                 ],
                 options={
                     'db_table': 'allume_looks',
