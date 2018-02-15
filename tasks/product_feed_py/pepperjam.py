@@ -6,6 +6,7 @@ import urllib2
 import urlparse
 import csv
 import time
+from copy import copy
 from django.db import connection
 from . import mappings
 from . import product_feed_helpers
@@ -260,7 +261,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     # record['allume_category'] = u'allume_category' # allume_category hard coded
                     record['allume_category'] = allume_category # replace hard coding?
                     record['brand'] = product['manufacturer'] # doubles as brand
-                    record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
+                    record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
                     record['merchant_name'] = merchant_name
 
                     # set defaults
