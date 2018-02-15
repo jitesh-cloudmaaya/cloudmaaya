@@ -287,20 +287,22 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     for key, value in record.iteritems():
                         record[key] = value.encode('UTF-8')
 
+                    # check size here to see if we should write additional 'child' records?
+                    parent_attributes = copy(record)
+                    sizes = re.split(r'[,]+', parent_attributes['size'])
+                    product_id = parent_attributes['product_id']
+                    if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+                        for size in sizes:
+                            parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                            parent_attributes['size'] = size
+                            writer.writerow(parent_attributes)
+                            writtenCount += 1
+                        # set the parent record to is_deleted
+                        record['is_deleted'] = 1
+
                     # write the reconstructed line to the cleaned file using the csvwriter
                     writer.writerow(record)
                     writtenCount += 1
-
-                    # check size here to see if we should write additional 'child' records?
-                    sizes = re.split(r'[,]+', record['size'])
-                    product_id = record['product_id']
-                    if len(sizes) > 1: # the size attribute of the record was a comma seperated list
-                        for size in sizes:
-                            record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                            record['size'] = size
-                            writer.writerow(record)
-                            writtenCount += 1
-                            totalCount += 1
                 else:
                     categoriesSkipped += 1
 
