@@ -482,6 +482,7 @@ class Look(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, db_column='date_created')
     updated_at = models.DateTimeField(auto_now=True, null=True, db_column='last_modified')
     is_legacy = models.IntegerField(blank=True, null=True, default = 0)
+    look_layout = models.ForeignKey(LookLayout, db_column='layout_id')
     look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
     position = models.IntegerField(default=100)
 
