@@ -134,7 +134,9 @@ def index_deleted_products_cleanup(days_threshold = 5):
         cursor.execute(statement)
         cursor.close()
 
-    print 'just this part took %s seconds' % (time.time() - start)
+    print 'Setting the inactive products to deleted took %s seconds' % (time.time() - start)
+
+    checkpoint = time.time()
 
     datetime_threshold = datetime.now() - timedelta(days = days_threshold) # query products as far back as days_threshold
     deleted_products = Product.objects.filter(updated_at__gte = datetime_threshold, is_deleted = True)
@@ -172,4 +174,6 @@ def index_deleted_products_cleanup(days_threshold = 5):
     # using these document_ids, issue a bulk delete on them
     helpers.bulk(CLIENT, actions)
 
-    print 'process took %s seconds' % (time.time() - start)
+    print 'Removing deleted products from the index took %s seconds' % (time.time() - checkpoint)
+
+    print 'The entire process took %s seconds' % (time.time() - start)
