@@ -192,6 +192,12 @@ var utils = {
       },
       url:'/shopping_tool_api/styling_session_notes/' + $('#user-clip').data('userid') + '/'
     });
+    /* quick set of rack ids */
+    for(var i = 0, l = initial_rack.length; i<l; i++){
+      var obj = initial_rack[i];
+      var sku = obj.id + '_' + obj.merchant_id + '_' + obj.product_id + '_' + obj.sku;
+      rack_builder.rack_product_ids.push(sku);
+    }
   },
   /**
   * @description create function which sets document cookies

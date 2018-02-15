@@ -64,12 +64,12 @@ for(var i = 0, l = look.look_products.length; i<l; i++){
   var loadTimer;
   var imgObject = new Image();
   imgObject.src = img;          
-  imgObject.onLoad = onImgLoaded();
-  function onImgLoaded() {
+  imgObject.onLoad = onImgLoaded(loadTimer, imgObject);
+  function onImgLoaded(loadTimer, imgObject) {
     if (loadTimer != null){ clearTimeout(loadTimer); };
     if (!imgObject.complete) {
       loadTimer = setTimeout(function() {
-        onImgLoaded();
+        onImgLoaded(loadTimer, imgObject);
       }, 3);
     } else {
       loading--;

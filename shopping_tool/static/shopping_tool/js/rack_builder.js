@@ -9,7 +9,11 @@ var rack_builder = {
   /**
   * @description cache array of favorited product ids, used to set correct favorite link 
   */
-  favorites_product_ids: [],   
+  favorites_product_ids: [],
+  /**
+  * @description cache array of racked product ids, used to set correct add to rack link 
+  */
+  rack_product_ids: [],    
   /** 
   * @description cache of styling session
   */
@@ -74,23 +78,17 @@ var rack_builder = {
     var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
     var add_to_list = false;
     if(existing == undefined){
-      if(page == 'search'){
-        item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
-      }else if(page == 'inspect'){
-        item.addClass('selected').html('<i class="fa fa-check"></i> racked');
-      }
-      rack.data('skus', details.sku);
+      item.addClass('selected').html('<i class="fa fa-check"></i> racked');
+      rack.data('skus', sku);
+      rack_builder.rack_product_ids.push(sku);
       add_to_list = true;
     }else{
       existing = existing.split(',');
       if(existing.indexOf(sku) == -1){
         existing.push(sku);
+        rack_builder.rack_product_ids.push(sku);
         rack.data('skus', existing.join(','));
-        if(page == 'search'){
-          item.addClass('selected').html('<i class="fa fa-check"></i> added to rack');
-        }else if(page == 'inspect'){
-          item.addClass('selected').html('<i class="fa fa-check"></i> racked');
-        }
+        item.addClass('selected').html('<i class="fa fa-check"></i> racked');
         add_to_list = true;
       }
     }
@@ -297,7 +295,8 @@ var rack_builder = {
     }
     var existing_items = []
     $.each(rack_list.find('a.remove-from-rack'), function(idx){
-      existing_items.push($(this).data('sku'));
+      var sku = $(this).data('sku')
+      existing_items.push(sku);
     });
     rack_list.data('skus', existing_items.join(','));
     /* create favorites section and add functionality */
@@ -422,19 +421,17 @@ var rack_builder = {
       var existing = rack.data('skus').split(',');
       var idx = existing.indexOf(sku);
       existing.splice(idx,1);
+      rack_builder.rack_product_ids.splice(idx,1);
       rack.data('skus',existing.join(','));
       /* undo selected btn */
-      if(link.data('idx') != ''){
-        var list_entry = $('#results div.item').eq(link.data('idx'));
-        var add_link = list_entry.find('a.add-to-rack');
-        if(add_link.length > 0){
-          var details = add_link.data('details')
-          var link_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
-          if(link_sku == sku){
-            add_link.html('<i class="icon-hanger"></i>add to rack').removeClass('selected');
-          }  
-        }
-      }
+      $.each($('#results a.add-to-rack.selected'), function(link_idx){
+        var rack_btn = $(this);
+        var details = rack_btn.data('details')
+        var link_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
+        if(link_sku == sku){
+          rack_btn.html('<i class="icon-hanger"></i>add to rack').removeClass('selected');
+        } 
+      });
       $.ajax({
         success:function(response){
           var parent_block = link.closest('div.block');
@@ -478,8 +475,10 @@ var rack_builder = {
     }).on('click','a.add-to-rack',function(e){
       e.preventDefault();
       var link = $(this);
-      var from_compare = link.hasClass('compare') ? true : false;
-      rack_builder.addToRack(link, 'inspect', from_compare);
+      if(link.hasClass('selected') == false){
+        var from_compare = link.hasClass('compare');
+        rack_builder.addToRack(link, 'inspect', from_compare);
+      }
     }).on('click', 'a#color-toggle', function(e){
       e.preventDefault();
       var link = $(this);
@@ -496,6 +495,7 @@ var rack_builder = {
       var matching = {};
       var price_display = '';
       var fave_link = '';
+      var rack_link = ''
       for(var i = 0, l = data.details.length; i<l; i++){
         var option = data.details[i];
         if(option._source.color == color){
@@ -515,6 +515,14 @@ var rack_builder = {
             fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
             matching._source.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
           }
+          rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
+            matching._source.product_id + '"><i class="icon-hanger"></i>add to rack</a>';
+          var rack_sku = matching._source.id + '_' + matching._source.merchant_id + '_' + matching._source.product_id + '_' + matching._source.sku;
+          var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
+          if(rack_idx > -1){
+            rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
+              matching._source.product_id + '"><i class="fa fa-check"></i> in rack</a>';
+          }
           break;
         }
       }
@@ -526,9 +534,9 @@ var rack_builder = {
         $('#inspected-item-img').attr('src', matching._source.product_image_url);
         var ii = $('#inspect-item')
         ii.find('a.favorite').remove();
-        ii.find('a.add-to-rack').data('productid', matching._source.product_id).data('details', matching._source)
-        .html('<i class="icon-hanger"></i> add to rack').removeClass('selected').before(fave_link);
-        ii.find('a.link-to-store').attr('href', matching._source.product_url);
+        ii.find('a.add-to-rack').remove();
+        ii.find('a.link-to-store').attr('href', matching._source.product_url).before(rack_link);
+        ii.find('a.add-to-rack').data('details', matching._source).before(fave_link);
         ii.find('a.favorite').data('details', matching._source);
         if(price_display != ''){ $('#inspected-item-price').html(price_display); }
         $('#inspected-item-sku').html('<em>sku:</em>' + matching._source.sku)
@@ -560,6 +568,12 @@ var rack_builder = {
       },
       type: "GET",
       url: '/product_api/get_product/' + id + '/',
+      error: function(){
+        $('#inspect-item').html(
+          '<div class="stage"><a href="#" class="close-inspect">' +
+          '<i class="fa fa-times"></i></a><h2>could not find product...</h2></div>'
+        );
+      },
       success: function(results){
         console.log(results)
         var inspect = $('#inspect-item');
@@ -606,8 +620,14 @@ var rack_builder = {
             fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
             product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
           }
-          var rack_link = '<a href="#" class="add-to-rack ' + view_class + 
-              '" data-productid="' + product.id + '"><i class="icon-hanger"></i>add to rack</a>'; 
+          var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
+            product.id + '"><i class="icon-hanger"></i>add to rack</a>';
+          var rack_sku = product.id + '_' + product.merchant_id + '_' + product.product_id + '_' + product.sku;
+          var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
+          if(rack_idx > -1){
+            rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
+              product.id + '"><i class="fa fa-check"></i> in rack</a>';
+          }
           var retail = product.retail_price;
           var sale = product.sale_price;
           var price_display = '';

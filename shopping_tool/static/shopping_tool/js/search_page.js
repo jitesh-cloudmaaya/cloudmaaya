@@ -25,6 +25,7 @@ var search_page = {
     $('#search-categories').val('').selectize({ create: false, sortField: 'text'}).change(function(){
       var dd = $(this);
       var val = dd.val();
+      $('#search-field').val(val);
       var def_div = $('#client-defaults');
       var header = '<h5>Client preferences and sizes for <strong>' + val + '</strong>:</h5>';
       var general = '<span><em>colors:</em>' + client_360.colors + '</span>' +
@@ -108,7 +109,9 @@ var search_page = {
     }).on('click','a.add-to-rack',function(e){
       e.preventDefault();
       var link = $(this);
-      rack_builder.addToRack(link, 'search', false);
+      if(link.hasClass('selected') == false){
+        rack_builder.addToRack(link, 'search', false);
+      }
     }).on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
@@ -120,8 +123,8 @@ var search_page = {
       var last_search = utils.parseQuery(search_cookie);
       var search_box = $('#search-field');
       var category = $('#search-categories');
-      search_box.val(last_search.text);
       category[0].selectize.setValue(last_search.primary_category, false);
+      search_box.val(last_search.text);
       if(last_search.favs != undefined){
         $('#facet-show-faves').prop('checked', true);
       }
@@ -139,14 +142,11 @@ var search_page = {
       var social_facets = [];
       var group_markup = {names: [], markup: {}}
       /* build initial list of facet buckets */
-      //var buckets = Object.keys(facets);
       var display_order = ['_filter_size','_filter_price_range','_filter_brand',
                            '_filter_merchant_name','_filter_color','_filter_material'];
       for(var i = 0, l = display_order.length; i<l; i++){
         var bucket = display_order[i];
-        //console.log(bucket)
         var facet_list = facets[bucket];
-        //console.log(facet_list)
         if(facet_list){
           if(['_filter_is_best_seller', '_filter_is_trending'].indexOf(bucket) == -1){
             var display_name = bucket.replace('_filter_', '');
@@ -235,7 +235,6 @@ var search_page = {
         }
         group_markup.markup['social'].push('</div>');
       }
-      //group_markup.names.sort();
       for(var i = 0, l = group_markup.names.length; i<l; i++){
         var group_name = group_markup.names[i];
         markup.push(group_markup.markup[group_name].join(''));
@@ -266,6 +265,15 @@ var search_page = {
     }
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
+
+    var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
+      details.id + '"><i class="icon-hanger"></i>add to rack</a>';
+    var rack_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
+    var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
+    if(rack_idx > -1){
+      rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
+        details.id + '"><i class="fa fa-check"></i> in rack</a>';
+    }
     var fave_link = '<a href="#" class="favorite" data-productid="' + 
       details.id + '"><i class="fa fa-heart-o"></i></a>';
     var fave_idx = rack_builder.favorites_product_ids.indexOf(details.id);
@@ -281,8 +289,7 @@ var search_page = {
       '"><img src="' + details.product_image_url + '"></a></div>' +
       '<a href="' + details.product_url + '"  title="' + details.product_name + 
       '" target="_blank" class="name">' + details.product_name + '</a>' + 
-      manu + '' + price_display + '<a href="#" class="add-to-rack" data-productid="' + 
-      details.id + '"><i class="icon-hanger"></i>add to rack</a></div>';
+      manu + '' + price_display + '' + rack_link + '</div>';
   },
   /**
   * @description ajax call to get search results
@@ -321,12 +328,6 @@ var search_page = {
     */
     if(lastSearch == true){ new_search = false; }
     if(category != ''){
-      facets.push('&primary_category=' + category);
-      selection_markup.push(
-        '<a href="#" class="remove-category" data-qparam="primary_category" ' +
-        'data-facet="' + category + '">' + category + 
-        '<i class="fa fa-times-circle"></i></a>'
-      );
       /**
       * if it is a new search we need to see if we have any client
       * data to prepopulate some of our facets with
@@ -351,11 +352,6 @@ var search_page = {
             size + '">' + size + '<i class="fa fa-times-circle"></i></a>'
           );
         }
-        if(cleaned_sizes.length > 0){
-          facets.push(
-            '&size=' + encodeURIComponent(cleaned_sizes.join('|'))
-          );
-        }
         for(i = 0, l = spend.length; i<l; i++){
           var range = spend[i].replace(/\$/g, '').split(' - ');
           var propper_range = '$' + range[0] + ' - $' + range[1];
@@ -366,11 +362,6 @@ var search_page = {
           selection_markup.push(
             '<a href="#" class="remove-facet" data-qparam="price_range" data-facet="' + 
             propper_range + '">' + propper_range + '<i class="fa fa-times-circle"></i></a>'
-          );
-        }
-        if(cleaned_spend.length > 0){
-          facets.push(
-            '&price_range=' + encodeURIComponent(cleaned_spend.join('|'))
           );
         }
         search_box.data('clientsize', cleaned_sizes.join('|')).data('clientspend', cleaned_spend.join('|')).data('clientsettings', true);
@@ -407,9 +398,6 @@ var search_page = {
       for(var i = 0, l = keys.length; i<l; i++){
         var key = keys[i];
         if(['page', 'text', 'primary_category'].indexOf(key) == -1){
-          facets.push(
-            '&' + key+ '=' + encodeURIComponent(additionalCriteria[key])
-          );
           var terms = additionalCriteria[key].split('|');
           for(var ix = 0, lx = terms.length; ix < lx; ix++){
             var term = terms[ix];
@@ -432,7 +420,11 @@ var search_page = {
       $('#facet-bar').addClass('show');
     }
     /* set the session search cookie so search will persist */
-    utils.createCookie('lastShoppingToolSearch' + search_page.session_id, q, 1);
+    var saved_search = q;
+    if(category != ''){
+      saved_search += '&primary_category=' + category;
+    }
+    utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
     $.ajax({
       beforeSend: function(){
         $('#results').html(
@@ -451,10 +443,12 @@ var search_page = {
       url: '/product_api/facets?',
       data: q,
       success: function(results){
-        if(results.data != undefined && results.data.length > 0){
-          utils.pagerTemplate(results.page, results.total_items, results.num_per_page);
+        if(new_search == false){
+          if(results.data != undefined && results.data.length > 0){
+            utils.pagerTemplate(results.page, results.total_items, results.num_per_page);
+          }
+          search_page.resultTemplate(results.data);
         }
-        search_page.resultTemplate(results.data);
         if(new_search == true){
           search_page.facetTemplate(results.facets);
           /**
@@ -475,6 +469,8 @@ var search_page = {
               }
             }
           }
+          /* trigger the secondary fetch */
+          $('#search-btn').trigger('click');
         }
       }
     });
