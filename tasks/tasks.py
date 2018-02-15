@@ -102,62 +102,6 @@ def build_lookmetrics():
         cursor.close()
 
 
-# attempt to write as raw SQL
-# Model._meta._db_name #?
-
-# -- attempt at writing the SQL to do the update
-# -- we want to set inactive products to is_deleted = True
-# -- change this to UPDATE product_api_product SET is_deleted = 1
-# SELECT pap.product_id, pap.product_name, pap.merchant_id, pap.merchant_name FROM product_api_product pap
-# LEFT JOIN product_api_categorymap pac ON pap.primary_category = pac.external_cat1
-# AND pap.secondary_category = pac.external_cat2
-# LEFT JOIN product_api_merchant pam ON pap.merchant_name = pam.name
-# WHERE pac.active = 0 AND pam.active = 0;
-
-
-# SELECT pap.product_id, pap.product_name, pap.merchant_id, pap.merchant_name FROM product_api_product pap
-# LEFT JOIN product_api_categorymap pac ON pap.primary_category = pac.external_cat1
-# AND pap.secondary_category = pac.external_cat2
-# LEFT JOIN product_api_merchant pam ON pap.merchant_name = pam.name
-# WHERE pac.active = 1 AND pam.active = 1 AND pac.pending_review = 0;
-
-from django.db.models import Q
-def test():
-    start = time.time()
-    # get the products of merchants that are inactive
-    merchants = Merchant.objects.filter(active=False).values_list('name')
-    # get the products of allume categories that are inactive
-    allume_categories = AllumeCategory.objects.filter(active=False).values_list('name')
-    # get the products of primary/secondary categories that are inactive
-    categories_primary = CategoryMap.objects.filter(active=False).values_list('external_cat1')
-    categories_secondary = CategoryMap.objects.filter(active=False).values_list('external_cat2')
-
-    # prepare Q object
-    q = Q(merchant_name__in = merchants) | Q (allume_category__in = allume_categories)
-    q = q | Q(primary_category__in = categories_primary, secondary_category__in = categories_secondary)
-    # set up filters
-    # merchant_products = Product.objects.filter(merchant_name__in = merchants)
-    # allume_category_products = Product.objects.filter(allume_category__in = allume_categories)
-    # category_products = Product.objects.filter(primary_category__in = categories_primary, secondary_category__in = categories_secondary)
-
-    # union operator selects only distinct values by default
-    # deleted_products = merchant_products.union(allume_category_products, category_products)
-
-    deleted_products = Product.objects.filter(q) # distinct necessary?
-    deleted_products.update(allume_score = 1)
-
-    print 'just this part took %s seconds' % (time.time() - start)
-
-## progress on SQL statement for update
-# UPDATE product_api_product pap
-# LEFT JOIN product_api_categorymap pac ON pap.primary_category = pac.external_cat1
-# AND pap.secondary_category = pac.external_cat2
-# LEFT JOIN product_api_merchant pam ON pap.merchant_name = pam.name
-# LEFT JOIN product_api_allumecategory paa ON pap.allume_category = paa.name
-# SET pap.allume_score = 21
-# WHERE pac.active = 0 OR pam.active = 0 OR paa.active = 0;
-
-
 @task(base=QueueOnce)
 def index_deleted_products_cleanup(days_threshold = 5):
     """
@@ -171,23 +115,24 @@ def index_deleted_products_cleanup(days_threshold = 5):
         as the threshold of how far back the updated_at parameter will be checked against. Defaults to 5 days.
     """
     start = time.time()
-    # get the products of merchants that are inactive
-    merchants = Merchant.objects.filter(active=False).values_list('name')
-    # get the products of allume categories that are inactive
-    allume_categories = AllumeCategory.objects.filter(active=False).values_list('name')
-    # get the products of primary/secondary categories that are inactive
-    categories = CategoryMap.objects.filter(active=False)
 
+    # sql to set inactive products to deleted
+    product_table = Product._meta.db_table
+    categorymap_table = CategoryMap._meta.db_table
+    merchant_table = Merchant._meta.db_table
+    allumecategory_table = AllumeCategory._meta.db_table
 
-    # this filtering is actually in correct, we get 400k records when we should only get 8
-    categories_primary = categories.values_list('external_cat1')
-    categories_secondary = categories.values_list('external_cat2')
+    statement = 'UPDATE %s pap' % product_table
+    statement += ' LEFT JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
+    statement += ' AND pap.secondary_category = pac.external_cat2'
+    statement += ' LEFT JOIN %s pam ON pap.merchant_name = pam.name' % merchant_table
+    statement += ' LEFT JOIN %s paa ON pap.allume_category = paa.name' % allumecategory_table
+    statement += ' SET is_deleted = 1'
+    statement += ' WHERE pac.active = 0 OR pam.active = 0 OR paa.active = 0;'
 
-    # prepare Q object
-    q = Q(merchant_name__in = merchants) | Q (allume_category__in = allume_categories) | Q(primary_category__in = categories_primary, secondary_category__in = categories_secondary)
-
-    deleted_products = Product.objects.filter(q).distinct() # distinct necessary?
-    deleted_products.update(is_deleted = 1)
+    with connection.cursor() as cursor:
+        cursor.execute(statement)
+        cursor.close()
 
     print 'just this part took %s seconds' % (time.time() - start)
 
