@@ -19,15 +19,15 @@ class Migration(migrations.Migration):
                 name='is_legacy',
                 field=models.BooleanField(default=0),
             ),
-            migrations.AddField(
-                model_name='allumelooks',
-                name='layout_id',
-                field=models.IntegerField(default=0),
-            ),
-            migrations.AddIndex(
-                model_name='allumelooks',
-                index=models.Index(fields=['layout_id'], name='allume_look_layout__eed162_idx'),
-            ),
+            # migrations.AddField(
+            #     model_name='allumelooks',
+            #     name='layout_id',
+            #     field=models.IntegerField(default=0),
+            # ),
+            # migrations.AddIndex(
+            #     model_name='allumelooks',
+            #     index=models.Index(fields=['layout_id'], name='allume_look_layout__eed162_idx'),
+            # ),
             migrations.AddIndex(
                 model_name='allumelookproducts',
                 index=models.Index(fields=['raw_product_id'], name='allume_look_raw_pro_9d6dbb_idx'),

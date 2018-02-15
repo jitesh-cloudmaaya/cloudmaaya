@@ -197,7 +197,7 @@ class ShoppingToolAPITestCase(APITestCase):
         url = reverse("shopping_tool_api:look", kwargs={'pk':0})
         
         shopper = WpUsers.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
-        data = {"name": "Api Test Look", "look_layout": 1, "allume_styling_session": 1, "stylist": shopper.id}
+        data = {"name": "Api Test Look", "allume_styling_session": 1, "stylist": shopper.id}
 
         response = self.client.put(url, data)
         response_data = json.loads(response.content)
@@ -206,7 +206,7 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(201, response.status_code)
         self.assertEqual(Look.objects.count(), 4)
         self.assertEqual(Look.objects.get(id = response_data['id']).name, 'Api Test Look')
-        self.assertEqual(Look.objects.get(id = response_data['id']).look_layout.name, 'one_item')
+        # self.assertEqual(Look.objects.get(id = response_data['id']).look_layout.name, 'one_item')
 
     def test_create_note(self):
         """

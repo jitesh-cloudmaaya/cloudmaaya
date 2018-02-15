@@ -463,7 +463,6 @@ def look(request, pk):
 
         {
          "name": "Test Look 5huck",
-         "look_layout": 1,
          "allume_styling_session":3,
          "stylist": 117,
          "description": "",
@@ -536,8 +535,8 @@ def look_list(request):
         }
     """
     looks = Look.objects.all()  
-    looks = looks.filter(look_layout__isnull=False)
-    looks = looks.exclude(look_layout = 0)
+    # looks = looks.filter(look_layout__isnull=False)
+    # looks = looks.exclude(look_layout = 0)
 
     page = 1
     if 'page' in request.data:

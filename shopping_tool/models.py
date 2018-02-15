@@ -420,16 +420,16 @@ class AllumeLooks(models.Model):
     date_created = models.DateTimeField()
     last_modified = models.DateTimeField()
     is_legacy = models.IntegerField()
-    layout_id = models.IntegerField()
+    # layout_id = models.IntegerField()
     position = models.IntegerField()
     collage_image_data = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'allume_looks'
-        indexes = [
-            models.Index(fields=['layout_id'])
-        ]
+        # indexes = [
+        #     models.Index(fields=['layout_id'])
+        # ]
 
 
 
@@ -483,7 +483,7 @@ class Look(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, db_column='date_created')
     updated_at = models.DateTimeField(auto_now=True, null=True, db_column='last_modified')
     is_legacy = models.IntegerField(blank=True, null=True, default = 0)
-    look_layout = models.ForeignKey(LookLayout, db_column='layout_id')
+    # look_layout = models.ForeignKey(LookLayout, db_column='layout_id')
     look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
     position = models.IntegerField(default=100)
     collage_image_data = models.TextField(blank=True, null=True)

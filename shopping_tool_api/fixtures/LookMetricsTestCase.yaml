@@ -19,102 +19,102 @@
 # looks
 -   model: shopping_tool.look
     pk: 1
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9470, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9470, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 2
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9471, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9471, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 3
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9472, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9472, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 4
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9473, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9473, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 5
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9474, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9474, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 6
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9475, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9475, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 7
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9476, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9476, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 8
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9477, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9477, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 9
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9478, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9478, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 10
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9479, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9479, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 11
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e14563c9470, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e14563c9470, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 12
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e24563c9470, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e24563c9470, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 13
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e34563c9470, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e34563c9470, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 14
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e44563c9470, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e44563c9470, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 15
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e54563c9470, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e54563c9470, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 16
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e64563c9470, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e64563c9470, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 17
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e74563c9470, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e74563c9470, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 18
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e84563c9470, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e84563c9470, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 19
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e94563c9470, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e94563c9470, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 -   model: shopping_tool.look
     pk: 20
-    fields: {token: ef21ff84-9bf2-48f0-bd77-3e14563c9471, allume_styling_session: 1, name: Fixture Test Look, look_layout: 1, stylist: 9,
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e14563c9471, allume_styling_session: 1, name: Fixture Test Look, stylist: 9,
         status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
         updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 1, description: None}
 # lookmetrics
