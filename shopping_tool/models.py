@@ -418,7 +418,7 @@ class AllumeLooks(models.Model):
     collage = models.CharField(max_length=200, blank=True, null=True)
     status = models.CharField(max_length=9)
     date_created = models.DateTimeField()
-    layout_id = models.IntegerField()
+    # layout_id = models.IntegerField()
     last_modified = models.DateTimeField()
     is_legacy = models.IntegerField()
     position = models.IntegerField()
@@ -426,9 +426,9 @@ class AllumeLooks(models.Model):
     class Meta:
         managed = False
         db_table = 'allume_looks'
-        indexes = [
-            models.Index(fields=['layout_id'])
-        ]
+        # indexes = [
+        #     models.Index(fields=['layout_id'])
+        # ]
 
 
 
@@ -482,7 +482,7 @@ class Look(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, db_column='date_created')
     updated_at = models.DateTimeField(auto_now=True, null=True, db_column='last_modified')
     is_legacy = models.IntegerField(blank=True, null=True, default = 0)
-    look_layout = models.ForeignKey(LookLayout, db_column='layout_id')
+    # look_layout = models.ForeignKey(LookLayout, db_column='layout_id')
     look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
     position = models.IntegerField(default=100)
 
