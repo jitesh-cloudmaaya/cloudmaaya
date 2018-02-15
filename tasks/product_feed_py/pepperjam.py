@@ -6,6 +6,7 @@ import urllib2
 import urlparse
 import csv
 import time
+import re
 from copy import copy
 from django.db import connection
 from . import mappings
