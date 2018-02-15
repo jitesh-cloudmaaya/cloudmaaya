@@ -422,6 +422,7 @@ class AllumeLooks(models.Model):
     is_legacy = models.IntegerField()
     layout_id = models.IntegerField()
     position = models.IntegerField()
+    collage_image_data = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -440,7 +441,7 @@ class AllumeLookProducts(models.Model):
     date_created = models.DateTimeField()
     last_modified = models.DateTimeField()
     product_clipped_stylist_id = models.BigIntegerField()
-    cropped_dimensions = models.CharField(max_length=200, blank=True, null=True)
+    cropped_dimensions = models.TextField(blank=True, null=True)
     layout_position = models.IntegerField()
     raw_product_id = models.IntegerField()
 

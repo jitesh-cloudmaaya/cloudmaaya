@@ -441,7 +441,8 @@ def look(request, pk):
          "look_layout": 1,
          "allume_styling_session":3,
          "stylist": 117,
-         "description": ""
+         "description": "",
+         "collage_image_data": ""
         }
     delete:
         Delete a look
@@ -601,7 +602,8 @@ def look_item(request, pk=None):
           "layout_position": 4,
           "look": 5,
           "product": 393223,
-          "layout_position": "xx,yy,zz"
+          "layout_position": "xx,yy,zz",
+          "cropped_dimensions": ""
         }
 
         Sample JSON Update Object
@@ -613,6 +615,7 @@ def look_item(request, pk=None):
           "look": 5,
           "product": 393223,
           "layout_position": "xx,yy,zz"
+          "cropped_dimensions": ""
         }
     delete:
         Remove a product from a look for a styling session
