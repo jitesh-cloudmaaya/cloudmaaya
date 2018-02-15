@@ -256,7 +256,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
                             # check size here to see if we should write additional 'child' records?
                             parent_attributes = copy(record)
-                            sizes = re.split(r'[,]+', parent_attributes['size'])
+                            sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:

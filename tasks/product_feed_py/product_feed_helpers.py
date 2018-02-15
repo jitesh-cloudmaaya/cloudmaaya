@@ -1,6 +1,7 @@
 import urlparse
 import urllib
 import hashlib
+import re
 
 def parse_raw_product_url(product_url, raw_product_attribute):
     """
@@ -57,3 +58,18 @@ def assign_product_id_size(product_id, size):
     product_id = str(product_id)
 
     return product_id
+
+def seperate_sizes(sizes):
+    """
+    Takes in a size attribute, intended to be from a product which has a comma seperated list as a size,
+    and returns an array of individual size values to be used in creation of children records.
+    Args:
+      sizes (str): A string containing a comma seperated list of sizes of the product.
+
+    Returns:
+      arr: An array of the individual sizes.
+    """
+    arr = re.split(r'[,]+', sizes)
+    for i in range(0, len(arr)):
+      arr[i] = arr[i].strip()
+    return arr
