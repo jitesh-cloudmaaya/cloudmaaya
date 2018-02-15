@@ -3,6 +3,7 @@ import datetime
 import yaml
 import urlparse
 import csv
+import re
 from django.db import connection
 from . import mappings
 from . import product_feed_helpers
@@ -255,6 +256,17 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             # write the reconstructed line to the cleaned file using the csvwriter
                             writer.writerow(record)
                             writtenCount += 1
+
+                            # check size here to see if we should write additional 'child' records?
+                            sizes = re.split(r'[,]+', record['size'])
+                            product_id = record['product_id']
+                            if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+                                for size in sizes:
+                                    record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    record['size'] = size
+                                    writer.writerow(record)
+                                    writtenCount += 1
+                                    totalCount += 1
                         else:
                             categoriesSkipped += 1
 
