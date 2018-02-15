@@ -365,6 +365,31 @@ def update_look_position(request, pk=None):
 
     return JsonResponse(request.data, safe=False)
 
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
+def update_look_collage_image_data(request, pk=None):
+    """
+    put:
+        Edit the collage_image_data field of an AllumeLooks.
+
+        /shopping_tool_api/update_look_collage_image_data/{allumelooks_id}/
+
+        Sample JSON object
+        {
+          "collage_image_data": "payload",
+        }
+    """
+    try:
+        look = Look.objects.get(id=pk)
+    except Look.DoesNotExist:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+    look.collage_image_data = request.data['collage_image_data']
+    look.save()
+
+    return JsonResponse(request.data, safe=False)
+
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
 @permission_classes((AllowAny, ))
