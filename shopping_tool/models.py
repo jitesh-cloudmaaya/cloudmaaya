@@ -418,6 +418,7 @@ class AllumeLooks(models.Model):
     collage = models.CharField(max_length=200, blank=True, null=True)
     status = models.CharField(max_length=9)
     date_created = models.DateTimeField()
+    layout_id = models.IntegerField()
     last_modified = models.DateTimeField()
     is_legacy = models.IntegerField()
     position = models.IntegerField()
