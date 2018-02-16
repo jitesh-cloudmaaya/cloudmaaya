@@ -785,6 +785,11 @@ var look_builder = {
           result.description + '</textarea></td></tr></table>' +
           '<input type="hidden" id="look-id" value="' + id + '"/>'
         );
+        result.look_products.sort(function(a,b){
+          if(a.layout_position < b.layout_position){ return 1}
+          if(a.layout_position > b.layout_position){ return -1}
+          return 0;
+        })        
         collage.init(result.look_products);
       }
     });

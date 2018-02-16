@@ -17,8 +17,6 @@ var collage = {
           /* loop through results to set up content for payload */
           for(var i = 0, l = results.data.length; i<l; i++){
             var product = results.data[i]._source;
-            console.log(product.id)
-            console.log(product_id)
             if((product.id == product_id)||(product.product_id == product_id)){
               matching_object = product;
             }
@@ -148,18 +146,18 @@ var collage = {
 	init: function(products){
     collage.canvas = new fabric.Canvas('c');
     collage.product_cache = products;
-    for(var i = 0, l = products.length; i<l; i++){
-      let prod = products[i];
-      var img = new Image(); 
-      collage.loadImg(prod,img)
+    collage.initial_load = products.length - 1;
+    if(collage.initial_load > -1){
+      collage.loadImg()
     }
   },
+  initial_load: null,
   /**
   * @description helper function to load/add image to canvas in order to preserve scope
-  * @param {object} prod - the product json
-  * @param {objetc} img - the newly created Imgae object
   */
-  loadImg:function(prod, img){
+  loadImg:function(){
+    var prod = collage.product_cache[collage.initial_load]
+    var img = new Image();
     img.src = look_proxy + '' + prod.product.product_image_url;
     img.onload = function() {
       var scale = 1;
@@ -187,6 +185,11 @@ var collage = {
       /* if picture was zoomed call the zoom function and correctly display zoomed object */
       if(dims.zoomedXY){
         collage.zoomBy(dims.zoomX, dims.zoomY, dims.zoomZ);
+      }
+      /* keep track of loaded object count lood next image if some still remain */
+      collage.initial_load--;
+      if(collage.initial_load > -1){
+        collage.loadImg();
       }
     };
   },
@@ -361,7 +364,6 @@ var collage = {
     for(var i = 0, l = changes.objects.length; i<l; i++){
       /* get the image */
       var prod = changes.objects[i];
-      console.log(prod)
       var product_id = null;
       for(var ix = 0, lx = collage.product_cache.length; ix<lx; ix++){
         var record = collage.product_cache[ix];
@@ -406,7 +408,7 @@ var collage = {
         contentType : 'application/json',
         data: JSON.stringify(look_product_obj),
         success:function(response){
-          console.log(response)
+          
         },
         type: 'PUT',
         url: '/shopping_tool_api/look_item/' + prod.prod_id + '/'
