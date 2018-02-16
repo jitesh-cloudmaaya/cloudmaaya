@@ -193,13 +193,15 @@ var look_builder = {
             var first_half_occs = look_occasions.splice(0,half_occs);
             for(var i = 0, l = response.looks.length; i<l; i++){
               var look = response.looks[i];
-              var look_products_markup = ['<div class="publish-look-wrapper"><div class="publish-looks-layout">'];
-              look_products_markup.push('</div></div>');
+              var collage_img = '<div class="collage-placeholder">no collage</div>';
+              if(look.collage_image_data != null){
+                collage_img = '<img class="collage" src="' + look.collage_image_data + '"/>';
+              }
               markup.push(
                 '<div class="pub-look" data-lookname="' + look.name + '" data-lookid="' + 
                 look.id + '"><h5><span>' + look.name + '</span></h5>' +
                 '<table class="categorize-look"><tr><td rowspan="2" class="collage">' +
-                look_products_markup.join('') + '</td><td class="label">Style:</td>' +
+                collage_img + '</td><td class="label">Style:</td>' +
                 '<td class="label"></td><td class="label split">Occasion:</td>' +
                 '<td class="label"></td></tr><tr>' +
                 '<td>' + first_half_styles.join('') + '</td>' +
@@ -510,10 +512,6 @@ var look_builder = {
             price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
               numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
           }
-
-
-
-
           fave_link = '<a href="#" class="favorite" data-productid="' + 
             prod.product.id + '"><i class="fa fa-heart-o"></i></a>';
           var fave_idx = rack_builder.favorites_product_ids.indexOf(prod.product.id);

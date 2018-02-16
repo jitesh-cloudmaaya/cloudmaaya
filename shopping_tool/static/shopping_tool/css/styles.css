@@ -3238,6 +3238,21 @@ div.publish-section div.pub-look table td { padding:10px; vertical-align: top }
 div.publish-section div.pub-look table td.label { font-size:14px; font-weight:500; padding:0 10px; }
 div.publish-section div.pub-look table td.split { border-left:1px solid #eee; padding-left:20px; }
 div.publish-section div.pub-look table td.collage {padding:10px 10px 10px 0;}
+div.publish-section div.pub-look table td.collage img.collage { display:block; width:285px; }
+div.publish-section div.pub-look table td.collage div.collage-placeholder{
+  background:#fafafa;
+  border:1px solid #eee;
+  color:#999;
+  font-size:18px;
+  font-variant: small-caps;
+  font-weight:300;
+  height:160px;
+  line-height:160px;
+  margin:0 0 10px;
+  text-align: center;
+  text-shadow:0 1px #fff;
+  width:285px;
+}
 div.publish-loading {margin:25px;}
 #publish-email {
   background:#fff;
