@@ -365,6 +365,31 @@ def update_look_position(request, pk=None):
 
     return JsonResponse(request.data, safe=False)
 
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
+def update_look_collage_image_data(request, pk=None):
+    """
+    put:
+        Edit the collage_image_data field of an AllumeLooks.
+
+        /shopping_tool_api/update_look_collage_image_data/{allumelooks_id}/
+
+        Sample JSON object
+        {
+          "collage_image_data": "payload",
+        }
+    """
+    try:
+        look = Look.objects.get(id=pk)
+    except Look.DoesNotExist:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+    look.collage_image_data = request.data['collage_image_data']
+    look.save()
+
+    return JsonResponse(request.data, safe=False)
+
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
 @permission_classes((AllowAny, ))
@@ -440,7 +465,8 @@ def look(request, pk):
          "name": "Test Look 5huck",
          "allume_styling_session":3,
          "stylist": 117,
-         "description": ""
+         "description": "",
+         "collage_image_data": ""
         }
     delete:
         Delete a look
@@ -600,7 +626,8 @@ def look_item(request, pk=None):
           "layout_position": 4,
           "look": 5,
           "product": 393223,
-          "layout_position": "xx,yy,zz"
+          "layout_position": "xx,yy,zz",
+          "cropped_dimensions": ""
         }
 
         Sample JSON Update Object
@@ -612,6 +639,7 @@ def look_item(request, pk=None):
           "look": 5,
           "product": 393223,
           "layout_position": "xx,yy,zz"
+          "cropped_dimensions": ""
         }
     delete:
         Remove a product from a look for a styling session

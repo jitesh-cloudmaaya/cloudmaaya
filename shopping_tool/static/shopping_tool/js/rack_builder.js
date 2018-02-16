@@ -126,7 +126,21 @@ var rack_builder = {
           rack.find('div.block[data-category="' + sanitized_cat + '"]').append(itm)
           rack_builder.updateRackCount();
           if(from_compare == true){
-            look_builder.orderedRack();
+            var sorted_racks = $('#rack-draggable').find('a.sort-items').length
+            if(sorted_racks == 0){
+              look_builder.orderedRack();
+            }else{
+              $('#rack-draggable div.look-builder-rack div.item:first').before(
+                '<div class="item" data-productid="' + details.id + '" data-url="' + 
+                details.product_image_url + '"><img class="handle" src="' + details.product_image_url + 
+                '"/><a href="#" class="add" data-productid="' + details.id + '" data-imgsrc="' + 
+                details.product_image_url + '"><i class="fa fa-plus-circle"></i></a>' +
+                '<a href="#"  class="view" data-productid="' + details.id + 
+                '"><i class="fa fa-search"></i></a><a href="#" class="remove" data-sku="' + 
+                details.id + '_' + details.merchant_id + '_' + details.product_id + 
+                '_' + details.sku + '" data-rackid="' + response.id + '"><i class="fa fa-times"></i></a></div>'
+              );
+            }
           }
         },
         type: 'PUT',
@@ -203,43 +217,15 @@ var rack_builder = {
         var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
           var comp = response.looks[i];
-          var look_products_markup = ['<div class="rack-look-wrapper"><div class="rack-looks-layout">'];
-          for(var ix = 0, lx = comp.look_layout.layout_json.length; ix<lx; ix++){
-            var block = comp.look_layout.layout_json[ix];
-            var position = block.position;
-            var product_markup = [];
-            for(var p = 0, prods = comp.look_products.length; p<prods; p++){
-              var prod = comp.look_products[p];
-              if((prod.layout_position == position)&&(prod.product != undefined)){
-                var src = prod.product.product_image_url;
-                if(prod.cropped_dimensions != null){
-                  var crop = {
-                    id: type + 'racklook-' + comp.id + '-item-' + prod.id,
-                    src: look_proxy + '' + src,
-                    dims: prod.cropped_dimensions
-                  }
-                  cropped_images.push(crop);
-                }
-                product_markup.push(
-                  '<div class="item"><a href="#" class="item-detail" ' + 
-                    'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
-                    '" data-productid="' + prod.product.id + '"><span id="' + type + 'racklook-' + comp.id + '-item-' + prod.id + 
-                    '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></a></div>'
-                );
-              }
-            }
-            look_products_markup.push(
-              '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
-              'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
-              'px" data-position="' + position + '">' + product_markup.join() + '</div>'
-            );
+          var collage_img = '<div class="collage-placeholder">collage not yet created</div>';
+          if(comp.collage_image_data != null){
+            collage_img = '<a href="#" class="view-look-details" data-look="' + comp.id + 
+            '"><img class="collage" src="' + comp.collage_image_data + '"/></a>';
           }
-          look_products_markup.push('</div></div>');
           markup.push(
             '<div class="rack-look"><a href="/look_builder/' + rack_builder.session_id + 
-            '/?look=' + comp.id  + '" class="look-link">edit look</a><h3>' + comp.name + '</h3><span class="layout"><em>layout: </em>' + 
-            comp.look_layout.display_name + '</span><div class="rack-look-display">' + 
-            look_products_markup.join('') + '</div><span class="layout desc"><em>description: </em>' + 
+            '/?look=' + comp.id  + '" class="look-link">edit look</a><h3>' + comp.name + '</h3>' + 
+            collage_img + '<span class="layout desc"><em>description: </em>' + 
             comp.description + '</span></div>'
           );
         }
@@ -366,6 +352,15 @@ var rack_builder = {
       }else{
         rack_builder.inspectItem(link);
       }       
+    }).on('click','a.view-look-details', function(e){
+      e.preventDefault();
+      var link = $(this);
+      look_builder.lookDetails(link);
+    });
+    $('#looks-list').on('click','a.view-look-details', function(e){
+      e.preventDefault();
+      var link = $(this);
+      look_builder.lookDetails(link);
     });
     /* my rack functionality */
     $('#rack-toggle').click(function(e){
@@ -420,8 +415,9 @@ var rack_builder = {
       var rack = $('#rack-list');
       var existing = rack.data('skus').split(',');
       var idx = existing.indexOf(sku);
+      var arr_idx = rack_builder.rack_product_ids.indexOf(sku)
       existing.splice(idx,1);
-      rack_builder.rack_product_ids.splice(idx,1);
+      rack_builder.rack_product_ids.splice(arr_idx,1);
       rack.data('skus',existing.join(','));
       /* undo selected btn */
       $.each($('#results a.add-to-rack.selected'), function(link_idx){
@@ -476,7 +472,10 @@ var rack_builder = {
       e.preventDefault();
       var link = $(this);
       if(link.hasClass('selected') == false){
-        var from_compare = link.hasClass('compare');
+        var from_compare = false;
+        if(document.location.href.indexOf('look_builder') > -1){
+          from_compare = true;
+        }
         rack_builder.addToRack(link, 'inspect', from_compare);
       }
     }).on('click', 'a#color-toggle', function(e){

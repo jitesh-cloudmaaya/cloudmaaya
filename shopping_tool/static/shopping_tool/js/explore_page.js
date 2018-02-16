@@ -40,6 +40,10 @@ var explore_page = {
       e.preventDefault();
       var link = $(this);
       rack_builder.inspectItem(link, 'rack');
+    }).on('click','a.view-look-details', function(e){
+      e.preventDefault();
+      var link = $(this);
+      look_builder.lookDetails(link);
     }).on('click','a.favorite-look', function(e){
       e.preventDefault();
       var link = $(this);
@@ -191,7 +195,7 @@ var explore_page = {
   */
   looksDisplay: function(list_object){
     var div = $('#all-looks-list');
-    //console.log(list_object.looks)
+    console.log(list_object.looks)
     var cropped_images = [];
     for(var i = 0, l = list_object.looks.length; i<l; i++){
       var look = list_object.looks[i];
@@ -206,55 +210,18 @@ var explore_page = {
         look_fave_link = '<a href="#" class="favorite-look favorited" data-lookid="' + 
         look.id + '" data-faveid="' + look_favorite_object.id + '"><i class="fa fa-heart"></i></a>';
       }
+      var collage_img = '<div class="collage-placeholder">collage not yet created</div>';
+      if(look.collage_image_data != null){
+        collage_img = '<a href="#" class="view-look-details" data-look="' + look.id + 
+            '"><img class="collage" src="' + look.collage_image_data + '"/></a>';
+      }
       markup.push(
         '<div class="look"><div class="display">' + look_fave_link  +
         '<h3><em data-lookid="' + look.id + '">' + look.name + '</em><span>by ' + 
-        look.stylist.first_name + ' ' + look.stylist.last_name + '</span></h3>' +
-        '<div class="items"><div class="explore-look-wrapper"><div class="explore-look-layout">'
+        look.stylist.first_name + ' ' + look.stylist.last_name + '</span></h3>' + 
+        collage_img
       );
-      for(var ix = 0, lx = look.look_layout.layout_json.length; ix<lx; ix++){
-        var block = look.look_layout.layout_json[ix];
-        var position = block.position;
-        var product_markup = [];
-        for(var p = 0, prods = look.look_products.length; p<prods; p++){
-          var prod = look.look_products[p];
-          if(prod.layout_position == position){
-            if(prod.product != null){
-              var src = prod.product.product_image_url;
-              if(prod.cropped_dimensions != null){
-                var crop = {
-                  id: 'look-' + look.id + '-item-' + prod.id,
-                  src: look_proxy + '' + src,
-                  dims: prod.cropped_dimensions
-                }
-                cropped_images.push(crop);
-              }
 
-              var retail = prod.product.retail_price;
-              var sale = prod.product.sale_price;
-              var price_display = '';
-              if((sale >= retail)||(sale == 0)){
-                price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-              }else{
-                price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-                  ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-              }
-              merchants.push(prod.product.merchant_name);
-              product_markup.push(
-                '<div class="item" data-productid="' + prod.product.id + '"><a href="#" class="item-detail" ' + 
-                'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
-                '" data-productid="' + prod.product.id + '"><span id="look-' + look.id + '-item-' + prod.id + 
-                '"><img style="height:' + block.height + 'px" src="' + src + '"/></span>' + price_display + '</a></div>'
-              );
-            }
-          }
-        }
-        markup.push(
-          '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
-          'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
-          'px" data-position="' + position + '">' + product_markup.join() + '</div>'
-        );
-      }
       var avg_price = '';
       var occasions = '';
       var stores = '';
@@ -279,7 +246,7 @@ var explore_page = {
         avg_price = numeral(parseFloat(look.look_metrics[0].average_item_price)).format('$0,0.00');
       }
       div.append(
-        markup.join('') + '</div></div>' + stores +
+        markup.join('') + '' + stores +
         '<p class="extras"><em>Total price:</em> ' + total_price + 
         '</p><p class="extras"><em>Average item price:</em> ' + avg_price +
         '</p>' + styles + '' + occasions + '' + desc + '</div></div>'

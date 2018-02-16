@@ -590,7 +590,6 @@ class ShoppingToolAPITestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
 
-    # test additions, test update_look_position
     def test_update_look_position(self):
         """
         Test to verify updating the position of a look
@@ -606,6 +605,20 @@ class ShoppingToolAPITestCase(APITestCase):
         response_data = json.loads(response.content)
 
         self.assertEqual(4, Look.objects.get(pk=1).position)
+
+    def test_update_look_collage_image_data(self):
+        """
+        Test to verify updating the collage_image_data field of a look
+        """
+        url = reverse("shopping_tool_api:update_look_collage_image_data", kwargs={'pk':1})
+
+        self.assertEqual(None, Look.objects.get(pk=1).collage_image_data)
+
+        data = {"collage_image_data": "new info"}
+        response = self.client.put(url, data)
+        response_data = json.loads(response.content)
+
+        self.assertEqual("new info", Look.objects.get(pk=1).collage_image_data)
 
 ### Look Favs
 
