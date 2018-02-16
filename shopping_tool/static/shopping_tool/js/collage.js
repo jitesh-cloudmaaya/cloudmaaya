@@ -151,6 +151,9 @@ var collage = {
       collage.loadImg()
     }
   },
+  /**
+  * @description object to be used to keep track of initial count of images
+  */  
   initial_load: null,
   /**
   * @description helper function to load/add image to canvas in order to preserve scope
@@ -416,6 +419,7 @@ var collage = {
     }
     /* reset the collage cache holders so collage is ready for new look to edit */
     collage.canvas = null;
+    collage.initial_load = null;
     collage.product_cache = null;
   },
   /**
