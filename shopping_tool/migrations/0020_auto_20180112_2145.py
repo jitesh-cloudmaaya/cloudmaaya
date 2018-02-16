@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             migrations.AddField(
                 model_name='allumelookproducts',
                 name='cropped_dimensions',
-                field=models.CharField(blank=True, max_length=200, null=True),
+                field=models.CharField(blank=True, max_length=2000, null=True),
             ),
             migrations.AddField(
                 model_name='allumelookproducts',
