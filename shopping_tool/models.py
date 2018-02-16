@@ -502,7 +502,7 @@ class LookProduct(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, db_column='date_created')
     updated_at = models.DateTimeField(auto_now=True, null=True, db_column='last_modified')
     product_clipped_stylist_id = models.BigIntegerField(blank=True, null=True, default=-1)
-    cropped_dimensions = models.CharField(max_length=200, blank=True, null=True)
+    cropped_dimensions = models.CharField(max_length=2000, blank=True, null=True)
     layout_position = models.IntegerField(db_column='sequence')
     product = models.ForeignKey(Product, db_column='raw_product_id')
 
