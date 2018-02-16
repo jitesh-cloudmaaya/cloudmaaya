@@ -198,6 +198,25 @@ var utils = {
       var sku = obj.id + '_' + obj.merchant_id + '_' + obj.product_id + '_' + obj.sku;
       rack_builder.rack_product_ids.push(sku);
     }
+    /* look indepth close */
+    $('#look-indepth').on('click', 'a.close-indepth', function(e){
+      e.preventDefault();
+      $('#look-indepth').fadeOut();
+    }).on('click','a.favorite',function(e){
+      e.preventDefault();
+      var link = $(this);
+      rack_builder.addFavorite(link);
+    }).on('click','a.add-to-rack',function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('selected') == false){
+        var from_compare = false;
+        if(document.location.href.indexOf('look_builder') > -1){
+          from_compare = true;
+        }
+        rack_builder.addToRack(link, 'inspect', from_compare);
+      }
+    });
   },
   /**
   * @description create function which sets document cookies

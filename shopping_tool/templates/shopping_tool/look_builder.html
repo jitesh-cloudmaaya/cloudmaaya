@@ -7,8 +7,8 @@
   <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css" rel="stylesheet" >
   {% load static %}
-  <link href="{% static 'shopping_tool/css/croppr.min.css' %}" media="all" rel="stylesheet"/>
   <link href="{% static 'shopping_tool/css/rome.css' %}" media="all" rel="stylesheet"/>
   <link href="{% static 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
 </head>
@@ -134,16 +134,17 @@ I can also help you with choosing which pieces to try. Just a heads up that piec
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
 <script src="{% static 'shopping_tool/js/Sortable.min.js' %}"></script>
-<script src="{% static 'shopping_tool/js/croppr.min.js' %}"></script>
+<script src="{% static 'shopping_tool/js/fabric.min.js' %}"></script>
 <script src="{% static 'shopping_tool/js/utils.js' %}"></script>
 <script src="{% static 'shopping_tool/js/search_page.js' %}"></script>
 <script src="{% static 'shopping_tool/js/rack_builder.js' %}"></script>
+<script src="{% static 'shopping_tool/js/collage.js' %}"></script>
 <script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
 {% include "shopping_tool/js_arrays.html" %}
-/* before initializing page get stylist's favorites */
 utils.menu();
 utils.client();
+collage.setUpObject();
 /* get the session looks */
 $.ajax({
   contentType : 'application/json',
@@ -158,7 +159,7 @@ $.ajax({
   type: 'POST',
   url: '/shopping_tool_api/look_list/'
 });
-/* get favorites */
+/* before initializing page get stylist's favorites */
 $.get('/shopping_tool_api/user_product_favorites/' + $('#stylist').data('stylistid') + '/',function(result){
   for(var i = 0, l = result.length;i<l;i++){
     var fave = result[i];

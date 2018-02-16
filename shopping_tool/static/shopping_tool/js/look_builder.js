@@ -16,21 +16,17 @@ var look_builder = {
   * @param {integer} at_load - id of currently being edited look or null
   */  
   editableLooksMarkup: function(looks){
-    //console.log(looks)
+    console.log(looks)
     var at_load = utils.readURLParams('look');
     var comp_looks = $('#compare-looks div.other-looks');
     var markup = [];
-    var cropped_images = [];
     looks.sort(function(a,b){
       if(a.position > b.position){ return 1}
       if(a.position < b.position){ return -1}
       return 0;
     });
     for(var i = 0, l = looks.length; i<l; i++){
-      var comp = looks[i];
-      var content = look_builder.lookMarkupGenerator(comp, 'comp', at_load)
-      markup.push(content[0]);
-      cropped_images = cropped_images.concat(content[1]);
+      markup.push(look_builder.lookMarkupGenerator(looks[i], 'comp', at_load));
     }
     /* display no looks message or add looks and drag/drop functionality */
     if(markup.length == 0){ 
@@ -61,56 +57,7 @@ var look_builder = {
           }
         }
       );
-      /* afix cropped images if present */
-      if(cropped_images.length > 0){
-        for(var i = 0, l = cropped_images.length; i<l; i++){
-          look_builder.getCroppedImage(cropped_images[i], '#compare-looks');
-        }
-      }
     }
-  },
-  /** 
-  * @description create the crop image ui/ux
-  * @param {DOM object} link - a element that triggered the crop initiation
-  */
-  cropImage: function(link){
-    var data = link.data();
-    var crop_dim = data.crop != null ? data.crop.split(',') : [];
-    var start_size = [50,50, '%'];
-    if(crop_dim[0] != undefined){
-      start_size = [crop_dim[0], crop_dim[1], 'px']
-    }
-    var work_station = $('#cropper-zone');
-    work_station.html(
-      '<p>Crop the product image to your desired dimensions. You will ' +
-      'see a live preview to the right. When happy hit the save crop button.</p>' +
-      '<img id="image-to-crop" src="' + look_proxy + '' + link.data('url') + '"/>' +
-      '<div id="thumb"><h6>crop preview</h6></div>'
-    );
-    var img  = $('#image-to-crop');
-    var display_w = $('#cropper-zone').width();
-    $('#cropper').fadeIn(function(){
-      var imgObject = new Image();
-      imgObject.src = look_proxy + '' +link.data('url');
-      var croppr = new Croppr('#image-to-crop', {
-        startSize: start_size,
-        onUpdate: function(value) {
-          var newImg = look_builder.getImagePortion(imgObject, value.width, value.height, value.x, value.y, 1);
-          var crop = value.width + ',' + value.height + ',' +  value.x + ',' + value.y;
-          /* place image in appropriate div */
-          $('#thumb').html(
-            '<h6>crop preview</h6>' +
-            '<img alt="" src="' +newImg+ '"/>'
-          );
-          $('#save-crop').show().data('look', data.look).data('productid', data.productid)
-          .data('lookitemid', data.lookitemid).data('position', data.position)
-          .data('crop', crop);
-        },
-      });
-      if(crop_dim[0] != undefined){
-        croppr.moveTo(parseInt(crop_dim[2]),parseInt(crop_dim[3]));
-      }
-    });
   },
   /**
   * @description look builder ui/ux functionality
@@ -118,15 +65,37 @@ var look_builder = {
   functionality: function(){
     $('#add-new-look-to-lookbook').click(function(e){
       e.preventDefault();
-      $('#new-look-error').html('');
-      $('#new-look-name').val('');
-      $('#look-layouts-container').find('input').prop('checked', false).end()
-      .find('label').removeClass('selected');
-      $('#create-look').fadeIn();
-    });
-    $('#cancel-new-look').click(function(e){
-      e.preventDefault()
-      $('#create-look').fadeOut();
+      var link = $(this);
+      var edit_status = $('#look-drop').find('div.start').length;
+      if(edit_status != 1){
+        $('#finish-editing-look').trigger('click');
+      }
+      $('#look-drop').html('<div class="start">building look editor...</div>');
+      $.ajax({
+        contentType : 'application/json',
+        data: JSON.stringify({
+         "name": '',
+         "description": '',
+         "allume_styling_session": look_builder.session_id,
+         "stylist": look_builder.stylist_id,
+         "collage_image_data": null     
+        }),
+        error: function(response){
+
+        },
+        success:function(response){
+          link.removeClass('loading')
+          look_builder.setUpBuilder(response.id);
+          $('#no-look-display').remove();
+          $.get('/shopping_tool_api/look/' + response.id + '/', function(result){
+            $('#compare-looks div.other-looks').prepend(look_builder.lookMarkupGenerator(result, 'comp', null));
+            var new_div = $('#compare-looks div.other-looks div.comp-look:nth-child(1)');
+            new_div.addClass('editing').siblings('div.comp-look').removeClass('editing off').addClass('off')
+          });
+        },
+        type: 'PUT',
+        url: '/shopping_tool_api/look/0/'
+      })
     });
     $('#look-layouts-container').on('click', 'label.layout-check', function(e){
       var box = $(this);
@@ -134,251 +103,7 @@ var look_builder = {
         box.addClass('selected').siblings('label.layout-check').removeClass('selected');
       }
     });
-    $('#create-new-look').click(function(e){
-      $('#new-look-error').html('');
-      e.preventDefault();
-      var pre = 0;
-      var msg = [];
-      var look_obj = {
-       "name": $('#new-look-name').val(),
-       "look_layout": parseInt($('#look-layouts-container input:checked').val()),
-       "description": '',
-       "allume_styling_session": look_builder.session_id,
-       "stylist": look_builder.stylist_id        
-      }
-      if(isNaN(look_obj.look_layout)){ 
-        pre++; 
-        msg.push('select a look layout'); 
-      }
-      if(pre == 0){
-        $('#creating-look').show();
-        $('#create-look').hide();
-        $('#publish-lookbook').data('allowed', 'false');
-        $.ajax({
-          contentType : 'application/json',
-          data: JSON.stringify(look_obj),
-          success:function(response){
-            look_builder.setUpBuilder(response.id);
-            $('#no-look-display').remove();
-            $.get('/shopping_tool_api/look/' + response.id + '/', function(result){
-              var content = look_builder.lookMarkupGenerator(result, 'comp', null);
-              $('#compare-looks div.other-looks').prepend(content[0]);
-              var new_div = $('#compare-looks div.other-looks div.comp-look:nth-child(1)');
-              new_div.addClass('editing').siblings('div.comp-look').removeClass('editing off').addClass('off')
-            });
-          },
-          type: 'PUT',
-          url: '/shopping_tool_api/look/0/'
-        })
-      }else{
-        $('#new-look-error').html(
-          '<span><i class="fa fa-exclamation-circle"></i>' +
-          'You must ' + msg.join('; ') + 
-          '.</span>'
-        );
-      }
-    }); 
-    $('#rack-draggable').on('click','a.close-all-rack-sections', function(e){
-      e.preventDefault();
-      var link = $(this);
-      if(link.hasClass('open-all') == false){
-        link.addClass('open-all').html('<i class="fa fa-caret-square-o-down"></i>expand all sections');
-        $.each($('#rack-draggable').find('a.rack-section-toggle'),function(idx){
-          var link = $(this);
-          var i = link.find('i')
-          var div = link.next('div.block');
-          if(link.hasClass('closed') == false){
-            link.addClass('closed');
-            i.removeClass('fa-angle-down').addClass('fa-angle-right');
-            div.slideUp();
-          }
-        });        
-      }else{
-        link.removeClass('open-all').html('<i class="fa fa-caret-square-o-up"></i>collapse all sections');
-        $.each($('#rack-draggable').find('a.rack-section-toggle'),function(idx){
-          var link = $(this);
-          var i = link.find('i')
-          var div = link.next('div.block');
-          if(link.hasClass('closed') == true){
-            link.removeClass('closed');
-            i.removeClass('fa-angle-right').addClass('fa-angle-down');
-            div.slideDown();
-          }
-        });
-      }
-    }).on('click','a.rack-section-toggle', function(e){
-      e.preventDefault();
-      var link = $(this);
-      var i = link.find('i')
-      var div = link.next('div.block')
-      if(link.hasClass('closed')){
-        link.removeClass('closed');
-        i.removeClass('fa-angle-right').addClass('fa-angle-down');
-        div.slideDown();
-      }else{
-        link.addClass('closed');
-        i.removeClass('fa-angle-down').addClass('fa-angle-right');
-        div.slideUp();       
-      }
-    }).on('click','a.sort-link', function(e){
-      e.preventDefault();
-      var link = $(this);
-      if(link.hasClass('unsort-items')){
-        look_builder.unorderedRack();
-      }else{
-        look_builder.orderedRack();
-      }
-    });
-    $('#fave-looks').on('click', 'a.item-detail', function(e){
-      e.preventDefault();
-      var link = $(this);
-      rack_builder.inspectItem(link, 'compare');
-    })
-    $('#looks-list').on('click', 'a.item-detail', function(e){
-      e.preventDefault();
-      var link = $(this);
-      rack_builder.inspectItem(link, 'compare');
-    });
-
-    $('#look-drop').on('click','a.look-more-details', function(e){
-      e.preventDefault();
-      var link = $(this);
-      $('#look-indepth').html(
-        '<div class="indepth-loading">' +
-        '<span class="pulse_loader"></span><span class="pulse_message">loading look details...</span>' +
-        '</div>'
-      ).fadeIn();
-      $.get('/shopping_tool_api/look/' + link.data('look') + '/', function(result){
-        var markup = ['<table>'];
-        result.look_products.sort(function(a,b){
-          if(a.layout_position > b.layout_position){ return 1}
-          if(a.layout_position < b.layout_position){ return -1}
-          return 0;
-        });
-        var cropped_images = [];
-        var merchants = []
-        for(var i = 0, l = result.look_products.length; i<l; i++){
-          var prod = result.look_products[i];
-          if(prod.product != undefined){
-            var retail = prod.product.retail_price;
-            var sale = prod.product.sale_price;
-            var price_display = '';
-            var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
-            var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>';   
-            merchants.push(prod.product.merchant_name); 
-            if((sale >= retail)||(sale == 0)){
-              price_display = '<span class="price"><em class="label">price:</em>' + 
-                numeral(retail).format('$0,0.00') + '</span>';
-            }else{
-              price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
-                numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-            }
-            var src = prod.product.product_image_url;
-            /* if product has been cropped for the look add crop object */
-            if(prod.cropped_dimensions != null){
-              var crop = {
-                id: 'detailsitem-' + prod.id,
-                src: look_proxy + '' + src,
-                dims: prod.cropped_dimensions
-              }
-              cropped_images.push(crop);
-            }
-            var other_details = [];
-            if(i == 0){  
-              other_details.push('<td class="desc" rowspan="' + l + '"><div class="look-meta">');
-              if(result.look_style_types != undefined && result.look_style_types.length > 0){
-                other_details.push('<p class="extras"><em>Style:</em> ' + 
-                  result.look_style_types.map(function(x, i){ return x.name}).join(', ') + 
-                  '</p>'
-                );
-              }
-              if(result.look_style_occasions != undefined && result.look_style_occasions.length > 0){
-                other_details.push('<p class="extras"><em>Occasions:</em> ' + 
-                  result.look_style_occasions.map(function(x, i){ return x.name}).join(', ') + 
-                  '</p>'
-                );
-              }      
-              if(result.look_metrics[0] != undefined){
-                var total_price = numeral(parseFloat(result.look_metrics[0].total_look_price)).format('$0,0.00');
-                var avg_price = numeral(parseFloat(result.look_metrics[0].average_item_price)).format('$0,0.00');
-                other_details.push(
-                  '<p class="extras"><em>Total price:</em> ' + total_price + 
-                  '</p><p class="extras"><em>Average item price:</em> ' + 
-                  avg_price + '</p>'
-                );
-              }
-              other_details.push('<p class="desc"><em>Description:</em>' + result.description + '</p></div></td>');
-            }
-            markup.push(
-              '<tr><td class="img"><a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
-              '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
-              '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
-              '" data-crop="' + prod.cropped_dimensions + '"><i class="fa fa-crop"></i></a>' +
-              '<span id="detailsitem-' + prod.id + '"><img src="' + src + '"/></span></td>' +
-              '<td class="details"><a href="' + prod.product.product_url + '" target="_blank" class="name">' + 
-              prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
-              prod.product.short_product_description + '</p>' + price_display +
-              '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
-              '<span class="general"><em>category:</em>' + prod.product.allume_category + 
-              '</span></td>' + other_details.join('') + '</tr>'
-            );
-          }
-        }
-        markup.push('</table>');
-        $('#look-indepth').html(
-          '<div class="stage"><a href="#" class="close-indepth"><i class="fa fa-times"></i></a>' +
-          '<h2>' + result.name + '</h2><p class="layout">' +
-          '<a href="https://shopping-tool-web-stage.allume.co/collage_image/' + result.id + 
-          '.jpg" id="collage-preview" target="_blank">preview collage</a>' +
-          '<em>stylist: </em>' + result.stylist.first_name + ' ' + result.stylist.last_name + 
-          '</p><div class="products">' + markup.join('') + '</div></div>'
-        );
-        if(merchants.length > 0){
-          merchants = [...new Set(merchants)];
-          $('#look-indepth div.look-meta').prepend(
-            '<p class="desc"><em>Stores:</em>' + merchants.join(', ') + '</p>'
-          );
-        }
-        if(cropped_images.length > 0){
-          for(var i = 0, l = cropped_images.length; i<l; i++){
-            look_builder.getCroppedImage(cropped_images[i], '#look-indepth');
-          }
-        }
-      });
-    }).on('click','a.crop-product-image',function(e){
-      e.preventDefault();
-      var link = $(this);
-      look_builder.cropImage(link);
-    }).on('blur', 'input#look-name', function(e){
-      look_builder.updateLook();
-    }).on('blur', 'textarea#look-desc', function(e){
-      look_builder.updateLook();
-    }).on('click', '#finish-editing-look', function(e){
-      e.preventDefault();
-      var link = $(this);
-      var data = link.data();
-      var looks = $('#compare-looks');
-      looks.find('div.comp-look.off').removeClass('off');
-      var div = looks.find('div.comp-look.editing');
-      div.addClass('updating').removeClass('editing').find('div.editing').html('loading changes...');
-      $.get('/shopping_tool_api/look/' + data.lookid + '/', function(result){
-        var content = look_builder.lookMarkupGenerator(result, 'comp', null);
-        div.before(content[0]);
-        div.remove();
-        if(content[1].length > 0){
-          for(var i = 0, l = content[1].length; i<l; i++){
-            look_builder.getCroppedImage(content[1][i], '#compare-looks');
-          }
-        }
-      });
-      $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
-      $('#publish-lookbook').data('allowed', 'false');
-    });
-    $('#compare-looks').on('click', 'a.item-detail', function(e){
-      e.preventDefault();
-      var link = $(this);
-      rack_builder.inspectItem(link, 'compare');
-    }).on('click', 'a.edit-look-btn', function(e){
+    $('#compare-looks').on('click', 'a.edit-look-btn', function(e){
       e.preventDefault();
       var link = $(this);
       var look = link.data('lookid');
@@ -391,7 +116,11 @@ var look_builder = {
       var link = $(this);
       var look = link.data('lookid');
       $('#delete-look-overlay').find('a.yes').data('lookid', look).end().fadeIn();
-    });
+    }).on('click','a.view-look-details', function(e){
+      e.preventDefault();
+      var link = $(this);
+      look_builder.lookDetails(link);
+    })
     /* delete look confirm dialog */
     $('#delete-look-overlay').find('a.yes').click(function(e){
       e.preventDefault();
@@ -413,46 +142,6 @@ var look_builder = {
     }).end().find('a.cancel').click(function(e){
       e.preventDefault();
       $('#delete-look-overlay').fadeOut();
-    });
-    $('#look-indepth').on('click', 'a.close-indepth', function(e){
-      e.preventDefault();
-      $('#look-indepth').fadeOut();
-    }).on('click','a.crop-product-image',function(e){
-      e.preventDefault();
-      var link = $(this);
-      look_builder.cropImage(link);
-    });
-    $('#cropper').on('click','a#save-crop',function(e){
-      e.preventDefault();
-      var link = $(this);
-      var data = link.data();
-      /* set up update object with correct/new values */
-      var update_json = {
-        "id": data.lookitemid,
-        "layout_position": data.position,
-        "look": data.look,
-        "product": data.productid,
-        "cropped_dimensions": data.crop
-      }
-      $('#look-indepth').fadeOut();
-      $('#cropper').fadeOut();
-      $('#updating-crop').show();
-      /* update the look item */
-      $.ajax({
-        contentType : 'application/json',
-        data: JSON.stringify(update_json),
-        success:function(response){
-          $('#updating-crop').fadeOut();
-          /* redraw look builder do we pick up the new crop */
-          look_builder.setUpBuilder(data.look);
-        },
-        type: 'PUT',
-        url: '/shopping_tool_api/look_item/' + data.lookitemid + '/'
-      })
-    });
-    $('#close-cropper').click(function(e){
-      e.preventDefault();
-      $('#cropper').fadeOut();
     });
     $('#preview-lookbook').click(function(e){
       e.preventDefault();
@@ -505,34 +194,6 @@ var look_builder = {
             for(var i = 0, l = response.looks.length; i<l; i++){
               var look = response.looks[i];
               var look_products_markup = ['<div class="publish-look-wrapper"><div class="publish-looks-layout">'];
-              for(var ix = 0, lx = look.look_layout.layout_json.length; ix<lx; ix++){
-                var block = look.look_layout.layout_json[ix];
-                var position = block.position;
-                var product_markup = [];
-                for(var p = 0, prods = look.look_products.length; p<prods; p++){
-                  var prod = look.look_products[p];
-                  if((prod.layout_position == position)&&(prod.product != undefined)){
-                    var src = prod.product.product_image_url;
-                    if(prod.cropped_dimensions != null){
-                      var crop = {
-                        id: 'pub-' + look.id + '-item-' + prod.id,
-                        src: look_proxy + '' + src,
-                        dims: prod.cropped_dimensions
-                      }
-                      cropped_images.push(crop);
-                    }
-                    product_markup.push(
-                      '<div class="item"><span id="pub-' + look.id + '-item-' + prod.id + 
-                        '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></div>'
-                    );
-                  }
-                }
-                look_products_markup.push(
-                  '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
-                  'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
-                  'px" data-position="' + position + '">' + product_markup.join() + '</div>'
-                );
-              }
               look_products_markup.push('</div></div>');
               markup.push(
                 '<div class="pub-look" data-lookname="' + look.name + '" data-lookid="' + 
@@ -566,11 +227,6 @@ var look_builder = {
                 var style_occ = occasions[ix];
                 div.find('input.occ[value="' + style_occ.id + '"]').prop('checked', true);                
               }              
-            }
-            if(cropped_images.length > 0){
-              for(var i = 0, l = cropped_images.length; i<l; i++){
-                look_builder.getCroppedImage(cropped_images[i], '#pub-section1');
-              }
             }
           },
           type: 'POST',
@@ -650,11 +306,9 @@ var look_builder = {
         var t = rome.find(document.getElementById('send-later'))
         var tz = $('#send-later').data('tz')
         var reg_str = t.getMoment().format('YYYY-MM-DD HH:MM');
-        //console.log(reg_str)
         var send_string = moment.tz(reg_str, tz).format('X');
         lookbook.send_at = parseInt(send_string);
       }
-      //console.log(lookbook)
       $.ajax({       
         contentType : 'application/json',
         crossDomain: true,
@@ -666,59 +320,141 @@ var look_builder = {
         }
       });
       $('#publish-lookbook-overlay').fadeOut();
-    })     
-  },
-  /**
-  * @description to handle invalid states we use a recursive loading check for images before we crop them
-  * @param {object} crop - object containing the image attributes we need to send top cropper function
-  * @param {string} selectore - css selector used to update the correct item with new cropped image
-  */
-  getCroppedImage: function(crop, selector){
-    var loadTimer;
-    var imgObject = new Image();
-    imgObject.src = crop.src;          
-    imgObject.onLoad = onImgLoaded();
-    function onImgLoaded() {
-      if (loadTimer != null){ clearTimeout(loadTimer); };
-      if (!imgObject.complete) {
-        loadTimer = setTimeout(function() {
-          onImgLoaded();
-        }, 3);
-      } else {
-        var dims = crop.dims.split(',')
-        var new_src = look_builder.getImagePortion(imgObject, dims[0],dims[1],dims[2], dims[3], 1);
-        var dom = $(selector + ' #' + crop.id);
-        var img_h = dom.find('img').height()
-        dom.find('img').attr('src', new_src );
+    });
+    /* collage funcs */
+    $('#look-drop').on('click', 'a.zoom-in', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,0,10);
+    }).on('click', 'a.zoom-out', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,0,-10);
+    }).on('click', 'a.shift-left', function(e){
+      e.preventDefault();
+      collage.zoomBy(5,0,0);
+    }).on('click', 'a.shift-right', function(e){
+      e.preventDefault();
+      collage.zoomBy(-5,0,0);
+    }).on('click', 'a.shift-up', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,5,0);
+    }).on('click', 'a.shift-down', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,-5,0);
+    }).on('click', 'a.trash-obj', function(e){
+      e.preventDefault();
+      collage.trash();
+    }).on('click', 'a.send-back', function(e){
+      e.preventDefault();
+      collage.sendBack();
+    }).on('click', 'a.send-front', function(e){
+      e.preventDefault();
+      collage.sendForward();
+    }).on('click','a.look-more-details', function(e){
+      e.preventDefault();
+      var link = $(this);
+      look_builder.lookDetails(link);
+    }).on('blur', 'input#look-name', function(e){
+      look_builder.updateLook(false, null);
+    }).on('blur', 'textarea#look-desc', function(e){
+      look_builder.updateLook(false, null);
+    }).on('click', '#finish-editing-look', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var looks = $('#compare-looks');
+      looks.find('div.comp-look.off').removeClass('off');
+      var div = looks.find('div.comp-look.editing');
+      collage.updateCollage(div);
+      $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
+      $('#publish-lookbook').data('allowed', 'false');
+    });
+    /* rack functionality */
+    $('#rack-draggable').on('click', 'a.add', function(e){
+      e.preventDefault();
+      var prod = $(this);
+      var data = prod.data();
+      var adding = $('#adding-product').length;
+      if(collage.canvas != null && adding == 0){
+        $('#look-drop').append(
+          '<div id="adding-product"><div class="loading-prod">' +
+          '</div><span class="loading-prod-msg">adding product ' + 
+          'to look...</span></div>'
+        );
+        collage.addCanvasImage(data.productid, data.imgsrc);
       }
-    }
-  },
-  /**
-  * @description take and image and apply user provided crop coordinates and return new image via HTML5 canvas
-  * @param {object} imgObj - the image to be used for cropping
-  * @param {integer} newWidth - the new width
-  * @param {integer} newHeight - the new height
-  * @param {integer} startX - X coordinates to begin the crop
-  * @param {integer} startY - Y coordinates to begin crop
-  * @param {integer} ratio - aspect ratio to apply to the crop
-  * @returns {string} data url of new image
-  */ 
-  getImagePortion: function(imgObj, newWidth, newHeight, startX, startY, ratio){
-    /* set up canvas for thumbnail */
-    var tnCanvas = document.createElement('canvas');
-    var tnCanvasContext = tnCanvas.getContext('2d');
-    tnCanvas.width = newWidth; tnCanvas.height = newHeight;
-    /* use the sourceCanvas to duplicate the entire image. */
-    var bufferCanvas = document.createElement('canvas');
-    var bufferContext = bufferCanvas.getContext('2d');
-    bufferCanvas.width = imgObj.width;
-    bufferCanvas.height = imgObj.height;
-    bufferContext.drawImage(imgObj, 0, 0);
-    /* now we use the drawImage method to take the pixels from our bufferCanvas and draw them into our thumbnail canvas */
-    tnCanvasContext.drawImage(bufferCanvas, startX, startY, newWidth * ratio, newHeight * ratio, 0, 0, newWidth, newHeight);
-    var img_data = tnCanvas.toDataURL();
-    $('canvas').remove();
-    return img_data
+    }).on('click', 'a.view', function(e){
+      e.preventDefault();
+      var link = $(this);
+      rack_builder.inspectItem(link, 'compare');
+    }).on('click', 'a.remove', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var sku = link.data('sku');
+      var rack_id = link.data('rackid')
+      var rack = $('#rack-list');
+      var existing = rack.data('skus').split(',');
+      var idx = existing.indexOf(sku);
+      var arr_idx = rack_builder.rack_product_ids.indexOf(sku)
+      existing.splice(idx,1);
+      rack_builder.rack_product_ids.splice(arr_idx,1);
+      rack.data('skus',existing.join(','));
+      link.closest('div.item').remove();
+      $('#rack-list').find('a.remove-from-rack[data-sku="' + sku + '"]').closest('div.item').remove();
+      $.ajax({
+        success:function(response){},
+        type: 'DELETE',
+        url: '/shopping_tool_api/rack_item/' + rack_id + '/'
+      });
+    }).on('click','a.close-all-rack-sections', function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('open-all') == false){
+        link.addClass('open-all').html('<i class="fa fa-caret-square-o-down"></i>expand all sections');
+        $.each($('#rack-draggable').find('a.rack-section-toggle'),function(idx){
+          var link = $(this);
+          var i = link.find('i')
+          var div = link.next('div.block');
+          if(link.hasClass('closed') == false){
+            link.addClass('closed');
+            i.removeClass('fa-angle-down').addClass('fa-angle-right');
+            div.slideUp();
+          }
+        });        
+      }else{
+        link.removeClass('open-all').html('<i class="fa fa-caret-square-o-up"></i>collapse all sections');
+        $.each($('#rack-draggable').find('a.rack-section-toggle'),function(idx){
+          var link = $(this);
+          var i = link.find('i')
+          var div = link.next('div.block');
+          if(link.hasClass('closed') == true){
+            link.removeClass('closed');
+            i.removeClass('fa-angle-right').addClass('fa-angle-down');
+            div.slideDown();
+          }
+        });
+      }
+    }).on('click','a.rack-section-toggle', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var i = link.find('i')
+      var div = link.next('div.block')
+      if(link.hasClass('closed')){
+        link.removeClass('closed');
+        i.removeClass('fa-angle-right').addClass('fa-angle-down');
+        div.slideDown();
+      }else{
+        link.addClass('closed');
+        i.removeClass('fa-angle-down').addClass('fa-angle-right');
+        div.slideUp();       
+      }
+    }).on('click','a.sort-link', function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('unsort-items')){
+        look_builder.unorderedRack();
+      }else{
+        look_builder.orderedRack();
+      }
+    });
   },
   /**
   * @description setup look builder page
@@ -736,80 +472,160 @@ var look_builder = {
     if(at_load_look != null){
       look_builder.setUpBuilder(at_load_look);
     }
-    /* add the layout options to create look overlay */
-    var layout_markup = [];
-    for(var i = 0, l = look_layouts.length; i<l; i++){
-      var layout = look_layouts[i];
-      var markup = ['<div class="grid-display-wrapper"><div class="grid-skew">'];
-      for(var ix = 0, lx = layout.display.length; ix<lx; ix++){
-        var block = layout.display[ix];
-        markup.push(
-          '<span class="layout-block" style="height:' + (block.height - 2) + 'px;' +
-          'width:' + (block.width - 2) + 'px;top:' + block.y + 'px;left:' + block.x + 
-          'px"></span>'
+  },
+  /**
+  * @description view indepth product and look details
+  * @param {DOM object} link - link that triggered the details view
+  */
+  lookDetails: function(link){
+    $('#look-indepth').html(
+      '<div class="indepth-loading">' +
+      '<span class="pulse_loader"></span><span class="pulse_message">loading look details...</span>' +
+      '</div>'
+    ).fadeIn();
+    $.get('/shopping_tool_api/look/' + link.data('look') + '/', function(result){
+      var markup = ['<table>'];
+      result.look_products.sort(function(a,b){
+        if(a.layout_position > b.layout_position){ return 1}
+        if(a.layout_position < b.layout_position){ return -1}
+        return 0;
+      });
+      var cropped_images = [];
+      var merchants = []
+      for(var i = 0, l = result.look_products.length; i<l; i++){
+        var prod = result.look_products[i];
+        if(prod.product != undefined){
+          var retail = prod.product.retail_price;
+          var sale = prod.product.sale_price;
+          var price_display = '';
+          var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
+          var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>'; 
+          var fave_link = '';
+          var rack_link = '';  
+          merchants.push(prod.product.merchant_name); 
+          if((sale >= retail)||(sale == 0)){
+            price_display = '<span class="price"><em class="label">price:</em>' + 
+              numeral(retail).format('$0,0.00') + '</span>';
+          }else{
+            price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
+              numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
+          }
+
+
+
+
+          fave_link = '<a href="#" class="favorite" data-productid="' + 
+            prod.product.id + '"><i class="fa fa-heart-o"></i></a>';
+          var fave_idx = rack_builder.favorites_product_ids.indexOf(prod.product.id);
+          if(fave_idx > -1){
+            var favorite_object = rack_builder.favorites[fave_idx];
+            fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
+            prod.product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
+          }
+          rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
+            prod.product.product_id + '"><i class="icon-hanger"></i>add to rack</a>';
+          var rack_sku = prod.product.id + '_' + prod.product.merchant_id + '_' + prod.product.product_id + '_' + prod.product.sku;
+          var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
+          if(rack_idx > -1){
+            rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
+              prod.product.product_id + '"><i class="fa fa-check"></i> in rack</a>';
+          }
+          var src = prod.product.product_image_url;
+          var other_details = [];
+          if(i == 0){  
+            other_details.push('<td class="desc" rowspan="' + l + '"><div class="look-meta">');
+            other_details.push(
+              '<p class="extras"><em>stylist: </em>' + 
+              result.stylist.first_name + ' ' + result.stylist.last_name + 
+              '</p>'
+            );
+            if(result.look_style_types != undefined && result.look_style_types.length > 0){
+              other_details.push('<p class="extras"><em>Style:</em> ' + 
+                result.look_style_types.map(function(x, i){ return x.name}).join(', ') + 
+                '</p>'
+              );
+            }
+            if(result.look_style_occasions != undefined && result.look_style_occasions.length > 0){
+              other_details.push('<p class="extras"><em>Occasions:</em> ' + 
+                result.look_style_occasions.map(function(x, i){ return x.name}).join(', ') + 
+                '</p>'
+              );
+            }      
+            if(result.look_metrics[0] != undefined){
+              var total_price = numeral(parseFloat(result.look_metrics[0].total_look_price)).format('$0,0.00');
+              var avg_price = numeral(parseFloat(result.look_metrics[0].average_item_price)).format('$0,0.00');
+              other_details.push(
+                '<p class="extras"><em>Total price:</em> ' + total_price + 
+                '</p><p class="extras"><em>Average item price:</em> ' + 
+                avg_price + '</p>'
+              );
+            }
+            other_details.push('<p class="desc"><em>Description:</em>' + result.description + '</p>');
+            if(result.collage_image_data != null){
+              other_details.push(
+                '<p class="desc"><em>Collage:</em>' +
+                '<img class="collage" src="' + result.collage_image_data + '"/></p>'
+              );
+            }
+            other_details.push('</div></td>');
+          }
+          markup.push(
+            '<tr><td class="img">' +
+            '<span id="detailsitem-' + prod.id + '"><img src="' + src + '"/></span></td>' +
+            '<td class="details"><a href="' + prod.product.product_url + '" target="_blank" class="name">' + 
+            prod.product.product_name + '</a>' +  merch + '' + manu + '<p class="item-desc"> '+ 
+            prod.product.short_product_description + '</p>' + price_display +
+            '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
+            '<span class="general"><em>category:</em>' + prod.product.allume_category + 
+            '</span>' + fave_link + '' + rack_link + '<a href="' + prod.product.product_url + 
+            '" target="_blank" class="link-to-store"><i class="fa fa-search"></i>' +
+            'view at store</a></td>' + other_details.join('') + '</tr>'
+          );
+        }
+      }
+      markup.push('</table>');
+      var indepth = $('#look-indepth');
+      indepth.html(
+        '<div class="stage"><a href="#" class="close-indepth"><i class="fa fa-times"></i></a>' +
+        '<h2>' + result.name + '</h2><div class="products">' + markup.join('') + '</div></div>'
+      );
+      if(merchants.length > 0){
+        merchants = [...new Set(merchants)];
+        indepth.find('div.look-meta p.extras:first').after(
+          '<p class="desc"><em>Stores:</em>' + merchants.join(', ') + '</p>'
         );
       }
-      markup.push('</div></div>');
-      layout_markup.push(
-        '<label class="layout-check"><div class="layout-block">' +
-        '<div class="layout-grid">' + markup.join('') + '</div>' +
-        '<span class="name">' + layout.name + '</span>' +
-        '<input type="radio" name="layout" value="' + layout.id + 
-        '"/><i class="fa fa-check"/></div></label>'
-      );
-    }
-    $('#look-layouts-container').html(layout_markup.join(''))
+      for(var i = 0, l = result.look_products.length; i<l; i++){
+        var prod = result.look_products[i];
+        var fave = indepth.find('a.favorite[data-productid="' + prod.product.id + '"]');
+        var rack = indepth.find('a.add-to-rack[data-productid="' + prod.product.product_id + '"]');
+        fave.data('details', prod.product)
+        rack.data('details', prod.product)
+      }
+    });    
   },
   /**
   * @description helper template function to generate look markup
   * @params {object} look - the look object
   * @params {string} mod - id string modifier
   * @params {integer} check - id of currently editing look or null
-  * @returns {array}  - [HTML, cropped images array]
+  * @returns {string} HTML
   */
   lookMarkupGenerator: function(look, mod, check){
-      var look_products_markup = ['<div class="compare-look-wrapper"><div class="compare-looks-layout">'];
-      var cropped_images = [];
-      for(var ix = 0, lx = look.look_layout.layout_json.length; ix<lx; ix++){
-        var block = look.look_layout.layout_json[ix];
-        var position = block.position;
-        var product_markup = [];
-        for(var p = 0, prods = look.look_products.length; p<prods; p++){
-          var prod = look.look_products[p];
-          if((prod.layout_position == position)&&(prod.product != undefined)){
-            var src = prod.product.product_image_url;
-            if(prod.cropped_dimensions != null){
-              var crop = {
-                id: mod + '-' + look.id + '-item-' + prod.id,
-                src: look_proxy + '' + src,
-                dims: prod.cropped_dimensions
-              }
-              cropped_images.push(crop);
-            }
-            product_markup.push(
-              '<div class="item"><a href="#" class="item-detail" ' + 
-                'data-name="' + prod.product.product_name + '" data-brand="' + prod.product.manufacturer_name + 
-                '" data-productid="' + prod.product.id + '"><span id="' + mod + '-' + look.id + '-item-' + prod.id + 
-                '"><img style="height:' + block.height + 'px" src="' + src + '"/></span></a></div>'
-            );
-          }
-        }
-        look_products_markup.push(
-          '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
-          'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
-          'px" data-position="' + position + '">' + product_markup.join() + '</div>'
-        );
-      }
-      look_products_markup.push('</div></div>');
-      var desc = look.description != '' ? '<span class="layout desc"><em>description: </em>' + look.description + '</span>' :  '';
-      var display_class = check == look.id ? 'editing' : '';
-      return ['<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
-        '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
-        look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="delete-look-btn" data-lookid="' + 
-        look.id + '"><i class="fa fa-times"></i></a><h3 class="look-name-header">' + look.name + '</h3>' +
-        '<span class="layout"><em>stylist: </em>' + look.stylist.first_name + ' ' + look.stylist.last_name + '</span>' +
-        '<div class="comp-look-display">' + look_products_markup.join('') + '</div>' + desc + 
-        '<div class="editing">editing look...</div></div>', cropped_images];
+    var collage_img = '<div class="collage-placeholder">collage not yet created</div>';
+    if(look.collage_image_data != null){
+      collage_img = '<a href="#" class="view-look-details" data-look="' + look.id + '">' +
+        '<img class="collage" src="' + look.collage_image_data + '"/></a>';
+    }
+    var desc = look.description != '' ? '<span class="layout desc"><em>description: </em>' + look.description + '</span>' :  '';
+    var display_class = check == look.id ? 'editing' : '';
+    return '<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
+      '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
+      look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="delete-look-btn" data-lookid="' + 
+      look.id + '"><i class="fa fa-times"></i></a><h3 class="look-name-header">' + look.name + '</h3>' +
+      '<span class="layout"><em>stylist: </em>' + look.stylist.first_name + ' ' + look.stylist.last_name + '</span>' +
+      '<div class="comp-look-display">' + collage_img + '</div>' + desc + 
+      '<div class="editing">editing look...</div></div>';
   },
   /**
   * @description the ordered look and feel for look builder rack
@@ -853,10 +669,20 @@ var look_builder = {
       );
       $.each(block.find('div.item'), function(index){
         var item = $(this);
+        var data = item.data();
         var src = item.find('img').attr('src');
+        var link = item.find('a.remove-from-rack')
+        var sku = link.data('sku');
+        var rack_id = link.data('rackid');
         rack_items.push(
           '<div class="item" data-productid="' + item.data('productid') + 
-          '" data-url="' + src + '"><img class="handle" src="' + src + '"/></div>'
+          '" data-url="' + src + '"><img class="handle" src="' + src + 
+          '"/><a href="#"  class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
+          src + '"><i class="fa fa-plus circle"></i></a>' +
+          '<a href="#"  class="view" data-productid="' + data.productid + 
+          '"><i class="fa fa-search"></i></a>' +
+          '<a href="#" class="remove" data-sku="' + sku + 
+          '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
         );
       })
       rack_items.push('</div>');
@@ -868,15 +694,6 @@ var look_builder = {
       '</h2><div class="look-builder-rack">' + 
       rack_items.join('') + '</div>'
     );
-    $.each(drag_rack.find('div.block'), function(idx){
-      var box = $(this)[0];
-      new Sortable(box, {
-        handle: ".handle",
-        group: { name: "look", pull: 'clone', put: false },
-        sort: false,
-        draggable: ".item"
-      });
-    });
   },
   /**
   * @description helper fuction to verify user has selected at least 
@@ -914,11 +731,16 @@ var look_builder = {
     var markup = [];
     $.each(faves, function(index){
       var item = $(this);
+      var data = item.data();
       var src = item.find('img').attr('src');
       markup.push(
-        '<div class="item" data-productid="' + item.data('productid') + 
+        '<div class="item fave" data-productid="' + data.productid + 
         '" data-url="' + src + '"><span class="fave"><i class="fa fa-heart"></i></span>' +
-        '<img class="handle" src="' + src + '"/></div>'
+        '<img class="handle" src="' + src + '"/>' +
+        '<a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
+        src + '"><i class="fa fa-plus-circle"></i></a>' +
+        '<a href="#"  class="view" data-productid="' + data.productid + 
+        '"><i class="fa fa-search"></i></a></div>'
       );
     });
     return markup.join('');
@@ -933,236 +755,39 @@ var look_builder = {
     $.get('/shopping_tool_api/look/' + id + '/', function(result){
       $('#creating-look').hide();
       if(result.allume_styling_session == look_builder.session_id){
-        var look_drop = $('#look-drop');
-        var cropped_images = [];
-        var markup = [];
-        markup.push('<div id="look-layout-grid">')
-        for(var i = 0, l = result.look_layout.layout_json.length; i<l; i++){
-          var block = result.look_layout.layout_json[i];
-          var position = block.position;
-          var product_markup = [];
-          for(var p = 0, prods = result.look_products.length; p<prods; p++){
-            var prod = result.look_products[p];
-            if((prod.layout_position == position)&&(prod.product != undefined)){
-              var src = prod.product.product_image_url;
-              if(prod.cropped_dimensions != null){
-                var crop = {
-                  id: 'lookitem-' + prod.id,
-                  src: look_proxy + '' + src,
-                  dims: prod.cropped_dimensions
-                }
-                cropped_images.push(crop);
-              }
-              product_markup.push(
-                '<div class="item" id="lookitem-' + prod.id + 
-                '" data-productid="' + prod.product.id + 
-                '" data-lookitemid="' + prod.id + '">' +
-                '<a href="#" class="crop-product-image" data-productid="' + prod.product.id + 
-                '" data-url="' + prod.product.product_image_url  + '" data-look="' + result.id + 
-                '" data-lookitemid="' + prod.id + '" data-position="' + prod.layout_position + 
-                '" data-crop="' + prod.cropped_dimensions + '"><i class="fa fa-crop"></i></a>' +
-                '<img class="handle" src="' + src + '"/></div>'
-              );
-            }
-          }
-          markup.push(
-            '<div class="layout-block" style="height:' + (block.height - 4) + 'px;' +
-            'width:' + (block.width - 4) + 'px;top:' + block.y + 'px;left:' + block.x + 
-            'px" data-position="' + position + '">' + product_markup.join() + '</div>'
-          );
-        }
-        markup.push('</div>');
-        /* add the created look markup to the ui, including instructions and trash bin */
-        look_drop.html(
-          '<a href="#" class="look-more-details" data-look="' + id + '">' +
-          '<i class="fa fa-search"></i>look details</a>' +
-          '<p class="look-drop-info">&bull; Drag items from the left into ' +
-          'the look layout, or items from the look to trash to remove.</p>' + markup.join('') + 
-          '<div id="look-trash"></div><a href="#" id="finish-editing-look" data-lookid="' + id + 
-          '"><i class="fa fa-check"></i>done editing</a>' +
-          '<a href="https://shopping-tool-web-stage.allume.co/collage_image/' + id + 
-          '.jpg" id="collage-preview-btn" target="_blank"><i class="fa fa-image"></i>preview collage</a>' +
-          '<label style="margin-top:10px">Name</label><input id="look-name" value="' + 
-          result.name + '"/><label>Description</label><textarea id="look-desc">' + 
-          result.description + '</textarea><input type="hidden" id="look-layoutid" value="' + 
-          result.look_layout.id + '"/><input type="hidden" id="look-id" value="' + id + '"/>'
+        $('#look-drop').html(
+          '<div id="canvas-container">' +
+          '<canvas id="c" width="760" height="415"></canvas>' +
+          '</div><div class="collage-controls">'+
+          '<a href="#" id="finish-editing-look" data-lookid="' + id + 
+          '"><i class="fa fa-check"></i>finished editing look</a>' +
+          '<a class="zoom-in" data-balloon="zoom in" data-balloon-pos="up" href="#">' +
+          '<i class="fa fa-search-plus"></i></a>' +
+          '<a class="zoom-out" data-balloon="zoom out" data-balloon-pos="up" href="#">' +
+          '<i class="fa fa-search-minus"></i></a>' +
+          '<a class="shift-left" data-balloon="shift left" data-balloon-pos="up" href="#">' +
+          '<i class="fa fa-chevron-left"></i></a>' +
+          '<a class="shift-up" data-balloon="shift up" data-balloon-pos="up" href="#">' +
+          '<i class="fa fa-chevron-up"></i></a>' +
+          '<a class="shift-down" data-balloon="shift down" data-balloon-pos="up" href="#">' +
+          '<i class="fa fa-chevron-down"></i></a>' +
+          '<a class="shift-right" data-balloon="shift right" data-balloon-pos="up" href="#">' +
+          '<i class="fa fa-chevron-right"></i></a>' +
+          '<a href="#" data-balloon="move to back" data-balloon-pos="up" class="send-back">' +
+          '<i class="fa fa-reply"></i></a>' +
+          '<a href="#" data-balloon="move to front" data-balloon-pos="up" class="send-front">' +
+          '<i class="fa fa-share"></i></a>' +
+          '<a href="#" class="trash-obj"><i class="fa fa-trash"></i> remove product</a></div>' +
+          '<span class="collage-sep"></span>' +
+          '<table class="collage-meta-fields"><tr><td>' +
+          '<label>Name</label><input id="look-name" value="' + 
+          result.name + '"/><a href="#" class="look-more-details" data-look="' + id + '">' +
+          '<i class="fa fa-search"></i>view more details about this look</a>' +
+          '</td><td><label>Description</label><textarea id="look-desc">' + 
+          result.description + '</textarea></td></tr></table>' +
+          '<input type="hidden" id="look-id" value="' + id + '"/>'
         );
-        if(cropped_images.length > 0){
-          for(var i = 0, l = cropped_images.length; i<l; i++){
-            look_builder.getCroppedImage(cropped_images[i], '#look-layout-grid');
-          }
-        }
-        /* add the trash functionality - simply accept objects and immediately remove from ui */
-        new Sortable(document.getElementById('look-trash'), {
-          group: "look",
-          onAdd: function (evt) {
-            var el = evt.item;
-            el.parentNode.removeChild(el);
-          }
-        });
-        /* add the drag/drop functionality to the newly created drop zones */
-        $.each(look_drop.find('#look-layout-grid div.layout-block'), function(idx){
-          var box = $(this);
-          new Sortable(box[0], {
-            handle: ".handle",
-            group: { name: "look", pull: true, put: true },
-            sort: false,
-            draggable: ".item",
-            onAdd: function (evt) {
-              var el = evt.item;
-              var el_id = el.dataset.productid;
-              /* create REST object */
-              var obj = {
-                layout_position: box.data('position'),
-                look: id,
-                product: parseInt(el_id),
-                cropped_dimensions:  null         
-              }
-              var dims = $(el).find('a.crop-product-image').data('crop')
-              if(dims != null){
-                obj.cropped_dimensions = dims;
-              }
-              //console.log(obj)
-              $.ajax({
-                contentType : 'application/json',
-                data: JSON.stringify(obj),
-                success:function(response){
-                  //console.log(response)
-                  //console.log(obj.product)
-                  var elem = $(el);
-                  elem.data('lookitemid', response.id)
-                  elem.data('isnew', 'yes');
-                  elem.siblings('div.item').data('isnew','no')
-                  if(elem.find('a.crop-product-image').length == 0){
-                    elem.append(
-                      '<a href="#" class="crop-product-image" data-productid="' + response.product + 
-                      '" data-url="' + elem.data('url')  + '" data-look="' + response.look + 
-                      '" data-lookitemid="' + response.id + '" data-position="' + response.layout_position + 
-                      '" data-crop="' + response.cropped_dimensions + '"><i class="fa fa-crop"></i></a>'
-                    );
-                  }
-                  /** ecom API addition */
-                  /* get the elastic search data for the product */
-                  $.ajax({
-                    success: function(results){
-                      //console.log(response)
-                      //console.log(results)
-                      if((results.data != undefined)&&(results.data.length > 0)){
-                        var payload = {sites: { } };
-                        var tmp = {color_names: [], color_objects: {}};
-                        var matching_object = '';
-                        /* loop through results to set up content for payload */
-                        for(var i = 0, l = results.data.length; i<l; i++){
-                          var product = results.data[i]._source;
-                          //console.log(product.product_id + " " + product.id + " " + response.product)
-                          if((product.id == response.product)||(product.product_id == response.product)){
-                            //console.log(product)
-                            matching_object = product;
-                          }
-                          /* create color object for payload */
-                          var clr = product.color.toLowerCase();
-                          if(tmp.color_names.indexOf(clr) == -1){
-                            tmp.color_names.push(clr);
-                            tmp.color_objects[clr] = { sizes: [], size_data : {}};
-                          }
-                          var all_sizes = product.size.split(',')
-                          for(var ix = 0, lx = all_sizes.length; ix < lx; ix++){
-                            var size = all_sizes[ix];
-                            if(tmp.color_objects[clr].sizes.indexOf(size) == -1){
-                              tmp.color_objects[clr].sizes.push(size);
-                              tmp.color_objects[clr].size_data[size] = {
-                                image: product.raw_product_url,
-                                price: product.current_price,
-                                text: size,
-                                value: size
-                              }
-                            }
-                          }
-                        }
-                        //console.log(matching_object)
-                        /* create payload object */
-                        /** NEED TO CHECK IF matching_object.product_api_merchant EXISTS FIRST?? **/
-                        var merchant_node = matching_object.product_api_merchant.toString();
-                        var product_node = response.product.toString();
-                        payload.sites[merchant_node] = {}
-                        payload.sites[merchant_node].add_to_cart = {}
-                        payload.sites[merchant_node].add_to_cart[product_node] = {};
-                        payload.sites[merchant_node].add_to_cart[product_node].title = matching_object.product_name;
-                        payload.sites[merchant_node].add_to_cart[product_node].brand = matching_object.brand;
-                        payload.sites[merchant_node].add_to_cart[product_node].price = matching_object.current_price;
-                        payload.sites[merchant_node].add_to_cart[product_node].original_price = matching_object.retail_price;
-                        payload.sites[merchant_node].add_to_cart[product_node].image = matching_object.product_image_url;
-                        payload.sites[merchant_node].add_to_cart[product_node].description = matching_object.long_product_description;
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_names = ["color", "size", "quantity"];
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values = {};
-                        payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color = [];
-                        payload.sites[merchant_node].add_to_cart[product_node].url = matching_object.product_url;
-                        payload.sites[merchant_node].add_to_cart[product_node].status = "done";
-                        payload.sites[merchant_node].add_to_cart[product_node].original_url = matching_object.raw_product_url;
-                        /* create the colors array objects */
-                        for(var i = 0, l = tmp.color_names.length; i<l; i++){
-                          var color = tmp.color_names[i];
-                          var obj = {
-                            dep: { size: [] },
-                            price: matching_object.current_price,
-                            text: color,
-                            value: color
-                          }
-                          for(var ix = 0, il = tmp.color_objects[color].sizes.length; ix<il; ix++){
-                            var size_name = tmp.color_objects[color].sizes[ix];
-                            var size = tmp.color_objects[color].size_data[size_name];
-                            size.dep = {}
-                            obj.dep.size.push(size);
-                          }
-                          payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color.push(obj);
-                        }
-                        $.ajax({
-                          contentType: 'application/x-www-form-urlencoded',
-                          crossDomain: true,
-                          data: $.param({look_product_id: response.id, product: payload}),
-                          type: 'POST',
-                          url: 'https://ecommerce-service-stage.allume.co/wp-json/products/create_or_update_product_from_affiliate_feeds_and_link_to_look/',
-                          xhrFields: {
-                            withCredentials: true
-                          }
-                        });
-                      }
-                    },
-                    type: "GET",
-                    url: '/product_api/get_product/' + response.product  + '/',
-                  });
-                  var list_items = box.find('div.item');
-                  if(list_items.length > 1){
-                    $.each(list_items, function(e){
-                      var item = $(this);
-                      var data = item.data();
-                      if(data.isnew == 'no'){
-                        $.ajax({
-                          success:function(response){
-                            item.remove();
-                          },
-                          type: 'DELETE',
-                          url: '/shopping_tool_api/look_item/' + data.lookitemid + '/'
-                        });
-                      }
-                    });
-                  }
-                },
-                type: 'PUT',
-                url: '/shopping_tool_api/look_item/0/'
-              });
-            },
-            onRemove: function(evt){
-              var elem = $(evt.item);
-              /* delete the item from the look/db when removed from a drop box */
-              $.ajax({
-                success:function(response){},
-                type: 'DELETE',
-                url: '/shopping_tool_api/look_item/' + elem.data('lookitemid') + '/'
-              });            
-            }
-          });        
-        });
+        collage.init(result.look_products);
       }
     });
   },
@@ -1182,10 +807,20 @@ var look_builder = {
     }
     $.each(rack_items_dom, function(index){
       var item = $(this);
+      var data = item.data();
       var src = item.find('img').attr('src');
+      var link = item.find('a.remove-from-rack')
+      var sku = link.data('sku');
+      var rack_id = link.data('rackid');
       rack_items.push(
-        '<div class="item" data-productid="' + item.data('productid') + 
-        '" data-url="' + src + '"><img class="handle" src="' + src + '"/></div>'
+        '<div class="item" data-productid="' + data.productid + 
+        '" data-url="' + src + '"><img class="handle" src="' + src + 
+        '"/><a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
+        src + '"><i class="fa fa-plus-circle"></i></a>' +
+        '<a href="#"  class="view" data-productid="' + data.productid + 
+        '"><i class="fa fa-search"></i></a>' +
+        '<a href="#" class="remove" data-sku="' + sku + 
+        '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
       );
     });
     var faves = $('#fave-prods div.item');
@@ -1278,21 +913,36 @@ var look_builder = {
   },
   /**
   * @description update a look with any changes to its fields
+  * @param {boolean} redraw - true/false to redraw the look in the comp looks section 
+  * @param {DOM Object} div - div to be updated with new display
   */
-  updateLook: function(){
+  updateLook: function(redraw, div){
+    var changes = collage.canvas.toObject();
+    var src = null;
+    if(changes.objects.length > 0){
+      src = collage.canvas.toDataURL('image/png')
+    }
+    var look_id = $('input#look-id').val();
     var look_obj = {
      "name": $('#look-name').val(),
-     "look_layout": parseInt($('input#look-layoutid').val()),
      "description": $('#look-desc').val(),
      "allume_styling_session": look_builder.session_id,
-     "stylist": look_builder.stylist_id        
+     "stylist": look_builder.stylist_id,
+     "collage_image_data": src
     }
     $.ajax({
       contentType : 'application/json',
       data: JSON.stringify(look_obj),
-      success:function(response){},
+      success:function(response){
+        if(redraw == true){
+          $.get('/shopping_tool_api/look/' + look_id + '/', function(result){
+            div.before(look_builder.lookMarkupGenerator(result, 'comp', null));
+            div.remove();
+          });
+        }
+      },
       type: 'PUT',
-      url: '/shopping_tool_api/look/' + $('input#look-id').val() + '/'
+      url: '/shopping_tool_api/look/' + look_id + '/'
     });  
   },
   /**
