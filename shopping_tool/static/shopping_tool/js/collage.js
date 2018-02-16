@@ -8,6 +8,7 @@ var collage = {
   * @param {integer} look_item_id - the app look item id
   */
   addAllumeProduct: function(product_id, look_item_id){
+    console.log('firing addAllumeProduct')
     $.ajax({
       success: function(results){
         if((results.data != undefined)&&(results.data.length > 0)){
@@ -41,6 +42,7 @@ var collage = {
             }
           }
           /* create payload object */
+          console.log('merchant product api ' + matching_object.product_api_merchant)
           var merchant_node = matching_object.product_api_merchant.toString();
           var product_node = product_id.toString();
           payload.sites[merchant_node] = {}
