@@ -218,9 +218,9 @@ var rack_builder = {
         for(var i = 0, l = response.looks.length; i<l; i++){
           var comp = response.looks[i];
           var collage_img = '<div class="collage-placeholder">collage not yet created</div>';
-          if(comp.collage_image_data != null){
+          if(comp.collage != null){
             collage_img = '<a href="#" class="view-look-details" data-look="' + comp.id + 
-            '"><img class="collage" src="' + comp.collage_image_data + '"/></a>';
+            '"><img class="collage" src="' + comp.collage + '"/></a>';
           }
           markup.push(
             '<div class="rack-look"><a href="/look_builder/' + rack_builder.session_id + 

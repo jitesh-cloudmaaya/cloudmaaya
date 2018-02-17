@@ -211,9 +211,9 @@ var explore_page = {
         look.id + '" data-faveid="' + look_favorite_object.id + '"><i class="fa fa-heart"></i></a>';
       }
       var collage_img = '<div class="collage-placeholder">collage not yet created</div>';
-      if(look.collage_image_data != null){
+      if(look.collage != null){
         collage_img = '<a href="#" class="view-look-details" data-look="' + look.id + 
-            '"><img class="collage" src="' + look.collage_image_data + '"/></a>';
+            '"><img class="collage" src="' + look.collage + '"/></a>';
       }
       markup.push(
         '<div class="look"><div class="display">' + look_fave_link  +

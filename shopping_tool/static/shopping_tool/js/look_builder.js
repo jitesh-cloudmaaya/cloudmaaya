@@ -78,7 +78,7 @@ var look_builder = {
          "description": '',
          "allume_styling_session": look_builder.session_id,
          "stylist": look_builder.stylist_id,
-         "collage_image_data": null     
+         "collage": null     
         }),
         error: function(response){
 
@@ -194,8 +194,8 @@ var look_builder = {
             for(var i = 0, l = response.looks.length; i<l; i++){
               var look = response.looks[i];
               var collage_img = '<div class="collage-placeholder">no collage</div>';
-              if(look.collage_image_data != null){
-                collage_img = '<img class="collage" src="' + look.collage_image_data + '"/>';
+              if(look.collage != null){
+                collage_img = '<img class="collage" src="' + look.collage + '"/>';
               }
               markup.push(
                 '<div class="pub-look" data-lookname="' + look.name + '" data-lookid="' + 
@@ -559,10 +559,10 @@ var look_builder = {
               );
             }
             other_details.push('<p class="desc"><em>Description:</em>' + result.description + '</p>');
-            if(result.collage_image_data != null){
+            if(result.collage != null){
               other_details.push(
                 '<p class="desc"><em>Collage:</em>' +
-                '<img class="collage" src="' + result.collage_image_data + '"/></p>'
+                '<img class="collage" src="' + result.collage + '"/></p>'
               );
             }
             other_details.push('</div></td>');
@@ -611,9 +611,9 @@ var look_builder = {
   */
   lookMarkupGenerator: function(look, mod, check){
     var collage_img = '<div class="collage-placeholder">collage not yet created</div>';
-    if(look.collage_image_data != null){
+    if(look.collage != null){
       collage_img = '<a href="#" class="view-look-details" data-look="' + look.id + '">' +
-        '<img class="collage" src="' + look.collage_image_data + '"/></a>';
+        '<img class="collage" src="' + look.collage + '"/></a>';
     }
     var desc = look.description != '' ? '<span class="layout desc"><em>description: </em>' + look.description + '</span>' :  '';
     var display_class = check == look.id ? 'editing' : '';
@@ -931,7 +931,7 @@ var look_builder = {
      "description": $('#look-desc').val(),
      "allume_styling_session": look_builder.session_id,
      "stylist": look_builder.stylist_id,
-     "collage_image_data": src
+     "collage": src
     }
     $.ajax({
       contentType : 'application/json',
