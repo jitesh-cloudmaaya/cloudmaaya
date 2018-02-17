@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                     ('wp_stylist_id', models.BigIntegerField()),
                     ('name', models.CharField(blank=True, max_length=100, null=True)),
                     ('descrip', models.TextField(blank=True, null=True)),
-                    ('collage', models.CharField(blank=True, max_length=200, null=True)),
+                    ('collage', models.TextField(blank=True, max_length=200, null=True)),
                     ('status', models.CharField(max_length=9)),
                     ('date_created', models.DateTimeField()),
                     ('last_modified', models.DateTimeField()),

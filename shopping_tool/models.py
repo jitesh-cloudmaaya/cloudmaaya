@@ -415,7 +415,7 @@ class AllumeLooks(models.Model):
     wp_stylist_id = models.BigIntegerField()
     name = models.CharField(max_length=100, blank=True, null=True)
     descrip = models.TextField(blank=True, null=True)
-    collage = models.CharField(max_length=200, blank=True, null=True)
+    collage = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=9)
     date_created = models.DateTimeField()
     # layout_id = models.IntegerField()
@@ -563,7 +563,7 @@ class StyleOccasion(models.Model):
 @receiver(pre_save, sender=Look)
 def set_look_client_id(sender, instance, *args, **kwargs):
     instance.wp_client_id = instance.allume_styling_session.client.id
-    instance.collage = "%s/%s.jpg" % (COLLAGE_IMAGE_ROOT, instance.id)
+    #instance.collage = "%s/%s.jpg" % (COLLAGE_IMAGE_ROOT, instance.id)
 
 @receiver(pre_save, sender=LookProduct)
 def set_product_clipped_stylist_id(sender, instance, *args, **kwargs):

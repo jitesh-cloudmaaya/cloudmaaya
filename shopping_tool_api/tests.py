@@ -612,13 +612,13 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         url = reverse("shopping_tool_api:update_look_collage_image_data", kwargs={'pk':1})
 
-        self.assertEqual(None, Look.objects.get(pk=1).collage_image_data)
+        self.assertEqual(None, Look.objects.get(pk=1).collage)
 
         data = {"collage_image_data": "new info"}
         response = self.client.put(url, data)
         response_data = json.loads(response.content)
 
-        self.assertEqual("new info", Look.objects.get(pk=1).collage_image_data)
+        self.assertEqual("new info", Look.objects.get(pk=1).collage)
 
 ### Look Favs
 
