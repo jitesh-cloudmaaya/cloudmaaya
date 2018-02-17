@@ -478,7 +478,7 @@ class Look(models.Model):
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=1000, blank=True, null=True, db_column='descrip')
-    collage = models.CharField(max_length=200, blank=True, null=True, db_column='collage')
+    collage = models.TextField(blank=True, null=True, db_column='collage')
     status = models.CharField(max_length=11, default='Draft')
     created_at = models.DateTimeField(auto_now_add=True, null=True, db_column='date_created')
     updated_at = models.DateTimeField(auto_now=True, null=True, db_column='last_modified')
