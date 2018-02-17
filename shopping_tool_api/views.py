@@ -385,7 +385,7 @@ def update_look_collage_image_data(request, pk=None):
     except Look.DoesNotExist:
         return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
-    look.collage_image_data = request.data['collage_image_data']
+    look.collage = request.data['collage_image_data']
     look.save()
 
     return JsonResponse(request.data, safe=False)
