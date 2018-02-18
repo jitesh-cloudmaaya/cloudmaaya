@@ -565,7 +565,7 @@ def set_look_client_id(sender, instance, *args, **kwargs):
     instance.wp_client_id = instance.allume_styling_session.client.id
     #instance.collage = "%s/%s.jpg" % (COLLAGE_IMAGE_ROOT, instance.id)
 
-@receiver(pre_save, sender=LookProduct)
-def set_product_clipped_stylist_id(sender, instance, *args, **kwargs):
-    instance.product_clipped_stylist_id = instance.look.stylist.id
+#@receiver(pre_save, sender=LookProduct)
+#def set_product_clipped_stylist_id(sender, instance, *args, **kwargs):
+#    instance.product_clipped_stylist_id = instance.look.stylist.id
 

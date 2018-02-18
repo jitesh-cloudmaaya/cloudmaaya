@@ -655,11 +655,17 @@ def look_item(request, pk=None):
 
     elif request.method == 'PUT':
 
+        item = request.data
+        if 'product_clipped_stylist_id' not in item:
+            item['product_clipped_stylist_id'] = request.user.id
+
+
         try:
             look_item = LookProduct.objects.get(id=pk)
-            serializer = LookProductCreateSerializer(look_item, data=request.data)
+            serializer = LookProductCreateSerializer(look_item, data=item)
+
         except LookProduct.DoesNotExist:
-            serializer = LookProductCreateSerializer(data=request.data)
+            serializer = LookProductCreateSerializer(data=item)
         
         if serializer.is_valid():
             serializer.save()
