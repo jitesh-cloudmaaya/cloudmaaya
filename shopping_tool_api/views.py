@@ -655,10 +655,9 @@ def look_item(request, pk=None):
 
     elif request.method == 'PUT':
 
-        item = request.data
+        item = request.data.copy()
         if 'product_clipped_stylist_id' not in item:
             item['product_clipped_stylist_id'] = request.user.id
-
 
         try:
             look_item = LookProduct.objects.get(id=pk)
