@@ -142,7 +142,13 @@ var collage = {
   * @description object to be used to hold reference to canvas object being created for editing look collages
   */
   canvas: null,
+  /**
+  * @description field to hold reference to canvas sortable object
+  */  
   collageSortable: null,
+  /**
+  * @description flip active canvas object horizontally
+  */
   flipX: function(){
     var activeObject = collage.canvas.getActiveObject();
     if (activeObject) {
