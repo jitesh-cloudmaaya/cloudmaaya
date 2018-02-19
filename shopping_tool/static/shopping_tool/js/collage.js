@@ -128,6 +128,7 @@ var collage = {
           //fImg.setCrossOrigin('anonymous');
           collage.canvas.add(fImg);
           collage.canvas.setActiveObject(fImg);
+          collage.canvas.discardActiveObject();
           $('#adding-product').remove();
           collage.product_cache.push(response);
         };
@@ -141,6 +142,7 @@ var collage = {
   * @description object to be used to hold reference to canvas object being created for editing look collages
   */
   canvas: null,
+  collageSortable: null,
   flipX: function(){
     var activeObject = collage.canvas.getActiveObject();
     if (activeObject) {
@@ -197,7 +199,7 @@ var collage = {
       }
       var fImg = new fabric.Cropzoomimage(this, dims);
       collage.canvas.add(fImg);
-      collage.canvas.setActiveObject(fImg);
+      //collage.canvas.setActiveObject(fImg);
       /* if picture was zoomed call the zoom function and correctly display zoomed object */
       if(dims.zoomedXY){
         collage.zoomBy(dims.zoomX, dims.zoomY, dims.zoomZ);

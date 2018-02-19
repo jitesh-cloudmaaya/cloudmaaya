@@ -790,6 +790,27 @@ var look_builder = {
           result.description + '</textarea></td></tr></table>' +
           '<input type="hidden" id="look-id" value="' + id + '"/>'
         );
+        collage.collageSortable = null;
+        collage.collageSortable = new Sortable($('#canvas-container')[0], {
+          group: "look",
+          sort: false,
+          onAdd: function (evt) {
+            var el = evt.item;
+            var adding = $('#adding-product').length;
+            if(adding == 0){
+             $('#look-drop').append(
+                '<div id="adding-product"><div class="loading-prod">' +
+                '</div><span class="loading-prod-msg">adding product ' + 
+                'to look...</span></div>'
+              );            
+              collage.addCanvasImage(el.dataset.productid, el.dataset.url);
+            }
+            el.parentNode.removeChild(el);
+          }
+        });
+        $('#canvas-container').mousedown(function(){
+          collage.collageSortable.option("disabled", true);
+        })
         result.look_products.sort(function(a,b){
           if(a.layout_position < b.layout_position){ return 1}
           if(a.layout_position > b.layout_position){ return -1}
@@ -846,7 +867,13 @@ var look_builder = {
       handle: ".handle",
       group: { name: "look", pull: 'clone', put: false },
       sort: true,
-      draggable: ".item"
+      draggable: ".item",
+      onStart: function(){
+        var cc = $('#canvas-container');
+        if(cc.length > 0){
+          collage.collageSortable.option('disabled', false);
+        }
+      }
     });  
   },
   /**

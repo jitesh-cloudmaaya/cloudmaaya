@@ -3408,6 +3408,7 @@ div#canvas-container {
   margin:15px auto 0;
   width:760px;
 }
+div#canvas-container div.item {display:none;}
 div.collage-controls {margin:15px 16px;}
 div.collage-controls a {
   background:#fafafa;
