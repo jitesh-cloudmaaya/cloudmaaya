@@ -351,6 +351,9 @@ var look_builder = {
     }).on('click', 'a.send-front', function(e){
       e.preventDefault();
       collage.sendForward();
+    }).on('click', 'a.flip-x', function(e){
+      e.preventDefault();
+      collage.flipX();      
     }).on('click','a.look-more-details', function(e){
       e.preventDefault();
       var link = $(this);
@@ -763,6 +766,8 @@ var look_builder = {
           '<i class="fa fa-search-plus"></i></a>' +
           '<a class="zoom-out" data-balloon="zoom out" data-balloon-pos="up" href="#">' +
           '<i class="fa fa-search-minus"></i></a>' +
+          '<a class="flip-x" data-balloon="flip horizontal" data-balloon-pos="up" href="#">' +
+          '<i class="fa fa-refresh"></i></a>' +
           '<a class="shift-left" data-balloon="shift left" data-balloon-pos="up" href="#">' +
           '<i class="fa fa-chevron-left"></i></a>' +
           '<a class="shift-up" data-balloon="shift up" data-balloon-pos="up" href="#">' +

@@ -141,6 +141,17 @@ var collage = {
   * @description object to be used to hold reference to canvas object being created for editing look collages
   */
   canvas: null,
+  flipX: function(){
+    var activeObject = collage.canvas.getActiveObject();
+    if (activeObject) {
+      if(activeObject.flipX == true){
+        activeObject.flipX = false;
+      }else{
+        activeObject.flipX = true;
+      }
+      collage.canvas.renderAll();
+    }
+  },
   /**
   * @description init function to draw the canvas and add initial look products
   * @param {array} products - array of look products
@@ -195,6 +206,8 @@ var collage = {
       collage.initial_load--;
       if(collage.initial_load > -1){
         collage.loadImg();
+      }else{
+        collage.canvas.renderAll();
       }
     };
   },
@@ -361,6 +374,7 @@ var collage = {
     collage.canvas.discardActiveObject();
     /* get canvas object so that we can update look products */
     var changes = collage.canvas.toObject();
+    console.log(changes)
     /* update the look */
     look_builder.updateLook(true, div);
     /* cahce the look id so we have it for the update calls for look products */
@@ -394,6 +408,7 @@ var collage = {
         cy: prod.cy,
         cw: prod.cw,
         ch: prod.ch,
+        flipX: prod.flipX,
         width: prod.width,
         height: prod.height,
         zoomX: prod.zoomX,

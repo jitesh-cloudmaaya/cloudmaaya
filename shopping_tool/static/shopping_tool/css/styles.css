@@ -3423,13 +3423,13 @@ div.collage-controls a {
   text-transform: uppercase;
 }
 div.collage-controls a:nth-of-type(2),
-div.collage-controls a:nth-of-type(4),
+div.collage-controls a:nth-of-type(5),
 div.collage-controls a.send-back {
   border-top-left-radius:5px;
   border-bottom-left-radius:5px;
 }
-div.collage-controls a:nth-of-type(3),
-div.collage-controls a:nth-of-type(7),
+div.collage-controls a:nth-of-type(4),
+div.collage-controls a:nth-of-type(8),
 div.collage-controls a.send-front {
   border-top-right-radius:5px;
   border-bottom-right-radius:5px;
