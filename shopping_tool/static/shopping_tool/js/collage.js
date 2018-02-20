@@ -266,7 +266,6 @@ var collage = {
         }
         var fImg = new fabric.Cropzoomimage(this, dims);
         collage.canvas.add(fImg);
-        //collage.canvas.setActiveObject(fImg);
         /* if picture was zoomed call the zoom function and correctly display zoomed object */
         if(dims.zoomedXY){
           collage.zoomBy(dims.zoomX, dims.zoomY, dims.zoomZ);
@@ -325,9 +324,7 @@ var collage = {
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify({cropped_image_code: data.path}),
-        success:function(response){
-          
-        },
+        success:function(response){},
         type: 'PUT',
         url: '/shopping_tool_api/update_cropped_image_code/' + cache_obj.id + '/'
       });
