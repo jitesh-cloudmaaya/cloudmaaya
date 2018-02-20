@@ -289,7 +289,8 @@ var search_page = {
       '"><img src="' + details.product_image_url + '"></a></div>' +
       '<a href="' + details.product_url + '"  title="' + details.product_name + 
       '" target="_blank" class="name">' + details.product_name + '</a><span class="manu"' + 
-      ' title="' + manu + '' + merch + '">' + manu + '' + merch + '</span>' + price_display + '' + rack_link + '</div>';
+      ' title="' + manu + '' + merch + '">' + manu + '' + merch + 
+      '</span>' + price_display + '' + rack_link + '</div>';
   },
   /**
   * @description ajax call to get search results
