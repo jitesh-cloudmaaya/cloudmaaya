@@ -104,7 +104,8 @@ var collage = {
       look: $('input#look-id').val(),
       product: product_id,
       cropped_dimensions: null,
-      in_collage: 'True'       
+      in_collage: 'True',
+      cropped_image_code: null       
     }
     $.ajax({
       contentType : 'application/json',
@@ -235,10 +236,14 @@ var collage = {
   */
   loadImg:function(){
     var prod = collage.product_cache[collage.initial_load]
-    console.log(prod.in_collage)
-    if(prod.in_collage == true || prod.in_collage == undefined){
+    /* if product in collage add to collage other wise add to additional items */
+    if(prod.in_collage == true){
       var img = new Image();
-      img.src = look_proxy + '' + prod.product.product_image_url;
+      if(prod.cropped_image_code != null){
+        img.src = prod.cropped_image_code
+      }else{
+        img.src = look_proxy + '' + prod.product.product_image_url;
+      }
       img.onload = function() {
         var scale = 1;
         if(this.naturalHeight > 395){
@@ -266,7 +271,7 @@ var collage = {
         if(dims.zoomedXY){
           collage.zoomBy(dims.zoomX, dims.zoomY, dims.zoomZ);
         }
-        /* keep track of loaded object count lood next image if some still remain */
+        /* keep track of loaded object count lood next product if some still remain */
         collage.initial_load--;
         if(collage.initial_load > -1){
           collage.loadImg();
@@ -280,6 +285,7 @@ var collage = {
         '"/><a href="#" class="remove" data-lookitemid="' + prod.id +
         '"><i class="fa fa-times"></i></a></div>'
       );
+      /* keep track of loaded object count lood next product if some still remain */
       collage.initial_load--;
       if(collage.initial_load > -1){
         collage.loadImg();
@@ -315,7 +321,17 @@ var collage = {
           break;
         }
       }
-      /*$('#crop-look-image').fadeOut();
+      cache_obj.cropped_image_code = data.path;
+      $.ajax({
+        contentType : 'application/json',
+        data: JSON.stringify({cropped_image_code: data.path}),
+        success:function(response){
+          
+        },
+        type: 'PUT',
+        url: '/shopping_tool_api/update_cropped_image_code/' + cache_obj.id + '/'
+      });
+      $('#crop-look-image').fadeOut();
       collage.canvas.remove(collage.canvas.item(correct_canvas_idx));
       var img = new Image(); 
       img.src = data.path;
@@ -333,58 +349,10 @@ var collage = {
           scaleY: scale,
           prod_id: data.prodid
         });
-        //fImg.setCrossOrigin('anonymous');
         collage.canvas.add(fImg);
-        collage.canvas.setActiveObject(fImg);
-      };*/
-
-
-
-
-
-
-
-      /*
-
-      var dims = {
-        angel: prod.angle,
-        left: prod.left,
-        top: prod.top,
-        scaleX: prod.scaleX,
-        scaleY: prod.scaleY,
-        skewX: prod.skewX,
-        skewY: prod.skewY,
-        cx: prod.cx,
-        cy: prod.cy,
-        cw: prod.cw,
-        ch: prod.ch,
-        flipX: prod.flipX,
-        width: prod.width,
-        height: prod.height,
-        zoomX: prod.zoomX,
-        zoomY: prod.zoomY,
-        zoomZ: prod.zoomZ,
-        zoomedXY: prod.zoomedXY
-      }
-      var look_product_obj = {
-        layout_position: i,
-        look: look_id,
-        product: product_id,
-        cropped_dimensions: JSON.stringify(dims)       
-      }
-      $.ajax({
-        contentType : 'application/json',
-        data: JSON.stringify(look_product_obj),
-        success:function(response){
-          
-        },
-        type: 'PUT',
-        url: '/shopping_tool_api/look_item/' + prod.prod_id + '/'
-      });
-
-
-      */
-      
+      };
+    }else{
+      alert('Nothing to save. You have not cropped the image...')
     }
   },
   /**
@@ -633,7 +601,7 @@ var collage = {
       var prod = changes.objects[i];
       if(prod.prod_id != 'watermark'){
         var product_id = null;
-        var cropp_src = null;
+        var crop_src = null;
         for(var ix = 0, lx = collage.product_cache.length; ix<lx; ix++){
           var record = collage.product_cache[ix];
           if(record.id == prod.prod_id){
@@ -641,6 +609,9 @@ var collage = {
               product_id = record.product.id;
             }else{
               product_id = record.product;
+            }
+            if(record.cropped_image_code != undefined){
+              crop_src = record.cropped_image_code;
             }
             break;
           }
@@ -672,15 +643,14 @@ var collage = {
           look: look_id,
           product: product_id,
           cropped_dimensions: JSON.stringify(dims),
-          in_collage: 'True'      
+          in_collage: 'True',
+          cropped_image_code: crop_src     
         }
         /* update the look product */
         $.ajax({
           contentType : 'application/json',
           data: JSON.stringify(look_product_obj),
-          success:function(response){
-            
-          },
+          success:function(response){},
           type: 'PUT',
           url: '/shopping_tool_api/look_item/' + prod.prod_id + '/'
         });
