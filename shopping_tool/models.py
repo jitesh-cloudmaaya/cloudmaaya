@@ -505,6 +505,8 @@ class LookProduct(models.Model):
     cropped_dimensions = models.CharField(max_length=2000, blank=True, null=True)
     layout_position = models.IntegerField(db_column='sequence')
     product = models.ForeignKey(Product, db_column='raw_product_id')
+    in_collage = models.BooleanField(default=True)
+    cropped_image_code = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False

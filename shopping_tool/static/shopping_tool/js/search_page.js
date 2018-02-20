@@ -255,8 +255,8 @@ var search_page = {
     var retail = details.retail_price;
     var sale = details.sale_price;
     var price_display = '';
-    var merch = '<span class="merch">' + details.merchant_name + '</span>';
-    var manu = '<span class="manu">' + details.manufacturer_name + '</span>';    
+    var merch = ' at ' + details.merchant_name;
+    var manu = details.manufacturer_name;    
     if((sale >= retail)||(sale == 0)){
       price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
     }else{
@@ -288,8 +288,9 @@ var search_page = {
       '" data-productid="' + details.id + '" data-merchantid="' + details.merchant_id + 
       '"><img src="' + details.product_image_url + '"></a></div>' +
       '<a href="' + details.product_url + '"  title="' + details.product_name + 
-      '" target="_blank" class="name">' + details.product_name + '</a>' + 
-      manu + '' + price_display + '' + rack_link + '</div>';
+      '" target="_blank" class="name">' + details.product_name + '</a><span class="manu"' + 
+      ' title="' + manu + '' + merch + '">' + manu + '' + merch + 
+      '</span>' + price_display + '' + rack_link + '</div>';
   },
   /**
   * @description ajax call to get search results

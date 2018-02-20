@@ -181,7 +181,7 @@ class LookMetricsTestCase(APITestCase):
 
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['wpusers', 'allumestylingsessions', 'styling_session_notes', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite', 'lookmetrics']
+    fixtures = ['wpusers', 'allumestylingsessions', 'styling_session_notes', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite', 'lookmetrics', 'look_products']
 
     shopper = ''
     client = ''
@@ -385,14 +385,16 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         url = reverse("shopping_tool_api:look_item", kwargs={'pk':0})
 
+        old_look_products_count = LookProduct.objects.count()
+
         data = {"layout_position": 4,"look": 1,"product": 1}
         response = self.client.put(url, data)
 
         look_products_count = Look.objects.get(id=1).product_set.count()
 
         self.assertEqual(201, response.status_code)
-        self.assertEqual(LookProduct.objects.count(), 1)
-        self.assertEqual(look_products_count, 1)
+        self.assertEqual(LookProduct.objects.count(), old_look_products_count+1)
+        self.assertEqual(look_products_count, old_look_products_count+1)
 
 
     def test_update_look_item(self):
@@ -619,6 +621,23 @@ class ShoppingToolAPITestCase(APITestCase):
         response_data = json.loads(response.content)
 
         self.assertEqual("new info", Look.objects.get(pk=1).collage)
+
+    def test_update_cropped_image_code(self):
+        """
+        Test to verify updating the cropped_image_code field of a LookProduct
+        """
+        url = reverse("shopping_tool_api:update_cropped_image_code", kwargs={'pk': 4})
+
+        lp = LookProduct.objects.get(pk=4)
+
+        self.assertEqual(None, lp.cropped_image_code)
+
+        data = {"cropped_image_code": "payload"}
+        response = self.client.put(url, data)
+
+        lp = LookProduct.objects.get(pk=4)
+
+        self.assertEqual("payload", lp.cropped_image_code)
 
 ### Look Favs
 

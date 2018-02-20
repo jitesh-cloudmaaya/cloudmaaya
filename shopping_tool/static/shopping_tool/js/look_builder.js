@@ -16,7 +16,7 @@ var look_builder = {
   * @param {integer} at_load - id of currently being edited look or null
   */  
   editableLooksMarkup: function(looks){
-    console.log(looks)
+    //console.log(looks)
     var at_load = utils.readURLParams('look');
     var comp_looks = $('#compare-looks div.other-looks');
     var markup = [];
@@ -351,14 +351,22 @@ var look_builder = {
     }).on('click', 'a.send-front', function(e){
       e.preventDefault();
       collage.sendForward();
+    }).on('click', 'a.flip-x', function(e){
+      e.preventDefault();
+      collage.flipX();      
+    }).on('click', 'a.crop-image', function(e){
+      e.preventDefault();
+      collage.setUpCrop();      
+    }).on('click', 'a.bg-toggle', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var div = $('#canvas-container');
+      link.toggleClass('white');
+      div.toggleClass('white');   
     }).on('click','a.look-more-details', function(e){
       e.preventDefault();
       var link = $(this);
       look_builder.lookDetails(link);
-    }).on('blur', 'input#look-name', function(e){
-      look_builder.updateLook(false, null);
-    }).on('blur', 'textarea#look-desc', function(e){
-      look_builder.updateLook(false, null);
     }).on('click', '#finish-editing-look', function(e){
       e.preventDefault();
       var link = $(this);
@@ -457,6 +465,27 @@ var look_builder = {
         look_builder.orderedRack();
       }
     });
+    $('#cropper-btns').find('a.crop').click(function(e){
+      e.preventDefault();
+      collage.cropImage();
+    }).end().find('a.restart').click(function(e){
+      e.preventDefault();
+      var data = $(this).data();
+      collage.cropper.clear();
+      collage.setUpCropperImage(data.path, data.prodid, 'restart');
+    }).end().find('a.cancel').click(function(e){
+      e.preventDefault();
+      $('#crop-look-image').fadeOut();
+      collage.cropper = null;
+    }).end().find('a.save').click(function(e){
+      e.preventDefault();
+      collage.saveCrop($(this));
+    });
+    $('#close-crop-image').click(function(e){
+      e.preventDefault();
+      $('#crop-look-image').fadeOut();
+      collage.cropper = null;
+    })
   },
   /**
   * @description setup look builder page
@@ -738,7 +767,8 @@ var look_builder = {
         '<a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
         src + '"><i class="fa fa-plus-circle"></i></a>' +
         '<a href="#"  class="view" data-productid="' + data.productid + 
-        '"><i class="fa fa-search"></i></a></div>'
+        '"><i class="fa fa-search"></i></a><a href="#" class="remove" ' +
+        'data-lookitemid=""><i class="fa fa-times"></i></a></div>'
       );
     });
     return markup.join('');
@@ -759,10 +789,14 @@ var look_builder = {
           '</div><div class="collage-controls">'+
           '<a href="#" id="finish-editing-look" data-lookid="' + id + 
           '"><i class="fa fa-check"></i>finished editing look</a>' +
+          '<a class="bg-toggle checker-bg" data-balloon="toggle collage ' +
+          'background" data-balloon-pos="up" href="#"><em></em></a>' +
           '<a class="zoom-in" data-balloon="zoom in" data-balloon-pos="up" href="#">' +
           '<i class="fa fa-search-plus"></i></a>' +
           '<a class="zoom-out" data-balloon="zoom out" data-balloon-pos="up" href="#">' +
           '<i class="fa fa-search-minus"></i></a>' +
+          '<a class="flip-x" data-balloon="flip horizontal" data-balloon-pos="up" href="#">' +
+          '<i class="fa fa-refresh"></i></a>' +
           '<a class="shift-left" data-balloon="shift left" data-balloon-pos="up" href="#">' +
           '<i class="fa fa-chevron-left"></i></a>' +
           '<a class="shift-up" data-balloon="shift up" data-balloon-pos="up" href="#">' +
@@ -775,16 +809,77 @@ var look_builder = {
           '<i class="fa fa-reply"></i></a>' +
           '<a href="#" data-balloon="move to front" data-balloon-pos="up" class="send-front">' +
           '<i class="fa fa-share"></i></a>' +
-          '<a href="#" class="trash-obj"><i class="fa fa-trash"></i> remove product</a></div>' +
+          '<a href="#" data-balloon="crop image" data-balloon-pos="up" class="crop-image">' +
+          '<i class="fa fa-crop"></i></a>' +
+          '<a href="#" class="trash-obj" data-balloon="remove product" data-balloon-pos="up">' +
+          '<i class="fa fa-trash"></i></a></div>' +
           '<span class="collage-sep"></span>' +
           '<table class="collage-meta-fields"><tr><td>' +
           '<label>Name</label><input id="look-name" value="' + 
-          result.name + '"/><a href="#" class="look-more-details" data-look="' + id + '">' +
-          '<i class="fa fa-search"></i>view more details about this look</a>' +
-          '</td><td><label>Description</label><textarea id="look-desc">' + 
-          result.description + '</textarea></td></tr></table>' +
+          result.name + '"/><label>Description</label><textarea id="look-desc">' + 
+          result.description + '</textarea></td><td><label>Additional Products</label>' +
+          '<div id="non-collage-items"></div><a href="#" class="look-more-details" data-look="' + id + 
+          '"><i class="fa fa-search"></i>view more details about this look</a></td></tr></table>' +
           '<input type="hidden" id="look-id" value="' + id + '"/>'
         );
+        collage.collageSortable = null;
+        collage.collageSortable = new Sortable($('#canvas-container')[0], {
+          group: { name: "look", pull: false, put: true },
+          sort: false,
+          onAdd: function (evt) {
+            var el = evt.item;
+            var adding = $('#adding-product').length;
+            if(adding == 0){
+             $('#look-drop').append(
+                '<div id="adding-product"><div class="loading-prod">' +
+                '</div><span class="loading-prod-msg">adding product ' + 
+                'to look...</span></div>'
+              );            
+              collage.addCanvasImage(el.dataset.productid, el.dataset.url);
+            }
+            el.parentNode.removeChild(el);
+          }
+        });
+        new Sortable($('#non-collage-items')[0], {
+          group: { name: "look", pull: false, put: true },
+          sort: false,
+          onAdd: function (evt) {
+            var item = $(evt.item)
+            var data = evt.item.dataset;
+            var look_product_obj = {
+              layout_position: 100,
+              look: parseInt($('input#look-id').val()),
+              product: parseInt(data.productid),
+              cropped_dimensions: null,
+              in_collage: 'False',
+              cropped_image_code: null      
+            }
+            $.ajax({
+              contentType : 'application/json',
+              data: JSON.stringify(look_product_obj),
+              success:function(response){
+                item.find('a.remove').data('lookitemid', response.id)
+                collage.addAllumeProduct(response.product, response.id);
+              },
+              type: 'PUT',
+              url: '/shopping_tool_api/look_item/0/'
+            });
+          }
+        });
+        $('#non-collage-items').on('click', 'a.remove', function(e){
+          e.preventDefault();
+          var link = $(this);
+          var lookitm = link.data('lookitemid');
+          link.closest('div.item').remove();
+          $.ajax({
+            success:function(response){},
+            type: 'DELETE',
+            url: '/shopping_tool_api/look_item/' + lookitm + '/'
+          });
+        })
+        $('#canvas-container').mousedown(function(){
+          collage.collageSortable.option("disabled", true);
+        })
         result.look_products.sort(function(a,b){
           if(a.layout_position < b.layout_position){ return 1}
           if(a.layout_position > b.layout_position){ return -1}
@@ -841,7 +936,13 @@ var look_builder = {
       handle: ".handle",
       group: { name: "look", pull: 'clone', put: false },
       sort: true,
-      draggable: ".item"
+      draggable: ".item",
+      onStart: function(){
+        var cc = $('#canvas-container');
+        if(cc.length > 0){
+          collage.collageSortable.option('disabled', false);
+        }
+      }
     });  
   },
   /**
@@ -916,37 +1017,67 @@ var look_builder = {
   },
   /**
   * @description update a look with any changes to its fields
-  * @param {boolean} redraw - true/false to redraw the look in the comp looks section 
   * @param {DOM Object} div - div to be updated with new display
+  * @param {integer} look_id - id of the look to update
+  * @param {string} look_name - look name
+  * @param {string} look_desc - look description
   */
-  updateLook: function(redraw, div){
-    var changes = collage.canvas.toObject();
-    var src = null;
-    if(changes.objects.length > 0){
-      src = collage.canvas.toDataURL('image/png')
-    }
-    var look_id = $('input#look-id').val();
-    var look_obj = {
-     "name": $('#look-name').val(),
-     "description": $('#look-desc').val(),
-     "allume_styling_session": look_builder.session_id,
-     "stylist": look_builder.stylist_id,
-     "collage": src
-    }
-    $.ajax({
-      contentType : 'application/json',
-      data: JSON.stringify(look_obj),
-      success:function(response){
-        if(redraw == true){
+  updateLook: function(div, look_id, look_name, look_desc){
+    /* before we can update the look we need to add the watermark to the collage */
+    var img = new Image(); 
+    /* watermarl path */
+    img.src = '/static/shopping_tool/image/allume_watermark.png';
+    img.onload = function() {
+      /* scale: 0.15, left: 657, and top: 393 based upon 1365 x 284 watermark dimensions */
+      var scale = 0.15;
+      var fImg = new fabric.Cropzoomimage(this, {
+        originX: 'center',
+        originY: 'center',
+        left: 657,
+        top: 393,
+        scaleX: scale,
+        scaleY: scale,
+        prod_id: 'watermark'
+      });
+      collage.canvas.add(fImg);
+      /* since we are saving as high quality jpeg we need to set the canvas bg to white */
+      collage.canvas.backgroundColor = '#ffffff';
+      /* set the watermark as unselectable so we don;t get the outline in the jpeg */
+      fImg.selectable = false;
+      collage.canvas.setActiveObject(fImg);
+      /* call render all to pick up new background */
+      collage.canvas.renderAll();
+      /* get base64 jpeg of canvas */
+      var src = collage.canvas.toDataURL({
+        format: 'jpeg',
+        quality: 1,
+      });
+      /* the look object to save */
+      var look_obj = {
+        "name": look_name,
+        "description": look_desc,
+        "allume_styling_session": look_builder.session_id,
+        "stylist": look_builder.stylist_id,
+        "collage": src
+      }
+      /* update the look with the new values */
+      $.ajax({
+        contentType : 'application/json',
+        data: JSON.stringify(look_obj),
+        success:function(response){
           $.get('/shopping_tool_api/look/' + look_id + '/', function(result){
             div.before(look_builder.lookMarkupGenerator(result, 'comp', null));
             div.remove();
           });
-        }
-      },
-      type: 'PUT',
-      url: '/shopping_tool_api/look/' + look_id + '/'
-    });  
+        },
+        type: 'PUT',
+        url: '/shopping_tool_api/look/' + look_id + '/'
+      });
+      /* reset the collage cache holders so collage is ready for new look to edit */
+      collage.canvas = null;
+      collage.initial_load = null;
+      collage.product_cache = null;      
+    }     
   },
   /**
   * @description update looks categories when tabs are clicked in publish
