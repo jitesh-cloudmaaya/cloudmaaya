@@ -390,6 +390,30 @@ def update_look_collage_image_data(request, pk=None):
 
     return JsonResponse(request.data, safe=False)
 
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
+def update_cropped_image_code(request, pk=None):
+    """
+    Update the cropped_image_code of a LookProduct.
+
+    /shopping_tool_api/update_cropped_image_code/{lookproduct_id}/
+
+    Sample JSON object
+    {
+        "cropped_image_code": "payload",
+    }
+    """
+    try:
+        lookproduct = LookProduct.objects.get(id=pk)
+    except LookProduct.DoesNotExist:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+    lookproduct.cropped_image_code = request.data['cropped_image_code']
+    lookproduct.save()
+
+    return JsonResponse(request.data, safe=False)
+
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
 @permission_classes((AllowAny, ))
