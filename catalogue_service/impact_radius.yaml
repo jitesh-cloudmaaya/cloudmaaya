@@ -58,7 +58,7 @@ ftp_config:
   host: products.impactradius.com
   user: ps-ftp_380198
   password: 4JC:)nto7P
-clean_data_method: impact_radius.impact_radius(self._local_temp_dir self._fields)
+clean_data_method: impact_radius.impact_radius(self._local_temp_dir, self._fields)
 
 # TO CHNAGE
 table: please change this
