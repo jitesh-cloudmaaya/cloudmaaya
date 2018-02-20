@@ -26,6 +26,7 @@ class Migration(migrations.Migration):
                     ('product_clipped_stylist_id', models.BigIntegerField()),
                     ('cropped_dimensions', models.TextField(blank=True, null=True)),
                     ('raw_product_id', models.IntegerField(default=100)),
+                    ('in_collage', models.BooleanField(default=True)),
                 ],
                 options={
                     'db_table': 'allume_look_products',
