@@ -146,6 +146,7 @@ var collage = {
   * @description field to hold reference to canvas sortable object
   */  
   collageSortable: null,
+  cropper: null,
   /**
   * @description flip active canvas object horizontally
   */
@@ -240,6 +241,113 @@ var collage = {
     if (activeObject) {
       collage.canvas.bringToFront(activeObject);
     }
+  },
+  setUpCrop: function(){
+    var activeObject = collage.canvas.getActiveObject();
+    if (activeObject) {
+      $('#cropper-container').html('<canvas id="crop-canvas" width="415" height="415"></canvas>');
+      collage.cropper = new fabric.Canvas('crop-canvas');
+      collage.setUpCropperImage(activeObject.orgSrc, activeObject.prod_id, 'initial');
+      $('#cropper-btns').find('a.restart').data('path', activeObject.orgSrc)
+      .data('prodid', activeObject.prod_id).end()
+      .find('a.save').data('prodid', activeObject.prod_id);
+    }    
+  },
+  setUpCropper: function() { 
+    var obj = collage.cropper.getActiveObject(); 
+    var el = new fabric.Rect({
+      fill: 'transparent',
+      originX: 'center',
+      originY: 'center',
+      stroke: '#555',
+      strokeDashArray: [7, 7],
+      opacity: 1,
+      width: 1,
+      height: 1,
+      cornerColor: '#333',
+      borderColor: 'transparent',
+      hasRotatingPoint:false,
+      objectCaching: false
+    });
+    el.left = collage.cropper.getWidth()/2;
+    el.top = collage.cropper.getHeight()/2;
+    el.width = obj.width * obj.scaleX;
+    el.height = obj.height * obj.scaleY;
+    collage.cropper.add(el);
+    collage.cropper.setActiveObject(el);
+    obj.selectable = false
+  },  
+  setUpCropperImage: function(src, prod_id, time){
+    var img = new Image();
+    img.src = src;
+    img.onload = function() {
+      var scale = 1;
+      if(this.naturalHeight > 395){
+        scale = 395 / this.naturalHeight 
+      }
+      var dims = {
+        originX: 'center',
+        originY: 'center',
+        left: collage.cropper.getWidth()/2,
+        top: collage.cropper.getHeight()/2,
+        scaleX: scale,
+        scaleY: scale,
+        prod_id: prod_id
+      }
+      var fImg = new fabric.Cropzoomimage(this, dims);
+      collage.cropper.add(fImg);
+      collage.cropper.setActiveObject(fImg);
+      collage.setUpCropper();
+      if(time == 'initial'){
+        $('#crop-look-image').fadeIn();
+        $('#adding-product').remove();
+      }
+    };
+  },
+  cropImage: function(){
+    var rectangle = collage.cropper.getActiveObject();
+    var cropped = new Image();
+    rectangle.visible = false
+    cropped.src = collage.cropper.toDataURL({
+        left: rectangle.aCoords.tl.x,
+        top: rectangle.aCoords.tl.y,
+        width: rectangle.width * rectangle.scaleX,
+        height: rectangle.height * rectangle.scaleY
+    });
+    cropped.onload = function() {
+        collage.cropper.clear();
+        var image = new fabric.Image(cropped);
+        image.left = rectangle.left;
+        image.top = rectangle.top;
+        image.originX = 'center';
+        image.originY = 'center';
+        image.setCoords();
+        collage.cropper.add(image);
+        collage.cropper.setActiveObject(image);
+
+        var el = new fabric.Rect({
+          fill: 'transparent',
+          originX: 'center',
+          originY: 'center',
+          stroke: '#555',
+          strokeDashArray: [7, 7],
+          opacity: 1,
+          width: 1,
+          height: 1,
+          cornerColor: '#333',
+          borderColor: 'transparent',
+          hasRotatingPoint:false,
+          objectCaching: false
+        });
+        el.left = rectangle.left;
+        el.top = rectangle.top;
+        el.width = image.width * image.scaleX;
+        el.height = image.height * image.scaleY;
+        collage.cropper.add(el);
+        collage.cropper.setActiveObject(el);
+        image.selectable = false
+        collage.cropper.renderAll();
+    };    
   },
   /**
   * @description extend fabric with our new object class name 

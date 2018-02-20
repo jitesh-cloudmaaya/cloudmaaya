@@ -354,6 +354,15 @@ var look_builder = {
     }).on('click', 'a.flip-x', function(e){
       e.preventDefault();
       collage.flipX();      
+    }).on('click', 'a.crop-image', function(e){
+      e.preventDefault();
+      collage.setUpCrop();      
+    }).on('click', 'a.bg-toggle', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var div = $('#canvas-container');
+      link.toggleClass('white');
+      div.toggleClass('white');   
     }).on('click','a.look-more-details', function(e){
       e.preventDefault();
       var link = $(this);
@@ -460,6 +469,24 @@ var look_builder = {
         look_builder.orderedRack();
       }
     });
+    $('#cropper-btns').find('a.crop').click(function(e){
+      e.preventDefault();
+      collage.cropImage();
+    }).end().find('a.restart').click(function(e){
+      e.preventDefault();
+      var data = $(this).data();
+      collage.cropper.clear();
+      collage.setUpCropperImage(data.path, data.prodid, 'restart');
+    }).end().find('a.cancel').click(function(e){
+      e.preventDefault();
+      $('#crop-look-image').fadeOut();
+      collage.cropper = null;
+    });
+    $('#close-crop-image').click(function(e){
+      e.preventDefault();
+      $('#crop-look-image').fadeOut();
+      collage.cropper = null;
+    })
   },
   /**
   * @description setup look builder page
@@ -762,6 +789,8 @@ var look_builder = {
           '</div><div class="collage-controls">'+
           '<a href="#" id="finish-editing-look" data-lookid="' + id + 
           '"><i class="fa fa-check"></i>finished editing look</a>' +
+          '<a class="bg-toggle checker-bg" data-balloon="toggle collage ' +
+          'background" data-balloon-pos="up" href="#"><em></em></a>' +
           '<a class="zoom-in" data-balloon="zoom in" data-balloon-pos="up" href="#">' +
           '<i class="fa fa-search-plus"></i></a>' +
           '<a class="zoom-out" data-balloon="zoom out" data-balloon-pos="up" href="#">' +
@@ -780,7 +809,10 @@ var look_builder = {
           '<i class="fa fa-reply"></i></a>' +
           '<a href="#" data-balloon="move to front" data-balloon-pos="up" class="send-front">' +
           '<i class="fa fa-share"></i></a>' +
-          '<a href="#" class="trash-obj"><i class="fa fa-trash"></i> remove product</a></div>' +
+          '<a href="#" data-balloon="crop image" data-balloon-pos="up" class="crop-image">' +
+          '<i class="fa fa-crop"></i></a>' +
+          '<a href="#" class="trash-obj" data-balloon="remove product" data-balloon-pos="up">' +
+          '<i class="fa fa-trash"></i></a></div>' +
           '<span class="collage-sep"></span>' +
           '<table class="collage-meta-fields"><tr><td>' +
           '<label>Name</label><input id="look-name" value="' + 

@@ -778,6 +778,7 @@ div#rack-btns span {
 #close-lb,
 #close-lb-pre,
 #look-indepth a.close-indepth,
+#close-crop-image,
 #inspect-item a.close-inspect {
   color:#bbb;
   font-size:20px;
@@ -794,6 +795,7 @@ div#rack-btns span {
 #cancel-new-look:hover,
 #close-design-look:hover,
 #cancel-edit-look:hover,
+#close-crop-image:hover,
 #look-indepth a.close-indepth:hover,
 #inspect-item a.close-inspect:hover,
 #close-lb:hover,
@@ -802,6 +804,7 @@ div#rack-btns span {
 #cancel-new-look:active,
 #close-design-look:active,
 #cancel-edit-look:active,
+#close-crop-image:active,
 #close-lb:active,
 #close-lb-pre:active,
 #look-indepth a.close-indepth:active,
@@ -1316,6 +1319,7 @@ div.layout-option span.name {
 
 #create-look,
 #creating-look,
+#crop-look-image,
 #updating-crop,
 #publish-lookbook-overlay,
 #preview-lookbook-overlay,
@@ -1345,6 +1349,17 @@ div.indepth-loading {
   top:calc(50% - 240px);
   width:600px;
   z-index:201;
+}
+#crop-look-image div.stage {
+  background:#fff;
+  border-radius:5px;
+  box-shadow:0 0 3px rgba(0,0,0,0.8);
+  height:545px;
+  left:calc(50% - 222.5px);
+  position:absolute;
+  top:calc(50% - 272.5px);
+  width:445px;
+  z-index:201;  
 }
 #publish-lookbook-overlay div.stage,
 #preview-lookbook-overlay div.stage,
@@ -1437,7 +1452,8 @@ div.indepth-loading {
 div.indepth-loading span.pulse_loader {margin:45px 0 0 75px;}
 #create-look div.stage h2,
 #publish-lookbook-overlay h2,
-#preview-lookbook-overlay h2{
+#preview-lookbook-overlay h2,
+#crop-look-image div.stage h2{
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;
@@ -3401,16 +3417,22 @@ div.rd-time-option:hover {background:#eee;color:#000;}
 }
 
 
-div#canvas-container {
+div#canvas-container,
+div#cropper-container {
   border:1px solid #d0d0d0;
   background-image: url(data:image/gif;base64,R0lGODlhCgAKAIAAAOLi4v///yH5BAAHAP8ALAAAAAAKAAoAAAIRhB2ZhxoM3GMSykqd1VltzxQAOw==);
   height:415px;
   margin:15px auto 0;
   width:760px;
 }
+div#canvas-container.white {background:#fff;}
+div#cropper-container { width:415px;  }
+
 div#canvas-container div.item {display:none;}
 div.collage-controls {margin:15px 16px;}
-div.collage-controls a {
+#cropper-btns {margin:15px auto; width:397px;}
+div.collage-controls a,
+#cropper-btns a {
   background:#fafafa;
   border:1px solid #ccc;
   border-right:0px;
@@ -3423,26 +3445,45 @@ div.collage-controls a {
   text-decoration:none;
   text-transform: uppercase;
 }
+div.collage-controls a.bg-toggle em {
+  border:1px solid #ccc;
+  border-radius:3px;
+  display:block;  
+  height:14px;
+  width:14px;
+}
+div.collage-controls a.bg-toggle.checker-bg em {background-image: url(data:image/gif;base64,R0lGODlhCgAKAIAAAOLi4v///yH5BAAHAP8ALAAAAAAKAAoAAAIRhB2ZhxoM3GMSykqd1VltzxQAOw==);}
+div.collage-controls a.bg-toggle.checker-bg.white em {background:#fff;}
+#cropper-btns a:nth-of-type(1),
+#cropper-btns a:nth-of-type(4),
 div.collage-controls a:nth-of-type(2),
-div.collage-controls a:nth-of-type(5),
+div.collage-controls a:nth-of-type(3),
+div.collage-controls a:nth-of-type(6),
 div.collage-controls a.send-back {
   border-top-left-radius:5px;
   border-bottom-left-radius:5px;
 }
-div.collage-controls a:nth-of-type(4),
-div.collage-controls a:nth-of-type(8),
-div.collage-controls a.send-front {
+#cropper-btns a:nth-of-type(3),
+div.collage-controls a:nth-of-type(2),
+div.collage-controls a:nth-of-type(5),
+div.collage-controls a:nth-of-type(9),
+#cropper-btns a:nth-of-type(5),
+div.collage-controls a.crop-image
+/*,div.collage-controls a.send-front*/ {
   border-top-right-radius:5px;
   border-bottom-right-radius:5px;
   border-right:1px solid #ccc;
   margin-right:10px;
 }
+#cropper-btns a:nth-of-type(5) {margin:0;}
 div.collage-controls a#finish-editing-look {float:right; border-radius:5px; border-right:1px solid #ccc; margin-left:35px;}
 div.collage-controls a.trash-obj {border-radius:5px; border-right:1px solid #ccc;}
-div.collage-controls a.trash-obj i,
-div.collage-controls a#finish-editing-look i {padding-right:5px;}
-div.collage-controls a:hover {background:#eee;}
-div.collage-controls a:active {
+div.collage-controls a#finish-editing-look i,
+#cropper-btns a i {padding-right:5px;}
+div.collage-controls a:hover,
+#cropper-btns a:hover {background:#eee;}
+div.collage-controls a:active,
+#cropper-btns a:active {
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.2);
 }
