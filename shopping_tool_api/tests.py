@@ -385,14 +385,16 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         url = reverse("shopping_tool_api:look_item", kwargs={'pk':0})
 
+        old_look_products_count = LookProduct.objects.count()
+
         data = {"layout_position": 4,"look": 1,"product": 1}
         response = self.client.put(url, data)
 
         look_products_count = Look.objects.get(id=1).product_set.count()
 
         self.assertEqual(201, response.status_code)
-        self.assertEqual(LookProduct.objects.count(), 1)
-        self.assertEqual(look_products_count, 1)
+        self.assertEqual(LookProduct.objects.count(), old_look_products_count+1)
+        self.assertEqual(look_products_count, old_look_products_count+1)
 
 
     def test_update_look_item(self):
