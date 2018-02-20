@@ -27,6 +27,7 @@ class Migration(migrations.Migration):
                     ('cropped_dimensions', models.TextField(blank=True, null=True)),
                     ('raw_product_id', models.IntegerField(default=100)),
                     ('in_collage', models.BooleanField(default=True)),
+                    ('cropped_image_code', models.TextField(blank=True, null=True))
                 ],
                 options={
                     'db_table': 'allume_look_products',
