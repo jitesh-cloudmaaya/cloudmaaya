@@ -149,7 +149,6 @@ def get_product(self, product_id):
     # grab and add_source field dict to add field for API call
     for hit in results_dict['hits']['hits']:
         hit['_source']['product_api_merchant'] = merchant_id
-    print len(results_dict['hits'])
 
     total_count = s.count()
     page = 1
