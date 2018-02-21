@@ -224,8 +224,8 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     if shipping != None:
                         record['shipping_price'] = shipping
 
-                    merchant_color = product['color']
-                    record['merchant_color'] = merchant_color
+                    record['merchant_color'] = product['color']
+                    merchant_color = product['color'].lower()
                     try:
                         allume_color = color_mapping[merchant_color]
                     except:
