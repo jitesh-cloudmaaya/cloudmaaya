@@ -87,15 +87,43 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             allume_color = u'other'
                         record['color'] = allume_color
 
+                        availability = datum['Stock Availability']
+                        if availability == 'Y':
+                            availability = 'yes'
+                        else:
+                            availability = availability
+                        record['availability'] = availability
+
                         record['age'] = datum['Age Range']
                         record['manufacturer_name'] = datum['Manufacturer']
                         record['long_product_description'] = datum['Product Description']
                         record['short_product_description'] = datum['Product Description']
                         record['product_name'] = datum['Product Name']
                         record['size'] = datum['Size']
+                        record['manufacturer_part_number'] = datum['MPN']
+                        record['product_type'] = datum['Product Type']
+                        record['gender'] = datum['Gender']
+                        record['product_url'] = datum['Product URL']
+                        record['product_image_url'] = datum['Image URL']
+                        record['primary_category'] = datum['Category']
 
-                        print record
-                        return
+                        # open the other file for any potentially useful info
+                        second_file = file_list[1]
+                        with open(second_file, "r") as csvfile2:
+                            print '====================================== beginning second file for now ==========================================='
+
+                            more_lines = csvfile2.readlines()
+                            # product_id is custom_label_4???
+                            reader2 = csv.DictReader(more_lines, restval = '', dialect = 'reading')
+                            for datum in reader2:
+                                for key, value in datum.iteritems():
+                                    datum[key] = value.decode('UTF-8')
+
+                                for key, value in datum.iteritems():
+                                    print (key, value)
+
+                                print record
+                                return
 
 
 
@@ -103,25 +131,18 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 # still need to get these fields
 # - product_id
 # - merchant_id
-# - product_url
 # - raw_product_url
-# - product_image_url
 # - buy_url
-# - manufacturer_part_number
 # - SKU
-# - product_type
 # - discount
 # - discount_type
 # - sale_price
 # - retail_price
 # - shipping_price
-# - gender
 # - style
 # - material
 # - currency
-# - availability
 # - keywords
-# - primary_category
 # - secondary_category
 # - allume_category
 # - brand
