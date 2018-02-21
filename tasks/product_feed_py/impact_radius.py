@@ -6,6 +6,7 @@ import csv
 from . import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR
 from product_api.models import Merchant, CategoryMap
+from itertools import izip
 
 def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     # mappings
@@ -41,92 +42,78 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
         cleaned_fieldnames = cleaned_fields.split(',')
         writer = csv.DictWriter(cleaned, cleaned_fieldnames, dialect = 'writing')
 
-
         # work with hard coded assumptions for now
         product_catalog_IR = file_list[0] # should be DSW-Product-Catalog_IR.txt
-        with open(product_catalog_IR, "r") as csvfile:
-            # header = csvfile.readline()
-            # header = header.decode('UTF-8')
-            # header = header.split('\t')
+        product_catalog_GOOGLE = file_list[1] # should be DSW-Product-Catalog_GOOGLE_TXT.txt
 
-            # print header
+        # rewrite the process to use both files
+        with open(product_catalog_IR, "r") as file1, open(product_catalog_GOOGLE, "r") as file2:
+            lines1 = file1.readlines()
+            lines2 = file2.readlines()
 
-            lines = csvfile.readlines()
-            # lines = lines[-1]
-
-            # need to figure out how or if to use catalog_GOOGLE_TXT.txt?
-
+            # need some way to identify the merchants??
             # merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
             merchant_is_active = 1
             if merchant_is_active:
-                reader = csv.DictReader(lines, restval = '', dialect = 'reading') # omit fieldnames to use header
-                for datum in reader:
+                # omit fieldnames to use header lines
+                reader1 = csv.DictReader(lines1, restval = '', dialect = 'reading')
+                reader2 = csv.DictReader(lines2, restval = '', dialect = 'reading')
+
+                for datum1, datum2 in izip(reader1, reader2): # handle when/if the files are of two different lengths
                     totalCount += 1
 
-                    for key, value in datum.iteritems():
-                        datum[key] = value.decode('UTF-8')
+                    # unicode sandwich stuff
+                    for key, value in datum1.iteritems():
+                        datum1[key] = value.decode('UTF-8')
+                    for key, value in datum2.iteritems():
+                        datum2[key] = value.decode('UTF-8')
 
-                    for key, value in datum.iteritems():
+                    # print statements
+                    for key, value in datum1.iteritems():
+                        print (key, value)
+                    for key, value in datum2.iteritems():
                         print (key, value)
 
-                    # unpack relevant data and do skipping checks ere
-
+                    # unpack relevant data and do skipping checks here
 
                     # allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
                     allume_category = 'allume_category'
                     if allume_category:
                         record = {}
 
-
-
-                        record['merchant_color'] = datum['Color']
-                        merchant_color = datum['Color'].lower()
+                        record['merchant_color'] = datum1['Color']
+                        merchant_color = datum1['Color'].lower()
                         try:
                             allume_color = color_mapping[merchant_color]
                         except:
                             allume_color = u'other'
                         record['color'] = allume_color
 
-                        availability = datum['Stock Availability']
+                        availability = datum1['Stock Availability']
                         if availability == 'Y':
                             availability = 'yes'
                         else:
                             availability = availability
                         record['availability'] = availability
 
-                        record['age'] = datum['Age Range']
-                        record['manufacturer_name'] = datum['Manufacturer']
-                        record['long_product_description'] = datum['Product Description']
-                        record['short_product_description'] = datum['Product Description']
-                        record['product_name'] = datum['Product Name']
-                        record['size'] = datum['Size']
-                        record['manufacturer_part_number'] = datum['MPN']
-                        record['product_type'] = datum['Product Type']
-                        record['gender'] = datum['Gender']
-                        record['product_url'] = datum['Product URL']
-                        record['product_image_url'] = datum['Image URL']
-                        record['primary_category'] = datum['Category']
+                        record['age'] = datum1['Age Range']
+                        record['manufacturer_name'] = datum1['Manufacturer']
+                        record['long_product_description'] = datum1['Product Description']
+                        record['short_product_description'] = datum1['Product Description']
+                        record['product_name'] = datum1['Product Name']
+                        record['size'] = datum1['Size']
+                        record['manufacturer_part_number'] = datum1['MPN']
+                        record['product_type'] = datum1['Product Type']
+                        record['gender'] = datum1['Gender']
+                        record['product_url'] = datum1['Product URL']
+                        record['product_image_url'] = datum1['Image URL']
+                        record['primary_category'] = datum1['Category']
 
-                        # open the other file for any potentially useful info
-                        second_file = file_list[1]
-                        with open(second_file, "r") as csvfile2:
-                            print '====================================== beginning second file for now ==========================================='
+                        # need to ascertain
+                        record['product_id'] = datum2['custom_label_4']
 
-                            more_lines = csvfile2.readlines()
-                            # product_id is custom_label_4???
-                            reader2 = csv.DictReader(more_lines, restval = '', dialect = 'reading')
-                            for datum in reader2:
-                                for key, value in datum.iteritems():
-                                    datum[key] = value.decode('UTF-8')
-
-                                for key, value in datum.iteritems():
-                                    print (key, value)
-
-                                print record
-                                return
-
-
-
+                        print record
+                        return
 
 # still need to get these fields
 # - product_id
