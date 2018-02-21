@@ -75,6 +75,11 @@ class Merchant(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['name'])
+        ]
+
 class MerchantCategory(models.Model):
     external_merchant_id = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=128, blank=True, null=True)
@@ -109,6 +114,9 @@ class AllumeCategory(models.Model):
 
     class Meta:
         verbose_name_plural = "Allume Categories"
+        indexes = [
+            models.Index(fields=['name'])
+        ]
 
 class CategoryMap(models.Model):
     external_cat1 = models.CharField(max_length=150, blank=True, null=True)
@@ -122,6 +130,12 @@ class CategoryMap(models.Model):
 
     def __str__(self):
         return self.external_cat1 + ": " + self.external_cat2
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['external_cat1']),
+            models.Index(fields=['external_cat2']),
+        ]
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
