@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from product_feed_py.pepperjam import generate_product_id
 from .product_feed_py.mappings import *
+from product_feed_py.product_feed_helpers import *
 
 # Create your tests here.
 class GenerateProductIdTestCase(TestCase):
@@ -23,6 +24,34 @@ class GenerateProductIdTestCase(TestCase):
         # sku + merchant id is very long
         self.assertEqual(u'6592220150063020212', generate_product_id(u'65IVTO006-TUVMQU5HRSBHUkVZ0', u'38014'))
 
+class SeperateSizeTestCase(TestCase):
+    """
+    Tests the behavior of the seperate_sizes function for splitting sizes.
+    """
+
+    def test_split_commas(self):
+        """
+        Tests that seperate_sizes handles comma delimited size fields correctly.
+        """
+        self.assertEqual(['L','M','S'], seperate_sizes('L,M,S'))
+        self.assertEqual(['X-LARGE', 'LARGE', 'MEDIUM', 'SMALL'], seperate_sizes('X-LARGE,,LARGE,MEDIUM,SMALL'))
+        self.assertEqual(['13', '12', '15', '18'], seperate_sizes('  13,  12,   15,,,18'))
+
+    def test_split_hyphens(self):
+        """
+        Tests that seperate_sizes handles hyphen delimited size fields correctly.
+        """
+        return # remove this when split on hyphen implemented
+        self.assertEqual(['L', 'M', 'S'], seperate_sizes('L - M - S'))
+        self.assertEqual(['L', 'M', 'S'], seperate_sizes('L -- M -- S'))
+        self.assertEqual(['L', 'M', 'S'], seperate_sizes('   L--  M -   S '))
+
+        self.assertEqual(['X-LARGE', 'LARGE', 'MEDIUM'], seperate_sizes('X-LARGE, LARGE, MEDIUM'))
+        self.assertEqual(['M(6-8)'], seperate_sizes('M(6-8)'))
+
+        # not sure on the assertions on expected for these two
+        self.assertEqual(['XS B-C CUP', 'XS D CUP', 'SM B-C CUP', 'SM D CUP', 'LXL B-C', 'LXL D CUP'], seperate_sizes('XS B-C CUP - XS D CUP - SM B-C CUP - SM D CUP - LXL B-C - LXL D CUP'))
+        self.assertEqual(['S-30IN-75CM'], seperate_sizes('S-30IN-75CM'))
 
 # class MappingsTestCase(TestCase):
 #     """
