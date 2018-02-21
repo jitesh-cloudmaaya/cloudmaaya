@@ -53,6 +53,12 @@ class Product(models.Model):
 
     class Meta:
         unique_together = (('product_id', 'merchant_id'))
+        indexes = [
+            models.Index(fields=['primary_category']),
+            models.Index(fields=['secondary_category']),
+            # models.Index(fields=['allume_category']),
+            # models.Index(fields=['merchant_name']),
+        ]
 
 class Network(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
