@@ -19,15 +19,16 @@ var initial_rack = [
     "rack_id": {{item.id}},
     "id": {{item.product.id}},
     "product_id": {{ item.product.product_id }},
-    "sku": "{{ item.product.sku}}",
+    "sku": "{{ item.product.sku }}",
     "merchant_id": {{ item.product.merchant_id }},
     "merchant_name": "{{ item.product.merchant_name }}",
     "manufacturer_name": "{{ item.product.manufacturer_name }}",
-    "product_image_url": "{{item.product.product_image_url}}",
-    "primary_category": "{{item.product.primary_category}}",
-    "allume_category": "{{item.product.allume_category}}",
-    "retail_price": {{item.product.retail_price}},
-    "sale_price" : {{item.product.sale_price}}
+    "product_name": "{{ item.product.product_name }}",
+    "product_image_url": "{{ item.product.product_image_url }}",
+    "primary_category": "{{ item.product.primary_category }}",
+    "allume_category": "{{ item.product.allume_category }}",
+    "retail_price": {{ item.product.retail_price }},
+    "sale_price" : {{ item.product.sale_price }}
   },
 {% endfor %} 
 ];
@@ -39,15 +40,16 @@ var stylist_favorites = [
   { 
     "id": {{item.product.id}},
     "product_id": {{ item.product.product_id }},
-    "sku": "{{ item.product.sku}}",
+    "sku": "{{ item.product.sku }}",
     "merchant_id": {{ item.product.merchant_id }},
     "merchant_name": "{{ item.product.merchant_name }}",
     "manufacturer_name": "{{ item.product.manufacturer_name }}",
-    "product_image_url": "{{item.product.product_image_url}}",
-    "primary_category": "{{item.product.primary_category}}",
-    "allume_category": "{{item.product.allume_category}}",
-    "retail_price": {{item.product.retail_price}},
-    "sale_price" : {{item.product.sale_price}}
+    "product_name": "{{ item.product.product_name }}",
+    "product_image_url": "{{ item.product.product_image_url }}",
+    "primary_category": "{{ item.product.primary_category }}",
+    "allume_category": "{{ item.product.allume_category }}",
+    "retail_price": {{ item.product.retail_price }},
+    "sale_price" : {{ item.product.sale_price }}
   },
 {% endfor %} 
 ];
