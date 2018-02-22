@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from product_feed_py.pepperjam import generate_product_id
 from .product_feed_py.mappings import *
+from product_feed_py.product_feed_helpers import *
 
 # Create your tests here.
 class GenerateProductIdTestCase(TestCase):
@@ -12,6 +13,7 @@ class GenerateProductIdTestCase(TestCase):
     That is, ensure that the generated product_ids only consist of numeric characters, have a
     length no greater than 19, etc.
     """
+
     def test_generate_product_id(self):
         # both sku and merchant id are numeric
         self.assertEqual(u'82197041558', generate_product_id(u'821970', u'41558'))
@@ -22,6 +24,33 @@ class GenerateProductIdTestCase(TestCase):
         self.assertEqual(u'2621268302324973024', generate_product_id(u'ZUZH-WX97-XS', u'41846'))
         # sku + merchant id is very long
         self.assertEqual(u'6592220150063020212', generate_product_id(u'65IVTO006-TUVMQU5HRSBHUkVZ0', u'38014'))
+
+class ProductFeedHelpersTestCase(TestCase):
+    """
+    Tests the behavior of the methods used in product_feed_helpers.py. Useful for determining the behavior
+    of the methods across network data feeds to ascertain whether the error is in the helper or the method
+    of application. Furthermore, has uses in maintaining appropriate behavior of the functions even as 
+    more requirements are illuminated.
+    """
+
+    def test_parse_raw_product_url(self):
+        """
+        Tests that the parse_raw_product_url function grabs the appropriate parameter.
+        """
+        ran_product_url0 = 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=507227.11059255658&type=15&murl=https%3A%2F%2Fwww.thereformation.com%2Fproducts%2Fpoppy-dress-black'
+        ran_product_url1 = 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=396056.10149032802&type=15&murl=https%3A%2F%2Fwww.uniqlo.com%2Fus%2Fen%2Fws-hooded-jacket-134855COL15SMA005000.html%3Futm_source%3Dlinkshare%26utm_medium%3Dcse%26utm_term%3D134855-15-005-000'
+
+        pepperjam_product_url0 = 'http://www.pjtra.com/t/Qz9JREdDP0NHSURESj9JREdD?url=https%3A%2F%2Fwww.nordstromrack.com%2Fshop%2Fproduct%2F1877489'
+
+        impact_radius_product_url0 = 'http://dsw.pxf.io/c/380198/317666/4837?prodsku=58000000002119200010000Z0XLRG&u=https%3A%2F%2Fwww.dsw.com%2Fen%2Fus%2Fproduct%2Fhue-hosiery-opaque-tights%2F211920'
+
+        # ran
+        self.assertEqual('https://www.thereformation.com/products/poppy-dress-black', parse_raw_product_url(ran_product_url0, 'murl'))
+        self.assertEqual('https://www.uniqlo.com/us/en/ws-hooded-jacket-134855COL15SMA005000.html?utm_term=134855-15-005-000', parse_raw_product_url(ran_product_url1, 'murl'))
+        # pepperjam
+        self.assertEqual('https://www.nordstromrack.com/shop/product/1877489', parse_raw_product_url(pepperjam_product_url0, 'url'))
+        # impact_radius
+        self.assertEqual('https://www.dsw.com/en/us/product/hue-hosiery-opaque-tights/211920', parse_raw_product_url(impact_radius_product_url0, 'u'))
 
 
 # class MappingsTestCase(TestCase):
