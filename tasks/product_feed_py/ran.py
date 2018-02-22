@@ -160,7 +160,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         gender = gender.replace('MAN', 'MEN')
 
                         # check if gender makes record 'inactive'
-                        if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS': # girls and boys?
+                        skippedGenders = ['MEN', 'CHILD', 'KIDS', 'BOYS', 'GIRLS', 'BABY']
+                        if gender in skippedGenders:
                             genderSkipped += 1
                             continue
 

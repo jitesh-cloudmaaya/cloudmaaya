@@ -77,14 +77,16 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                     for key, value in datum2.iteritems():
                         datum2[key] = value.decode('UTF-8')
 
-                    # gender checking
+                    # gender pigeonholing
                     gender = datum1['Gender']
                     gender = gender.upper()
                     gender = gender.replace('FEMALE', 'WOMEN')
                     gender = gender.replace('MALE', 'MEN')
                     gender = gender.replace('MAN', 'MEN')
 
-                    if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS':
+                    # gender checking
+                    skippedGenders = ['MEN', 'CHILD', 'KIDS', 'BOYS', 'GIRLS', 'BABY']
+                    if gender in skippedGenders:
                         genderSkipped += 1
                         continue
 
@@ -188,12 +190,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     print('Updating non-upserted Impact Radius products')
     set_deleted_impact_radius_products()
 
-
-
-
-
-
-
 # need to add helper to infer deleted status
 def set_deleted_impact_radius_products(threshold = 12):
     """
@@ -212,11 +208,3 @@ def set_deleted_impact_radius_products(threshold = 12):
     datetime_threshold = datetime.now() - timedelta(hours = threshold)
     deleted_products = products.filter(updated_at__lte = datetime_threshold)
     deleted_products.update(is_deleted = True)
-
-
-
-
-
-
-
-
