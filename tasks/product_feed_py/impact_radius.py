@@ -138,9 +138,14 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             #or generate prod_id somehow
                             # record['product_id'] = generate_product_id(args)
 
-
-
                         record['brand'] = datum2['brand']
+
+                        # derived
+                        try:
+                            record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(record['product_url'], 'u')
+                        except Exception as e:
+                            print e
+                            record['raw_product_url'] = u''
 
                         # not from data
                         record['merchant_name'] = merchant_name
@@ -161,7 +166,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
 # still need to get these fields
 # - merchant_id
-# - raw_product_url
 # - buy_url
 # - discount
 # - discount_type
