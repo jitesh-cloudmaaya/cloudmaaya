@@ -122,15 +122,14 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['product_image_url'] = datum1['Image URL']
                         record['primary_category'] = datum1['Category']
                         record['SKU'] = datum1['Unique Merchant SKU']
-                        record['current_price'] = datum1['current_price']
-                        record['shipping_price'] = datum1['shipping_rate']
-                        record['']
+                        record['current_price'] = datum1['Current Price']
+                        record['shipping_price'] = datum1['Shipping Rate']
 
                         #datum2
                         record['product_id'] = datum2['custom_label_4'] # there is an instance of custom_label_3 having the product_id
                         # handling product_id in one of the custom labels
                         for i in range(0, 5):
-                            key = 'custom_label' + str(i)
+                            key = 'custom_label_' + str(i)
                             if datum2[key].isdigit(): # product_id can seemingly occur at place 3 or 4
                                 record['product_id'] = datum2[key]
                                 break
@@ -152,6 +151,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['allume_score'] = u'0'
                         # need to infer deleted?
                         record['is_deleted'] = u'0'
+                        print record
 
 
 
@@ -173,7 +173,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 # - keywords
 # - secondary_category
 # - allume_category
-# - current_price
 
                         # finish unicode sandwich
                         for key, value in record.iteritems():
