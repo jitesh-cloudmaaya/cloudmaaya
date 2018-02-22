@@ -12,6 +12,14 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING("Decompressing files"))
         pf.decompress_data()
 
+        self.stdout.write(self.style.WARNING("Cleaning files"))
+        pf.clean_data()
+
+        self.stdout.write(self.style.WARNING("Update API products table"))
+        pf.load_cleaned_data()
+
+        self.stdout.write(self.style.SUCCESS("Sucessfully updated API products table"))
+
         # rest of task is todo
     except Exception as e:
         self.stdout.write(self.style.ERROR("Failed"))
