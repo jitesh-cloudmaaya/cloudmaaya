@@ -53,6 +53,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
         pattern = re.compile('.*\/(.*?)-')
         result = re.search(pattern, product_catalog_IR) # maybe need to change??
         merchant_name = result.group(1)
+        merchant_id = u'432' # hardcoded for now
 
         # rewrite the process to use both files
         with open(product_catalog_IR, "r") as file1, open(product_catalog_GOOGLE, "r") as file2:
@@ -77,8 +78,11 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         datum2[key] = value.decode('UTF-8')
 
                     # print statements
+                    print '======================= start product %s ===============================' % str(totalCount)
+                    print '=================== info from IR ====================='
                     for key, value in datum1.iteritems():
                         print (key, value)
+                    print '=================== info from google ================='
                     for key, value in datum2.iteritems():
                         print (key, value)
 
@@ -104,6 +108,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             availability = availability
                         record['availability'] = availability
 
+                        #datum1
                         record['age'] = datum1['Age Range']
                         record['manufacturer_name'] = datum1['Manufacturer']
                         record['long_product_description'] = datum1['Product Description']
@@ -116,39 +121,58 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['product_url'] = datum1['Product URL']
                         record['product_image_url'] = datum1['Image URL']
                         record['primary_category'] = datum1['Category']
-                        record['merchant_name'] = merchant_name
+                        record['SKU'] = datum1['Unique Merchant SKU']
+                        record['current_price'] = datum1['current_price']
+                        record['shipping_price'] = datum1['shipping_rate']
+                        record['']
 
+                        #datum2
+                        record['product_id'] = datum2['custom_label_4'] # there is an instance of custom_label_3 having the product_id
+                        # handling product_id in one of the custom labels
+                        for i in range(0, 5):
+                            key = 'custom_label' + str(i)
+                            if datum2[key].isdigit(): # product_id can seemingly occur at place 3 or 4
+                                record['product_id'] = datum2[key]
+                                break
+                        if not record['product_id']: # it did not get set in above
+                            continue # skip this record ???
+                            #or generate prod_id somehow
+                            # record['product_id'] = generate_product_id(args)
+
+
+
+                        record['brand'] = datum2['brand']
+
+                        # not from data
+                        record['merchant_name'] = merchant_name
+                        record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         # defaults?
                         record['is_best_seller'] = u'0'
-                        record['is_tending'] = u'0'
+                        record['is_trending'] = u'0'
                         record['allume_score'] = u'0'
                         # need to infer deleted?
-                        record['is_deleted='] = u'0'
+                        record['is_deleted'] = u'0'
 
-                        # need to ascertain
-                        record['product_id'] = datum2['custom_label_4']
 
-                        print record
+
+                    print '======================== end product %s ================================' % totalCount
+                    if totalCount > 10:
                         return
 
 # still need to get these fields
 # - merchant_id
 # - raw_product_url
 # - buy_url
-# - SKU
 # - discount
 # - discount_type
 # - sale_price
 # - retail_price
-# - shipping_price
 # - style
 # - material
 # - currency
 # - keywords
 # - secondary_category
 # - allume_category
-# - brand
-# - updated_at
 # - current_price
 
                         # finish unicode sandwich
