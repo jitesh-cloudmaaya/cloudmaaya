@@ -61,8 +61,8 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
             lines2 = file2.readlines()
 
             # need some way to identify the merchants??
-            # merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
-            merchant_is_active = 1
+            merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
+            # merchant_is_active = 1
             if merchant_is_active:
                 # omit fieldnames to use header lines
                 reader1 = csv.DictReader(lines1, restval = '', dialect = 'reading')
@@ -77,10 +77,22 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                     for key, value in datum2.iteritems():
                         datum2[key] = value.decode('UTF-8')
 
-                    # unpack relevant data and do skipping checks here
+                    # gender checking
+                    gender = datum1['Gender']
+                    gender = gender.upper()
+                    gender = gender.replace('FEMALE', 'WOMEN')
+                    gender = gender.replace('MALE', 'MEN')
+                    gender = gender.replace('MAN', 'MEN')
 
-                    # allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
-                    allume_category = 'allume_category'
+                    if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS':
+                        genderSkipped += 1
+                        continue
+
+                    primary_category = datum1['Category']
+                    secondary_category = u'' # ?
+
+                    allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
+                    # allume_category = 'allume_category'
                     if allume_category:
                         record = {}
 
@@ -101,10 +113,10 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['size'] = datum1['Size']
                         record['manufacturer_part_number'] = datum1['MPN']
                         record['product_type'] = datum1['Product Type']
-                        record['gender'] = datum1['Gender']
+                        record['gender'] = gender
                         record['product_url'] = datum1['Product URL']
                         record['product_image_url'] = datum1['Image URL']
-                        record['primary_category'] = datum1['Category']
+                        record['primary_category'] = primary_category
                         record['SKU'] = datum1['Unique Merchant SKU']
                         record['current_price'] = datum1['Current Price']
                         record['shipping_price'] = datum1['Shipping Rate']
@@ -153,7 +165,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['style'] = u''
                         record['currency'] = u''
                         record['keywords'] = u''
-                        record['secondary_category'] = u''
+                        record['secondary_category'] = secondary_category
 
                         # finish unicode sandwich
                         for key, value in record.iteritems():
