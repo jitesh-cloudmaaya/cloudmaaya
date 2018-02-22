@@ -6,7 +6,7 @@ import re
 import csv
 from . import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap
+from product_api.models import Merchant, CategoryMap, Network
 from itertools import izip
 
 def impact_radius(local_temp_dir, file_ending, cleaned_fields):
@@ -172,6 +172,10 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
+    # infer deleted products
+    print('Updating non-upserted Impact Radius products')
+    set_deleted_impact_radius_products()
+
 
 
 
@@ -180,7 +184,22 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
 # need to add helper to infer deleted status
 def set_deleted_impact_radius_products(threshold = 12):
-    pass
+    """
+    Helper method for use in the main get_data method. Collects a list Impact Radius products
+    that should have been upserted in the current run. For those that were determined to not have
+    been upserted, set those products to a status of is_deleted = True.
+
+    Args:
+        threshold (int): The time threshold in hours. If the updated_at value of a record is threshold
+        or more hours old, conclude that it was not updated in the current upsert and set to deleted.
+    """
+    impact_radius_id = Network.objects.get(name="Impact Radius") # may need to change depening on actual name in staging/prod
+    merchants = Merchant.objects.filter(active=True, network_id=impact_radius_id)
+    merchant_ids = merchants.values_list('external_merchant_id')
+    products = Product.objects.filter(merchant_id__in = merchant_ids)
+    datetime_threshold = datetime.now() - timedelta(hours = threshold)
+    deleted_products = products.filter(updated_at__lte = datetime_threshold)
+    deleted_products.update(is_deleted = True)
 
 
 
