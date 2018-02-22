@@ -2,6 +2,7 @@ import os
 import datetime
 import yaml
 import urlparse
+import re
 import csv
 from . import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR
@@ -45,6 +46,13 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
         # work with hard coded assumptions for now
         product_catalog_IR = file_list[0] # should be DSW-Product-Catalog_IR.txt
         product_catalog_GOOGLE = file_list[1] # should be DSW-Product-Catalog_GOOGLE_TXT.txt
+
+
+        # write a regex to get everything before the first hyphen
+        # ^(.*?)-
+        pattern = re.compile('.*\/(.*?)-')
+        result = re.search(pattern, product_catalog_IR) # maybe need to change??
+        merchant_name = result.group(1)
 
         # rewrite the process to use both files
         with open(product_catalog_IR, "r") as file1, open(product_catalog_GOOGLE, "r") as file2:
@@ -108,6 +116,14 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['product_url'] = datum1['Product URL']
                         record['product_image_url'] = datum1['Image URL']
                         record['primary_category'] = datum1['Category']
+                        record['merchant_name'] = merchant_name
+
+                        # defaults?
+                        record['is_best_seller'] = u'0'
+                        record['is_tending'] = u'0'
+                        record['allume_score'] = u'0'
+                        # need to infer deleted?
+                        record['is_deleted='] = u'0'
 
                         # need to ascertain
                         record['product_id'] = datum2['custom_label_4']
@@ -116,7 +132,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         return
 
 # still need to get these fields
-# - product_id
 # - merchant_id
 # - raw_product_url
 # - buy_url
@@ -134,12 +149,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 # - allume_category
 # - brand
 # - updated_at
-# - merchant_name
-# - is_best_seller
-# - is_trending
-# - allume_score
 # - current_price
-# - is_deleted
 
                         # finish unicode sandwich
                         for key, value in record.iteritems():
