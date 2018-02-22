@@ -77,15 +77,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                     for key, value in datum2.iteritems():
                         datum2[key] = value.decode('UTF-8')
 
-                    # print statements
-                    print '======================= start product %s ===============================' % str(totalCount)
-                    print '=================== info from IR ====================='
-                    for key, value in datum1.iteritems():
-                        print (key, value)
-                    print '=================== info from google ================='
-                    for key, value in datum2.iteritems():
-                        print (key, value)
-
                     # unpack relevant data and do skipping checks here
 
                     # allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
@@ -164,15 +155,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['keywords'] = u''
                         record['secondary_category'] = u''
 
-
-                        print record
-
-
-
-                    print '======================== end product %s ================================' % totalCount
-                    if totalCount > 10:
-                        return
-
                         # finish unicode sandwich
                         for key, value in record.iteritems():
                             record[key] = value.encode('UTF-8')
@@ -180,7 +162,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         # write the record
                         writer.writerow(record)
                         writtenCount += 1
-                        return # remove this
                     else:
                         categoriesSkipped += 1
 
