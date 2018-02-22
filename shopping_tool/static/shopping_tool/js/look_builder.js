@@ -464,6 +464,9 @@ var look_builder = {
       }else{
         look_builder.orderedRack();
       }
+    }).on('click', 'a.lb-search-link', function(e){
+      e.preventDefault();
+      look_builder.setUpSearch();
     });
     $('#cropper-btns').find('a.crop').click(function(e){
       e.preventDefault();
@@ -668,6 +671,8 @@ var look_builder = {
     }
     if((rack_cats.length > 0)||(faves.length > 0)){
       rack_items.push(
+        '<a href="#" class="lb-search-link">' +
+        '<i class="fa fa-search"></i>search rack</a>' +
         '<a class="close-all-rack-sections" href="#">' +
         '<i class="fa fa-caret-square-o-up"></i>collapse all sections</a>' +
         '<a class="sort-link unsort-items" href="#">' +
@@ -772,6 +777,71 @@ var look_builder = {
       );
     });
     return markup.join('');
+  },
+  /**
+  * @description perform a simple name match filter against items in the rack and favroites
+  * @param {string} q - the term to match against
+  * @param {DOM Object} drack_rack - the look builder rack body
+  */
+  searchRack: function(q, drag_rack){
+    var rack_items_dom = $('#rack-list').find('div.item');
+    drag_rack.find('.item').remove();
+    var items = [];
+    var items_markup = [];
+    var racked = $('#rack-list').find('div.item');
+    $.each(racked, function(idx){
+      var item = $(this).data();
+      if(item.productname.toLowerCase().indexOf(q.toLowerCase()) > -1){
+        items.push(item)
+      }else if(q == ''){
+        items.push(item)
+      }
+    });
+    var faves = $('#fave-prods div.item');
+    $.each(faves, function(index){
+      var item = $(this).data();
+      if(item.productname.toLowerCase().indexOf(q.toLowerCase()) > -1){
+        items.push(item)
+      }else if(q == ''){
+        items.push(item)
+      }
+    });
+    if(q == ''){
+      $('#rack-search-term').html('All rack items...');
+    }else{
+      if(items.length > 0){
+        var plural = items.length == 1 ? items.length + ' item' : items.length + ' items' ;
+        $('#rack-search-term').html(plural + ' matching: "<b>' + q + '</b>"');
+      }else{
+        $('#rack-search-term').html('No items matching: "<b>' + q + '</b>"');
+      }
+    }
+    for(var i = 0, l = items.length; i<l; i++){
+      var datum = items[i];
+      if(datum.fave != undefined){
+        items_markup.push(
+          '<div class="item fave" data-productid="' + datum.productid + 
+          '" data-url="' + datum.src + '"><span class="fave"><i class="fa fa-heart"></i></span>' +
+          '<img class="handle" src="' + datum.src + '"/>' +
+          '<a href="#" class="add" data-productid="' + datum.productid + '" data-imgsrc="' + 
+          datum.src + '"><i class="fa fa-plus-circle"></i></a>' +
+          '<a href="#"  class="view" data-productid="' + datum.productid + 
+          '"><i class="fa fa-search"></i></a><a href="#" class="remove" ' +
+          'data-lookitemid=""><i class="fa fa-times"></i></a></div>'
+        );
+      }else{
+        items_markup.push(
+          '<div class="item" data-productid="' + datum.productid + 
+          '" data-url="' + datum.src + '"><img class="handle" src="' + datum.src + 
+          '"/><a href="#" class="add" data-productid="' + datum.productid + '" data-imgsrc="' + 
+          datum.src + '"><i class="fa fa-plus-circle"></i></a>' +
+          '<a href="#"  class="view" data-productid="' + datum.productid + 
+          '"><i class="fa fa-search"></i></a><a href="#" class="remove" data-sku="' + datum.sku + 
+          '" data-rackid="' + datum.rackid + '"><i class="fa fa-times"></i></a></div>'
+        );
+      }
+    }
+    drag_rack.append(items_markup.join(''));
   },
   /**
   * @description set up the builder ui/ux from clicked look link
@@ -890,61 +960,34 @@ var look_builder = {
     });
   },
   /**
-  * @description the unordered look and feel for look builder rack
+  * @description - set up the rack search feature ui
   */
-  unorderedRack: function(){
-    var rack_items = [];
-    var rack_items_dom = $('#rack-list').find('div.item');
-    if(rack_items_dom.length > 0){
-      rack_items.push(
-        '<a class="sort-link sort-items" href="#">' +
-        '<i class="fa fa-th-list"></i>sort items</a>'
-      );
-    }else{
-      rack_items.push('<div class="empty">Your rack is empty...</div>');
-    }
-    $.each(rack_items_dom, function(index){
-      var item = $(this);
-      var data = item.data();
-      var src = item.find('img').attr('src');
-      var link = item.find('a.remove-from-rack')
-      var sku = link.data('sku');
-      var rack_id = link.data('rackid');
-      rack_items.push(
-        '<div class="item" data-productid="' + data.productid + 
-        '" data-url="' + src + '"><img class="handle" src="' + src + 
-        '"/><a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
-        src + '"><i class="fa fa-plus-circle"></i></a>' +
-        '<a href="#"  class="view" data-productid="' + data.productid + 
-        '"><i class="fa fa-search"></i></a>' +
-        '<a href="#" class="remove" data-sku="' + sku + 
-        '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
-      );
-    });
-    var faves = $('#fave-prods div.item');
-    if(faves.length > 0){
-      rack_items.push(look_builder.rackFavorites(faves));
-    }
-    /* add the clones and assign drag/drop functionality */
+  setUpSearch: function(){
+    /* set up the search ui */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(
       '<h2>' + $('#rack').find('h2').html() + 
-      '</h2><div class="look-builder-rack">' + 
-      rack_items.join('') + '</div>'
+      '</h2><div class="look-builder-rack">' +
+      '<div id="rack-search-toggles">' +
+      '<a class="sort-link sort-items" href="#">' +
+      '<i class="fa fa-th-list"></i>back to sorted</a>' +
+      '<a class="sort-link unsort-items" href="#">' +
+      '<i class="fa fa-th"></i>back to unsorted</a></div>' +      
+      '<input id="rack-search" placeholder="Start typing to find rack items..."/>' +
+      '<div id="rack-search-term"></div>' +
+      '</div>'
     );
-    new Sortable($('#rack-draggable div.look-builder-rack')[0], {
-      handle: ".handle",
-      group: { name: "look", pull: 'clone', put: false },
-      sort: true,
-      draggable: ".item",
-      onStart: function(){
-        var cc = $('#canvas-container');
-        if(cc.length > 0){
-          collage.collageSortable.option('disabled', false);
-        }
-      }
-    });  
-  },
+    var div = drag_rack.find('div.look-builder-rack')
+    /* attahc same functionality to search results as regular unoredered rack */
+    look_builder.unorderedDrag();
+    /* attached event listener to filter results */
+    $('#rack-search').keyup(function(e){
+      var q = $(this).val();
+      look_builder.searchRack(q, div);
+    });
+    /* set up initial reasults */
+    look_builder.searchRack('', div);
+  },  
   /**
   * @description switching to tab two in publish look book flow
   * @param {DOM Object} link - the link that trigger the navigation
@@ -1015,6 +1058,70 @@ var look_builder = {
       }
     }    
   },
+  /**
+  * @description helper function to dry up drag and drop
+  */
+  unorderedDrag: function(){
+    new Sortable($('#rack-draggable div.look-builder-rack')[0], {
+      handle: ".handle",
+      group: { name: "look", pull: 'clone', put: false },
+      sort: true,
+      draggable: ".item",
+      onStart: function(){
+        var cc = $('#canvas-container');
+        if(cc.length > 0){
+          collage.collageSortable.option('disabled', false);
+        }
+      }
+    });
+  },
+  /**
+  * @description the unordered look and feel for look builder rack
+  */
+  unorderedRack: function(){
+    var rack_items = [];
+    var rack_items_dom = $('#rack-list').find('div.item');
+    if(rack_items_dom.length > 0){
+      rack_items.push(
+        '<a href="#" class="lb-search-link">' +
+        '<i class="fa fa-search"></i>search rack</a>' +
+        '<a class="sort-link sort-items" href="#">' +
+        '<i class="fa fa-th-list"></i>sort items</a>'
+      );
+    }else{
+      rack_items.push('<div class="empty">Your rack is empty...</div>');
+    }
+    $.each(rack_items_dom, function(index){
+      var item = $(this);
+      var data = item.data();
+      var src = item.find('img').attr('src');
+      var link = item.find('a.remove-from-rack')
+      var sku = link.data('sku');
+      var rack_id = link.data('rackid');
+      rack_items.push(
+        '<div class="item" data-productid="' + data.productid + 
+        '" data-url="' + src + '"><img class="handle" src="' + src + 
+        '"/><a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
+        src + '"><i class="fa fa-plus-circle"></i></a>' +
+        '<a href="#"  class="view" data-productid="' + data.productid + 
+        '"><i class="fa fa-search"></i></a>' +
+        '<a href="#" class="remove" data-sku="' + sku + 
+        '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
+      );
+    });
+    var faves = $('#fave-prods div.item');
+    if(faves.length > 0){
+      rack_items.push(look_builder.rackFavorites(faves));
+    }
+    /* add the clones and assign drag/drop functionality */
+    var drag_rack = $('#rack-draggable');
+    drag_rack.html(
+      '<h2>' + $('#rack').find('h2').html() + 
+      '</h2><div class="look-builder-rack">' + 
+      rack_items.join('') + '</div>'
+    );
+    look_builder.unorderedDrag();  
+  },  
   /**
   * @description update a look with any changes to its fields
   * @param {DOM Object} div - div to be updated with new display

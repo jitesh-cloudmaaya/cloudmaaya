@@ -1725,7 +1725,8 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
 }
 #rack-draggable a.rack-section-toggle,
 #rack-draggable a.close-all-rack-sections,
-#rack-draggable a.sort-link {
+#rack-draggable a.sort-link,
+#rack-draggable a.lb-search-link {
   color:#474747;
   display:block;
   font-size:14px;
@@ -1733,16 +1734,20 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   text-decoration:none;
   text-shadow:0 1px #fff;
 }
+#rack-draggable div#rack-search-toggles a.sort-link  {float:left; padding:5px 15px 0 0;}
+#rack-draggable a.lb-search-link {float:right;}
 #rack-list a.rack-section-toggle i,
 #rack-draggable a.rack-section-toggle i,
 #rack-list a.close-all-rack-sections i,
 #rack-draggable a.close-all-rack-sections i,
 #favorites-list a.rack-section-toggle i,
+#rack-draggable a.lb-search-link i,
 #rack-draggable a.sort-link i {margin-right:5px;}
 #rack-list a.close-all-rack-sections:active,
 #rack-draggable a.close-all-rack-sections:active,
 #favorites-list a.rack-section-toggle:active
-#rack-draggable a.sort-link:active {color:#f2987e;}
+#rack-draggable a.sort-link:active,
+#rack-draggable a.lb-search-link:active {color:#f2987e;}
 #rack-list div.block,
 #rack-draggable div.block,
 #favorites-list div.block {overflow:hidden;}
@@ -3597,8 +3602,27 @@ div#non-collage-items div.item a.remove {
   top:0;
 }
 div#non-collage-items div.item a.remove:hover {color:#F44336; opacity:1;}
-
-
+#rack-search-toggles {overflow:auto; padding:3px 0 0 5px;}
+#rack-search {
+  background:#fff;
+  border:1px solid #d0d0d0;
+  border-radius:20px;
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.1);
+  color:#303030;
+  display:block;
+  font-size:12px;
+  font-weight:200;
+  line-height:18px;
+  margin:10px 3px; 
+  padding:3px 10px;
+  width:287px;
+}
+#rack-search-term {
+  color:#474747;
+  font-size:14px;
+  font-weight:100;
+  margin:5px;
+}
 
 
 
