@@ -14,16 +14,16 @@ class Migration(migrations.Migration):
 
     if 'test' in sys.argv or DEBUG:
         operations = [
-            # migrations.AddField(
-            #     model_name='allumelookproducts',
-            #     name='cropped_dimensions',
-            #     field=models.CharField(blank=True, max_length=2000, null=True),
-            # ),
-            # migrations.AddField(
-            #     model_name='allumelookproducts',
-            #     name='raw_product_id',
-            #     field=models.IntegerField(default=0),
-            # ),
+            migrations.AddField(
+                model_name='allumelookproducts',
+                name='cropped_dimensions',
+                field=models.CharField(blank=True, max_length=2000, null=True),
+            ),
+            migrations.AddField(
+                model_name='allumelookproducts',
+                name='raw_product_id',
+                field=models.IntegerField(default=0),
+            ),
             migrations.AddField(
                 model_name='allumelooks',
                 name='is_legacy',
