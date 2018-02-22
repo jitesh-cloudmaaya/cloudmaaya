@@ -101,13 +101,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             allume_color = u'other'
                         record['color'] = allume_color
 
-                        availability = datum1['Stock Availability']
-                        if availability == 'Y':
-                            availability = 'yes'
-                        else:
-                            availability = availability
-                        record['availability'] = availability
-
                         #datum1
                         record['age'] = datum1['Age Range']
                         record['manufacturer_name'] = datum1['Manufacturer']
@@ -124,6 +117,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['SKU'] = datum1['Unique Merchant SKU']
                         record['current_price'] = datum1['Current Price']
                         record['shipping_price'] = datum1['Shipping Rate']
+                        record['material'] = datum1['Material']
 
                         #datum2
                         record['product_id'] = datum2['custom_label_4'] # there is an instance of custom_label_3 having the product_id
@@ -137,7 +131,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             continue # skip this record ???
                             #or generate prod_id somehow
                             # record['product_id'] = generate_product_id(args)
-
+                        record['availability'] = datum2['availability']
                         record['brand'] = datum2['brand']
 
                         # derived
@@ -146,6 +140,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         except Exception as e:
                             print e
                             record['raw_product_url'] = u''
+                        record['allume_category'] = allume_category
 
                         # not from data
                         record['merchant_name'] = merchant_name
@@ -156,6 +151,20 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['allume_score'] = u'0'
                         # need to infer deleted?
                         record['is_deleted'] = u'0'
+
+
+                        # fields not available from data?
+                        record['buy_url'] = u''
+                        record['discount'] = u''
+                        record['discount_type'] = u''
+                        record['sale_price'] = u''
+                        record['retail_price'] = u''
+                        record['style'] = u''
+                        record['currency'] = u''
+                        record['keywords'] = u''
+                        record['secondary_category'] = u''
+
+
                         print record
 
 
@@ -163,20 +172,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                     print '======================== end product %s ================================' % totalCount
                     if totalCount > 10:
                         return
-
-# still need to get these fields
-# - merchant_id
-# - buy_url
-# - discount
-# - discount_type
-# - sale_price
-# - retail_price
-# - style
-# - material
-# - currency
-# - keywords
-# - secondary_category
-# - allume_category
 
                         # finish unicode sandwich
                         for key, value in record.iteritems():
