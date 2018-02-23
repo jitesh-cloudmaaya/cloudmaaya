@@ -2966,15 +2966,15 @@ div.lookbook-btns a#publish-lookbook:active{
   font-weight:200;
   margin:0;
   padding:8px;
-  width: calc(100% - 18px);
+  width: 348px;
 }
 #look-drop #look-name {margin-bottom:10px;}
 #look-drop #look-desc {
   height:105px;
   max-height:105px;
   min-height:105px;  
-  max-width:calc(100% - 18px);
-  min-width:calc(100% - 18px);
+  max-width:348px;
+  min-width:348px;
 }
 
 /* notes ui */
