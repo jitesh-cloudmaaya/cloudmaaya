@@ -324,25 +324,7 @@ var look_builder = {
       $('#publish-lookbook-overlay').fadeOut();
     });
     /* collage funcs */
-    $('#look-drop').on('click', 'a.zoom-in', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,0,10);
-    }).on('click', 'a.zoom-out', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,0,-10);
-    }).on('click', 'a.shift-left', function(e){
-      e.preventDefault();
-      collage.zoomBy(5,0,0);
-    }).on('click', 'a.shift-right', function(e){
-      e.preventDefault();
-      collage.zoomBy(-5,0,0);
-    }).on('click', 'a.shift-up', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,5,0);
-    }).on('click', 'a.shift-down', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,-5,0);
-    }).on('click', 'a.trash-obj', function(e){
+    $('#look-drop').on('click', 'a.trash-obj', function(e){
       e.preventDefault();
       collage.trash();
     }).on('click', 'a.send-back', function(e){
@@ -377,6 +359,27 @@ var look_builder = {
       $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
       $('#publish-lookbook').data('allowed', 'false');
     });
+    /*
+    .on('click', 'a.zoom-in', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,0,10);
+    }).on('click', 'a.zoom-out', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,0,-10);
+    }).on('click', 'a.shift-left', function(e){
+      e.preventDefault();
+      collage.zoomBy(5,0,0);
+    }).on('click', 'a.shift-right', function(e){
+      e.preventDefault();
+      collage.zoomBy(-5,0,0);
+    }).on('click', 'a.shift-up', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,5,0);
+    }).on('click', 'a.shift-down', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,-5,0);
+    })
+    */
     /* rack functionality */
     $('#rack-draggable').on('click', 'a.add', function(e){
       e.preventDefault();
@@ -861,24 +864,18 @@ var look_builder = {
           '"><i class="fa fa-check"></i>finished editing look</a>' +
           '<a class="bg-toggle checker-bg" data-balloon="toggle collage ' +
           'background" data-balloon-pos="up" href="#"><em></em></a>' +
-          '<a class="zoom-in" data-balloon="zoom in" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-search-plus"></i></a>' +
-          '<a class="zoom-out" data-balloon="zoom out" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-search-minus"></i></a>' +
+          '<a href="#" data-balloon="move to back" data-balloon-pos="up" class="send-back">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" enable-background="new 0 0 512 512">' +
+          '<path d="M398.7 221.8l96.1-56.8-238.9-143.2-238.9 143.2 96.1 56.8-85.6 50.6 88.9 53.3-66.6 39.3 206 ' +
+          '123.5 206-123.5-66.6-39.3 88.9-53.3-85.4-50.6zm-142.8-174.1l195.4 117.1-195.4 115.4-195.4-115.4 ' +
+          '195.4-117.1zm0 334.9l-183.7-110.2 63.4-37.4 120.3 71.1 120.3-71.1 63.4 37.4-183.7 110.2z"></path></svg></a>' +
+          '<a href="#" data-balloon="move to front" data-balloon-pos="up" class="send-front">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" enable-background="new 0 0 512 512">' +
+          '<path d="M495.8 249.6l-93.3-55.9 69.9-41.3-216.4-129.7-216.4 129.7 69.9 41.3-93.3 55.9 83.1 49.1-82.4 ' +
+          '49.4 239.1 141.2 239.1-141.3-82.4-49.4 83.1-49zm-362.8-42.1l123 72.6 123-72.6 70 41.9-193 114-192.9-113.9 ' +
+          '69.9-42zm123 254.7l-193.5-114.3 55.7-33.4 137.8 81.5 137.8-81.4 55.7 33.4-193.5 114.2z"></path></svg></a>' +
           '<a class="flip-x" data-balloon="flip horizontal" data-balloon-pos="up" href="#">' +
           '<i class="fa fa-refresh"></i></a>' +
-          '<a class="shift-left" data-balloon="shift left" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-chevron-left"></i></a>' +
-          '<a class="shift-up" data-balloon="shift up" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-chevron-up"></i></a>' +
-          '<a class="shift-down" data-balloon="shift down" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-chevron-down"></i></a>' +
-          '<a class="shift-right" data-balloon="shift right" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-chevron-right"></i></a>' +
-          '<a href="#" data-balloon="move to back" data-balloon-pos="up" class="send-back">' +
-          '<i class="fa fa-reply"></i></a>' +
-          '<a href="#" data-balloon="move to front" data-balloon-pos="up" class="send-front">' +
-          '<i class="fa fa-share"></i></a>' +
           '<a href="#" data-balloon="crop image" data-balloon-pos="up" class="crop-image">' +
           '<i class="fa fa-crop"></i></a>' +
           '<a href="#" class="trash-obj" data-balloon="remove product" data-balloon-pos="up">' +
