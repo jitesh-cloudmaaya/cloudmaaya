@@ -75,42 +75,42 @@ def seperate_sizes(sizes):
     return arr
 
 def little_parser3(sizes):
-  """
-  Attempt at writing a little parser that successfully splits on hyphens
-  with one or more occurences of whitespace on either side, not enclosed by
-  parentheses.
+    """
+    Attempt at writing a little parser that successfully splits on hyphens
+    with one or more occurences of whitespace on either side, not enclosed by
+    parentheses.
 
-  Args:
-    sizes (str): A string representing the a character delimited list of sizes.
+    Args:
+      sizes (str): A string representing the a character delimited list of sizes.
 
-  Returns:
-    arr: An array containing each distinct size from the input.
-  """
-  splitSizes = []
-  # initialize a pointer to start of sizes string
-  pointer = 0
-  # start initialized to 0
-  start = 0
-  # end initialized to 0
-  end = 0
-  # iterate in this fashion until pointer > len(string)
-  while (pointer < len(sizes)):
-  # increment pointer and read character by character until/if we encounter whitespace
-    if sizes[pointer].isspace(): # we have encountered whitespace
-      # if this happens, set end to pointer
-      end = pointer
-      # add the split size
-      splitSizes.append(sizes[start:end]) # off by one?
-      # then, keep reading until character is neither whitespace or a dash (increment the pointer)
-      while sizes[pointer].isspace() or sizes[pointer] == '-':
+    Returns:
+      arr: An array containing each distinct size from the input.
+    """
+    splitSizes = []
+    # initialize a pointer to start of sizes string
+    pointer = 0
+    # start initialized to 0
+    start = 0
+    # end initialized to 0
+    end = 0
+    # iterate in this fashion until pointer > len(string)
+    while (pointer < len(sizes)):
+    # increment pointer and read character by character until/if we encounter whitespace
+      if sizes[pointer].isspace(): # we have encountered whitespace
+        # if this happens, set end to pointer
+        end = pointer
+        # add the split size
+        splitSizes.append(sizes[start:end]) # off by one?
+        # then, keep reading until character is neither whitespace or a dash (increment the pointer)
+        while sizes[pointer].isspace() or sizes[pointer] == '-':
+          pointer += 1
+        # the pointer value that occurs here is the new start
+        start = pointer
+      else:
+        # repeat this process until we break out of the looping condition
         pointer += 1
-      # the pointer value that occurs here is the new start
-      start = pointer
-    else:
-      # repeat this process until we break out of the looping condition
-      pointer += 1
 
-  # then, append sizes[start:len(sizes)]
-  splitSizes.append(sizes[start:len(sizes)])
+    # then, append sizes[start:len(sizes)]
+    splitSizes.append(sizes[start:len(sizes)])
 
-  return splitSizes
+    return splitSizes
