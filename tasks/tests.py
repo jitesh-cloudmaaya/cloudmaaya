@@ -59,7 +59,20 @@ class ParserTestCase(TestCase):
     Tests the behavior of the size parser
     Currently working with dashes
     """
-    
+
+    def test_everything(self):
+        """
+        test everything here for now, build incrementally progress points using tests
+        """
+        self.assertEqual(['32', '32', '34', '25'], little_parser3('32 - 32 - 34 - 25'))
+        self.assertEqual(['32 32 32'], little_parser3('32 32 32')) # for now
+        self.assertEqual(['32', '32', '32'], little_parser3('32    - 32     - 32')) # double check if desired behavior against data
+        self.assertEqual(['32', '32'], little_parser3('32 --------- -- - - -32')) # double check if desired behavior against data also
+        self.assertEqual(['X-SMALL'], little_parser3('X-SMALL'))
+        return
+        # desired future stuffs
+        self.assertEqual(['EU 37 / US 7 - 7.5'], little_parser3('EU 37 / US 7 - 7.5')) # currently returns ['EU 37 / US 7', '7.5']
+
 
 
 
