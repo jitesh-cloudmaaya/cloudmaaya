@@ -100,12 +100,31 @@ def little_parser3(sizes):
         # if this happens, set end to pointer
         end = pointer
         # add the split size
-        splitSizes.append(sizes[start:end]) # off by one?
         # then, keep reading until character is neither whitespace or a dash (increment the pointer)
-        while sizes[pointer].isspace() or sizes[pointer] == '-':
-          pointer += 1
-        # the pointer value that occurs here is the new start
-        start = pointer
+        # while sizes[pointer].isspace() or sizes[pointer] == '-':
+          # pointer += 1
+        while sizes[pointer].isspace():
+            pointer += 1
+        # we should have the non whitespace char at pointer
+        if sizes[pointer] == '-': # we found what we're looking for
+            while sizes[pointer].isspace() or sizes[pointer] == '-':
+                pointer += 1
+            splitSizes.append(sizes[start:end]) # off by one?
+            # the pointer value that occurs here is the new start
+            start = pointer
+        else: # not sure exactly yet?
+            pass 
+
+
+        # we need to go until we encounter a non whitespace character...
+        # what the character is will determine whether or not we should split the sizes or not
+        # if it is a dash, then we should keep reading until we encounter a non dash non space character
+        # if it is not a dash, false alarm (not yet sure if we need additional logic here?)
+
+
+        
+
+            
       else:
         # repeat this process until we break out of the looping condition
         pointer += 1

@@ -53,6 +53,16 @@ class SeperateSizeTestCase(TestCase):
         self.assertEqual(['XS B-C CUP', 'XS D CUP', 'SM B-C CUP', 'SM D CUP', 'LXL B-C', 'LXL D CUP'], seperate_sizes('XS B-C CUP - XS D CUP - SM B-C CUP - SM D CUP - LXL B-C - LXL D CUP'))
         self.assertEqual(['S-30IN-75CM'], seperate_sizes('S-30IN-75CM'))
 
+# combine with more general product feed helpers test case in the future?
+class ParserTestCase(TestCase):
+    """
+    Tests the behavior of the size parser
+    Currently working with dashes
+    """
+    
+
+
+
 # class MappingsTestCase(TestCase):
 #     """
 #     Some simple tests to confirm that mappings return a structure like we expect.
