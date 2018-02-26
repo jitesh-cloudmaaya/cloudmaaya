@@ -476,7 +476,7 @@ var look_builder = {
     });
     $('#cropper-btns').find('a.crop').click(function(e){
       e.preventDefault();
-      collage.cropImage();
+      collage.cropImage($(this));
     }).end().find('a.restart').click(function(e){
       e.preventDefault();
       var data = $(this).data();
@@ -486,10 +486,24 @@ var look_builder = {
       e.preventDefault();
       $('#crop-look-image').fadeOut();
       collage.cropper = null;
-    }).end().find('a.save').click(function(e){
-      e.preventDefault();
-      collage.saveCrop($(this));
     });
+    $('#pg-cropper-btns').find('a.save').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      collage.saveCrop(link, link.data('path'));
+    }).end().find('a.cancel').click(function(e){
+      e.preventDefault();
+      $('#pg-crop-look-image').fadeOut();
+    }).end().find('a.restart').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.data('path') !== undefined){
+        console.log(link.data('path'))
+        link.siblings('a.save').data('path', link.data('path'));
+        $('#pg-cropper-container').html('<canvas id="pg-cropper" width="415" height="415"></canvas>');
+        collage.setUpPolygonCropper(link.data('path'));
+      }
+    })
     $('#close-crop-image').click(function(e){
       e.preventDefault();
       $('#crop-look-image').fadeOut();
@@ -498,7 +512,6 @@ var look_builder = {
     $('#close-pg-crop-image').click(function(e){
       e.preventDefault();
       $('#pg-crop-look-image').fadeOut();
-      collage.cropper = null;
     })
   },
   /**

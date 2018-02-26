@@ -1448,7 +1448,7 @@ div.indepth-loading {
 }
 #creating-look div.stage span.pulse_loader,
 #updating-crop div.stage span.pulse_loader,
-div.indepth-loading span.pulse_loader {margin:45px 0 0 75px;}
+div.indepth-loading span.pulse_loader {margin:49px 0 0 75px;}
 #create-look div.stage h2,
 #publish-lookbook-overlay h2,
 #preview-lookbook-overlay h2,
@@ -3425,7 +3425,8 @@ div.rd-time-option:hover {background:#eee;color:#000;}
 
 
 div#canvas-container,
-div#cropper-container {
+div#cropper-container,
+#pg-cropper-container {
   border:1px solid #d0d0d0;
   background-image: url(data:image/gif;base64,R0lGODlhCgAKAIAAAOLi4v///yH5BAAHAP8ALAAAAAAKAAoAAAIRhB2ZhxoM3GMSykqd1VltzxQAOw==);
   height:415px;
@@ -3433,13 +3434,16 @@ div#cropper-container {
   width:760px;
 }
 div#canvas-container.white {background:#fff;}
-div#cropper-container { width:415px;  }
+div#cropper-container,
+#pg-cropper-container { width:415px;  }
 
 div#canvas-container div.item {display:none;}
 div.collage-controls {margin:15px 16px;}
-#cropper-btns {margin:15px auto; width:340px;}
+#cropper-btns,
+#pg-cropper-btns {margin:15px auto; width:255px;}
 div.collage-controls a,
-#cropper-btns a {
+#cropper-btns a,
+#pg-cropper-btns a {
   background:#fafafa;
   border:1px solid #ccc;
   border-right:0px;
@@ -3462,16 +3466,16 @@ div.collage-controls a.bg-toggle em {
 div.collage-controls a.bg-toggle.checker-bg em {background-image: url(data:image/gif;base64,R0lGODlhCgAKAIAAAOLi4v///yH5BAAHAP8ALAAAAAAKAAoAAAIRhB2ZhxoM3GMSykqd1VltzxQAOw==);}
 div.collage-controls a.bg-toggle.checker-bg.white em {background:#fff;}
 #cropper-btns a:nth-of-type(1),
-#cropper-btns a:nth-of-type(3),
+#pg-cropper-btns a:nth-of-type(1),
 div.collage-controls a:nth-of-type(2),
 div.collage-controls a:nth-of-type(3),
 div.collage-controls a.send-back {
   border-top-left-radius:5px;
   border-bottom-left-radius:5px;
 }
-#cropper-btns a:nth-of-type(2),
 div.collage-controls a:nth-of-type(2),
-#cropper-btns a:nth-of-type(4),
+#cropper-btns a:nth-of-type(3),
+#pg-cropper-btns a:nth-of-type(3),
 div.collage-controls a.polygon-crop
 /*,div.collage-controls a.send-front*/ {
   border-top-right-radius:5px;
@@ -3483,17 +3487,21 @@ div.collage-controls a.send-back,
 div.collage-controls a.send-front {height:16px; width:16px;}
 div.collage-controls a.polygon-crop { height: 21px; padding: 3px 6px 3px; width: 21px;}
 
-#cropper-btns a:nth-of-type(5) {margin:0;}
+#cropper-btns a:nth-of-type(3) {margin:0;}
 div.collage-controls a#finish-editing-look {float:right; border-radius:5px; border-right:1px solid #ccc; margin-left:35px;}
 div.collage-controls a.trash-obj {border-radius:5px; border-right:1px solid #ccc;}
 div.collage-controls a#finish-editing-look i,
-#cropper-btns a i {padding-right:5px;}
+#cropper-btns a i,
+#pg-cropper-btns a i {padding-right:5px;}
 #cropper-btns a i.fa-times,
+#pg-cropper-btns a i.fa-times,
 div.collage-controls a i {font-size:15px;}
 div.collage-controls a:hover,
+#pg-cropper-btns a:hover,
 #cropper-btns a:hover {background:#eee;}
 div.collage-controls a:active,
-#cropper-btns a:active {
+#cropper-btns a:active,
+#pg-cropper-btns a:active {
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.2);
 }
