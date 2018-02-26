@@ -422,7 +422,7 @@ class AllumeLooks(models.Model):
     last_modified = models.DateTimeField()
     is_legacy = models.IntegerField()
     position = models.IntegerField()
-    collage_image_data = models.TextField(blank=True, null=True)
+    # collage_image_data = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -486,7 +486,7 @@ class Look(models.Model):
     # look_layout = models.ForeignKey(LookLayout, db_column='layout_id')
     look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
     position = models.IntegerField(default=100)
-    collage_image_data = models.TextField(blank=True, null=True)
+    # collage_image_data = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ['-updated_at']

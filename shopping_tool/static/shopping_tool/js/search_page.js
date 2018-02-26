@@ -25,7 +25,6 @@ var search_page = {
     $('#search-categories').val('').selectize({ create: false, sortField: 'text'}).change(function(){
       var dd = $(this);
       var val = dd.val();
-      $('#search-field').val(val);
       var def_div = $('#client-defaults');
       var header = '<h5>Client preferences and sizes for <strong>' + val + '</strong>:</h5>';
       var general = '<span><em>colors:</em>' + client_360.colors + '</span>' +
@@ -309,7 +308,6 @@ var search_page = {
     var text = search_box.val();
     var category = $('#search-categories').val();    
     if(text != '') { 
-      q += 'text=' + encodeURIComponent(text); 
       selection_markup.push(
         '<a href="#" class="remove-search">' + text + '<i class="fa fa-times-circle"></i></a>'
       );
@@ -411,7 +409,7 @@ var search_page = {
         }
       }
     }
-    q += '&page=' + page + '' + facets.join('');
+    q += 'page=' + page + '' + facets.join('');
     var faves = $('#facet-show-faves').prop('checked');
     if(faves == true){
       q += '&favs=' + parseInt($('#stylist').data('stylistid'));
@@ -425,7 +423,17 @@ var search_page = {
     if(category != ''){
       saved_search += '&primary_category=' + category;
     }
+    if(text != '') { 
+      saved_search += '&text=' + encodeURIComponent(text); 
+    }    
     utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
+    if(text != '') { 
+      var text_term = '&text=' + encodeURIComponent(text);
+      if(category != ''){
+        text_term += ' ' + category;
+      }
+      q += text_term; 
+    }
     $.ajax({
       beforeSend: function(){
         $('#results').html(
