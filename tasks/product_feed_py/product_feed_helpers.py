@@ -160,8 +160,8 @@ def little_parser3(sizes):
         splitSizes.append(sizes[start:len(sizes)])
 
         return splitSizes
-    except :
-        return sizes
+    except IndexError as e:
+        return [sizes]
 
 
     # if I wrap in a try / except around a 
