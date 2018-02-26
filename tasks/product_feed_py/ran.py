@@ -289,12 +289,12 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
 def set_deleted_ran_products(threshold = 12):
     """
-    Theory for why comma splitting SEEMS to not be working?
+    Sets RAN products for the current run to deleted if they were not upserted.
     """
     ran_id = Network.objects.get(name ='RAN')
     merchants = Merchant.objects.filter(active = True, network_id = ran_id)
     merchant_ids = merchants.values_list('external_merchant_id')
-    products = Product.objects.filter(merchant_id__in = merchant_ids)
+    products = Product.objects.filter(merchant_id__in = merchant_ids, is_deleted = False)
     datetime_threshold = datetime.now() - timedelta(hours = threshold)
     # print datetime_threshold # in case behavior is not as expected
     deleted_products = products.filter(updated_at__lte = datetime_threshold)
