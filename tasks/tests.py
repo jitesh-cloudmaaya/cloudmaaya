@@ -60,6 +60,10 @@ class ParserTestCase(TestCase):
     Currently working with dashes
     """
 
+    def test_comma_cases_that_fail(self):
+        return
+        self.assertEqual(['32'], seperate_sizes('32,')) # ?
+
     def test_everything(self):
         """
         test everything here for now, build incrementally progress points using tests
