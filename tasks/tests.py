@@ -57,36 +57,24 @@ class SeperateSizeTestCase(TestCase):
 # combine with more general product feed helpers test case in the future?
 class ParserTestCase(TestCase):
     """
-    Tests the behavior of the size parser
-    Currently working with dashes
+    Tests the behavior and ability of seperating sizes based on a pre-decided list of 
+    delimiters. Tests both the smaller private methods that seperate sizes based on a
+    delimiter as well as the full parsing on complex sizes.
     """
-
-    def test_comma_cases_that_fail(self): # fix
-        return
-        self.assertEqual(['32'], seperate_sizes('32,')) # ?
-
-    def test_size_parsing(self):
-        """
-        Tests the full
-        """
-        # move comma separated tests to a function testing the overall delimiting process
-        self.assertEqual(['SMALL (32 - 34)', 'MEDIUM (36 - 38)'], seperate_sizes('SMALL (32 - 34), MEDIUM (36 - 38)'))
-        self.assertEqual(['SMALL (32-34)', 'MEDIUM (36-38)'], seperate_sizes('SMALL (32-34), MEDIUM (36-38)'))
-        return
-        # desired future stuffs
-        self.assertEqual(['EU 37 / US 7 - 7.5'], seperate_sizes('EU 37 / US 7 - 7.5')) # currently returns ['EU 37 / US 7', '7.5']
-
     def test_split_commas(self):
         """
-        Test
+        Tests that the function used to seperate sizes with commas as the delimiter.
         """
         self.assertEqual(['L','M','S'], _comma_seperate_sizes('L,M,S'))
         self.assertEqual(['X-LARGE', 'LARGE', 'MEDIUM', 'SMALL'], _comma_seperate_sizes('X-LARGE,,LARGE,MEDIUM,SMALL'))
         self.assertEqual(['13', '12', '15', '18'], _comma_seperate_sizes('  13,  12,   15,,,18'))
+        return
+        # test currently errors
+        self.assertEqual(['32'], seperate_sizes('32,')) # ?
 
     def test_split_hyphens(self):
         """
-        test everything here for now, build incrementally progress points using tests
+        Tests the function used to seperate sizes with hyphens as the delimiter.
         """
         # tests against reasonable inputs directly or derived from data
         self.assertEqual(['32', '32', '34', '25'], _hyphen_seperate_sizes('32 - 32 - 34 - 25'))
@@ -105,6 +93,18 @@ class ParserTestCase(TestCase):
         self.assertEqual(['MEDIUM- SMALL'], _hyphen_seperate_sizes('MEDIUM- SMALL'))
         self.assertEqual(['MEDIUM-SMALL'], _hyphen_seperate_sizes('MEDIUM-SMALL'))
 
+    def test_size_parsing(self):
+        """
+        Tests the full ability to seperate sizes for use in the product processing data feeds.
+        Tests the basic cases and mixes the delimiter to ensure proper hierachy among delimiters
+        is enforced.
+        """
+        # move comma separated tests to a function testing the overall delimiting process
+        self.assertEqual(['SMALL (32 - 34)', 'MEDIUM (36 - 38)'], seperate_sizes('SMALL (32 - 34), MEDIUM (36 - 38)'))
+        self.assertEqual(['SMALL (32-34)', 'MEDIUM (36-38)'], seperate_sizes('SMALL (32-34), MEDIUM (36-38)'))
+        return
+        # desired future stuffs
+        self.assertEqual(['EU 37 / US 7 - 7.5'], seperate_sizes('EU 37 / US 7 - 7.5')) # currently returns ['EU 37 / US 7', '7.5']
 
 
 

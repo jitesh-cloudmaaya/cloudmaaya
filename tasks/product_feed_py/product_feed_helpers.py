@@ -61,9 +61,14 @@ def assign_product_id_size(product_id, size):
 
 def seperate_sizes(sizes):
     """
-    Method that should call the parsers on sizes. Each parser should behave as though a list of length
-    1 being returned means that the sizes cannot be split using that delimiter. Finds the appropriate
-    delimiter, if possible, and uses it to split the sizes...
+    Takes in sizes and determines if it can use any of the available parsing methods to seperate the 
+    sizes into a distinct sizes array. Enforces a delimiter hierarchy of commas, hyphens. If the sizes
+    passed in do not contain any of the delimiters, it returns the sizes attribute unchanged.
+    Args:
+      sizes (str): A string representing the size attribute of a product record.
+    Returns:
+      arr: An array of individual sizes.
+      str: The sizes argument unmodified.
     """
     # check in order, if the input contains commas, slashes, or dashes
     # then, call the appropriate parser?
@@ -79,7 +84,9 @@ def seperate_sizes(sizes):
 def _comma_seperate_sizes(sizes):
     """
     Takes in a size attribute, intended to be from a product which has a comma seperated list as a size,
-    and returns an array of individual size values to be used in creation of children records.
+    and returns an array of individual size values to be used in creation of children records. If the sizes
+    passed in do not contain a comma delimiter or is an otherwise malformed input, returns sizes as the single
+    member of an array.
     Args:
       sizes (str): A string containing a comma seperated list of sizes of the product.
 
@@ -93,9 +100,10 @@ def _comma_seperate_sizes(sizes):
 
 def _hyphen_seperate_sizes(sizes):
     """
-    Attempt at writing a little parser that successfully splits on hyphens
-    with one or more occurences of whitespace on either side, not enclosed by
-    parentheses.
+    Takes in a size attribute, intended t obe from a product which has a hyphen seperated list as a size,
+    and returns an array of individual size values to be used in the creation of children records. If the sizes
+    passed in do not contain a hyphen delimiter or is an otherwise malformed input, returns sizes as the single
+    member of an array.
 
     Args:
       sizes (str): A string representing the a character delimited list of sizes.
