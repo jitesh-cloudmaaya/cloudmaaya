@@ -59,6 +59,23 @@ def assign_product_id_size(product_id, size):
 
     return product_id
 
+def function_that_calls_parsers(sizes):
+    """
+    Method that should call the parsers on sizes. Each parser should behave as though a list of length
+    1 being returned means that the sizes cannot be split using that delimiter. Finds the appropriate
+    delimiter, if possible, and uses it to split the sizes...
+    """
+    # check in order, if the input contains commas, slashes, or dashes
+    # then, call the appropriate parser?
+    if ',' in sizes:
+        sizes = seperate_sizes(sizes)
+    elif '/' in sizes:
+        pass # no understanding yet of separation on slashes
+    elif '-' in sizes:
+        sizes = little_parser3(sizes)
+    # or size contains no sought delmiters
+    return sizes
+
 def seperate_sizes(sizes):
     """
     Takes in a size attribute, intended to be from a product which has a comma seperated list as a size,

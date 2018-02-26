@@ -72,8 +72,9 @@ class ParserTestCase(TestCase):
         return
         # desired future stuffs
         self.assertEqual(['EU 37 / US 7 - 7.5'], little_parser3('EU 37 / US 7 - 7.5')) # currently returns ['EU 37 / US 7', '7.5']
-
-
+        self.assertEqual(['SMALL (32 - 34)', 'MEDIUM (36 - 38)'], little_parser3('SMALL (32 - 34), MEDIUM (36 - 38)'))
+        self.assertEqual(['SMALL (32-34)', 'MEDIUM (36-38)'], 'SMALL (32-34), MEDIUM (36-38)')
+        self.assertEqual(['SMALL - '], 'SMALL - ') # maybe handle malformed? otherwise just try and except
 
 
 # class MappingsTestCase(TestCase):
