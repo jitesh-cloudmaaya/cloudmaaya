@@ -1,5 +1,4 @@
 import os
-import datetime
 import yaml
 import urlparse
 import re
@@ -8,6 +7,7 @@ from . import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR
 from product_api.models import Merchant, CategoryMap, Network
 from itertools import izip
+from datetime import datetime, timedelta
 
 def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     # mappings
@@ -149,7 +149,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
                         # not from data
                         record['merchant_name'] = merchant_name
-                        record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         # defaults?
                         record['is_best_seller'] = u'0'
                         record['is_trending'] = u'0'
@@ -207,4 +207,5 @@ def set_deleted_impact_radius_products(threshold = 12):
     products = Product.objects.filter(merchant_id__in = merchant_ids)
     datetime_threshold = datetime.now() - timedelta(hours = threshold)
     deleted_products = products.filter(updated_at__lte = datetime_threshold)
-    deleted_products.update(is_deleted = True)
+    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    deleted_products.update(is_deleted = True, updated_at = updated_at)
