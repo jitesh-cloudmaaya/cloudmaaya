@@ -339,6 +339,9 @@ var look_builder = {
     }).on('click', 'a.crop-image', function(e){
       e.preventDefault();
       collage.setUpCrop();      
+    }).on('click', 'a.polygon-crop', function(e){
+      e.preventDefault();
+      collage.setUpPolygonCrop();      
     }).on('click', 'a.bg-toggle', function(e){
       e.preventDefault();
       var link = $(this);
@@ -490,6 +493,11 @@ var look_builder = {
     $('#close-crop-image').click(function(e){
       e.preventDefault();
       $('#crop-look-image').fadeOut();
+      collage.cropper = null;
+    });
+    $('#close-pg-crop-image').click(function(e){
+      e.preventDefault();
+      $('#pg-crop-look-image').fadeOut();
       collage.cropper = null;
     })
   },
@@ -876,11 +884,20 @@ var look_builder = {
           '69.9-42zm123 254.7l-193.5-114.3 55.7-33.4 137.8 81.5 137.8-81.4 55.7 33.4-193.5 114.2z"></path></svg></a>' +
           '<a class="flip-x" data-balloon="flip horizontal" data-balloon-pos="up" href="#">' +
           '<i class="fa fa-refresh"></i></a>' +
-          '<a href="#" data-balloon="crop image" data-balloon-pos="up" class="crop-image">' +
-          '<i class="fa fa-crop"></i></a>' +
-          '<a href="#" class="trash-obj" data-balloon="remove product" data-balloon-pos="up">' +
-          '<i class="fa fa-trash"></i></a></div>' +
-          '<span class="collage-sep"></span>' +
+          '<a href="#" data-balloon="square crop" data-balloon-pos="up" class="crop-image">' +
+          '<i class="fa fa-crop"></i></a>' + 
+          '<a href="#" class="polygon-crop" data-balloon="polygon crop" data-balloon-pos="up"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"'+
+          ' version="1.1" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">' +
+          '<path d="M82.028,16.686c-0.005-0.709-0.451-1.34-1.118-1.581c-0.668-0.243-1.414-0.041-1.87,0.501L58.702,39.741L20.361,22.214 ' +
+          ' c-0.659-0.302-1.434-0.151-1.932,0.373c-0.498,0.524-0.609,1.306-0.275,1.948l19.062,36.657c-2.112,1.524-3.448,3.72-3.448,6.165 ' +
+          ' c0,3.988,3.537,7.327,8.24,8.136L37.95,82.45c-0.471,0.808-0.199,1.845,0.609,2.316c0.268,0.157,0.562,0.231,0.852,0.231 ' +
+          ' c0.582,0,1.149-0.301,1.464-0.84l5.011-8.591c4.943-0.64,8.735-4.048,8.763-8.163l26.224-8.738c0.699-0.23,1.168-0.885,1.163-1.621 ' +
+          ' L82.028,16.686z M37.154,67.357c0-1.174,0.622-2.268,1.642-3.126l4.148,7.978C39.7,71.777,37.154,69.733,37.154,67.357z ' +
+          '  M46.641,71.976l-4.81-9.25c0.749-0.195,1.548-0.307,2.379-0.307c3.824,0,7.056,2.261,7.056,4.938 ' +
+          ' C51.266,69.439,49.309,71.265,46.641,71.976z M78.642,55.834l-24.818,8.274c-1.591-2.981-5.3-5.077-9.613-5.077 ' +
+          ' c-1.406,0-2.747,0.226-3.973,0.629L23.431,27.34l35.033,16.016c0.691,0.315,1.509,0.133,1.999-0.449l18.21-21.61L78.642,55.834z">' +
+          '</path></svg></a><a href="#" class="trash-obj" data-balloon="remove product" data-balloon-pos="up">' +
+          '<i class="fa fa-trash"></i></a></div><span class="collage-sep"></span>' +
           '<table class="collage-meta-fields"><tr><td>' +
           '<label>Name</label><input id="look-name" value="' + 
           result.name + '"/><label>Description</label><textarea id="look-desc">' + 

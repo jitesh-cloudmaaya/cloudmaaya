@@ -293,6 +293,9 @@ var collage = {
       }
     }
   },
+  polygonCrop: function(){
+
+  },
   /**
   * @description cache of look products to be used for removal of objects and positioning
   */  
@@ -552,6 +555,14 @@ var collage = {
         });
       }, null, object.crossOrigin);
     };
+  },
+  setUpPolygonCrop: function(){
+    var activeObject = collage.canvas.getActiveObject();
+    if (activeObject) {
+      /* add the new canvas and initialize with fabric */
+      $('#pg-cropper-container').html('<canvas id="pg-cropper" width="415" height="415"></canvas>');
+      $('#pg-crop-look-image').fadeIn();
+    }
   },
   /**
   * @description removal of object from canvas and from look products

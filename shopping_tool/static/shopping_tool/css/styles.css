@@ -773,6 +773,7 @@ div#rack-btns span {
 #close-lb-pre,
 #look-indepth a.close-indepth,
 #close-crop-image,
+#close-pg-crop-image,
 #inspect-item a.close-inspect {
   color:#bbb;
   font-size:20px;
@@ -790,6 +791,7 @@ div#rack-btns span {
 #close-design-look:hover,
 #cancel-edit-look:hover,
 #close-crop-image:hover,
+#close-pg-crop-image:hover,
 #look-indepth a.close-indepth:hover,
 #inspect-item a.close-inspect:hover,
 #close-lb:hover,
@@ -801,6 +803,7 @@ div#rack-btns span {
 #close-crop-image:active,
 #close-lb:active,
 #close-lb-pre:active,
+#close-pg-crop-image:active,
 #look-indepth a.close-indepth:active,
 #inspect-item a.close-inspect:active {color:#0090D9;}
 a.add-to-rack {
@@ -1314,6 +1317,7 @@ div.layout-option span.name {
 #create-look,
 #creating-look,
 #crop-look-image,
+#pg-crop-look-image,
 #updating-crop,
 #publish-lookbook-overlay,
 #preview-lookbook-overlay,
@@ -1344,7 +1348,8 @@ div.indepth-loading {
   width:600px;
   z-index:201;
 }
-#crop-look-image div.stage {
+#crop-look-image div.stage,
+#pg-crop-look-image div.stage {
   background:#fff;
   border-radius:5px;
   box-shadow:0 0 3px rgba(0,0,0,0.8);
@@ -1447,7 +1452,8 @@ div.indepth-loading span.pulse_loader {margin:45px 0 0 75px;}
 #create-look div.stage h2,
 #publish-lookbook-overlay h2,
 #preview-lookbook-overlay h2,
-#crop-look-image div.stage h2{
+#crop-look-image div.stage h2,
+#pg-crop-look-image div.stage h2{
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;
@@ -3466,7 +3472,7 @@ div.collage-controls a.send-back {
 #cropper-btns a:nth-of-type(2),
 div.collage-controls a:nth-of-type(2),
 #cropper-btns a:nth-of-type(4),
-div.collage-controls a.crop-image
+div.collage-controls a.polygon-crop
 /*,div.collage-controls a.send-front*/ {
   border-top-right-radius:5px;
   border-bottom-right-radius:5px;
@@ -3475,6 +3481,7 @@ div.collage-controls a.crop-image
 }
 div.collage-controls a.send-back,
 div.collage-controls a.send-front {height:16px; width:16px;}
+div.collage-controls a.polygon-crop { height: 21px; padding: 3px 6px 3px; width: 21px;}
 
 #cropper-btns a:nth-of-type(5) {margin:0;}
 div.collage-controls a#finish-editing-look {float:right; border-radius:5px; border-right:1px solid #ccc; margin-left:35px;}
