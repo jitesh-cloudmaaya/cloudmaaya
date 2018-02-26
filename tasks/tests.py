@@ -5,6 +5,7 @@ from django.test import TestCase
 from product_feed_py.pepperjam import generate_product_id
 from .product_feed_py.mappings import *
 from product_feed_py.product_feed_helpers import *
+from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes
 
 # Create your tests here.
 class GenerateProductIdTestCase(TestCase):
@@ -60,25 +61,51 @@ class ParserTestCase(TestCase):
     Currently working with dashes
     """
 
-    def test_comma_cases_that_fail(self):
+    def test_comma_cases_that_fail(self): # fix
         return
         self.assertEqual(['32'], seperate_sizes('32,')) # ?
 
-    def test_everything(self):
+    def test_size_parsing(self):
+        """
+        Tests the full
+        """
+        # move comma separated tests to a function testing the overall delimiting process
+        self.assertEqual(['SMALL (32 - 34)', 'MEDIUM (36 - 38)'], seperate_sizes('SMALL (32 - 34), MEDIUM (36 - 38)'))
+        self.assertEqual(['SMALL (32-34)', 'MEDIUM (36-38)'], seperate_sizes('SMALL (32-34), MEDIUM (36-38)'))
+        return
+        # desired future stuffs
+        self.assertEqual(['EU 37 / US 7 - 7.5'], seperate_sizes('EU 37 / US 7 - 7.5')) # currently returns ['EU 37 / US 7', '7.5']
+
+    def test_split_commas(self):
+        """
+        Test
+        """
+        self.assertEqual(['L','M','S'], _comma_seperate_sizes('L,M,S'))
+        self.assertEqual(['X-LARGE', 'LARGE', 'MEDIUM', 'SMALL'], _comma_seperate_sizes('X-LARGE,,LARGE,MEDIUM,SMALL'))
+        self.assertEqual(['13', '12', '15', '18'], _comma_seperate_sizes('  13,  12,   15,,,18'))
+
+    def test_split_hyphens(self):
         """
         test everything here for now, build incrementally progress points using tests
         """
-        self.assertEqual(['32', '32', '34', '25'], little_parser3('32 - 32 - 34 - 25'))
-        self.assertEqual(['32 32 32'], little_parser3('32 32 32')) # for now
-        self.assertEqual(['32', '32', '32'], little_parser3('32    - 32     - 32')) # double check if desired behavior against data
-        self.assertEqual(['32', '32'], little_parser3('32 --------- -- - - -32')) # double check if desired behavior against data also
-        self.assertEqual(['X-SMALL'], little_parser3('X-SMALL'))
-        return
-        # desired future stuffs
-        self.assertEqual(['EU 37 / US 7 - 7.5'], little_parser3('EU 37 / US 7 - 7.5')) # currently returns ['EU 37 / US 7', '7.5']
-        self.assertEqual(['SMALL (32 - 34)', 'MEDIUM (36 - 38)'], little_parser3('SMALL (32 - 34), MEDIUM (36 - 38)'))
-        self.assertEqual(['SMALL (32-34)', 'MEDIUM (36-38)'], 'SMALL (32-34), MEDIUM (36-38)')
-        self.assertEqual(['SMALL - '], 'SMALL - ') # maybe handle malformed? otherwise just try and except
+        # tests against reasonable inputs directly or derived from data
+        self.assertEqual(['32', '32', '34', '25'], _hyphen_seperate_sizes('32 - 32 - 34 - 25'))
+        self.assertEqual(['32 32 32'], _hyphen_seperate_sizes('32 32 32')) # for now
+        self.assertEqual(['32', '32', '32'], _hyphen_seperate_sizes('32    - 32     - 32')) # double check if desired behavior against data
+        self.assertEqual(['32', '32'], _hyphen_seperate_sizes('32 --------- -- - - -32')) # double check if desired behavior against data also
+        self.assertEqual(['X-SMALL'], _hyphen_seperate_sizes('X-SMALL'))
+        self.assertEqual(['SMALL (32 - 34)', 'MEDIUM (34 - 36)'], _hyphen_seperate_sizes('SMALL (32 - 34) - MEDIUM (34 - 36)'))
+
+        # testing against malformed input
+        self.assertEqual(['SMALL - '], _hyphen_seperate_sizes('SMALL - '))
+        self.assertEqual(['MEDIUM (32 - 35) - SMALL (34'], _hyphen_seperate_sizes('MEDIUM (32 - 35) - SMALL (34'))
+
+        # no hard and fast interpretation for correctness
+        self.assertEqual(['MEDIUM', 'SMALL'], _hyphen_seperate_sizes('MEDIUM -SMALL'))
+        self.assertEqual(['MEDIUM- SMALL'], _hyphen_seperate_sizes('MEDIUM- SMALL'))
+        self.assertEqual(['MEDIUM-SMALL'], _hyphen_seperate_sizes('MEDIUM-SMALL'))
+
+
 
 
 # class MappingsTestCase(TestCase):

@@ -59,7 +59,7 @@ def assign_product_id_size(product_id, size):
 
     return product_id
 
-def function_that_calls_parsers(sizes):
+def seperate_sizes(sizes):
     """
     Method that should call the parsers on sizes. Each parser should behave as though a list of length
     1 being returned means that the sizes cannot be split using that delimiter. Finds the appropriate
@@ -68,15 +68,15 @@ def function_that_calls_parsers(sizes):
     # check in order, if the input contains commas, slashes, or dashes
     # then, call the appropriate parser?
     if ',' in sizes:
-        sizes = seperate_sizes(sizes)
+        sizes = _comma_seperate_sizes(sizes)
     elif '/' in sizes:
         pass # no understanding yet of separation on slashes
     elif '-' in sizes:
-        sizes = little_parser3(sizes)
+        sizes = _hyphen_seperate_sizes(sizes)
     # or size contains no sought delmiters
     return sizes
 
-def seperate_sizes(sizes):
+def _comma_seperate_sizes(sizes):
     """
     Takes in a size attribute, intended to be from a product which has a comma seperated list as a size,
     and returns an array of individual size values to be used in creation of children records.
@@ -91,7 +91,7 @@ def seperate_sizes(sizes):
       arr[i] = arr[i].strip()
     return arr
 
-def little_parser3(sizes):
+def _hyphen_seperate_sizes(sizes):
     """
     Attempt at writing a little parser that successfully splits on hyphens
     with one or more occurences of whitespace on either side, not enclosed by
