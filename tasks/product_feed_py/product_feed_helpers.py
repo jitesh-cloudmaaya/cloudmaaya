@@ -68,17 +68,16 @@ def seperate_sizes(sizes):
       sizes (str): A string representing the size attribute of a product record.
     Returns:
       arr: An array of individual sizes.
-      str: The sizes argument unmodified.
     """
-    # check in order, if the input contains commas, slashes, or dashes
-    # then, call the appropriate parser?
     if ',' in sizes:
         sizes = _comma_seperate_sizes(sizes)
     elif '/' in sizes:
         pass # no understanding yet of separation on slashes
+        sizes = [sizes]
     elif '-' in sizes:
         sizes = _hyphen_seperate_sizes(sizes)
-    # or size contains no sought delmiters
+    else: # or size contains no sought delmiters
+        sizes = [sizes]
     return sizes
 
 def _comma_seperate_sizes(sizes):
@@ -96,6 +95,7 @@ def _comma_seperate_sizes(sizes):
     arr = re.split(r'[,]+', sizes)
     for i in range(0, len(arr)):
       arr[i] = arr[i].strip()
+    arr = filter(bool, arr)
     return arr
 
 def _hyphen_seperate_sizes(sizes):
@@ -120,8 +120,6 @@ def _hyphen_seperate_sizes(sizes):
         # end initialized to 0
         end = 0
 
-        # enclosure
-        parenOpen = False
         # iterate in this fashion until pointer > len(string)
         while (pointer < len(sizes)):
           # increment pointer and read character by character until/if we encounter whitespace
@@ -150,16 +148,6 @@ def _hyphen_seperate_sizes(sizes):
                     # proceed to iterate until or if we reach a closure
                     while sizes[pointer] != ')':
                         pointer += 1
-                    # but also want to handle the splitting...
-
-
-            # we need to go until we encounter a non whitespace character...
-            # what the character is will determine whether or not we should split the sizes or not
-            # if it is a dash, then we should keep reading until we encounter a non dash non space character
-            # if it is not a dash, false alarm (not yet sure if we need additional logic here?)
-            
-
-                
             else:
               # repeat this process until we break out of the looping condition
                 pointer += 1
@@ -170,6 +158,3 @@ def _hyphen_seperate_sizes(sizes):
         return splitSizes
     except IndexError as e:
         return [sizes]
-
-
-    # if I wrap in a try / except around a 
