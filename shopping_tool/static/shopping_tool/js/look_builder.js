@@ -106,20 +106,38 @@ var look_builder = {
     $('#compare-looks').on('click', 'a.edit-look-btn', function(e){
       e.preventDefault();
       var link = $(this);
-      var look = link.data('lookid');
-      var div = link.closest('div.comp-look');
-      div.addClass('editing').siblings('div.comp-look').removeClass('editing').addClass('off');
-      look_builder.setUpBuilder(look);
-      $('#publish-lookbook').data('allowed', 'false');
+      var edit_status = $('#look-drop').find('div.start').length;
+      if(edit_status != 1){
+        alert('Please finish editing your selected look before begin editing another...')
+      }else{
+        var look = link.data('lookid');
+        var div = link.closest('div.comp-look');
+        div.addClass('editing').siblings('div.comp-look').removeClass('editing').addClass('off');
+        look_builder.setUpBuilder(look);
+        $('#publish-lookbook').data('allowed', 'false');
+      }
     }).on('click', 'a.delete-look-btn', function(e){
       e.preventDefault();
       var link = $(this);
       var look = link.data('lookid');
       $('#delete-look-overlay').find('a.yes').data('lookid', look).end().fadeIn();
-    }).on('click','a.view-look-details', function(e){
+    }).on('click', 'a.view-look-btn', function(e){
       e.preventDefault();
       var link = $(this);
       look_builder.lookDetails(link);
+    }).on('click','a.look-editor-link', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var edit_status = $('#look-drop').find('div.start').length;
+      if(edit_status != 1){
+        alert('Please finish editing your selected look before begin editing another...')
+      }else{
+        var look = link.data('lookid');
+        var div = link.closest('div.comp-look');
+        div.addClass('editing').siblings('div.comp-look').removeClass('editing').addClass('off');
+        look_builder.setUpBuilder(look);
+        $('#publish-lookbook').data('allowed', 'false');
+      }
     })
     /* delete look confirm dialog */
     $('#delete-look-overlay').find('a.yes').click(function(e){
@@ -668,14 +686,15 @@ var look_builder = {
   lookMarkupGenerator: function(look, mod, check){
     var collage_img = '<div class="collage-placeholder">collage not yet created</div>';
     if(look.collage != null){
-      collage_img = '<a href="#" class="view-look-details" data-look="' + look.id + '">' +
+      collage_img = '<a href="#" class="look-editor-link" data-lookid="' + look.id + '">' +
         '<img class="collage" src="' + look.collage + '"/></a>';
     }
     var desc = look.description != '' ? '<span class="layout desc"><em>description: </em>' + look.description + '</span>' :  '';
     var display_class = check == look.id ? 'editing' : '';
     return '<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
       '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
-      look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="delete-look-btn" data-lookid="' + 
+      look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="view-look-btn" data-look="' + 
+      look.id + '"><i class="fa fa-search"></i></a><a href="#" class="delete-look-btn" data-lookid="' + 
       look.id + '"><i class="fa fa-times"></i></a><h3 class="look-name-header">' + look.name + '</h3>' +
       '<span class="layout"><em>stylist: </em>' + look.stylist.first_name + ' ' + look.stylist.last_name + '</span>' +
       '<div class="comp-look-display">' + collage_img + '</div>' + desc + 
