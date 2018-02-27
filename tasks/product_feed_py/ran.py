@@ -209,16 +209,22 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
                             attribute_3_size = attribute_3_size.upper()
                             attribute_3_size = attribute_3_size.replace('~', ',')
+                            record['size'] = attribute_3_size
 
                             if allume_category == 'Shoes':
                                 # use the shoe size mapping
                                 if attribute_3_size in shoe_size_mapping.keys():
-                                    attribute_3_size = shoe_size_mapping[attribute_3_size]
+                                    record['allume_size'] = shoe_size_mapping[attribute_3_size]
+                                else:
+                                    # double check no existing mapping case?
+                                    record['allume_size'] = attribute_3_size
                             else:
                                 # use the size mapping
                                 if attribute_3_size in size_mapping.keys():
-                                    attribute_3_size = size_mapping[attribute_3_size]
-                            record['size'] = attribute_3_size
+                                    record['allume_size'] = size_mapping[attribute_3_size]
+                                else:
+                                    record['allume_size'] = attribute_3_size
+
 
                             record['material'] = attribute_4_material
 
@@ -275,11 +281,11 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                                     if allume_category == 'Shoes':
                                         # use the shoe size mapping
                                         if size in shoe_size_mapping.keys():
-                                            size = shoe_size_mapping[size]
+                                            parent_attributes['allume_size'] = shoe_size_mapping[size]
                                     else:
                                         # use the size mapping
                                         if size in size_mapping.keys():
-                                            size = size_mapping[size]
+                                            parent_attributes['allume_size'] = size_mapping[size]
                                     parent_attributes['size'] = size
                                     parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
                                     writer.writerow(parent_attributes)
