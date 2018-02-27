@@ -82,6 +82,8 @@ def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping
       allume_category (str): The allume_category from the product. Should contain a value in the
       product_api_allumecategory table.
       size (str): The size the merchant provided, unless delimited.
+      size_mapping (dict):
+      shoe_size_mapping (dict):
 
     Returns:
       str: The calculated allume_size to use.
@@ -93,6 +95,15 @@ def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping
 
 def _determine_allume_size(size, size_mapping):
     """
+    aaaaaa
+
+    Args:
+      size (str):
+      size_mapping (dict):
+
+    Returns:
+      str: 
+
     """
     if size in size_mapping.keys():
         allume_size = size_mapping[size]
@@ -100,29 +111,32 @@ def _determine_allume_size(size, size_mapping):
         allume_size = size
     return allume_size
 
+# strategy for shoe size mapping
+# seperate the string from any part of the string that is contained in parentheses: 70 WW (US) -> 70 WW
+# seperate this value into a numeric component and a character component (assumption is that shoe sizes start with numbers)
+# check if the seperated numeric value exists in the shoe size mapping
+    # if yes, use that value, if no keep the same
+# then attempt to expand the character part of the parsed size (there is also additional logic surrounding plus to be implemented here)
+    # if yes, use that value, if no keep the same (WW -> WIDE but D -> D)
+# then concatenate these values in some form or fashion (perhaps with only 1 space? or a space determined by whether or not there was a dict hit)
+
+
 def _determine_allume_size_shoe(size, shoe_size_mapping):
     """
+    aaaaaaa
+
+    Args:
+      size (str):
+      size_mapping (dict):
+
+    Returns:
+      str:
     """
     if size in shoe_size_mapping.keys():
         allume_size = shoe_size_mapping[size]
     else:
         allume_size = size
     return allume_size
-
-
-# if allume_category == 'Shoes':
-#     # use the shoe size mapping
-#     if attribute_3_size in shoe_size_mapping.keys():
-#         record['allume_size'] = shoe_size_mapping[attribute_3_size]
-#     else:
-#         # double check no existing mapping case?
-#         record['allume_size'] = attribute_3_size
-# else:
-#     # use the size mapping
-#     if attribute_3_size in size_mapping.keys():
-#         record['allume_size'] = size_mapping[attribute_3_size]
-#     else:
-#         record['allume_size'] = attribute_3_size
 
 
 
