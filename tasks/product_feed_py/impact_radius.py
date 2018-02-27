@@ -112,7 +112,11 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['long_product_description'] = datum1['Product Description']
                         record['short_product_description'] = datum1['Product Description']
                         record['product_name'] = datum1['Product Name']
-                        record['size'] = datum1['Size']
+
+                        size = datum1['Size'].upper()
+                        size = size.repalce('~', ',')
+                        record['size'] = size
+
                         record['manufacturer_part_number'] = datum1['MPN']
                         record['product_type'] = datum1['Product Type']
                         record['gender'] = gender
