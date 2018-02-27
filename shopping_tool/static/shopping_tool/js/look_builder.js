@@ -516,7 +516,6 @@ var look_builder = {
       e.preventDefault();
       var link = $(this);
       if(link.data('path') !== undefined){
-        console.log(link.data('path'))
         link.siblings('a.save').data('path', link.data('path'));
         $('#pg-cropper-container').html('<canvas id="pg-cropper" width="415" height="415"></canvas>');
         collage.setUpPolygonCropper(link.data('path'));
