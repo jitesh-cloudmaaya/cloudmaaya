@@ -213,7 +213,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             if allume_category == 'Shoes':
                                 # use the shoe size mapping
                                 if attribute_3_size in shoe_size_mapping.keys():
-                                    attribute_3_size = size_mapping[attribute_3_size]
+                                    attribute_3_size = shoe_size_mapping[attribute_3_size]
                             else:
                                 # use the size mapping
                                 if attribute_3_size in size_mapping.keys():
@@ -275,7 +275,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                                     if allume_category == 'Shoes':
                                         # use the shoe size mapping
                                         if size in shoe_size_mapping.keys():
-                                            size = size_mapping[size]
+                                            size = shoe_size_mapping[size]
                                     else:
                                         # use the size mapping
                                         if size in size_mapping.keys():

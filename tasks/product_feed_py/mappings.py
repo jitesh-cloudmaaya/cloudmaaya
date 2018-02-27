@@ -81,7 +81,7 @@ def create_shoe_size_mapping():
     shoe_size_maps = ShoeSizeMap.objects.values_list('merchant_size', 'allume_size')
 
     for shoe_size_map in shoe_size_maps:
-        shoe_size_mappiing[shoe_size_map[0]] = shoe_size_map[1]
+        shoe_size_mapping[shoe_size_map[0]] = shoe_size_map[1]
 
     return shoe_size_mapping
 
