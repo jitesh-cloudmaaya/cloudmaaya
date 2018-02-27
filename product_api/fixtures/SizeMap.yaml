@@ -1,0 +1,75 @@
+-   model: product_api.sizemap
+    pk: 1
+    fields: {merchant_size: One Size, allume_size: One Size}
+-   model: product_api.sizemap
+    pk: 2
+    fields: {merchant_size: ONE SIZE, allume_size: One Size}
+-   model: product_api.sizemap
+    pk: 3
+    fields: {merchant_size: No Size, allume_size: One Size}
+-   model: product_api.sizemap
+    pk: 4
+    fields: {merchant_size: NO SIZE, allume_size: One Size}
+-   model: product_api.sizemap
+    pk: 5
+    fields: {merchant_size: XS, allume_size: XS}
+-   model: product_api.sizemap
+    pk: 6
+    fields: {merchant_size: X SMALL, allume_size: XS}
+-   model: product_api.sizemap
+    pk: 7
+    fields: {merchant_size: X-SMALL, allume_size: XS}
+-   model: product_api.sizemap
+    pk: 8
+    fields: {merchant_size: XSML, allume_size: XS}
+-   model: product_api.sizemap
+    pk: 9
+    fields: {merchant_size: S, allume_size: S}
+-   model: product_api.sizemap
+    pk: 10
+    fields: {merchant_size: SMALL, allume_size: S}
+-   model: product_api.sizemap
+    pk: 11
+    fields: {merchant_size: SML, allume_size: S}
+-   model: product_api.sizemap
+    pk: 12
+    fields: {merchant_size: M, allume_size: M}
+-   model: product_api.sizemap
+    pk: 13
+    fields: {merchant_size: MEDIUM, allume_size: M}
+-   model: product_api.sizemap
+    pk: 14
+    fields: {merchant_size: MED, allume_size: M}
+-   model: product_api.sizemap
+    pk: 15
+    fields: {merchant_size: L, allume_size: L}
+-   model: product_api.sizemap
+    pk: 16
+    fields: {merchant_size: LARGE, allume_size: L}
+-   model: product_api.sizemap
+    pk: 17
+    fields: {merchant_size: LRG, allume_size: L}
+-   model: product_api.sizemap
+    pk: 18
+    fields: {merchant_size: XL, allume_size: XL}
+-   model: product_api.sizemap
+    pk: 19
+    fields: {merchant_size: X LARGE, allume_size: XL}
+-   model: product_api.sizemap
+    pk: 20
+    fields: {merchant_size: X-LARGE, allume_size: XL}
+-   model: product_api.sizemap
+    pk: 21
+    fields: {merchant_size: XLRG, allume_size: XL}
+-   model: product_api.sizemap
+    pk: 22
+    fields: {merchant_size: XXL, allume_size: XXL}
+-   model: product_api.sizemap
+    pk: 23
+    fields: {merchant_size: XX LARGE, allume_size: XXL}
+-   model: product_api.sizemap
+    pk: 24
+    fields: {merchant_size: XX-LARGE, allume_size: XXL}
+-   model: product_api.sizemap
+    pk: 25
+    fields: {merchant_size: XXLRG, allume_size: XXL}
