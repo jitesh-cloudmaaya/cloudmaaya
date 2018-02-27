@@ -298,7 +298,8 @@ def set_deleted_ran_products(threshold = 12):
     datetime_threshold = datetime.now() - timedelta(hours = threshold)
     # print datetime_threshold # in case behavior is not as expected
     deleted_products = products.filter(updated_at__lte = datetime_threshold)
-    deleted_products.update(is_deleted = True)
+    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    deleted_products.update(is_deleted = True, updated_at = updated_at)
     print('Set %s non-upserted products to deleted' % deleted_products.count())
 
 
