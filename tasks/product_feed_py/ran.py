@@ -19,6 +19,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
     size_mapping = mappings.create_size_mapping()
+    shoe_size_mapping = mappings.create_shoe_size_mapping()
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('RAN')
