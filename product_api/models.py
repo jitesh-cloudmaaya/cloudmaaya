@@ -161,7 +161,7 @@ class ShoeSizeMap(models.Model):
     def __str__(self):
         return self.merchant_size
 
-class SizeTermsMap(models.Model):
+class SizeTermMap(models.Model):
     merchant_phrase = models.CharField(max_length=128, blank=True, null=True)
     allume_attribute = models.CharField(max_length=128, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)

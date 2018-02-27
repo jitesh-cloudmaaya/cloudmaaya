@@ -111,9 +111,24 @@ def _determine_allume_size(size, size_mapping):
         allume_size = size
     return allume_size
 
+def _determine_allume_shoe_size2(size, shoe_size_mapping):
+    """
+    """
+    # seperate the string from any part of the string that is contained in parentheses: 70 WW (US) -> 70 WW
+    pattern = re.compile('^[^\(]+')
+    match = re.match(pattern, size)
+    try:
+        parsed_size = match.group(0).strip()
+    except AttributeError: # if match is None
+        # do something
+        pass
+
+    # seperate this value into a numeric component and a character component (assumption is that shoe sizes start with numbers)
+    # assuming that shoe sizes start with numbers, seperate the shoe size into a numeric and character component
+    
+    
+
 # strategy for shoe size mapping
-# seperate the string from any part of the string that is contained in parentheses: 70 WW (US) -> 70 WW
-# seperate this value into a numeric component and a character component (assumption is that shoe sizes start with numbers)
 # check if the seperated numeric value exists in the shoe size mapping
     # if yes, use that value, if no keep the same
 # then attempt to expand the character part of the parsed size (there is also additional logic surrounding plus to be implemented here)
@@ -144,3 +159,4 @@ def _determine_allume_size_shoe(size, shoe_size_mapping):
 
 
 
+    
