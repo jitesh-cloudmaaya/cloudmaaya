@@ -69,6 +69,7 @@ def facets(self):
     es = es[start_record:end_record]
     results = es.execute().to_dict()
     results_count = es_count.execute().to_dict()
+    #results_count['aggregations']['unique_count']['value'] = 0
     #results = results_count
 
 
