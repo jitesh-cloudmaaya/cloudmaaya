@@ -1,0 +1,51 @@
+-   model: product_api.sizetermmap
+    pk: 1
+    fields: {merchant_phrase: P, allume_attribute: Petite}
+-   model: product_api.sizetermmap
+    pk: 2
+    fields: {merchant_phrase: Petite, allume_attribute: Petite}
+-   model: product_api.sizetermmap
+    pk: 3
+    fields: {merchant_phrase: Short, allume_attribute: Petite}
+-   model: product_api.sizetermmap
+    pk: 4
+    fields: {merchant_phrase: X, allume_attribute: Plus}
+-   model: product_api.sizetermmap
+    pk: 5
+    fields: {merchant_phrase: Plus, allume_attribute: Plus}
+-   model: product_api.sizetermmap
+    pk: 6
+    fields: {merchant_phrase: Tall, allume_attribute: Tall}
+-   model: product_api.sizetermmap
+    pk: 7
+    fields: {merchant_phrase: Long, allume_attribute: Tall}
+-   model: product_api.sizetermmap
+    pk: 8
+    fields: {merchant_phrase: N, allume_attribute: Narrow}
+-   model: product_api.sizetermmap
+    pk: 9
+    fields: {merchant_phrase: Narrow, allume_attribute: Narrow}
+-   model: product_api.sizetermmap
+    pk: 10
+    fields: {merchant_phrase: M, allume_attribute: Medium}
+-   model: product_api.sizetermmap
+    pk: 11
+    fields: {merchant_phrase: Medium, allume_attribute: Medium}
+-   model: product_api.sizetermmap
+    pk: 12
+    fields: {merchant_phrase: W, allume_attribute: Wide}
+-   model: product_api.sizetermmap
+    pk: 13
+    fields: {merchant_phrase: Wide, allume_attribute: Wide}
+-   model: product_api.sizetermmap
+    pk: 14
+    fields: {merchant_phrase: WW, allume_attribute: Wide}
+-   model: product_api.sizetermmap
+    pk: 15
+    fields: {merchant_phrase: XW, allume_attribute: Wide}
+-   model: product_api.sizetermmap
+    pk: 16
+    fields: {merchant_phrase: WW-Wide, allume_attribute: Wide}
+-   model: product_api.sizetermmap
+    pk: 17
+    fields: {merchant_phrase: X-Wide, allume_attribute: Wide}
