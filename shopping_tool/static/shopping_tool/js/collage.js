@@ -133,6 +133,7 @@ var collage = {
           collage.canvas.discardActiveObject();
           $('#adding-product').remove();
           collage.product_cache.push(response);
+          collage.setWatermark();
         };
         collage.addAllumeProduct(response.product, response.id);
       },
@@ -190,6 +191,25 @@ var collage = {
     collage.canvas = new fabric.Canvas('c');
     collage.product_cache = products;
     collage.initial_load = products.length - 1;
+    /* add in the watermark */
+    var img = new Image(); 
+    /* watermark path */
+    img.src = '/static/shopping_tool/image/allume_watermark.png';
+    img.onload = function() {
+      /* scale: 0.15, left: 657, and top: 393 based upon 1365 x 284 watermark dimensions */
+      var scale = 0.15;
+      var fImg = new fabric.Cropzoomimage(this, {
+        originX: 'center',
+        originY: 'center',
+        left: 657,
+        top: 393,
+        scaleX: scale,
+        scaleY: scale,
+        prod_id: 'watermark'
+      });
+      collage.canvas.add(fImg);
+      fImg.selectable = false;
+    }
     if(collage.initial_load > -1){
       collage.loadImg()
     }
@@ -239,6 +259,7 @@ var collage = {
         if(collage.initial_load > -1){
           collage.loadImg();
         }else{
+          collage.setWatermark();
           collage.canvas.renderAll();
         }
       };
@@ -335,6 +356,7 @@ var collage = {
     var activeObject = collage.canvas.getActiveObject();
     if (activeObject) {
       collage.canvas.bringToFront(activeObject);
+      collage.setWatermark();
     }
   },
   /**
@@ -675,7 +697,20 @@ var collage = {
       /* remove the tmp crop canvas */
       $('#tmp-crop').remove();
     }
-  },  
+  },
+  /**
+  * @description funtion to place the watermark object on top of the stack
+  */ 
+  setWatermark: function(){
+    var cv_objs = collage.canvas.toObject();
+    for(var i = 0, l = cv_objs.objects.length; i<l; i++){
+      var prod = cv_objs.objects[i];
+      if(prod.prod_id == 'watermark'){
+        collage.canvas.bringToFront(collage.canvas.item(i));
+        break;
+      }
+    }
+  },
   /**
   * @description removal of object from canvas and from look products
   */
@@ -777,6 +812,10 @@ var collage = {
         });
       }
     }
+    /* reset the collage cache holders so collage is ready for new look to edit */
+    collage.canvas = null;
+    collage.initial_load = null;
+    collage.product_cache = null;  
   },
   /**
   * @description zoomBy function for image cropping

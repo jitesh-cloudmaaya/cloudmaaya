@@ -1176,61 +1176,36 @@ var look_builder = {
   * @param {string} look_desc - look description
   */
   updateLook: function(div, look_id, look_name, look_desc){
-    /* before we can update the look we need to add the watermark to the collage */
-    var img = new Image(); 
-    /* watermarl path */
-    img.src = '/static/shopping_tool/image/allume_watermark.png';
-    img.onload = function() {
-      /* scale: 0.15, left: 657, and top: 393 based upon 1365 x 284 watermark dimensions */
-      var scale = 0.15;
-      var fImg = new fabric.Cropzoomimage(this, {
-        originX: 'center',
-        originY: 'center',
-        left: 657,
-        top: 393,
-        scaleX: scale,
-        scaleY: scale,
-        prod_id: 'watermark'
-      });
-      collage.canvas.add(fImg);
-      /* since we are saving as high quality jpeg we need to set the canvas bg to white */
-      collage.canvas.backgroundColor = '#ffffff';
-      /* set the watermark as unselectable so we don;t get the outline in the jpeg */
-      fImg.selectable = false;
-      collage.canvas.setActiveObject(fImg);
-      /* call render all to pick up new background */
-      collage.canvas.renderAll();
-      /* get base64 jpeg of canvas */
-      var src = collage.canvas.toDataURL({
-        format: 'jpeg',
-        quality: 1,
-      });
-      /* the look object to save */
-      var look_obj = {
-        "name": look_name,
-        "description": look_desc,
-        "allume_styling_session": look_builder.session_id,
-        "stylist": look_builder.stylist_id,
-        "collage": src
-      }
-      /* update the look with the new values */
-      $.ajax({
-        contentType : 'application/json',
-        data: JSON.stringify(look_obj),
-        success:function(response){
-          $.get('/shopping_tool_api/look/' + look_id + '/', function(result){
-            div.before(look_builder.lookMarkupGenerator(result, 'comp', null));
-            div.remove();
-          });
-        },
-        type: 'PUT',
-        url: '/shopping_tool_api/look/' + look_id + '/'
-      });
-      /* reset the collage cache holders so collage is ready for new look to edit */
-      collage.canvas = null;
-      collage.initial_load = null;
-      collage.product_cache = null;      
-    }     
+    collage.setWatermark();
+    collage.canvas.backgroundColor = '#ffffff';
+    /* call render all to pick up new background */
+    collage.canvas.renderAll();
+    /* get base64 jpeg of canvas */
+    var src = collage.canvas.toDataURL({
+      format: 'jpeg',
+      quality: 1,
+    });
+    /* the look object to save */
+    var look_obj = {
+      "name": look_name,
+      "description": look_desc,
+      "allume_styling_session": look_builder.session_id,
+      "stylist": look_builder.stylist_id,
+      "collage": src
+    }
+    /* update the look with the new values */
+    $.ajax({
+      contentType : 'application/json',
+      data: JSON.stringify(look_obj),
+      success:function(response){
+        $.get('/shopping_tool_api/look/' + look_id + '/', function(result){
+          div.before(look_builder.lookMarkupGenerator(result, 'comp', null));
+          div.remove();
+        });
+      },
+      type: 'PUT',
+      url: '/shopping_tool_api/look/' + look_id + '/'
+    });   
   },
   /**
   * @description update looks categories when tabs are clicked in publish
