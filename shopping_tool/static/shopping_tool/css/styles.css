@@ -3447,8 +3447,8 @@ div#cropper-container,
 
 div#canvas-container div.item {display:none;}
 div.collage-controls {margin:15px 16px;}
-#cropper-btns,
-#pg-cropper-btns {margin:15px auto; width:255px;}
+#cropper-btns {margin:15px auto; width:255px;}
+#pg-cropper-btns {margin:15px auto; width:260px;}
 div.collage-controls a,
 #cropper-btns a,
 #pg-cropper-btns a {
