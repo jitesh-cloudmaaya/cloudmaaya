@@ -18,6 +18,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+    size_mapping = mappings.create_size_mapping()
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('RAN')
@@ -207,6 +208,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
                             attribute_3_size = attribute_3_size.upper()
                             attribute_3_size = attribute_3_size.replace('~', ',')
+                            # use the size mapping
+                            if attribute_3_size in size_mapping.keys():
+                                attribute_3_size = size_mapping[attribute_3_size]
                             record['size'] = attribute_3_size
 
                             record['material'] = attribute_4_material
@@ -260,8 +264,11 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    # use the size mapping here also
+                                    if size in size_mapping.keys():
+                                        size = size_mapping[size]
                                     parent_attributes['size'] = size
+                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
                                     writer.writerow(parent_attributes)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
