@@ -73,3 +73,60 @@ def seperate_sizes(sizes):
     for i in range(0, len(arr)):
       arr[i] = arr[i].strip()
     return arr
+
+def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping):
+    """
+
+
+    Args:
+      allume_category (str): The allume_category from the product. Should contain a value in the
+      product_api_allumecategory table.
+      size (str): The size the merchant provided, unless delimited.
+
+    Returns:
+      str: The calculated allume_size to use.
+    """
+    if allume_category == 'Shoes':
+        return _determine_allume_size_shoe(size, shoe_size_mapping)
+    else:
+        return _determine_allume_size(size, size_mapping)
+
+def _determine_allume_size(size, size_mapping):
+    """
+    """
+    if size in size_mapping.keys():
+        allume_size = size_mapping[size]
+    else:
+        allume_size = size
+    return allume_size
+
+def _determine_allume_size_shoe(size, shoe_size_mapping):
+    """
+    """
+    if size in shoe_size_mapping.keys():
+        allume_size = shoe_size_mapping[size]
+    else:
+        allume_size = size
+    return allume_size
+
+
+# if allume_category == 'Shoes':
+#     # use the shoe size mapping
+#     if attribute_3_size in shoe_size_mapping.keys():
+#         record['allume_size'] = shoe_size_mapping[attribute_3_size]
+#     else:
+#         # double check no existing mapping case?
+#         record['allume_size'] = attribute_3_size
+# else:
+#     # use the size mapping
+#     if attribute_3_size in size_mapping.keys():
+#         record['allume_size'] = size_mapping[attribute_3_size]
+#     else:
+#         record['allume_size'] = attribute_3_size
+
+
+
+
+
+
+
