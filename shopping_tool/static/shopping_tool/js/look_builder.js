@@ -324,25 +324,7 @@ var look_builder = {
       $('#publish-lookbook-overlay').fadeOut();
     });
     /* collage funcs */
-    $('#look-drop').on('click', 'a.zoom-in', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,0,10);
-    }).on('click', 'a.zoom-out', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,0,-10);
-    }).on('click', 'a.shift-left', function(e){
-      e.preventDefault();
-      collage.zoomBy(5,0,0);
-    }).on('click', 'a.shift-right', function(e){
-      e.preventDefault();
-      collage.zoomBy(-5,0,0);
-    }).on('click', 'a.shift-up', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,5,0);
-    }).on('click', 'a.shift-down', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,-5,0);
-    }).on('click', 'a.trash-obj', function(e){
+    $('#look-drop').on('click', 'a.trash-obj', function(e){
       e.preventDefault();
       collage.trash();
     }).on('click', 'a.send-back', function(e){
@@ -377,6 +359,27 @@ var look_builder = {
       $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
       $('#publish-lookbook').data('allowed', 'false');
     });
+    /*
+    .on('click', 'a.zoom-in', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,0,10);
+    }).on('click', 'a.zoom-out', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,0,-10);
+    }).on('click', 'a.shift-left', function(e){
+      e.preventDefault();
+      collage.zoomBy(5,0,0);
+    }).on('click', 'a.shift-right', function(e){
+      e.preventDefault();
+      collage.zoomBy(-5,0,0);
+    }).on('click', 'a.shift-up', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,5,0);
+    }).on('click', 'a.shift-down', function(e){
+      e.preventDefault();
+      collage.zoomBy(0,-5,0);
+    })
+    */
     /* rack functionality */
     $('#rack-draggable').on('click', 'a.add', function(e){
       e.preventDefault();
@@ -464,6 +467,9 @@ var look_builder = {
       }else{
         look_builder.orderedRack();
       }
+    }).on('click', 'a.lb-search-link', function(e){
+      e.preventDefault();
+      look_builder.setUpSearch();
     });
     $('#cropper-btns').find('a.crop').click(function(e){
       e.preventDefault();
@@ -668,6 +674,8 @@ var look_builder = {
     }
     if((rack_cats.length > 0)||(faves.length > 0)){
       rack_items.push(
+        '<a href="#" class="lb-search-link">' +
+        '<i class="fa fa-search"></i>search rack</a>' +
         '<a class="close-all-rack-sections" href="#">' +
         '<i class="fa fa-caret-square-o-up"></i>collapse all sections</a>' +
         '<a class="sort-link unsort-items" href="#">' +
@@ -774,6 +782,71 @@ var look_builder = {
     return markup.join('');
   },
   /**
+  * @description perform a simple name match filter against items in the rack and favroites
+  * @param {string} q - the term to match against
+  * @param {DOM Object} drack_rack - the look builder rack body
+  */
+  searchRack: function(q, drag_rack){
+    var rack_items_dom = $('#rack-list').find('div.item');
+    drag_rack.find('.item').remove();
+    var items = [];
+    var items_markup = [];
+    var racked = $('#rack-list').find('div.item');
+    $.each(racked, function(idx){
+      var item = $(this).data();
+      if(item.productname.toLowerCase().indexOf(q.toLowerCase()) > -1){
+        items.push(item)
+      }else if(q == ''){
+        items.push(item)
+      }
+    });
+    var faves = $('#fave-prods div.item');
+    $.each(faves, function(index){
+      var item = $(this).data();
+      if(item.productname.toLowerCase().indexOf(q.toLowerCase()) > -1){
+        items.push(item)
+      }else if(q == ''){
+        items.push(item)
+      }
+    });
+    if(q == ''){
+      $('#rack-search-term').html('All rack items...');
+    }else{
+      if(items.length > 0){
+        var plural = items.length == 1 ? items.length + ' item' : items.length + ' items' ;
+        $('#rack-search-term').html(plural + ' matching: "<b>' + q + '</b>"');
+      }else{
+        $('#rack-search-term').html('No items matching: "<b>' + q + '</b>"');
+      }
+    }
+    for(var i = 0, l = items.length; i<l; i++){
+      var datum = items[i];
+      if(datum.fave != undefined){
+        items_markup.push(
+          '<div class="item fave" data-productid="' + datum.productid + 
+          '" data-url="' + datum.src + '"><span class="fave"><i class="fa fa-heart"></i></span>' +
+          '<img class="handle" src="' + datum.src + '"/>' +
+          '<a href="#" class="add" data-productid="' + datum.productid + '" data-imgsrc="' + 
+          datum.src + '"><i class="fa fa-plus-circle"></i></a>' +
+          '<a href="#"  class="view" data-productid="' + datum.productid + 
+          '"><i class="fa fa-search"></i></a><a href="#" class="remove" ' +
+          'data-lookitemid=""><i class="fa fa-times"></i></a></div>'
+        );
+      }else{
+        items_markup.push(
+          '<div class="item" data-productid="' + datum.productid + 
+          '" data-url="' + datum.src + '"><img class="handle" src="' + datum.src + 
+          '"/><a href="#" class="add" data-productid="' + datum.productid + '" data-imgsrc="' + 
+          datum.src + '"><i class="fa fa-plus-circle"></i></a>' +
+          '<a href="#"  class="view" data-productid="' + datum.productid + 
+          '"><i class="fa fa-search"></i></a><a href="#" class="remove" data-sku="' + datum.sku + 
+          '" data-rackid="' + datum.rackid + '"><i class="fa fa-times"></i></a></div>'
+        );
+      }
+    }
+    drag_rack.append(items_markup.join(''));
+  },
+  /**
   * @description set up the builder ui/ux from clicked look link
   * @param {integer} id -  the look id 
   */
@@ -791,24 +864,18 @@ var look_builder = {
           '"><i class="fa fa-check"></i>finished editing look</a>' +
           '<a class="bg-toggle checker-bg" data-balloon="toggle collage ' +
           'background" data-balloon-pos="up" href="#"><em></em></a>' +
-          '<a class="zoom-in" data-balloon="zoom in" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-search-plus"></i></a>' +
-          '<a class="zoom-out" data-balloon="zoom out" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-search-minus"></i></a>' +
+          '<a href="#" data-balloon="move to back" data-balloon-pos="up" class="send-back">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" enable-background="new 0 0 512 512">' +
+          '<path d="M398.7 221.8l96.1-56.8-238.9-143.2-238.9 143.2 96.1 56.8-85.6 50.6 88.9 53.3-66.6 39.3 206 ' +
+          '123.5 206-123.5-66.6-39.3 88.9-53.3-85.4-50.6zm-142.8-174.1l195.4 117.1-195.4 115.4-195.4-115.4 ' +
+          '195.4-117.1zm0 334.9l-183.7-110.2 63.4-37.4 120.3 71.1 120.3-71.1 63.4 37.4-183.7 110.2z"></path></svg></a>' +
+          '<a href="#" data-balloon="move to front" data-balloon-pos="up" class="send-front">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" enable-background="new 0 0 512 512">' +
+          '<path d="M495.8 249.6l-93.3-55.9 69.9-41.3-216.4-129.7-216.4 129.7 69.9 41.3-93.3 55.9 83.1 49.1-82.4 ' +
+          '49.4 239.1 141.2 239.1-141.3-82.4-49.4 83.1-49zm-362.8-42.1l123 72.6 123-72.6 70 41.9-193 114-192.9-113.9 ' +
+          '69.9-42zm123 254.7l-193.5-114.3 55.7-33.4 137.8 81.5 137.8-81.4 55.7 33.4-193.5 114.2z"></path></svg></a>' +
           '<a class="flip-x" data-balloon="flip horizontal" data-balloon-pos="up" href="#">' +
           '<i class="fa fa-refresh"></i></a>' +
-          '<a class="shift-left" data-balloon="shift left" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-chevron-left"></i></a>' +
-          '<a class="shift-up" data-balloon="shift up" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-chevron-up"></i></a>' +
-          '<a class="shift-down" data-balloon="shift down" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-chevron-down"></i></a>' +
-          '<a class="shift-right" data-balloon="shift right" data-balloon-pos="up" href="#">' +
-          '<i class="fa fa-chevron-right"></i></a>' +
-          '<a href="#" data-balloon="move to back" data-balloon-pos="up" class="send-back">' +
-          '<i class="fa fa-reply"></i></a>' +
-          '<a href="#" data-balloon="move to front" data-balloon-pos="up" class="send-front">' +
-          '<i class="fa fa-share"></i></a>' +
           '<a href="#" data-balloon="crop image" data-balloon-pos="up" class="crop-image">' +
           '<i class="fa fa-crop"></i></a>' +
           '<a href="#" class="trash-obj" data-balloon="remove product" data-balloon-pos="up">' +
@@ -890,61 +957,34 @@ var look_builder = {
     });
   },
   /**
-  * @description the unordered look and feel for look builder rack
+  * @description - set up the rack search feature ui
   */
-  unorderedRack: function(){
-    var rack_items = [];
-    var rack_items_dom = $('#rack-list').find('div.item');
-    if(rack_items_dom.length > 0){
-      rack_items.push(
-        '<a class="sort-link sort-items" href="#">' +
-        '<i class="fa fa-th-list"></i>sort items</a>'
-      );
-    }else{
-      rack_items.push('<div class="empty">Your rack is empty...</div>');
-    }
-    $.each(rack_items_dom, function(index){
-      var item = $(this);
-      var data = item.data();
-      var src = item.find('img').attr('src');
-      var link = item.find('a.remove-from-rack')
-      var sku = link.data('sku');
-      var rack_id = link.data('rackid');
-      rack_items.push(
-        '<div class="item" data-productid="' + data.productid + 
-        '" data-url="' + src + '"><img class="handle" src="' + src + 
-        '"/><a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
-        src + '"><i class="fa fa-plus-circle"></i></a>' +
-        '<a href="#"  class="view" data-productid="' + data.productid + 
-        '"><i class="fa fa-search"></i></a>' +
-        '<a href="#" class="remove" data-sku="' + sku + 
-        '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
-      );
-    });
-    var faves = $('#fave-prods div.item');
-    if(faves.length > 0){
-      rack_items.push(look_builder.rackFavorites(faves));
-    }
-    /* add the clones and assign drag/drop functionality */
+  setUpSearch: function(){
+    /* set up the search ui */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(
       '<h2>' + $('#rack').find('h2').html() + 
-      '</h2><div class="look-builder-rack">' + 
-      rack_items.join('') + '</div>'
+      '</h2><div class="look-builder-rack">' +
+      '<div id="rack-search-toggles">' +
+      '<a class="sort-link sort-items" href="#">' +
+      '<i class="fa fa-th-list"></i>back to sorted</a>' +
+      '<a class="sort-link unsort-items" href="#">' +
+      '<i class="fa fa-th"></i>back to unsorted</a></div>' +      
+      '<input id="rack-search" placeholder="Start typing to find rack items..."/>' +
+      '<div id="rack-search-term"></div>' +
+      '</div>'
     );
-    new Sortable($('#rack-draggable div.look-builder-rack')[0], {
-      handle: ".handle",
-      group: { name: "look", pull: 'clone', put: false },
-      sort: true,
-      draggable: ".item",
-      onStart: function(){
-        var cc = $('#canvas-container');
-        if(cc.length > 0){
-          collage.collageSortable.option('disabled', false);
-        }
-      }
-    });  
-  },
+    var div = drag_rack.find('div.look-builder-rack')
+    /* attahc same functionality to search results as regular unoredered rack */
+    look_builder.unorderedDrag();
+    /* attached event listener to filter results */
+    $('#rack-search').keyup(function(e){
+      var q = $(this).val();
+      look_builder.searchRack(q, div);
+    });
+    /* set up initial reasults */
+    look_builder.searchRack('', div);
+  },  
   /**
   * @description switching to tab two in publish look book flow
   * @param {DOM Object} link - the link that trigger the navigation
@@ -1015,6 +1055,70 @@ var look_builder = {
       }
     }    
   },
+  /**
+  * @description helper function to dry up drag and drop
+  */
+  unorderedDrag: function(){
+    new Sortable($('#rack-draggable div.look-builder-rack')[0], {
+      handle: ".handle",
+      group: { name: "look", pull: 'clone', put: false },
+      sort: true,
+      draggable: ".item",
+      onStart: function(){
+        var cc = $('#canvas-container');
+        if(cc.length > 0){
+          collage.collageSortable.option('disabled', false);
+        }
+      }
+    });
+  },
+  /**
+  * @description the unordered look and feel for look builder rack
+  */
+  unorderedRack: function(){
+    var rack_items = [];
+    var rack_items_dom = $('#rack-list').find('div.item');
+    if(rack_items_dom.length > 0){
+      rack_items.push(
+        '<a href="#" class="lb-search-link">' +
+        '<i class="fa fa-search"></i>search rack</a>' +
+        '<a class="sort-link sort-items" href="#">' +
+        '<i class="fa fa-th-list"></i>sort items</a>'
+      );
+    }else{
+      rack_items.push('<div class="empty">Your rack is empty...</div>');
+    }
+    $.each(rack_items_dom, function(index){
+      var item = $(this);
+      var data = item.data();
+      var src = item.find('img').attr('src');
+      var link = item.find('a.remove-from-rack')
+      var sku = link.data('sku');
+      var rack_id = link.data('rackid');
+      rack_items.push(
+        '<div class="item" data-productid="' + data.productid + 
+        '" data-url="' + src + '"><img class="handle" src="' + src + 
+        '"/><a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
+        src + '"><i class="fa fa-plus-circle"></i></a>' +
+        '<a href="#"  class="view" data-productid="' + data.productid + 
+        '"><i class="fa fa-search"></i></a>' +
+        '<a href="#" class="remove" data-sku="' + sku + 
+        '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
+      );
+    });
+    var faves = $('#fave-prods div.item');
+    if(faves.length > 0){
+      rack_items.push(look_builder.rackFavorites(faves));
+    }
+    /* add the clones and assign drag/drop functionality */
+    var drag_rack = $('#rack-draggable');
+    drag_rack.html(
+      '<h2>' + $('#rack').find('h2').html() + 
+      '</h2><div class="look-builder-rack">' + 
+      rack_items.join('') + '</div>'
+    );
+    look_builder.unorderedDrag();  
+  },  
   /**
   * @description update a look with any changes to its fields
   * @param {DOM Object} div - div to be updated with new display

@@ -84,7 +84,8 @@ def set_deleted_pepperjam_products(threshold = 12):
     datetime_threshold = datetime.now() - timedelta(hours = threshold) # comparison threshold is 12 hours ago or more
     deleted_products = products.filter(updated_at__lte = datetime_threshold)
     # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
-    deleted_products.update(is_deleted = True)
+    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    deleted_products.update(is_deleted = True, updated_at = updated_at)
 
 def get_data(local_temp_dir, cleaned_fieldnames):
 

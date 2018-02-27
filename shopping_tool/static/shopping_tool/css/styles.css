@@ -1725,7 +1725,8 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
 }
 #rack-draggable a.rack-section-toggle,
 #rack-draggable a.close-all-rack-sections,
-#rack-draggable a.sort-link {
+#rack-draggable a.sort-link,
+#rack-draggable a.lb-search-link {
   color:#474747;
   display:block;
   font-size:14px;
@@ -1733,16 +1734,20 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   text-decoration:none;
   text-shadow:0 1px #fff;
 }
+#rack-draggable div#rack-search-toggles a.sort-link  {float:left; padding:5px 15px 0 0;}
+#rack-draggable a.lb-search-link {float:right;}
 #rack-list a.rack-section-toggle i,
 #rack-draggable a.rack-section-toggle i,
 #rack-list a.close-all-rack-sections i,
 #rack-draggable a.close-all-rack-sections i,
 #favorites-list a.rack-section-toggle i,
+#rack-draggable a.lb-search-link i,
 #rack-draggable a.sort-link i {margin-right:5px;}
 #rack-list a.close-all-rack-sections:active,
 #rack-draggable a.close-all-rack-sections:active,
 #favorites-list a.rack-section-toggle:active
-#rack-draggable a.sort-link:active {color:#f2987e;}
+#rack-draggable a.sort-link:active,
+#rack-draggable a.lb-search-link:active {color:#f2987e;}
 #rack-list div.block,
 #rack-draggable div.block,
 #favorites-list div.block {overflow:hidden;}
@@ -2961,15 +2966,15 @@ div.lookbook-btns a#publish-lookbook:active{
   font-weight:200;
   margin:0;
   padding:8px;
-  width: calc(100% - 18px);
+  width: 374px;
 }
 #look-drop #look-name {margin-bottom:10px;}
 #look-drop #look-desc {
   height:105px;
   max-height:105px;
   min-height:105px;  
-  max-width:calc(100% - 18px);
-  min-width:calc(100% - 18px);
+  max-width:374px;
+  min-width:374px;
 }
 
 /* notes ui */
@@ -3433,7 +3438,7 @@ div.collage-controls a,
   border:1px solid #ccc;
   border-right:0px;
   display:inline-block;
-  color:#474747;
+  color:#000;
   float:left;
   font-size:13px;
   font-variant: small-caps;
@@ -3454,15 +3459,12 @@ div.collage-controls a.bg-toggle.checker-bg.white em {background:#fff;}
 #cropper-btns a:nth-of-type(3),
 div.collage-controls a:nth-of-type(2),
 div.collage-controls a:nth-of-type(3),
-div.collage-controls a:nth-of-type(6),
 div.collage-controls a.send-back {
   border-top-left-radius:5px;
   border-bottom-left-radius:5px;
 }
 #cropper-btns a:nth-of-type(2),
 div.collage-controls a:nth-of-type(2),
-div.collage-controls a:nth-of-type(5),
-div.collage-controls a:nth-of-type(9),
 #cropper-btns a:nth-of-type(4),
 div.collage-controls a.crop-image
 /*,div.collage-controls a.send-front*/ {
@@ -3471,12 +3473,16 @@ div.collage-controls a.crop-image
   border-right:1px solid #ccc;
   margin-right:10px;
 }
+div.collage-controls a.send-back,
+div.collage-controls a.send-front {height:16px; width:16px;}
+
 #cropper-btns a:nth-of-type(5) {margin:0;}
 div.collage-controls a#finish-editing-look {float:right; border-radius:5px; border-right:1px solid #ccc; margin-left:35px;}
 div.collage-controls a.trash-obj {border-radius:5px; border-right:1px solid #ccc;}
 div.collage-controls a#finish-editing-look i,
 #cropper-btns a i {padding-right:5px;}
-#cropper-btns a i.fa-times {font-size:15px;}
+#cropper-btns a i.fa-times,
+div.collage-controls a i {font-size:15px;}
 div.collage-controls a:hover,
 #cropper-btns a:hover {background:#eee;}
 div.collage-controls a:active,
@@ -3486,8 +3492,8 @@ div.collage-controls a:active,
 }
 span.collage-sep { display:block; clear:both; padding-bottom:15px; }
 [data-balloon]:after {font-size:10px !important;padding-top:.75em;}
-table.collage-meta-fields {margin:0; width:100%;}
-table.collage-meta-fields td {padding:5px 16px;vertical-align:top;max-width:50%; min-width:50%; width:50%;}
+table.collage-meta-fields {margin:0;}
+table.collage-meta-fields td {padding:5px 16px;vertical-align:top;}
 table.collage-meta-fields td + td {padding:5px 16px 5px 4px;}
 
 #adding-product {
@@ -3563,7 +3569,7 @@ div#non-collage-items {
   margin: 0;
   overflow:auto;
   padding: 5px 5px 5px 8px;
-  width: calc(100% - 42px);  
+  width: 335px;  
 }
 div#non-collage-items div.item {
   background:#fff;
@@ -3597,8 +3603,27 @@ div#non-collage-items div.item a.remove {
   top:0;
 }
 div#non-collage-items div.item a.remove:hover {color:#F44336; opacity:1;}
-
-
+#rack-search-toggles {overflow:auto; padding:3px 0 0 5px;}
+#rack-search {
+  background:#fff;
+  border:1px solid #d0d0d0;
+  border-radius:20px;
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.1);
+  color:#303030;
+  display:block;
+  font-size:12px;
+  font-weight:200;
+  line-height:18px;
+  margin:10px 3px; 
+  padding:3px 10px;
+  width:287px;
+}
+#rack-search-term {
+  color:#474747;
+  font-size:14px;
+  font-weight:100;
+  margin:5px;
+}
 
 
 

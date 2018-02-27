@@ -1,5 +1,4 @@
 import os
-import datetime
 import yaml
 import urlparse
 import csv
@@ -9,7 +8,8 @@ from django.db import connection
 from . import mappings
 from . import product_feed_helpers
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap
+from product_api.models import Merchant, CategoryMap, Network, Product
+from datetime import datetime, timedelta
 
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir, file_ending, cleaned_fields):
@@ -244,7 +244,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             record['allume_category'] = allume_category
                             record['brand'] = brand
 
-                            record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                             record['merchant_name'] = merchant_name
 
                             # set defaults
@@ -307,5 +307,25 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
+
+    # test the theory
+    print('Setting deleted for non-upserted products')
+    set_deleted_ran_products()
+
+
+def set_deleted_ran_products(threshold = 12):
+    """
+    Theory for why comma splitting SEEMS to not be working?
+    """
+    ran_id = Network.objects.get(name ='RAN')
+    merchants = Merchant.objects.filter(active = True, network_id = ran_id)
+    merchant_ids = merchants.values_list('external_merchant_id')
+    products = Product.objects.filter(merchant_id__in = merchant_ids)
+    datetime_threshold = datetime.now() - timedelta(hours = threshold)
+    # print datetime_threshold # in case behavior is not as expected
+    deleted_products = products.filter(updated_at__lte = datetime_threshold)
+    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    deleted_products.update(is_deleted = True, updated_at = updated_at)
+    print('Set %s non-upserted products to deleted' % deleted_products.count())
 
 

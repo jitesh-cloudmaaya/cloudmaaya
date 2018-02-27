@@ -33,7 +33,7 @@ var collage = {
               if(tmp.color_objects[clr].sizes.indexOf(size) == -1){
                 tmp.color_objects[clr].sizes.push(size);
                 tmp.color_objects[clr].size_data[size] = {
-                  image: product.raw_product_url,
+                  image: product.product_image_url,
                   price: product.current_price,
                   text: size,
                   value: size
