@@ -90,8 +90,10 @@ def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping
       str: The calculated allume_size to use.
     """
     if allume_category == 'Shoes':
+        'print shoes got called'
         return _determine_allume_size_shoe(size, shoe_size_mapping, size_term_mapping)
     else:
+        print 'this got called'
         return _determine_allume_size(size, size_mapping, size_term_mapping)
 
 def _determine_allume_size(size, size_mapping, size_term_mapping):
@@ -156,13 +158,4 @@ def _split_size(size): # maybe just for shoes???
         numeric = size
         alpha = ''
     return (numeric, alpha)
-
-
-from tasks.product_feed_py.mappings import *
-allume_category = 'Shoes'
-size_mapping = create_size_mapping()
-shoe_size_mapping = create_shoe_size_mapping()
-size_term_mapping = create_size_term_mapping()
-
-print determine_allume_size(allume_category, '8', size_mapping, shoe_size_mapping, size_term_mapping)
 
