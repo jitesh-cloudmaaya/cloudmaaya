@@ -157,12 +157,12 @@ class EProductSearch(FacetedSearch):
             main_q = Q('multi_match',
                     fields=self.fields,
                     query=query,
-                    type='best_fields',
+                    type='cross_fields',
                     #type='cross_fields',
                     operator='and',
-                    fuzziness="Auto",
-                    prefix_length=3,
-                    analyzer="my_synonyms"
+                   # fuzziness="Auto",
+                   # prefix_length=2,
+                    #analyzer="my_synonyms"
                    # auto_generate_synonyms_phrase_query="true"
                 )
 
