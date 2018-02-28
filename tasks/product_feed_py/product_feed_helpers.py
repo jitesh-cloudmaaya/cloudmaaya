@@ -107,25 +107,6 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
       str: The allume size to use. Can return the size that was passed in if there are no mapping hits.
 
     """
-    if size in size_mapping.keys():
-        allume_size = size_mapping[size]
-    else:
-        allume_size = size
-    return allume_size
-
-def _determine_allume_size(size, size_mapping, size_term_mapping):
-    """
-    Takes in 
-
-    Args:
-      size (str): The string representing the distinct (not a list) size value of a product.
-      size_mapping (dict): A dictionary created by the helper function. Uses the sizemap model.
-      size_term_mapping (dict): A dictionary created by the helper function. Uses the sizetermmap model.
-
-    Returns:
-      str: The allume size to use. Can return the size that was passed in if there are no mapping hits.
-
-    """
     # seperate the string from any part of the string that is contained in parentheses
     pattern = re.compile('^[^\(]+')
     match = re.match(pattern, size)
@@ -144,6 +125,13 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
     except IndexError:
         starts_with_num = False
 
+
+    # if alpha is only characters that occur in bra sizes? we know not to do the allume_size logic, it would 
+    # likely need to be a bra size? [abcdefg] known
+    # bool(re.match('^[abcdefgh]+$', s))
+    # v2
+    # not bool(re.compile(r'[^abcedfgh]').search(s)) # does not work for '' (would return True, when we prob want False)
+
     if starts_with_num:
         # check for the special cases of 1X, 2X, 3X, 4X
         special_cases = set(['0X', '1X', '2X', '3X', '4X'])
@@ -153,13 +141,16 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
             join_val = ''
             # check number split from characters?
             numeric, alpha = _split_size(parsed_size)
-            if numeric in size_mapping.keys():
-                numeric = size_mapping[numeric]
-            if alpha in size_term_mapping.keys():
-                alpha = size_term_mapping[alpha]
-                join_val = ' '
-            allume_size = numeric + join_val + alpha
-            allume_size = allume_size.strip()
+            if _lingerie_match(alpha): # we believe this to be lingerie
+                allume_size = numeric + alpha
+            else:
+                if numeric in size_mapping.keys():
+                    numeric = size_mapping[numeric]
+                if alpha in size_term_mapping.keys():
+                    alpha = size_term_mapping[alpha]
+                    join_val = ' '
+                allume_size = numeric + join_val + alpha
+                allume_size = allume_size.strip()
     else:
         # DO MORE work here
         # check if it is a character size?
@@ -170,6 +161,13 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
 
 
     return allume_size
+
+
+# mostly considered necessary because lingerie sizes occur when the allume_category is 'Other'
+def _lingerie_match(characters):
+    if len(characters) == 0:
+        return False
+    return not bool(re.compile(r'[^abcedfghABCDEFGH]').search(characters))
 
 def _determine_allume_size_shoe(size, shoe_size_mapping, size_term_mapping):
     """
@@ -203,6 +201,8 @@ def _determine_allume_size_shoe(size, shoe_size_mapping, size_term_mapping):
         # then attempt to expand the character part of the parsed size (there is also additional logic surrounding plus to be implemented here)
         alpha = size_term_mapping[alpha]
         join_val = ' '
+
+
 
     # then concatenate these values in some form or fashion (perhaps with only 1 space? or a space determined by whether or not there was a dict hit)
     allume_size = numeric + join_val + alpha

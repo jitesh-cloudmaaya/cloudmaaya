@@ -99,7 +99,7 @@ class SizeTestCase(TestCase):
         self.assertEqual('3.3OZ.', determine_allume_size(allume_category, '3.3 OZ.', size_mapping, shoe_size_mapping, size_term_mapping))
         self.assertEqual('44IT', determine_allume_size(allume_category, '44 IT (10 US)', size_mapping, shoe_size_mapping, size_term_mapping))
 
-        return # problem cases occuring with lingerie?
+        # return # problem cases occuring with lingerie?
         self.assertEqual('32DDD', determine_allume_size(allume_category, '32DDD', size_mapping, shoe_size_mapping, size_term_mapping))
         return
         # future support?
