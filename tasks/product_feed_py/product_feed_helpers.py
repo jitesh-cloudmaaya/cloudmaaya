@@ -74,7 +74,7 @@ def seperate_sizes(sizes):
       arr[i] = arr[i].strip()
     return arr
 
-def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping):
+def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping):
     """
 
 
@@ -89,11 +89,11 @@ def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping
       str: The calculated allume_size to use.
     """
     if allume_category == 'Shoes':
-        return _determine_allume_size_shoe(size, shoe_size_mapping)
+        return _determine_allume_size_shoe(size, shoe_size_mapping, size_term_mapping)
     else:
-        return _determine_allume_size(size, size_mapping)
+        return _determine_allume_size(size, size_mapping, size_term_mapping)
 
-def _determine_allume_size(size, size_mapping):
+def _determine_allume_size(size, size_mapping, size_term_mapping):
     """
     aaaaaa
 
@@ -111,7 +111,7 @@ def _determine_allume_size(size, size_mapping):
         allume_size = size
     return allume_size
 
-def _determine_allume_shoe_size2(size, shoe_size_mapping):
+def _determine_allume_size_shoe(size, shoe_size_mapping, size_term_mapping):
     """
     """
     # seperate the string from any part of the string that is contained in parentheses: 70 WW (US) -> 70 WW
@@ -120,43 +120,48 @@ def _determine_allume_shoe_size2(size, shoe_size_mapping):
     try:
         parsed_size = match.group(0).strip()
     except AttributeError: # if match is None
-        # do something
-        pass
+        parsed_size = size
 
     # seperate this value into a numeric component and a character component (assumption is that shoe sizes start with numbers)
     # assuming that shoe sizes start with numbers, seperate the shoe size into a numeric and character component
-    
-    
+    numeric, alpha = _split_size(parsed_size)
 
-# strategy for shoe size mapping
-# check if the seperated numeric value exists in the shoe size mapping
-    # if yes, use that value, if no keep the same
-# then attempt to expand the character part of the parsed size (there is also additional logic surrounding plus to be implemented here)
-    # if yes, use that value, if no keep the same (WW -> WIDE but D -> D)
-# then concatenate these values in some form or fashion (perhaps with only 1 space? or a space determined by whether or not there was a dict hit)
+    join_val = ''
+    # check if the seperated numeric value exists in the shoe size mapping
+    if numeric in shoe_size_mapping.keys():
+        numeric = shoe_size_mapping[numeric]
+    if alpha in size_term_mapping.keys():
+        # then attempt to expand the character part of the parsed size (there is also additional logic surrounding plus to be implemented here)
+        alpha = size_term_mapping[alpha]
+        join_val = ' '
 
-
-def _determine_allume_size_shoe(size, shoe_size_mapping):
-    """
-    aaaaaaa
-
-    Args:
-      size (str):
-      size_mapping (dict):
-
-    Returns:
-      str:
-    """
-    if size in shoe_size_mapping.keys():
-        allume_size = shoe_size_mapping[size]
-    else:
-        allume_size = size
+    # then concatenate these values in some form or fashion (perhaps with only 1 space? or a space determined by whether or not there was a dict hit)
+    allume_size = numeric + join_val + alpha
+    allume_size = allume_size.strip()
     return allume_size
 
+def _split_size(size): # maybe just for shoes???
+    """
+    Attempts to parse size such that a shoe size '7WW' seperates into the parts: '7' and 'WW'.
+
+    Returns:
+      tup:
+    """
+    match = re.compile("[^\W\d]").search(size)
+    try:
+        numeric = size[:match.start()].strip()
+        alpha = size[match.start():].strip()
+    except AttributeError: # match is None
+        numeric = size
+        alpha = ''
+    return (numeric, alpha)
 
 
+from tasks.product_feed_py.mappings import *
+allume_category = 'Shoes'
+size_mapping = create_size_mapping()
+shoe_size_mapping = create_shoe_size_mapping()
+size_term_mapping = create_size_term_mapping()
 
+print determine_allume_size(allume_category, '8', size_mapping, shoe_size_mapping, size_term_mapping)
 
-
-
-    
