@@ -90,22 +90,21 @@ def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping
       str: The calculated allume_size to use.
     """
     if allume_category == 'Shoes':
-        'print shoes got called'
         return _determine_allume_size_shoe(size, shoe_size_mapping, size_term_mapping)
     else:
-        print 'this got called'
         return _determine_allume_size(size, size_mapping, size_term_mapping)
 
 def _determine_allume_size(size, size_mapping, size_term_mapping):
     """
-    aaaaaa
+    Takes in 
 
     Args:
-      size (str):
-      size_mapping (dict):
+      size (str): The string representing the distinct (not a list) size value of a product.
+      size_mapping (dict): A dictionary created by the helper function. Uses the sizemap model.
+      size_term_mapping (dict): A dictionary created by the helper function. Uses the sizetermmap model.
 
     Returns:
-      str: 
+      str: The allume size to use. Can return the size that was passed in if there are no mapping hits.
 
     """
     if size in size_mapping.keys():
@@ -114,8 +113,75 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
         allume_size = size
     return allume_size
 
+def _determine_allume_size(size, size_mapping, size_term_mapping):
+    """
+    Takes in 
+
+    Args:
+      size (str): The string representing the distinct (not a list) size value of a product.
+      size_mapping (dict): A dictionary created by the helper function. Uses the sizemap model.
+      size_term_mapping (dict): A dictionary created by the helper function. Uses the sizetermmap model.
+
+    Returns:
+      str: The allume size to use. Can return the size that was passed in if there are no mapping hits.
+
+    """
+    # seperate the string from any part of the string that is contained in parentheses
+    pattern = re.compile('^[^\(]+')
+    match = re.match(pattern, size)
+    try:
+        parsed_size = match.group(0).strip()
+    except AttributeError: # if match is None
+        parsed_size = size
+
+    # if the parsed size is only alphabetic characters and the dash character, check it against the size mapping
+    # e.g., attempt to use X-LARGE -> XL
+    # maybe look for anything but a number?
+
+    # if it startswith a number
+    try:
+        starts_with_num = parsed_size[0].isdigit()
+    except IndexError:
+        starts_with_num = False
+
+    if starts_with_num:
+        # check for the special cases of 1X, 2X, 3X, 4X
+        special_cases = set(['0X', '1X', '2X', '3X', '4X'])
+        if parsed_size in special_cases:
+            allume_size = size_mapping[parsed_size]
+        else:
+            join_val = ''
+            # check number split from characters?
+            numeric, alpha = _split_size(parsed_size)
+            if numeric in size_mapping.keys():
+                numeric = size_mapping[numeric]
+            if alpha in size_term_mapping.keys():
+                alpha = size_term_mapping[alpha]
+                join_val = ' '
+            allume_size = numeric + join_val + alpha
+            allume_size = allume_size.strip()
+    else:
+        # DO MORE work here
+        # check if it is a character size?
+        if parsed_size in size_mapping.keys():
+            allume_size = size_mapping[parsed_size]
+        else:
+            allume_size = parsed_size
+
+
+    return allume_size
+
 def _determine_allume_size_shoe(size, shoe_size_mapping, size_term_mapping):
     """
+    
+
+    Args:
+      size (str): The string representing the distinct (not a list) size value of a product.
+      size_mapping (dict): A dictionary created by the helper function. Uses the sizemap model.
+      size_term_mapping (dict): A dictionary created by the helper function. Uses the sizetermmap model.
+
+    Returns:
+      str: The allume size to use. Can return the size that was passed in if there are no mapping hits.
     """
     # seperate the string from any part of the string that is contained in parentheses: 70 WW (US) -> 70 WW
     pattern = re.compile('^[^\(]+')

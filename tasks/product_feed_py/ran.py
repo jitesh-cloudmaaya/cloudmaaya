@@ -12,7 +12,7 @@ from product_api.models import Merchant, CategoryMap, Network, Product
 from datetime import datetime, timedelta
 
 ### attempt at writing record with logic
-def clean_ran(local_temp_dir, file_ending, cleaned_fields):
+def clean_ran(local_temp_dir, file_ending, cleaned_fields, infer_deleted = False):
     # instantiate relevant mappings
     merchant_mapping = mappings.create_merchant_mapping()
     color_mapping = mappings.create_color_mapping()
@@ -282,7 +282,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
 
-                                    allume_size = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
                                     parent_attributes['size'] = size
                                     parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
@@ -307,8 +307,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
 
     # test the theory
-    print('Setting deleted for non-upserted products')
-    set_deleted_ran_products()
+    if infer_deleted:
+        print('Setting deleted for non-upserted products')
+        set_deleted_ran_products()
 
 
 def set_deleted_ran_products(threshold = 12):

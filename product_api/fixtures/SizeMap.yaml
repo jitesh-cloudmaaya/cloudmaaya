@@ -178,3 +178,6 @@
 -   model: product_api.sizemap
     pk: 60
     fields: {merchant_size: 8.25, allume_size: 8}
+-   model: product_api.sizemap
+    pk: 61
+    fields: {merchant_size: ONE, allume_size: One Size}
