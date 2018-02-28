@@ -122,10 +122,10 @@ def index_deleted_products_cleanup(days_threshold = 5):
     allumecategory_table = AllumeCategory._meta.db_table
 
     statement = 'UPDATE %s pap' % product_table
-    statement += ' LEFT JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
+    statement += ' INNER JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
     statement += ' AND pap.secondary_category = pac.external_cat2'
-    statement += ' LEFT JOIN %s pam ON pap.merchant_name = pam.name' % merchant_table
-    statement += ' LEFT JOIN %s paa ON pap.allume_category = paa.name' % allumecategory_table
+    statement += ' INNER JOIN %s pam ON pap.merchant_name = pam.name' % merchant_table
+    statement += ' INNER JOIN %s paa ON pap.allume_category = paa.name' % allumecategory_table
     statement += ' SET is_deleted = 1'
     statement += ' WHERE pac.active = 0 OR pam.active = 0 OR paa.active = 0;'
 
