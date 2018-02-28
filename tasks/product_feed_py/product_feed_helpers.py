@@ -84,6 +84,7 @@ def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping
       size (str): The size the merchant provided, unless delimited.
       size_mapping (dict):
       shoe_size_mapping (dict):
+      size_term_mapping (dict):
 
     Returns:
       str: The calculated allume_size to use.

@@ -20,6 +20,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     allume_category_mapping = mappings.create_allume_category_mapping()
     size_mapping = mappings.create_size_mapping()
     shoe_size_mapping = mappings.create_shoe_size_mapping()
+    size_term_mapping = mappings.create_size_term_mapping()
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('RAN')
@@ -212,7 +213,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             record['size'] = attribute_3_size
 
 
-                            record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping)
+                            record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
                             # # replace below with above
                             # if allume_category == 'Shoes':
                             #     # use the shoe size mapping
@@ -281,7 +282,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
 
-                                    allume_size = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping)
+                                    allume_size = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
                                     parent_attributes['size'] = size
                                     parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
