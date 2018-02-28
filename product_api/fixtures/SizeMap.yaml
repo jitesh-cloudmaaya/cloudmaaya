@@ -102,82 +102,121 @@
     fields: {merchant_size: 4X, allume_size: 26}
 -   model: product_api.sizemap
     pk: 35
-    fields: {merchant_size: 00, allume_size: 00 & XXS}
+    fields: {merchant_size: '00', allume_size: 00 & XXS}
 -   model: product_api.sizemap
     pk: 36
-    fields: {merchant_size: 22, allume_size: 00 & 22 & XXS}
+    fields: {merchant_size: '0', allume_size: 0 & XS}
 -   model: product_api.sizemap
     pk: 37
-    fields: {merchant_size: 23, allume_size: 00 & 23 & XXS}
+    fields: {merchant_size: 2, allume_size: 2 & XS}
 -   model: product_api.sizemap
     pk: 38
-    fields: {merchant_size: 24, allume_size: 00 & 24 & XXS}
+    fields: {merchant_size: 4, allume_size: 4 & S}
 -   model: product_api.sizemap
     pk: 39
-    fields: {merchant_size: 25, allume_size: 0 & 25 & XS}
+    fields: {merchant_size: 6, allume_size: 6 & S}
 -   model: product_api.sizemap
     pk: 40
-    fields: {merchant_size: 26, allume_size: 2 & 26 & XS}
+    fields: {merchant_size: 8, allume_size: 8 & M}
 -   model: product_api.sizemap
     pk: 41
-    fields: {merchant_size: 27, allume_size: 4 & 27 & S}
+    fields: {merchant_size: 10, allume_size: 10 & M}
 -   model: product_api.sizemap
     pk: 42
-    fields: {merchant_size: 28, allume_size: 6 & 28 & S}
+    fields: {merchant_size: 12, allume_size: 12 & L}
 -   model: product_api.sizemap
     pk: 43
-    fields: {merchant_size: 29, allume_size: 8 & 29 & M}
+    fields: {merchant_size: 14, allume_size: 14 & L}
 -   model: product_api.sizemap
     pk: 44
-    fields: {merchant_size: 30, allume_size: 10 & 30 & M}
+    fields: {merchant_size: 16, allume_size: 16 & XL}
 -   model: product_api.sizemap
     pk: 45
-    fields: {merchant_size: 31, allume_size: 12 & 31 & L}
+    fields: {merchant_size: 18, allume_size: 18 & XXL}
 -   model: product_api.sizemap
     pk: 46
-    fields: {merchant_size: 32, allume_size: 14 & 32 & L}
--   model: product_api.sizemap
-    pk: 47
-    fields: {merchant_size: 33, allume_size: 16 & 33 & XL}
--   model: product_api.sizemap
-    pk: 48
-    fields: {merchant_size: 34, allume_size: 18 & 34 & XXL}
--   model: product_api.sizemap
-    pk: 49
-    fields: {merchant_size: 1, allume_size: 0}
+    fields: {merchant_size: 20, allume_size: 20 & 2X}
+# -   model: product_api.sizemap
+#     pk: 47
+#     fields: {merchant_size: 22, allume_size: 22 & 3X}
+# -   model: product_api.sizemap
+#     pk: 48
+#     fields: {merchant_size: 24, allume_size: 24 & 3X}
+# -   model: product_api.sizemap
+#     pk: 49
+#     fields: {merchant_size: 26, allume_size: 26 & 4X}
 -   model: product_api.sizemap
     pk: 50
-    fields: {merchant_size: 1.25, allume_size: 0}
+    fields: {merchant_size: 22, allume_size: 00 & 22 & XXS}
 -   model: product_api.sizemap
     pk: 51
-    fields: {merchant_size: 1.75, allume_size: 0}
+    fields: {merchant_size: 23, allume_size: 00 & 23 & XXS}
 -   model: product_api.sizemap
     pk: 52
-    fields: {merchant_size: 2.25, allume_size: 2}
+    fields: {merchant_size: 24, allume_size: 00 & 24 & XXS}
 -   model: product_api.sizemap
     pk: 53
-    fields: {merchant_size: 2.5, allume_size: 2}
+    fields: {merchant_size: 25, allume_size: 0 & 25 & XS}
 -   model: product_api.sizemap
     pk: 54
-    fields: {merchant_size: 3, allume_size: 4}
+    fields: {merchant_size: 26, allume_size: 2 & 26 & XS}
 -   model: product_api.sizemap
     pk: 55
-    fields: {merchant_size: 3.5, allume_size: 4}
+    fields: {merchant_size: 27, allume_size: 4 & 27 & S}
 -   model: product_api.sizemap
     pk: 56
-    fields: {merchant_size: 4, allume_size: 4}
+    fields: {merchant_size: 28, allume_size: 6 & 28 & S}
 -   model: product_api.sizemap
     pk: 57
-    fields: {merchant_size: 4.25, allume_size: 4}
+    fields: {merchant_size: 29, allume_size: 8 & 29 & M}
 -   model: product_api.sizemap
     pk: 58
-    fields: {merchant_size: 4.5, allume_size: 4}
+    fields: {merchant_size: 30, allume_size: 10 & 30 & M}
 -   model: product_api.sizemap
     pk: 59
-    fields: {merchant_size: 6.25, allume_size: 6}
+    fields: {merchant_size: 31, allume_size: 12 & 31 & L}
 -   model: product_api.sizemap
     pk: 60
-    fields: {merchant_size: 8.25, allume_size: 8}
+    fields: {merchant_size: 32, allume_size: 14 & 32 & L}
 -   model: product_api.sizemap
     pk: 61
+    fields: {merchant_size: 33, allume_size: 16 & 33 & XL}
+-   model: product_api.sizemap
+    pk: 62
+    fields: {merchant_size: 34, allume_size: 18 & 34 & XXL}
+-   model: product_api.sizemap
+    pk: 63
+    fields: {merchant_size: 1, allume_size: 0 & XS}
+-   model: product_api.sizemap
+    pk: 64
+    fields: {merchant_size: 1.25, allume_size: 0 & XS}
+-   model: product_api.sizemap
+    pk: 65
+    fields: {merchant_size: 1.75, allume_size: 0 & XS}
+-   model: product_api.sizemap
+    pk: 66
+    fields: {merchant_size: 2.25, allume_size: 2 & XS}
+-   model: product_api.sizemap
+    pk: 67
+    fields: {merchant_size: 2.5, allume_size: 2 & XS}
+-   model: product_api.sizemap
+    pk: 68
+    fields: {merchant_size: 3, allume_size: 4 & S}
+-   model: product_api.sizemap
+    pk: 69
+    fields: {merchant_size: 3.5, allume_size: 4 & S}
+-   model: product_api.sizemap
+    pk: 70
+    fields: {merchant_size: 4.25, allume_size: 4 & S}
+-   model: product_api.sizemap
+    pk: 71
+    fields: {merchant_size: 4.5, allume_size: 4 & S}
+-   model: product_api.sizemap
+    pk: 72
+    fields: {merchant_size: 6.25, allume_size: 6 & S}
+-   model: product_api.sizemap
+    pk: 73
+    fields: {merchant_size: 8.25, allume_size: 8 & M}
+-   model: product_api.sizemap
+    pk: 74
     fields: {merchant_size: ONE, allume_size: One Size}

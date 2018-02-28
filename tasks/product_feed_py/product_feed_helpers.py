@@ -165,6 +165,8 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
 
 # mostly considered necessary because lingerie sizes occur when the allume_category is 'Other'
 def _lingerie_match(characters):
+    """
+    """
     if len(characters) == 0:
         return False
     return not bool(re.compile(r'[^abcedfghABCDEFGH]').search(characters))
