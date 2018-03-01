@@ -29,23 +29,23 @@ def get_merchants(status='joined'):
 
     ## Dev Only
     # # Test Merchants Data
-    # print("Getting local test data")
-    # json_data = open('tasks/product_feed_py/sample_data/pepperjam_merchant.json')
-    # merchants = json.load(json_data)
-    # json_data.close()
+    print("Getting local test data")
+    json_data = open('tasks/product_feed_py/sample_data/pepperjam_merchant.json')
+    merchants = json.load(json_data)
+    json_data.close()
 
     # Get Merchants
     ## Prod & Staging Only
-    print 'Getting merchants using API call'
+    # print 'Getting merchants using API call'
 
-    # set api call variables
-    numTries = 4 # total number of tries
-    timeout = 60 # in seconds
-    delay = 3 # pause in seconds between retries
-    backoff = 2 # multiplier on timeout between retries
+    # # set api call variables
+    # numTries = 4 # total number of tries
+    # timeout = 60 # in seconds
+    # delay = 3 # pause in seconds between retries
+    # backoff = 2 # multiplier on timeout between retries
 
-    json_data = open_w_timeout_retry(pepper_jam_api_merchant_url, numTries, timeout, delay, backoff)
-    merchants = json.load(json_data)
+    # json_data = open_w_timeout_retry(pepper_jam_api_merchant_url, numTries, timeout, delay, backoff)
+    # merchants = json.load(json_data)
     
     # Create some variables to count process metrics
     new_merchants = 0
@@ -63,29 +63,6 @@ def get_merchants(status='joined'):
 
     merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
     return merchant_mapping
-
-def set_deleted_pepperjam_products(threshold = 12):
-    """
-    Helper method for use in the main get_data method. Collects a list of Pepperjam products
-    that should have been upserted in the current run. For those that were not upserted, determined
-    by a settable time threshold, set those products to a status of is_deleted = True.
-
-    Args:
-        threshold (int): The time threshold in hours. If the updated_at value of a record is threshold
-        or more hours old, conclude it was not updated in the current upsert and set to deleted. 
-    """
-    # id of the pepperjam network for use in merchants' network_id
-    pepperjam_id = Network.objects.get(name='PepperJam').id
-    # get the pepperjam merchants that were active (and hence were just updated)
-    merchants = Merchant.objects.filter(active=True, network_id = pepperjam_id) # multiple arguments over chaining for performance
-    merchant_ids = merchants.values_list('external_merchant_id')
-    # get the products of these merchants
-    products = Product.objects.filter(merchant_id__in = merchant_ids) # up to here is confirmed what we want
-    datetime_threshold = datetime.now() - timedelta(hours = threshold) # comparison threshold is 12 hours ago or more
-    deleted_products = products.filter(updated_at__lte = datetime_threshold)
-    # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
-    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    deleted_products.update(is_deleted = True, updated_at = updated_at)
 
 def get_data(local_temp_dir, cleaned_fieldnames):
 
@@ -131,26 +108,26 @@ def get_data(local_temp_dir, cleaned_fieldnames):
 
         while more_pages:
             ## Dev Only
-            # print("Getting Data")
-            # print(pepper_jam_api_product_url)
-            # json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
-            # product_feed = json.load(json_data)
-            # json_data.close()
+            print("Getting Data")
+            print(pepper_jam_api_product_url)
+            json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
+            product_feed = json.load(json_data)
+            json_data.close()
 
             # commenting out because API only has X amount of access allowed in a day
             ## Prod & Staging Only
-            print 'Getting data using the API calls'
-            print("Getting Data")
+            # print 'Getting data using the API calls'
+            # print("Getting Data")
 
-            # set api call variables
-            numTries = 4 # total number of tries
-            timeout = 60 # in seconds
-            delay = 3 # pause in seconds between retries
-            backoff = 2 # multiplier on timeout between retries
+            # # set api call variables
+            # numTries = 4 # total number of tries
+            # timeout = 60 # in seconds
+            # delay = 3 # pause in seconds between retries
+            # backoff = 2 # multiplier on timeout between retries
 
-            print(pepper_jam_api_product_url)
-            json_data = open_w_timeout_retry(pepper_jam_api_product_url, numTries, timeout, delay, backoff)
-            product_feed = json.load(json_data)
+            # print(pepper_jam_api_product_url)
+            # json_data = open_w_timeout_retry(pepper_jam_api_product_url, numTries, timeout, delay, backoff)
+            # product_feed = json.load(json_data)
 
 
             if 'next' in product_feed['meta']['pagination']:
@@ -326,7 +303,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
 
     # call update_pepperjam here?
     print('Updating non-upserted records')
-    set_deleted_pepperjam_products()
+    product_feed_helpers.set_deleted_network_products('PepperJam')
 
 def generate_product_id(SKU, merchant_id):
     """

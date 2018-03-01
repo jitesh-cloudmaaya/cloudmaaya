@@ -291,22 +291,4 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
     print('Setting deleted for non-upserted products')
-    set_deleted_ran_products()
-
-
-def set_deleted_ran_products(threshold = 12):
-    """
-    Theory for why comma splitting SEEMS to not be working?
-    """
-    ran_id = Network.objects.get(name ='RAN')
-    merchants = Merchant.objects.filter(active = True, network_id = ran_id)
-    merchant_ids = merchants.values_list('external_merchant_id')
-    products = Product.objects.filter(merchant_id__in = merchant_ids)
-    datetime_threshold = datetime.now() - timedelta(hours = threshold)
-    # print datetime_threshold # in case behavior is not as expected
-    deleted_products = products.filter(updated_at__lte = datetime_threshold)
-    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    deleted_products.update(is_deleted = True, updated_at = updated_at)
-    print('Set %s non-upserted products to deleted' % deleted_products.count())
-
-
+    product_feed_helpers.set_deleted_network_products('RAN')
