@@ -196,13 +196,13 @@ var collage = {
     /* watermark path */
     img.src = '/static/shopping_tool/image/allume_watermark.png';
     img.onload = function() {
-      /* scale: 0.15, left: 657, and top: 393 based upon 1365 x 284 watermark dimensions */
-      var scale = 0.15;
+      /* scale: 0.1, left: 690, and top: 400 based upon 1365 x 284 watermark dimensions */
+      var scale = 0.1;
       var fImg = new fabric.Cropzoomimage(this, {
         originX: 'center',
         originY: 'center',
-        left: 657,
-        top: 393,
+        left: 690,
+        top: 400,
         scaleX: scale,
         scaleY: scale,
         prod_id: 'watermark'
@@ -274,6 +274,7 @@ var collage = {
       if(collage.initial_load > -1){
         collage.loadImg();
       }else{
+        collage.setWatermark();
         collage.canvas.renderAll();
       }
     }
