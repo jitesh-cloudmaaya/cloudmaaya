@@ -164,7 +164,7 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
         if parsed_size in size_mapping.keys():
             allume_size = size_mapping[parsed_size]
 
-            if 'XL' in allume_size or 'XXL' in allume_size:
+            if 'XXL' in allume_size or 'XXXL' in allume_size:
                 allume_size += ' Plus'
         else:
             allume_size = parsed_size
