@@ -1,5 +1,5 @@
 from django.db import connection
-from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory
+from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap
 
 def create_merchant_mapping():
     """
@@ -60,6 +60,44 @@ def create_allume_category_mapping():
         allume_category_mapping[allume_category[0]] = val_tup
 
     return allume_category_mapping
+
+
+def create_size_mapping():
+    """
+    Returns a dict of merchant_sized mapped to the allume_size. Both values are strings.
+    """
+    size_mapping = {}
+
+    size_maps = SizeMap.objects.values_list('merchant_size', 'allume_size')
+
+    for size_map in size_maps:
+        size_mapping[size_map[0]] = size_map[1]
+
+    return size_mapping
+
+def create_shoe_size_mapping():
+    """
+    """
+    shoe_size_mapping = {}
+
+    shoe_size_maps = ShoeSizeMap.objects.values_list('merchant_size', 'allume_size')
+
+    for shoe_size_map in shoe_size_maps:
+        shoe_size_mapping[shoe_size_map[0]] = shoe_size_map[1]
+
+    return shoe_size_mapping
+
+def create_size_term_mapping():
+    """
+    """
+    size_term_mapping = {}
+
+    size_term_maps = SizeTermMap.objects.values_list('merchant_phrase', 'allume_attribute')
+
+    for size_term in size_term_maps:
+        size_term_mapping[size_term[0]] = size_term[1]
+
+    return size_term_mapping
 
 def add_new_merchant(external_merchant_id, name, network, active = False):
     Merchant.objects.create(external_merchant_id = external_merchant_id, name = name, network = network, active = active)

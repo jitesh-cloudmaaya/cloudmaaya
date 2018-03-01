@@ -6,6 +6,8 @@ import urllib2
 import urlparse
 import csv
 import time
+import re
+from copy import copy
 from django.db import connection
 from . import mappings
 from . import product_feed_helpers
@@ -82,7 +84,8 @@ def set_deleted_pepperjam_products(threshold = 12):
     datetime_threshold = datetime.now() - timedelta(hours = threshold) # comparison threshold is 12 hours ago or more
     deleted_products = products.filter(updated_at__lte = datetime_threshold)
     # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
-    deleted_products.update(is_deleted = True)
+    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    deleted_products.update(is_deleted = True, updated_at = updated_at)
 
 def get_data(local_temp_dir, cleaned_fieldnames):
 
@@ -95,6 +98,10 @@ def get_data(local_temp_dir, cleaned_fieldnames):
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+    size_mapping = mappings.create_size_mapping()
+    shoe_size_mapping = mappings.create_shoe_size_mapping()
+    size_term_mapping = mappings.create_size_term_mapping()
+
     network = mappings.get_network('PepperJam')
 
     # Set Up PepeprJam URL
@@ -240,6 +247,8 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     attribute_3_size = attribute_3_size.replace('~', ',')
                     record['size'] = attribute_3_size
 
+                    record['allume_size'] = product_feed_helpers.determine_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+
                     record['material'] = product['material']
 
                     attribute_8_age = product['age_range']
@@ -260,7 +269,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     # record['allume_category'] = u'allume_category' # allume_category hard coded
                     record['allume_category'] = allume_category # replace hard coding?
                     record['brand'] = product['manufacturer'] # doubles as brand
-                    record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
+                    record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
                     record['merchant_name'] = merchant_name
 
                     # set defaults
@@ -286,6 +295,20 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     # end unicode sandwich
                     for key, value in record.iteritems():
                         record[key] = value.encode('UTF-8')
+
+                    # check size here to see if we should write additional 'child' records?
+                    parent_attributes = copy(record)
+                    sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
+                    product_id = parent_attributes['product_id']
+                    if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+                        for size in sizes:
+                            parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                            parent_attributes['size'] = size
+                            parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                            writer.writerow(parent_attributes)
+                            writtenCount += 1
+                        # set the parent record to is_deleted
+                        record['is_deleted'] = 1
 
                     # write the reconstructed line to the cleaned file using the csvwriter
                     writer.writerow(record)

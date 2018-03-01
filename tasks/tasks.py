@@ -2,9 +2,10 @@ from __future__ import absolute_import, unicode_literals
 from celery import task
 from django.db import connection, transaction
 import os
+import time
 from catalogue_service.settings import BASE_DIR
 from celery_once import QueueOnce
-from product_api.models import Product
+from product_api.models import Product, AllumeCategory, CategoryMap, Merchant
 from tasks.product_feed import ProductFeed
 from tasks.product_feed_py.pepperjam import get_data, get_merchants
 from datetime import datetime, timedelta
@@ -111,7 +112,7 @@ def build_lookmetrics():
                     cursor.execute(statements[i])
     finally:
         cursor.close()
-# comment and redeploy
+
 @task(base=QueueOnce)
 def index_deleted_products_cleanup(days_threshold = 5):
     """
@@ -124,6 +125,30 @@ def index_deleted_products_cleanup(days_threshold = 5):
         days_threshold (int): An optional parameter that filters the Products to perform an ES query on. Serves
         as the threshold of how far back the updated_at parameter will be checked against. Defaults to 5 days.
     """
+    start = time.time()
+
+    # sql to set inactive products to deleted
+    product_table = Product._meta.db_table
+    categorymap_table = CategoryMap._meta.db_table
+    merchant_table = Merchant._meta.db_table
+    allumecategory_table = AllumeCategory._meta.db_table
+
+    statement = 'UPDATE %s pap' % product_table
+    statement += ' LEFT JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
+    statement += ' AND pap.secondary_category = pac.external_cat2'
+    statement += ' LEFT JOIN %s pam ON pap.merchant_name = pam.name' % merchant_table
+    statement += ' LEFT JOIN %s paa ON pap.allume_category = paa.name' % allumecategory_table
+    statement += ' SET is_deleted = 1'
+    statement += ' WHERE pac.active = 0 OR pam.active = 0 OR paa.active = 0;'
+
+    with connection.cursor() as cursor:
+        cursor.execute(statement)
+        cursor.close()
+
+    print 'Setting the inactive products to deleted took %s seconds' % (time.time() - start)
+
+    checkpoint = time.time()
+
     datetime_threshold = datetime.now() - timedelta(days = days_threshold) # query products as far back as days_threshold
     deleted_products = Product.objects.filter(updated_at__gte = datetime_threshold, is_deleted = True)
     deleted_products = deleted_products.values_list('product_id', 'merchant_id') # ids are longs
@@ -159,3 +184,7 @@ def index_deleted_products_cleanup(days_threshold = 5):
 
     # using these document_ids, issue a bulk delete on them
     helpers.bulk(CLIENT, actions)
+
+    print 'Removing deleted products from the index took %s seconds' % (time.time() - checkpoint)
+
+    print 'The entire process took %s seconds' % (time.time() - start)

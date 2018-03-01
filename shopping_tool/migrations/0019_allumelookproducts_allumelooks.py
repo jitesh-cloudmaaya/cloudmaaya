@@ -26,6 +26,8 @@ class Migration(migrations.Migration):
                     ('product_clipped_stylist_id', models.BigIntegerField()),
                     ('cropped_dimensions', models.TextField(blank=True, null=True)),
                     ('raw_product_id', models.IntegerField(default=100)),
+                    ('in_collage', models.BooleanField(default=True)),
+                    ('cropped_image_code', models.TextField(blank=True, null=True))
                 ],
                 options={
                     'db_table': 'allume_look_products',
@@ -42,7 +44,7 @@ class Migration(migrations.Migration):
                     ('wp_stylist_id', models.BigIntegerField()),
                     ('name', models.CharField(blank=True, max_length=100, null=True)),
                     ('descrip', models.TextField(blank=True, null=True)),
-                    ('collage', models.CharField(blank=True, max_length=200, null=True)),
+                    ('collage', models.TextField(blank=True, max_length=200, null=True)),
                     ('status', models.CharField(max_length=9)),
                     ('date_created', models.DateTimeField()),
                     ('last_modified', models.DateTimeField()),

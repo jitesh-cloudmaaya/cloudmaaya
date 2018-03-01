@@ -1,13 +1,15 @@
 import os
-import datetime
 import yaml
 import urlparse
 import csv
+import re
+from copy import copy
 from django.db import connection
 from . import mappings
 from . import product_feed_helpers
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap
+from product_api.models import Merchant, CategoryMap, Network, Product
+from datetime import datetime, timedelta
 
 ### attempt at writing record with logic
 def clean_ran(local_temp_dir, file_ending, cleaned_fields):
@@ -16,6 +18,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+    size_mapping = mappings.create_size_mapping()
+    shoe_size_mapping = mappings.create_shoe_size_mapping()
+    size_term_mapping = mappings.create_size_term_mapping()
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('RAN')
@@ -208,6 +213,24 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             attribute_3_size = attribute_3_size.replace('~', ',')
                             record['size'] = attribute_3_size
 
+
+                            record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+                            # # replace below with above
+                            # if allume_category == 'Shoes':
+                            #     # use the shoe size mapping
+                            #     if attribute_3_size in shoe_size_mapping.keys():
+                            #         record['allume_size'] = shoe_size_mapping[attribute_3_size]
+                            #     else:
+                            #         # double check no existing mapping case?
+                            #         record['allume_size'] = attribute_3_size
+                            # else:
+                            #     # use the size mapping
+                            #     if attribute_3_size in size_mapping.keys():
+                            #         record['allume_size'] = size_mapping[attribute_3_size]
+                            #     else:
+                            #         record['allume_size'] = attribute_3_size
+
+
                             record['material'] = attribute_4_material
 
                             attribute_8_age = attribute_8_age.upper()
@@ -226,7 +249,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             record['allume_category'] = allume_category
                             record['brand'] = brand
 
-                            record['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                             record['merchant_name'] = merchant_name
 
                             # set defaults
@@ -253,6 +276,21 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             for key, value in record.iteritems():
                                 record[key] = value.encode('UTF-8')
 
+                            # check size here to see if we should write additional 'child' records?
+                            parent_attributes = copy(record)
+                            sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
+                            product_id = parent_attributes['product_id']
+                            if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+                                for size in sizes:
+                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    # use the size mapping here also
+                                    parent_attributes['size'] = size
+                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    writer.writerow(parent_attributes)
+                                    writtenCount += 1
+                                # set the parent record to is_deleted
+                                record['is_deleted'] = 1
+
                             # write the reconstructed line to the cleaned file using the csvwriter
                             writer.writerow(record)
                             writtenCount += 1
@@ -267,5 +305,23 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
+    print('Setting deleted for non-upserted products')
+    set_deleted_ran_products()
+
+
+def set_deleted_ran_products(threshold = 12):
+    """
+    Theory for why comma splitting SEEMS to not be working?
+    """
+    ran_id = Network.objects.get(name ='RAN')
+    merchants = Merchant.objects.filter(active = True, network_id = ran_id)
+    merchant_ids = merchants.values_list('external_merchant_id')
+    products = Product.objects.filter(merchant_id__in = merchant_ids)
+    datetime_threshold = datetime.now() - timedelta(hours = threshold)
+    # print datetime_threshold # in case behavior is not as expected
+    deleted_products = products.filter(updated_at__lte = datetime_threshold)
+    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    deleted_products.update(is_deleted = True, updated_at = updated_at)
+    print('Set %s non-upserted products to deleted' % deleted_products.count())
 
 

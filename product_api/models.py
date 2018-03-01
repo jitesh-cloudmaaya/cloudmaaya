@@ -53,6 +53,12 @@ class Product(models.Model):
 
     class Meta:
         unique_together = (('product_id', 'merchant_id'))
+        indexes = [
+            models.Index(fields=['primary_category']),
+            models.Index(fields=['secondary_category']),
+            # models.Index(fields=['allume_category']),
+            # models.Index(fields=['merchant_name']),
+        ]
 
 class Network(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
@@ -74,6 +80,11 @@ class Merchant(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['name'])
+        ]
 
 class MerchantCategory(models.Model):
     external_merchant_id = models.IntegerField(blank=True, null=True)
@@ -109,6 +120,9 @@ class AllumeCategory(models.Model):
 
     class Meta:
         verbose_name_plural = "Allume Categories"
+        indexes = [
+            models.Index(fields=['name'])
+        ]
 
 class CategoryMap(models.Model):
     external_cat1 = models.CharField(max_length=150, blank=True, null=True)
@@ -122,6 +136,39 @@ class CategoryMap(models.Model):
 
     def __str__(self):
         return self.external_cat1 + ": " + self.external_cat2
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['external_cat1']),
+            models.Index(fields=['external_cat2']),
+        ]
+
+class SizeMap(models.Model):
+    merchant_size = models.CharField(max_length=128, blank=True, null=True)
+    allume_size = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return self.merchant_size
+
+class ShoeSizeMap(models.Model):
+    merchant_size = models.CharField(max_length=128, blank=True, null=True)
+    allume_size = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return self.merchant_size
+
+class SizeTermMap(models.Model):
+    merchant_phrase = models.CharField(max_length=128, blank=True, null=True)
+    allume_attribute = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return self.merchant_phrase
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:

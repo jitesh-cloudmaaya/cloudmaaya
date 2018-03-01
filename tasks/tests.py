@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.test import TestCase
 from product_feed_py.pepperjam import generate_product_id
-from .product_feed_py.mappings import *
+from product_feed_py.mappings import *
 from product_feed_py.product_feed_helpers import *
 
 # Create your tests here.
@@ -52,6 +52,78 @@ class ProductFeedHelpersTestCase(TestCase):
         # impact_radius
         self.assertEqual('https://www.dsw.com/en/us/product/hue-hosiery-opaque-tights/211920', parse_raw_product_url(impact_radius_product_url0, 'u'))
 
+class SizeTestCase(TestCase):
+    """
+    Tests the allume size parsing behavior. The mappings might be a bit amorphous so the test constraints
+    are not hard and fast, but should be a good guide to enforce correct behavior of determining an allume
+    size, given the current restraints, such as the lack of support for parsing sizes containing slashes.
+    """
+    fixtures = ['SizeMap', 'ShoeSizeMap', 'SizeTermMap']
+
+    def test_determine_allume_size_shoe(self):
+        # setup
+        # categories of interest / with special rules
+        allume_category = 'Shoes'
+        # initialize mappings
+        size_mapping = create_size_mapping()
+        shoe_size_mapping = create_shoe_size_mapping()
+        size_term_mapping = create_size_term_mapping()
+
+        # current rules happy path logic testing
+        self.assertEqual('8', determine_allume_size(allume_category, '8', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('7 Medium', determine_allume_size(allume_category, '7M', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('6 & 6.5', determine_allume_size(allume_category, '39', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('7 & 7.5', determine_allume_size(allume_category, '40', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('37', determine_allume_size(allume_category, '37 (7)', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('8.5 & 9', determine_allume_size(allume_category, '42 (9)', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('8.5 Wide', determine_allume_size(allume_category, '8.5W', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('10 Narrow', determine_allume_size(allume_category, '10N', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('8 Wide', determine_allume_size(allume_category, '8WW', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('8 Medium', determine_allume_size(allume_category, '8 M', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('6 & 6.5 Medium', determine_allume_size(allume_category, '39 M (6 US)', size_mapping, shoe_size_mapping, size_term_mapping))
+
+        # unsupported terms ?
+        self.assertEqual('6B', determine_allume_size(allume_category, '6B', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('7.5B / 37.5EU', determine_allume_size(allume_category, '7.5B / 37.5EU', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('EURO35/US4/UK2', determine_allume_size(allume_category, 'EURO35/US4/UK2', size_mapping, shoe_size_mapping, size_term_mapping))
+        
+        # unexpected / malformed 
+        self.assertEqual('5,6,7,8', determine_allume_size(allume_category, '5,6,7,8', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('REGULAR', determine_allume_size(allume_category, 'REGULAR', size_mapping, shoe_size_mapping, size_term_mapping))
+
+        # not sure if desired behavior (see also below)
+        self.assertEqual('22EU', determine_allume_size(allume_category, '22 EU (6 US)', size_mapping, shoe_size_mapping, size_term_mapping))
+
+    def test_determine_allume_size(self):
+        # setup
+        # categories of interest/ with special rules
+        allume_category = 'Other'
+        # initialize mappings
+        size_mapping = create_size_mapping()
+        shoe_size_mapping = create_shoe_size_mapping()
+        size_term_mapping = create_size_term_mapping()
+
+        self.assertEqual('L', determine_allume_size(allume_category, 'LARGE', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('14 & 16 Plus', determine_allume_size(allume_category, '1X', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('4 & 27 & S', determine_allume_size(allume_category, '27', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('4 & S', determine_allume_size(allume_category, '4 (XL)', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('4 & S Petite', determine_allume_size(allume_category, '4P', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('5 Medium', determine_allume_size(allume_category, '5M', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('18 & XXL Wide Plus', determine_allume_size(allume_category, '18W', size_mapping, shoe_size_mapping, size_term_mapping))
+
+        # unexpected / malformed
+        self.assertEqual('52X84', determine_allume_size(allume_category, '52X84', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('9-11', determine_allume_size(allume_category, '9-11', size_mapping, shoe_size_mapping, size_term_mapping))
+
+        # not sure if desired behavior (see above)
+        self.assertEqual('3.3OZ.', determine_allume_size(allume_category, '3.3 OZ.', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('44IT', determine_allume_size(allume_category, '44 IT (10 US)', size_mapping, shoe_size_mapping, size_term_mapping))
+
+        # return # problem cases occuring with lingerie?
+        self.assertEqual('32DDD', determine_allume_size(allume_category, '32DDD', size_mapping, shoe_size_mapping, size_term_mapping))
+        # return
+        # future support?
+        # self.assertEqual('M Petite', determine_allume_size(allume_category, 'P/M', size_mapping, shoe_size_mapping, size_term_mapping))
 
 # class MappingsTestCase(TestCase):
 #     """

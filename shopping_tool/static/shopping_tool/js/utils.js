@@ -262,8 +262,19 @@ var utils = {
   menu: function(){
     $('#menu-toggle').click(function(e){
       e.preventDefault();
-      $('#nav-menu').fadeIn();
-      $('#nav-menu div.menu').addClass('show');
+      var check = 0;
+      if(document.location.href.indexOf('look_builder') > -1){
+        var edit_status = $('#look-drop').find('div.start').length;
+        if(edit_status == 0){
+          check = 1
+        }
+      }
+      if(check > 0){
+        alert('You must finish editing your selected look before you can navigate to other page.')
+      }else{
+        $('#nav-menu').fadeIn();
+        $('#nav-menu div.menu').addClass('show');
+      }
     });
     $('#close-nav-menu').click(function(e){
       e.preventDefault();

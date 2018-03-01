@@ -415,14 +415,14 @@ class AllumeLooks(models.Model):
     wp_stylist_id = models.BigIntegerField()
     name = models.CharField(max_length=100, blank=True, null=True)
     descrip = models.TextField(blank=True, null=True)
-    collage = models.CharField(max_length=200, blank=True, null=True)
+    collage = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=9)
     date_created = models.DateTimeField()
     # layout_id = models.IntegerField()
     last_modified = models.DateTimeField()
     is_legacy = models.IntegerField()
     position = models.IntegerField()
-    collage_image_data = models.TextField(blank=True, null=True)
+    # collage_image_data = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -478,7 +478,7 @@ class Look(models.Model):
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=1000, blank=True, null=True, db_column='descrip')
-    collage = models.CharField(max_length=200, blank=True, null=True, db_column='collage')
+    collage = models.TextField(blank=True, null=True, db_column='collage')
     status = models.CharField(max_length=11, default='Draft')
     created_at = models.DateTimeField(auto_now_add=True, null=True, db_column='date_created')
     updated_at = models.DateTimeField(auto_now=True, null=True, db_column='last_modified')
@@ -486,7 +486,7 @@ class Look(models.Model):
     # look_layout = models.ForeignKey(LookLayout, db_column='layout_id')
     look_products = models.ManyToManyField(Product, db_column='product_id', through='LookProduct')
     position = models.IntegerField(default=100)
-    collage_image_data = models.TextField(blank=True, null=True)
+    # collage_image_data = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ['-updated_at']
@@ -505,6 +505,8 @@ class LookProduct(models.Model):
     cropped_dimensions = models.CharField(max_length=2000, blank=True, null=True)
     layout_position = models.IntegerField(db_column='sequence')
     product = models.ForeignKey(Product, db_column='raw_product_id')
+    in_collage = models.BooleanField(default=True)
+    cropped_image_code = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -563,9 +565,9 @@ class StyleOccasion(models.Model):
 @receiver(pre_save, sender=Look)
 def set_look_client_id(sender, instance, *args, **kwargs):
     instance.wp_client_id = instance.allume_styling_session.client.id
-    instance.collage = "%s/%s.jpg" % (COLLAGE_IMAGE_ROOT, instance.id)
+    #instance.collage = "%s/%s.jpg" % (COLLAGE_IMAGE_ROOT, instance.id)
 
-@receiver(pre_save, sender=LookProduct)
-def set_product_clipped_stylist_id(sender, instance, *args, **kwargs):
-    instance.product_clipped_stylist_id = instance.look.stylist.id
+#@receiver(pre_save, sender=LookProduct)
+#def set_product_clipped_stylist_id(sender, instance, *args, **kwargs):
+#    instance.product_clipped_stylist_id = instance.look.stylist.id
 

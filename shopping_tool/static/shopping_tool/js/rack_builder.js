@@ -185,9 +185,11 @@ var rack_builder = {
         ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
     }      
     var itm = '<div class="item" data-productid="' + obj.id + '" title="' + obj.merchant_name + ' by ' + 
-    obj.manufacturer_name + '" data-fave="' + favorite_object.id  + '"><a href="#" ' +
+    obj.manufacturer_name + '" data-productname="' + obj.product_name + 
+    '" data-src="' + obj.product_image_url + '" data-fave="' + favorite_object.id  + '"><a href="#" ' +
     'data-productid="' + obj.id + '" data-name="' + obj.product_name + '" data-brand="' + 
-    obj.manufacturer_name + '" class="fave-object">' + fave_link + '<div class="image"><img src="' + obj.product_image_url + 
+    obj.manufacturer_name + '" class="fave-object">' + fave_link + 
+    '<div class="image"><img src="' + obj.product_image_url + 
     '"/></div><div class="details">' + price_display + '</div></a></div>';
     return itm;
   },
@@ -218,9 +220,9 @@ var rack_builder = {
         for(var i = 0, l = response.looks.length; i<l; i++){
           var comp = response.looks[i];
           var collage_img = '<div class="collage-placeholder">collage not yet created</div>';
-          if(comp.collage_image_data != null){
+          if(comp.collage != null){
             collage_img = '<a href="#" class="view-look-details" data-look="' + comp.id + 
-            '"><img class="collage" src="' + comp.collage_image_data + '"/></a>';
+            '"><img class="collage" src="' + comp.collage + '"/></a>';
           }
           markup.push(
             '<div class="rack-look"><a href="/look_builder/' + rack_builder.session_id + 
@@ -688,9 +690,11 @@ var rack_builder = {
       price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
         ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
     }
+    var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
     return '<div class="item" data-productid="' + details.id + '" title="' + details.merchant_name + ' by ' + 
-      details.manufacturer_name + '"><a href="#" class="remove-from-rack" data-sku="' + 
-      details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku + 
+      details.manufacturer_name + '" data-productname="' + details.product_name + '" data-sku="' + sku + 
+      '" data-rackid="' + details.rack_id + '" data-src="' + details.product_image_url + 
+      '"><a href="#" class="remove-from-rack" data-sku="' + sku + 
       '" data-idx="' + idx + '" data-productid="' + details.id + '" data-rackid="' + 
       rack_item_id + '"><i class="fa fa-times"></i></a>' +
       '<div class="image"><img src="' + details.product_image_url + 
