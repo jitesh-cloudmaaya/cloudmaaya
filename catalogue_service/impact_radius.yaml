@@ -32,6 +32,7 @@ fields:
 - gender
 - style
 - size
+- allume_size
 - material
 - age
 - currency

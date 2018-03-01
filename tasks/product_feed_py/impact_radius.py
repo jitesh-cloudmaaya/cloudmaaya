@@ -4,8 +4,9 @@ import urlparse
 import re
 import csv
 from . import mappings, product_feed_helpers
+from copy import copy
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap, Network
+from product_api.models import Merchant, CategoryMap, Network, Product
 from itertools import izip
 from datetime import datetime, timedelta
 
@@ -144,7 +145,9 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             continue # skip this record ???
                             #or generate prod_id somehow
                             # record['product_id'] = generate_product_id(args)
-                        record['availability'] = datum2['availability']
+                        availability = datum2['availability']
+                        availability = availability.replace(' ', '-')
+                        record['availability'] = availability
                         record['brand'] = datum2['brand']
 
                         # derived
@@ -164,6 +167,9 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['allume_score'] = u'0'
                         # need to infer deleted?
                         record['is_deleted'] = u'0'
+
+                        # not sure how this will go
+                        record['merchant_id'] = merchant_id
 
                         # fields not available from data?
                         record['buy_url'] = u''
@@ -210,7 +216,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
     # infer deleted products
     print('Updating non-upserted Impact Radius products')
-    set_deleted_impact_radius_products()
+    # set_deleted_impact_radius_products() # comment out for now
 
 # need to add helper to infer deleted status
 def set_deleted_impact_radius_products(threshold = 12):
