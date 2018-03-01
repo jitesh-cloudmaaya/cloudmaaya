@@ -66,10 +66,6 @@ class SizeTestCase(TestCase):
         # not sure if desired behavior (see also below)
         self.assertEqual('22EU', determine_allume_size(allume_category, '22 EU (6 US)', size_mapping, shoe_size_mapping, size_term_mapping))
 
-        return
-        # additional problem cases, refine?
-        self.assertEqual('35 (5),35.5 (5.5),36 (6),36.5 (6.5),37 (7),37.5 (7.5),38 (8),38.5 (8.5),39 (9),39.5 (9.5),40 (10),40.5 (10.5),41 (11)', determine_allume_size(allume_category, '35 (5),35.5 (5.5),36 (6),36.5 (6.5),37 (7),37.5 (7.5),38 (8),38.5 (8.5),39 (9),39.5 (9.5),40 (10),40.5 (10.5),41 (11)', size_mapping, shoe_size_mapping, size_term_mapping))
-
     def test_determine_allume_size(self):
         # setup
         # categories of interest/ with special rules
@@ -87,10 +83,6 @@ class SizeTestCase(TestCase):
         self.assertEqual('5 Medium', determine_allume_size(allume_category, '5M', size_mapping, shoe_size_mapping, size_term_mapping))
         self.assertEqual('18 & XXL Wide Plus', determine_allume_size(allume_category, '18W', size_mapping, shoe_size_mapping, size_term_mapping))
 
-
-        # self.assertEqual('', determine_allume_size(allume_category, '23INCH', size_mapping, shoe_size_mapping, size_term_mapping))
-        # 00 & 23 & XXSINCH
-
         # unexpected / malformed
         self.assertEqual('52X84', determine_allume_size(allume_category, '52X84', size_mapping, shoe_size_mapping, size_term_mapping))
         self.assertEqual('9-11', determine_allume_size(allume_category, '9-11', size_mapping, shoe_size_mapping, size_term_mapping))
@@ -101,13 +93,9 @@ class SizeTestCase(TestCase):
 
         # return # problem cases occuring with lingerie?
         self.assertEqual('32DDD', determine_allume_size(allume_category, '32DDD', size_mapping, shoe_size_mapping, size_term_mapping))
-        return
+        # return
         # future support?
-        self.assertEqual('M Petite', determine_allume_size(allume_category, 'P/M', size_mapping, shoe_size_mapping, size_term_mapping))
-
-
-
-# "35 (5),35.5 (5.5),36 (6),36.5 (6.5),37 (7),37.5 (7.5),38 (8),38.5 (8.5),39 (9),39.5 (9.5),40 (10),40.5 (10.5),41 (11)","35","Shoes","233"
+        # self.assertEqual('M Petite', determine_allume_size(allume_category, 'P/M', size_mapping, shoe_size_mapping, size_term_mapping))
 
 # class MappingsTestCase(TestCase):
 #     """
