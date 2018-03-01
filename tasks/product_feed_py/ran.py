@@ -215,21 +215,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
 
                             record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
-                            # # replace below with above
-                            # if allume_category == 'Shoes':
-                            #     # use the shoe size mapping
-                            #     if attribute_3_size in shoe_size_mapping.keys():
-                            #         record['allume_size'] = shoe_size_mapping[attribute_3_size]
-                            #     else:
-                            #         # double check no existing mapping case?
-                            #         record['allume_size'] = attribute_3_size
-                            # else:
-                            #     # use the size mapping
-                            #     if attribute_3_size in size_mapping.keys():
-                            #         record['allume_size'] = size_mapping[attribute_3_size]
-                            #     else:
-                            #         record['allume_size'] = attribute_3_size
-
 
                             record['material'] = attribute_4_material
 

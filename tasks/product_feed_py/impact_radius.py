@@ -54,7 +54,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
             try:
                 merchant_name = re.match(pattern, f).group(0)
             except AttributeError, IndexError:
-                # file would not be of the format we expect from ir ftp server
+                # .txt file would not be of the format we expect from ir ftp server
                 continue
             merchant_names.add(merchant_name) # double check function name
 
@@ -82,17 +82,12 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
             file_of_interest2 = os.path.join(os.getcwd(), local_temp_dir, file_of_interest2)
             merchant_file_pairs.append((merchant_name, file_of_interest1, file_of_interest2))
 
-
         # this way we will run ir once for each found pair (altho currently only 1)
         for file_pair in merchant_file_pairs:
+            merchant_id = u'432' # hardcoded for now
             merchant_name = file_pair[0]
             product_catalog_IR = file_pair[1]
             product_catalog_GOOGLE = file_pair[2]
-
-            # need to read in the files in such a way that we have the pairs of GOOGLE_TXT
-            # and IR files used to create the data for the merchant available
-
-            merchant_id = u'432' # hardcoded for now
 
             # rewrite the process to use both files
             with open(product_catalog_IR, "r") as file1, open(product_catalog_GOOGLE, "r") as file2:
@@ -221,20 +216,20 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             for key, value in record.iteritems():
                                 record[key] = value.encode('UTF-8')
 
-                                # check size here to see if we should write additional 'child' records?
-                                parent_attributes = copy(record)
-                                sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
-                                product_id = parent_attributes['product_id']
-                                if len(sizes) > 1: # the size attribute of the record was a comma seperated list
-                                    for size in sizes:
-                                        parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
-                                        # use the size mapping here also
-                                        parent_attributes['size'] = size
-                                        parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                                        writer.writerow(parent_attributes)
-                                        writtenCount += 1
-                                    # set the parent record to is_deleted
-                                    record['is_deleted'] = 1
+                            # check size here to see if we should write additional 'child' records?
+                            parent_attributes = copy(record)
+                            sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
+                            product_id = parent_attributes['product_id']
+                            if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+                                for size in sizes:
+                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    # use the size mapping here also
+                                    parent_attributes['size'] = size
+                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    writer.writerow(parent_attributes)
+                                    writtenCount += 1
+                                # set the parent record to is_deleted
+                                record['is_deleted'] = 1
 
                             # write the record
                             writer.writerow(record)
