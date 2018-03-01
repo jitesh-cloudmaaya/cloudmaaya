@@ -114,7 +114,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         record['product_name'] = datum1['Product Name']
 
                         size = datum1['Size'].upper()
-                        size = size.repalce('~', ',')
+                        size = size.replace('~', ',')
                         record['size'] = size
 
                         record['manufacturer_part_number'] = datum1['MPN']
