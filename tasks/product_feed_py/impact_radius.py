@@ -31,7 +31,8 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
         for f in file_directory:
             if f.endswith(file_ending):
-                file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
+                file_list.append(f)
+                # file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
 
         # metric variables
         totalCount = 0
@@ -47,165 +48,199 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
         cleaned_fieldnames = cleaned_fields.split(',')
         writer = csv.DictWriter(cleaned, cleaned_fieldnames, dialect = 'writing')
 
-        # work with hard coded assumptions for now
-        product_catalog_IR = file_list[0] # should be DSW-Product-Catalog_IR.txt
-        product_catalog_GOOGLE = file_list[1] # should be DSW-Product-Catalog_GOOGLE_TXT.txt
+        merchant_names = set()
+        pattern = '^[^-]+' # read until the first hyphen
+        for f in file_list:
+            try:
+                merchant_name = re.match(pattern, f).group(0)
+            except AttributeError, IndexError:
+                # file would not be of the format we expect from ir ftp server
+                continue
+            merchant_names.add(merchant_name) # double check function name
+
+        merchant_file_pairs = [] # list of file pair tuples
+        for merchant_name in merchant_names:
+            # double check these patterns
+            pattern2 = '^' + merchant_name + '.*_IR.txt$' # ?
+
+            for f in file_list:
+                try:
+                    file_of_interest1 = re.match(pattern2, f).group(0)
+                except AttributeError:
+                    continue # i think?
+
+            pattern3 = '^' + merchant_name + '.*_GOOGLE_TXT.txt$' # ?
+            for f in file_list:
+                try:
+                    file_of_interest2 = re.match(pattern3, f).group(0)
+                except AttributeError:
+                    continue # I think?
+
+            if not file_of_interest1 or not file_of_interest2:
+                continue # skip? since we will not be able to get data
+            file_of_interest1 = os.path.join(os.getcwd(), local_temp_dir, file_of_interest1)
+            file_of_interest2 = os.path.join(os.getcwd(), local_temp_dir, file_of_interest2)
+            merchant_file_pairs.append((merchant_name, file_of_interest1, file_of_interest2))
 
 
-        # write a regex to get everything before the first hyphen
-        # ^(.*?)-
-        pattern = re.compile('.*\/(.*?)-')
-        result = re.search(pattern, product_catalog_IR) # maybe need to change??
-        merchant_name = result.group(1)
-        merchant_id = u'432' # hardcoded for now
+        # this way we will run ir once for each found pair (altho currently only 1)
+        for file_pair in merchant_file_pairs:
+            merchant_name = file_pair[0]
+            product_catalog_IR = file_pair[1]
+            product_catalog_GOOGLE = file_pair[2]
 
-        # rewrite the process to use both files
-        with open(product_catalog_IR, "r") as file1, open(product_catalog_GOOGLE, "r") as file2:
-            lines1 = file1.readlines()
-            lines2 = file2.readlines()
+            # need to read in the files in such a way that we have the pairs of GOOGLE_TXT
+            # and IR files used to create the data for the merchant available
 
-            # need some way to identify the merchants??
-            merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
-            # merchant_is_active = 1
-            if merchant_is_active:
-                # omit fieldnames to use header lines
-                reader1 = csv.DictReader(lines1, restval = '', dialect = 'reading')
-                reader2 = csv.DictReader(lines2, restval = '', dialect = 'reading')
+            merchant_id = u'432' # hardcoded for now
 
-                for datum1, datum2 in izip(reader1, reader2): # handle when/if the files are of two different lengths
-                    totalCount += 1
+            # rewrite the process to use both files
+            with open(product_catalog_IR, "r") as file1, open(product_catalog_GOOGLE, "r") as file2:
+                lines1 = file1.readlines()
+                lines2 = file2.readlines()
 
-                    # unicode sandwich stuff
-                    for key, value in datum1.iteritems():
-                        datum1[key] = value.decode('UTF-8')
-                    for key, value in datum2.iteritems():
-                        datum2[key] = value.decode('UTF-8')
+                # need some way to identify the merchants??
+                merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
+                # merchant_is_active = 1
+                if merchant_is_active:
+                    # omit fieldnames to use header lines
+                    reader1 = csv.DictReader(lines1, restval = '', dialect = 'reading')
+                    reader2 = csv.DictReader(lines2, restval = '', dialect = 'reading')
 
-                    # gender pigeonholing
-                    gender = datum1['Gender']
-                    gender = gender.upper()
-                    gender = gender.replace('FEMALE', 'WOMEN')
-                    gender = gender.replace('MALE', 'MEN')
-                    gender = gender.replace('MAN', 'MEN')
+                    for datum1, datum2 in izip(reader1, reader2): # handle when/if the files are of two different lengths
+                        totalCount += 1
 
-                    # gender checking
-                    skippedGenders = ['MEN', 'CHILD', 'KIDS', 'BOYS', 'GIRLS', 'BABY']
-                    if gender in skippedGenders:
-                        genderSkipped += 1
-                        continue
+                        # unicode sandwich stuff
+                        for key, value in datum1.iteritems():
+                            datum1[key] = value.decode('UTF-8')
+                        for key, value in datum2.iteritems():
+                            datum2[key] = value.decode('UTF-8')
 
-                    primary_category = datum1['Category']
-                    secondary_category = u'' # ?
+                        # gender pigeonholing
+                        gender = datum1['Gender']
+                        gender = gender.upper()
+                        gender = gender.replace('FEMALE', 'WOMEN')
+                        gender = gender.replace('MALE', 'MEN')
+                        gender = gender.replace('MAN', 'MEN')
 
-                    allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
-                    # allume_category = 'allume_category'
-                    if allume_category:
-                        record = {}
+                        # gender checking
+                        skippedGenders = ['MEN', 'CHILD', 'KIDS', 'BOYS', 'GIRLS', 'BABY']
+                        if gender in skippedGenders:
+                            genderSkipped += 1
+                            continue
 
-                        record['merchant_color'] = datum1['Color']
-                        merchant_color = datum1['Color'].lower()
-                        try:
-                            allume_color = color_mapping[merchant_color]
-                        except:
-                            allume_color = u'other'
-                        record['color'] = allume_color
+                        primary_category = datum1['Category']
+                        secondary_category = u'' # ?
 
-                        #datum1
-                        record['age'] = datum1['Age Range']
-                        record['manufacturer_name'] = datum1['Manufacturer']
-                        record['long_product_description'] = datum1['Product Description']
-                        record['short_product_description'] = datum1['Product Description']
-                        record['product_name'] = datum1['Product Name']
+                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
+                        # allume_category = 'allume_category'
+                        if allume_category:
+                            record = {}
 
-                        size = datum1['Size'].upper()
-                        size = size.replace('~', ',')
-                        record['size'] = size
-                        record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                            record['merchant_color'] = datum1['Color']
+                            merchant_color = datum1['Color'].lower()
+                            try:
+                                allume_color = color_mapping[merchant_color]
+                            except:
+                                allume_color = u'other'
+                            record['color'] = allume_color
 
-                        record['manufacturer_part_number'] = datum1['MPN']
-                        record['product_type'] = datum1['Product Type']
-                        record['gender'] = gender
-                        record['product_url'] = datum1['Product URL']
-                        record['product_image_url'] = datum1['Image URL']
-                        record['primary_category'] = primary_category
-                        record['SKU'] = datum1['Unique Merchant SKU']
-                        record['current_price'] = datum1['Current Price']
-                        record['shipping_price'] = datum1['Shipping Rate']
-                        record['material'] = datum1['Material']
+                            #datum1
+                            record['age'] = datum1['Age Range']
+                            record['manufacturer_name'] = datum1['Manufacturer']
+                            record['long_product_description'] = datum1['Product Description']
+                            record['short_product_description'] = datum1['Product Description']
+                            record['product_name'] = datum1['Product Name']
 
-                        #datum2
-                        record['product_id'] = datum2['custom_label_4'] # there is an instance of custom_label_3 having the product_id
-                        # handling product_id in one of the custom labels
-                        for i in range(0, 5):
-                            key = 'custom_label_' + str(i)
-                            if datum2[key].isdigit(): # product_id can seemingly occur at place 3 or 4
-                                record['product_id'] = datum2[key]
-                                break
-                        if not record['product_id']: # it did not get set in above
-                            continue # skip this record ???
-                            #or generate prod_id somehow
-                            # record['product_id'] = generate_product_id(args)
-                        availability = datum2['availability']
-                        availability = availability.replace(' ', '-')
-                        record['availability'] = availability
-                        record['brand'] = datum2['brand']
+                            size = datum1['Size'].upper()
+                            size = size.replace('~', ',')
+                            record['size'] = size
+                            record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
 
-                        # derived
-                        try:
-                            record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(record['product_url'], 'u')
-                        except Exception as e:
-                            print e
-                            record['raw_product_url'] = u''
-                        record['allume_category'] = allume_category
+                            record['manufacturer_part_number'] = datum1['MPN']
+                            record['product_type'] = datum1['Product Type']
+                            record['gender'] = gender
+                            record['product_url'] = datum1['Product URL']
+                            record['product_image_url'] = datum1['Image URL']
+                            record['primary_category'] = primary_category
+                            record['SKU'] = datum1['Unique Merchant SKU']
+                            record['current_price'] = datum1['Current Price']
+                            record['shipping_price'] = datum1['Shipping Rate']
+                            record['material'] = datum1['Material']
 
-                        # not from data
-                        record['merchant_name'] = merchant_name
-                        record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        # defaults?
-                        record['is_best_seller'] = u'0'
-                        record['is_trending'] = u'0'
-                        record['allume_score'] = u'0'
-                        # need to infer deleted?
-                        record['is_deleted'] = u'0'
+                            #datum2
+                            record['product_id'] = datum2['custom_label_4'] # there is an instance of custom_label_3 having the product_id
+                            # handling product_id in one of the custom labels
+                            for i in range(0, 5):
+                                key = 'custom_label_' + str(i)
+                                if datum2[key].isdigit(): # product_id can seemingly occur at place 3 or 4
+                                    record['product_id'] = datum2[key]
+                                    break
+                            if not record['product_id']: # it did not get set in above
+                                continue # skip this record ???
+                                #or generate prod_id somehow
+                                # record['product_id'] = generate_product_id(args)
+                            availability = datum2['availability']
+                            availability = availability.replace(' ', '-')
+                            record['availability'] = availability
+                            record['brand'] = datum2['brand']
 
-                        # not sure how this will go
-                        record['merchant_id'] = merchant_id
+                            # derived
+                            try:
+                                record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(record['product_url'], 'u')
+                            except Exception as e:
+                                print e
+                                record['raw_product_url'] = u''
+                            record['allume_category'] = allume_category
 
-                        # fields not available from data?
-                        record['buy_url'] = u''
-                        record['discount'] = u''
-                        record['discount_type'] = u''
-                        record['sale_price'] = u''
-                        record['retail_price'] = u''
-                        record['style'] = u''
-                        record['currency'] = u''
-                        record['keywords'] = u''
-                        record['secondary_category'] = secondary_category
+                            # not from data
+                            record['merchant_name'] = merchant_name
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            # defaults?
+                            record['is_best_seller'] = u'0'
+                            record['is_trending'] = u'0'
+                            record['allume_score'] = u'0'
+                            # need to infer deleted?
+                            record['is_deleted'] = u'0'
 
-                        # finish unicode sandwich
-                        for key, value in record.iteritems():
-                            record[key] = value.encode('UTF-8')
+                            # not sure how this will go
+                            record['merchant_id'] = merchant_id
 
-                            # check size here to see if we should write additional 'child' records?
-                            parent_attributes = copy(record)
-                            sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
-                            product_id = parent_attributes['product_id']
-                            if len(sizes) > 1: # the size attribute of the record was a comma seperated list
-                                for size in sizes:
-                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
-                                    # use the size mapping here also
-                                    parent_attributes['size'] = size
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                                    writer.writerow(parent_attributes)
-                                    writtenCount += 1
-                                # set the parent record to is_deleted
-                                record['is_deleted'] = 1
+                            # fields not available from data?
+                            record['buy_url'] = u''
+                            record['discount'] = u''
+                            record['discount_type'] = u''
+                            record['sale_price'] = u''
+                            record['retail_price'] = u''
+                            record['style'] = u''
+                            record['currency'] = u''
+                            record['keywords'] = u''
+                            record['secondary_category'] = secondary_category
 
-                        # write the record
-                        writer.writerow(record)
-                        writtenCount += 1
-                    else:
-                        categoriesSkipped += 1
+                            # finish unicode sandwich
+                            for key, value in record.iteritems():
+                                record[key] = value.encode('UTF-8')
+
+                                # check size here to see if we should write additional 'child' records?
+                                parent_attributes = copy(record)
+                                sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
+                                product_id = parent_attributes['product_id']
+                                if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+                                    for size in sizes:
+                                        parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                        # use the size mapping here also
+                                        parent_attributes['size'] = size
+                                        parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                        writer.writerow(parent_attributes)
+                                        writtenCount += 1
+                                    # set the parent record to is_deleted
+                                    record['is_deleted'] = 1
+
+                            # write the record
+                            writer.writerow(record)
+                            writtenCount += 1
+                        else:
+                            categoriesSkipped += 1
 
     print('Processed %s records' % totalCount)
     print('Wrote %s records' % writtenCount)
@@ -216,7 +251,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
     # infer deleted products
     print('Updating non-upserted Impact Radius products')
-    # set_deleted_impact_radius_products() # comment out for now
+    set_deleted_impact_radius_products() # comment out for now
 
 # need to add helper to infer deleted status
 def set_deleted_impact_radius_products(threshold = 12):
