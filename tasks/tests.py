@@ -80,12 +80,12 @@ class SizeTestCase(TestCase):
         size_term_mapping = create_size_term_mapping()
 
         self.assertEqual('L', determine_allume_size(allume_category, 'LARGE', size_mapping, shoe_size_mapping, size_term_mapping))
-        self.assertEqual('14 & 16', determine_allume_size(allume_category, '1X', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('14 & 16 Plus', determine_allume_size(allume_category, '1X', size_mapping, shoe_size_mapping, size_term_mapping))
         self.assertEqual('4 & 27 & S', determine_allume_size(allume_category, '27', size_mapping, shoe_size_mapping, size_term_mapping))
         self.assertEqual('4 & S', determine_allume_size(allume_category, '4 (XL)', size_mapping, shoe_size_mapping, size_term_mapping))
         self.assertEqual('4 & S Petite', determine_allume_size(allume_category, '4P', size_mapping, shoe_size_mapping, size_term_mapping))
         self.assertEqual('5 Medium', determine_allume_size(allume_category, '5M', size_mapping, shoe_size_mapping, size_term_mapping))
-        self.assertEqual('18 & XXL Wide', determine_allume_size(allume_category, '18W', size_mapping, shoe_size_mapping, size_term_mapping))
+        self.assertEqual('18 & XXL Wide Plus', determine_allume_size(allume_category, '18W', size_mapping, shoe_size_mapping, size_term_mapping))
 
 
         # self.assertEqual('', determine_allume_size(allume_category, '23INCH', size_mapping, shoe_size_mapping, size_term_mapping))

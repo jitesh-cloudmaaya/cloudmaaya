@@ -136,7 +136,14 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
         # check for the special cases of 1X, 2X, 3X, 4X
         special_cases = set(['0X', '1X', '2X', '3X', '4X'])
         if parsed_size in special_cases:
+            # if size is 1X or above, it is plus
+            special_cases.remove('0X')
+            size_term = ''
+            if parsed_size in special_cases:
+                size_term = 'Plus'
             allume_size = size_mapping[parsed_size]
+            if size_term:
+                allume_size += ' ' + size_term
         else:
             join_val = ''
             # check number split from characters?
@@ -151,11 +158,22 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
                     join_val = ' '
                 allume_size = numeric + join_val + alpha
                 allume_size = allume_size.strip()
+
+                # plus work?
+                plus_sizes = ['18', '20', '22', '24', '26']
+                for plus_size in plus_sizes:
+                    if plus_size in allume_size:
+                        allume_size += ' Plus'
+                        break
     else:
         # DO MORE work here
+        # if it's a character size, and also xxl or xxxl, add plus?
         # check if it is a character size?
         if parsed_size in size_mapping.keys():
             allume_size = size_mapping[parsed_size]
+
+            if 'XL' in allume_size or 'XXL' in allume_size:
+                allume_size += ' Plus'
         else:
             allume_size = parsed_size
 
