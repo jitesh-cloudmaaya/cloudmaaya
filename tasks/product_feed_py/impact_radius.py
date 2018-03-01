@@ -15,6 +15,9 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+    size_mapping = mappings.create_size_mapping()
+    shoe_size_mapping = mappings.create_shoe_size_mapping()
+    size_term_mapping = mappings.create_size_term_mapping()
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('Impact Radius') # name subject to change?
@@ -116,6 +119,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         size = datum1['Size'].upper()
                         size = size.replace('~', ',')
                         record['size'] = size
+                        record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
 
                         record['manufacturer_part_number'] = datum1['MPN']
                         record['product_type'] = datum1['Product Type']
@@ -161,7 +165,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         # need to infer deleted?
                         record['is_deleted'] = u'0'
 
-
                         # fields not available from data?
                         record['buy_url'] = u''
                         record['discount'] = u''
@@ -176,6 +179,21 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         # finish unicode sandwich
                         for key, value in record.iteritems():
                             record[key] = value.encode('UTF-8')
+
+                            # check size here to see if we should write additional 'child' records?
+                            parent_attributes = copy(record)
+                            sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
+                            product_id = parent_attributes['product_id']
+                            if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+                                for size in sizes:
+                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    # use the size mapping here also
+                                    parent_attributes['size'] = size
+                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    writer.writerow(parent_attributes)
+                                    writtenCount += 1
+                                # set the parent record to is_deleted
+                                record['is_deleted'] = 1
 
                         # write the record
                         writer.writerow(record)
