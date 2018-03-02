@@ -121,20 +121,39 @@ def index_deleted_products_cleanup(days_threshold = 5):
     merchant_table = Merchant._meta.db_table
     allumecategory_table = AllumeCategory._meta.db_table
 
-    statement = 'UPDATE %s pap' % product_table
-    statement += ' INNER JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
-    statement += ' AND pap.secondary_category = pac.external_cat2'
-    statement += ' INNER JOIN %s pam ON pap.merchant_name = pam.name' % merchant_table
-    statement += ' INNER JOIN %s paa ON pap.allume_category = paa.name' % allumecategory_table
-    statement += ' SET is_deleted = 1'
-    statement += ' WHERE pac.active = 0 OR pam.active = 0 OR paa.active = 0;'
+    statement1 = 'UPDATE %s pap' % product_table
+    statement1 += ' INNER JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
+    statement1 += ' AND pap.secondary_category = pac.external_cat2'
+    statement1 += ' SET is_deleted = 1 WHERE pac.active = 0'
+
+    statement2 = 'UPDATE %s pap' % product_table
+    statement2 += ' INNER JOIN %s pam ON pap.merchant_name = pam.name' % merchant_table
+    statement2 += ' SET is_deleted = 1 WHERE pam.active = 0'
+
+    statement3 = 'UPDATE %s pap' % product_table
+    statement3 += ' INNER JOIN %s paa ON pap.allume_category = paa.name' % allumecategory_table
+    statement3 += ' SET is_deleted = 1 WHERE paa.active = 0'
+
+    # statement = 'UPDATE %s pap' % product_table
+    # statement += ' INNER JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
+    # statement += ' AND pap.secondary_category = pac.external_cat2'
+    # statement += ' INNER JOIN %s pam ON pap.merchant_name = pam.name' % merchant_table
+    # statement += ' INNER JOIN %s paa ON pap.allume_category = paa.name' % allumecategory_table
+    # statement += ' SET is_deleted = 1'
+    # statement += ' WHERE pac.active = 0 OR pam.active = 0 OR paa.active = 0;'
 
     with connection.cursor() as cursor:
-        cursor.execute(statement)
+        cursor.execute(statement1)
+        print 'Setting the inactive products to deleted took %s seconds' % (time.time() - start)
+        cursor.execute(statement2)
+        print 'Setting the inactive products to deleted took %s seconds' % (time.time() - start)
+        cursor.execute(statement3)
+        # print 'Setting the inactive products to deleted took %s seconds' % (time.time() - start)
         cursor.close()
 
     print 'Setting the inactive products to deleted took %s seconds' % (time.time() - start)
 
+    return
     checkpoint = time.time()
 
     datetime_threshold = datetime.now() - timedelta(days = days_threshold) # query products as far back as days_threshold
