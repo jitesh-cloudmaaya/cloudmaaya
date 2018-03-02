@@ -642,7 +642,13 @@ var rack_builder = {
               ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
           }
           if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }
-          if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }   
+          if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }  
+          var options_header = '';
+          var options_class = '';
+          if(color_options.length > 4){
+            options_class = 'with-header'
+            options_header = '<h6>' + (color_options.length - 1) + ' other color options</h6>';
+          }  
           markup.push(
             '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
             '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
@@ -653,7 +659,8 @@ var rack_builder = {
             product.short_product_description + '</p>' + price_display +
             '<span class="general" id="inspected-item-sku"><em>sku:</em>' + product.sku + '</span>' +
             '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
-            '<div id="color-options">' + color_options.join('') + '</div>' +
+            '<div id="color-options" class="' + options_class + '">' + options_header + 
+            '<div>' + color_options.join('') + '</div></div>' +
             '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
             '<span class="general"><em>category:</em>' + product.allume_category  + 
             '</span></td></tr></table><span class="shopping-for">styling for:</span>' + 
