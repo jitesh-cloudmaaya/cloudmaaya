@@ -41,6 +41,28 @@ def parse_raw_product_url(product_url, raw_product_attribute):
 
     return joined
 
+def generate_product_id(product_name, size, color): # what should arguments be....
+    """
+    In the event that a product_id cannot be found, deterministically generate a product_id
+    using that product's product_name, size, and color.
+
+    Args:
+      product_name (str): The product's name.
+      size (str): The merchant provided size field for the product.
+      color (str): The merchant provided color field for the product.
+
+    Returns:
+      str: A string to use as the product's product_id.
+    """
+    step1 = int(hashlib.sha256(size).hexdigest(), 16) % (10 ** 15)
+    step2 = int(hashlib.sha256(size).hexdigest(), 16) % (10 ** 15)
+    step3 = int(hashlib.sha256(size).hexdigest(), 16) % (10 ** 15)
+
+    product_id = step1 + step2 + step3
+    product_id = product_id % (2 ** 60) # keep within mysql bigint
+    product_id = str(product_id)
+
+    return product_id
 
 def assign_product_id_size(product_id, size):
     """

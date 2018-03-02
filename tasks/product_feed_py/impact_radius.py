@@ -177,9 +177,8 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                                     record['product_id'] = datum2[key]
                                     break
                             if not record['product_id']: # it did not get set in above
-                                continue # skip this record ???
-                                #or generate prod_id somehow
-                                # record['product_id'] = generate_product_id(args)
+                                record['product_id'] = product_feed_helpers.generate_product_id(record['product_name'], size, merchant_color)
+
                             availability = datum2['availability']
                             availability = availability.replace(' ', '-')
                             record['availability'] = availability
@@ -250,3 +249,5 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     # infer deleted products
     print('Updating non-upserted Impact Radius products')
     product_feed_helpers.set_deleted_network_products('Impact Radius')
+
+
