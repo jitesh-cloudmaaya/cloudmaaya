@@ -222,6 +222,7 @@ input.search {
   position:absolute;
   right:10px;
   top:5px;
+  z-index:3;
 }
 #results div.item div.image a.item-detail span {
   background:rgba(0,0,0,0.6);
