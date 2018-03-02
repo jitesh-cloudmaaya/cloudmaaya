@@ -84,8 +84,8 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
         # this way we will run ir once for each found pair (altho currently only 1)
         for file_pair in merchant_file_pairs:
-            merchant_id = u'432' # hardcoded for now
             merchant_name = file_pair[0]
+            merchant_id = product_feed_helpers.generate_merchant_id(merchant_name)
             product_catalog_IR = file_pair[1]
             product_catalog_GOOGLE = file_pair[2]
 
