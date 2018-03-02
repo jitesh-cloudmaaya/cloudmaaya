@@ -56,8 +56,8 @@ class Product(models.Model):
         indexes = [
             models.Index(fields=['primary_category']),
             models.Index(fields=['secondary_category']),
-            # models.Index(fields=['allume_category']),
-            # models.Index(fields=['merchant_name']),
+            models.Index(fields=['allume_category']),
+            models.Index(fields=['merchant_id']),
         ]
 
 class Network(models.Model):
