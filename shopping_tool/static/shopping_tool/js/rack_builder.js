@@ -499,9 +499,9 @@ var rack_builder = {
       var rack_link = ''
       for(var i = 0, l = data.details.length; i<l; i++){
         var option = data.details[i];
-        if(option._source.color == color){
+        if(option._source.merchant_color.toLowerCase() == color){
           matching = option;
-          var retail =  matching._source.retail_price;
+          var retail = matching._source.retail_price;
           var sale =  matching._source.sale_price;
           if((sale >= retail)||(sale == 0)){
             price_display = numeral(retail).format('$0,0.00');
@@ -583,11 +583,12 @@ var rack_builder = {
         var colors_hash = {color_names: [], color_sizes: {}};
         for(var i = 0, l = results.data.length; i<l; i++){
           var product = results.data[i]._source;
-          if(colors_hash.color_names.indexOf(product.color) == -1){
-            colors_hash.color_names.push(product.color)
-            colors_hash.color_sizes[product.color] = [];
+          var product_color = product.merchant_color.toLowerCase();
+          if(colors_hash.color_names.indexOf(product_color) == -1){
+            colors_hash.color_names.push(product_color)
+            colors_hash.color_sizes[product_color] = [];
           }
-          colors_hash.color_sizes[product.color] = colors_hash.color_sizes[product.color].concat(product.size.split(','));
+          colors_hash.color_sizes[product_color] = colors_hash.color_sizes[product_color].concat(product.size.split(','));
           if(product.id == id){
             matching = product;
           }
@@ -600,7 +601,7 @@ var rack_builder = {
           var sizes = '';
           for(var i = 0, l = colors_hash.color_names.length; i<l; i++){
             var color = colors_hash.color_names[i];
-            if(color == product.color){
+            if(color == product.merchant_color.toLowerCase()){
               if(l > 1){
                 color_link = '<a href="#" id="color-toggle">' + color + '<i class="fa fa-caret-down"></i></a>'
               }else{
@@ -641,7 +642,13 @@ var rack_builder = {
               ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
           }
           if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }
-          if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }   
+          if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }  
+          var options_header = '';
+          var options_class = '';
+          if(color_options.length > 4){
+            options_class = 'with-header'
+            options_header = '<h6>' + (color_options.length - 1) + ' other color options</h6>';
+          }  
           markup.push(
             '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
             '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
@@ -652,7 +659,8 @@ var rack_builder = {
             product.short_product_description + '</p>' + price_display +
             '<span class="general" id="inspected-item-sku"><em>sku:</em>' + product.sku + '</span>' +
             '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
-            '<div id="color-options">' + color_options.join('') + '</div>' +
+            '<div id="color-options" class="' + options_class + '">' + options_header + 
+            '<div>' + color_options.join('') + '</div></div>' +
             '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
             '<span class="general"><em>category:</em>' + product.allume_category  + 
             '</span></td></tr></table><span class="shopping-for">styling for:</span>' + 

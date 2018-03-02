@@ -22,7 +22,7 @@ var collage = {
               matching_object = product;
             }
             /* create color object for payload */
-            var clr = product.color.toLowerCase();
+            var clr = product.merchant_color.toLowerCase();
             if(tmp.color_names.indexOf(clr) == -1){
               tmp.color_names.push(clr);
               tmp.color_objects[clr] = { sizes: [], size_data : {}};
