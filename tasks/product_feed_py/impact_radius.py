@@ -159,7 +159,12 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             record['product_image_url'] = datum1['Image URL']
                             record['primary_category'] = primary_category
                             record['SKU'] = datum1['Unique Merchant SKU']
-                            record['current_price'] = datum1['Current Price']
+
+                            current_price = datum1['Current Price']
+                            record['current_price'] = current_price
+                            record['sale_price'] = current_price
+                            record['retail_price'] = current_price
+
                             record['shipping_price'] = datum1['Shipping Rate']
                             record['material'] = datum1['Material']
 
@@ -205,8 +210,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             record['buy_url'] = u''
                             record['discount'] = u''
                             record['discount_type'] = u''
-                            record['sale_price'] = u''
-                            record['retail_price'] = u''
                             record['style'] = u''
                             record['currency'] = u''
                             record['keywords'] = u''
