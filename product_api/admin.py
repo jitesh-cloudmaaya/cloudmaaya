@@ -15,6 +15,7 @@ class NetworkAdmin(admin.ModelAdmin):
 
 class CategoryMapAdmin(admin.ModelAdmin):
     list_display = ('id', 'external_cat1', 'external_cat2', 'merchant_name', 'allume_category', 'turned_on', 'pending_review')
+    list_filter = ('pending_review', 'turned_on',)
     search_fields = ('external_cat1', 'external_cat2', 'allume_category__name', 'merchant_name')
 
 #class MerchantCategoryAdmin(admin.ModelAdmin):
@@ -39,4 +40,5 @@ admin.site.register(Network, NetworkAdmin)
 admin.site.register(CategoryMap, CategoryMapAdmin)
 admin.site.register(AllumeCategory)
 admin.site.register(ColorMap)
+
 
