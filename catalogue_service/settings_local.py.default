@@ -50,6 +50,8 @@ AUTH_LOGIN_URL = 'https://social-services-stage.allume.co/auth/oauth/login/googl
 AUTH_EMAIL_KEY = 'user_email' #'allume-stylist-email-stage'
 DEV_AUTH_EMAIL = 'wduenow@allume.co'
 AUTH_REDIRECT_COOKIE = "login-redirect-page-stage"
+AUTH_SESSION_COOKIE_DOMAIN = "localhost:8000"
+#AUTH_SESSION_COOKIE_DOMAIN=".allume.co"
 
 IMGKIT_URL = 'https://shopping-tool-web-stage.allume.co'
 
