@@ -34,13 +34,30 @@ def get_allume_size(request):
     post:
         Get Allume Size
 
-        /shopping_tool_api/get_allume_size/      
+        /shopping_tool_api/get_allume_size/  
 
-        Sample JSON Object
+        Sample JSON Object 1
 
         {
           "size": "x-small",
           "category": "Tops"
+        }    
+
+        Sample JSON Response 1
+        {
+          "allume_size": "XS"
+        }
+
+        Sample JSON Object 2
+
+        {
+          "size": "46",
+          "category": "Shoes"
+        }
+
+        Sample JSON Response 2
+        {
+          "allume_size": "12 & 12.5 & 13 & 13.5"
         }
 
     """
@@ -53,7 +70,7 @@ def get_allume_size(request):
 
     allume_size = determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
 
-    return JsonResponse(allume_size, safe=False)
+    return JsonResponse({"allume_size": allume_size}, safe=False)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
