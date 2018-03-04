@@ -7,8 +7,14 @@ from .models import *
 
 # Register your models here.
 
+class ColorMapAdmin(admin.ModelAdmin):
+    list_display = ('allume_color', 'external_color')
+    list_filter = ('allume_color',)
+
+
 class MerchantAdmin(admin.ModelAdmin):
     list_display = ('name', 'active', 'network')
+    list_filter = ('network',)
 
 class NetworkAdmin(admin.ModelAdmin):
     list_display = ('name', 'active')
@@ -39,6 +45,5 @@ admin.site.register(Network, NetworkAdmin)
 #admin.site.register(MerchantCategory, MerchantCategoryAdmin)
 admin.site.register(CategoryMap, CategoryMapAdmin)
 admin.site.register(AllumeCategory)
-admin.site.register(ColorMap)
-
+admin.site.register(ColorMap, ColorMapAdmin)
 
