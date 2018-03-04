@@ -137,6 +137,9 @@ class CategoryMap(models.Model):
     def __str__(self):
         return self.external_cat1 + ": " + self.external_cat2
 
+    def merchant_name_formatted(self):
+        return self.merchant_name.replace("|", ", ")
+
     class Meta:
         indexes = [
             models.Index(fields=['external_cat1']),
