@@ -12,7 +12,7 @@ from product_api.models import Merchant, CategoryMap, Network, Product
 from datetime import datetime, timedelta
 
 ### attempt at writing record with logic
-def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=false):
+def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     # instantiate relevant mappings
     merchant_mapping = mappings.create_merchant_mapping()
     color_mapping = mappings.create_color_mapping()
