@@ -282,7 +282,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
 
-    # test the theory
+    # test the theory   UPDATE: Csn't use on the Delta File as it will not include records that didn't change but are still live
     print('Setting deleted for non-upserted products')
     set_deleted_ran_products()
 

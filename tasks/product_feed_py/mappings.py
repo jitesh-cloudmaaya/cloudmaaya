@@ -71,7 +71,7 @@ def is_merchant_in_category(category_mapping, identifier, merchant_name):
     allume_category_id, categories_are_active, category_map_id, merchant_name_list = category_mapping[identifier]
 
     if merchant_name_list:
-        merchants_list = merchant_name_list.split(",")
+        merchants_list = merchant_name_list.split("|")
     else:
         merchants_list = []
 
@@ -80,7 +80,9 @@ def is_merchant_in_category(category_mapping, identifier, merchant_name):
         merchants_list.append(merchant_name)
 
         cm = CategoryMap.objects.get(id = category_map_id)
-        cm.merchant_name = ', '.join(set(merchants_list))
+        #print merchants_list
+        merchants_list.sort()
+        cm.merchant_name = '|'.join(set(merchants_list))
         cm.save()
 
     return True
