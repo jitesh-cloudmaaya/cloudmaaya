@@ -143,36 +143,79 @@ class CategoryMap(models.Model):
             models.Index(fields=['external_cat2']),
         ]
 
-class SizeMap(models.Model):
-    merchant_size = models.CharField(max_length=128, blank=True, null=True)
-    allume_size = models.CharField(max_length=128, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
+# class SizeMap(models.Model):
+#     merchant_size = models.CharField(max_length=128, blank=True, null=True)
+#     allume_size = models.CharField(max_length=128, blank=True, null=True)
+#     created_at = models.DateTimeField(auto_now_add=True, null=True)
+#     updated_at = models.DateTimeField(auto_now=True, null=True)
 
-    def __str__(self):
-        return self.merchant_size
+#     def __str__(self):
+#         return self.merchant_size
 
-class ShoeSizeMap(models.Model):
-    merchant_size = models.CharField(max_length=128, blank=True, null=True)
-    allume_size = models.CharField(max_length=128, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
+# class ShoeSizeMap(models.Model):
+#     merchant_size = models.CharField(max_length=128, blank=True, null=True)
+#     allume_size = models.CharField(max_length=128, blank=True, null=True)
+#     created_at = models.DateTimeField(auto_now_add=True, null=True)
+#     updated_at = models.DateTimeField(auto_now=True, null=True)
 
-    def __str__(self):
-        return self.merchant_size
+#     def __str__(self):
+#         return self.merchant_size
 
-class SizeTermMap(models.Model):
-    merchant_phrase = models.CharField(max_length=128, blank=True, null=True)
-    allume_attribute = models.CharField(max_length=128, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
+# class SizeTermMap(models.Model):
+#     merchant_phrase = models.CharField(max_length=128, blank=True, null=True)
+#     allume_attribute = models.CharField(max_length=128, blank=True, null=True)
+#     created_at = models.DateTimeField(auto_now_add=True, null=True)
+#     updated_at = models.DateTimeField(auto_now=True, null=True)
 
-    def __str__(self):
-        return self.merchant_phrase
+#     def __str__(self):
+#         return self.merchant_phrase
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+
+
+
+sizemap_attrs = {
+    'merchant_size': models.CharField(max_length=128, blank=True, null=True),
+    'allume_size': models.CharField(max_length=128, blank=True, null=True),
+    'created_at': models.DateTimeField(auto_now_add=True, null=True),
+    'updated_at': models.DateTimeField(auto_now=True, null=True),
+    '__module__': 'product_api.models'
+}
+shoesizemap_attrs = {
+    'merchant_size': models.CharField(max_length=128, blank=True, null=True),
+    'allume_size': models.CharField(max_length=128, blank=True, null=True),
+    'created_at': models.DateTimeField(auto_now_add=True, null=True),
+    'updated_at': models.DateTimeField(auto_now=True, null=True),
+    '__module__': 'product_api.models'
+}
+sizetermmap_attrs = {
+    'merchant_phrase': models.CharField(max_length=128, blank=True, null=True),
+    'allume_attribute': models.CharField(max_length=128, blank=True, null=True),
+    'created_at': models.DateTimeField(auto_now_add=True, null=True),
+    'updated_at': models.DateTimeField(auto_now=True, null=True),
+    '__module__': 'product_api.models'
+}
+
+SizeMap = type(str("SizeMap"), (models.Model,), sizemap_attrs)
+ShoeSizeMap = type(str("ShoeSizeMap"), (models.Model,), shoesizemap_attrs)
+SizeTermMap = type(str("SizeTermMap"), (models.Model,), sizetermmap_attrs)
+
+# attrs 2 reading from json?
+# from catalogue_service.settings import BASE_DIR
+# import os
+# import json
+# filepath = os.path.join(BASE_DIR, 'product_api/temp_dir_for_yaml_model_defs/SizeMap.json')
+# attrs2 = json.load(open(filepath))
+# print attrs2
+
+# Test = type(b"Test", (models.Model,), attrs)
+# Test2 = type(b"Test", (models.Model,), attrs2)
+
+
+
 
 
