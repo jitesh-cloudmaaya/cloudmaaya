@@ -5,6 +5,8 @@ from django.test import TestCase
 from product_feed_py.pepperjam import generate_product_id
 from product_feed_py.mappings import *
 from product_feed_py.product_feed_helpers import *
+from product_feed_py.product_feed_helpers import *
+from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes
 
 # Create your tests here.
 class GenerateProductIdTestCase(TestCase):
@@ -23,6 +25,7 @@ class GenerateProductIdTestCase(TestCase):
         self.assertEqual(u'2621268302324973024', generate_product_id(u'ZUZH-WX97-XS', u'41846'))
         # sku + merchant id is very long
         self.assertEqual(u'6592220150063020212', generate_product_id(u'65IVTO006-TUVMQU5HRSBHUkVZ0', u'38014'))
+
 
 class SizeTestCase(TestCase):
     """
@@ -96,6 +99,72 @@ class SizeTestCase(TestCase):
         # return
         # future support?
         # self.assertEqual('M Petite', determine_allume_size(allume_category, 'P/M', size_mapping, shoe_size_mapping, size_term_mapping))
+ 
+class ParserTestCase(TestCase):
+    """
+    Tests the behavior and ability of seperating sizes based on a pre-decided list of 
+    delimiters. Tests both the smaller private methods that seperate sizes based on a
+    delimiter as well as the full parsing on complex sizes.
+    """
+    def test_split_commas(self):
+        """
+        Tests that the function used to seperate sizes with commas as the delimiter.
+        """
+        self.assertEqual(['L','M','S'], _comma_seperate_sizes('L,M,S'))
+        self.assertEqual(['X-LARGE', 'LARGE', 'MEDIUM', 'SMALL'], _comma_seperate_sizes('X-LARGE,,LARGE,MEDIUM,SMALL'))
+        self.assertEqual(['13', '12', '15', '18'], _comma_seperate_sizes('  13,  12,   15,,,18'))
+        self.assertEqual(['12', '24'], _comma_seperate_sizes('12, 24'))
+        self.assertEqual(['12', '24'], _comma_seperate_sizes('12,24'))
+        self.assertEqual(['12', '24'], _comma_seperate_sizes('12 , 24'))
+        self.assertEqual(['32'], _comma_seperate_sizes('32,'))
+        self.assertEqual(['32'], _comma_seperate_sizes('32,   '))
+
+    def test_split_hyphens(self):
+        """
+        Tests the function used to seperate sizes with hyphens as the delimiter.
+        """
+        # tests against reasonable inputs directly or derived from data
+        self.assertEqual(['32', '32', '34', '25'], _hyphen_seperate_sizes('32 - 32 - 34 - 25'))
+        self.assertEqual(['32 32 32'], _hyphen_seperate_sizes('32 32 32')) # for now
+        self.assertEqual(['32', '32', '32'], _hyphen_seperate_sizes('32    - 32     - 32')) # double check if desired behavior against data
+        self.assertEqual(['32', '32'], _hyphen_seperate_sizes('32 --------- -- - - -32')) # double check if desired behavior against data also
+        self.assertEqual(['L', 'M', 'S'], _hyphen_seperate_sizes('L - M - S'))
+        self.assertEqual(['L', 'M', 'S'], _hyphen_seperate_sizes('L -- M -- S'))
+        self.assertEqual(['X-SMALL'], _hyphen_seperate_sizes('X-SMALL'))
+        self.assertEqual(['M(6-8)'], _hyphen_seperate_sizes('M(6-8)'))
+        self.assertEqual(['S-30IN-75CM'], _hyphen_seperate_sizes('S-30IN-75CM'))
+        self.assertEqual(['SMALL (32 - 34)', 'MEDIUM (34 - 36)'], _hyphen_seperate_sizes('SMALL (32 - 34) - MEDIUM (34 - 36)'))
+        self.assertEqual(['XS B-C CUP', 'XS D CUP', 'SM B-C CUP', 'SM D CUP', 'LXL B-C', 'LXL D CUP'], _hyphen_seperate_sizes('XS B-C CUP - XS D CUP - SM B-C CUP - SM D CUP - LXL B-C - LXL D CUP'))
+
+        # testing against malformed input
+        self.assertEqual(['SMALL - '], _hyphen_seperate_sizes('SMALL - '))
+        self.assertEqual(['MEDIUM (32 - 35) - SMALL (34'], _hyphen_seperate_sizes('MEDIUM (32 - 35) - SMALL (34'))
+
+        # no hard and fast interpretation for correctness
+        self.assertEqual(['MEDIUM', 'SMALL'], _hyphen_seperate_sizes('MEDIUM -SMALL'))
+        self.assertEqual(['MEDIUM- SMALL'], _hyphen_seperate_sizes('MEDIUM- SMALL'))
+        self.assertEqual(['MEDIUM-SMALL'], _hyphen_seperate_sizes('MEDIUM-SMALL'))
+
+    def test_size_parsing(self):
+        """
+        Tests the full ability to seperate sizes for use in the product processing data feeds.
+        Tests the basic cases and mixes the delimiter to ensure proper hierachy among delimiters
+        is enforced.
+        """
+        self.assertEqual(['L','M','S'], seperate_sizes('L,M,S'))
+        self.assertEqual(['32', '32', '34', '25'], seperate_sizes('32 - 32 - 34 - 25'))
+        self.assertEqual(['SMALL (32 - 34)', 'MEDIUM (36 - 38)'], seperate_sizes('SMALL (32 - 34), MEDIUM (36 - 38)'))
+        self.assertEqual(['SMALL (32-34)', 'MEDIUM (36-38)'], seperate_sizes('SMALL (32-34), MEDIUM (36-38)'))
+        self.assertEqual(['X-LARGE', 'LARGE', 'MEDIUM'], seperate_sizes('X-LARGE, LARGE, MEDIUM'))
+        self.assertEqual(['EU 37 / US 7 - 7.5'], seperate_sizes('EU 37 / US 7 - 7.5'))
+        self.assertEqual(['X-SMALL'], seperate_sizes('X-SMALL'))
+        self.assertEqual(['28 (2-4)'], seperate_sizes('28 (2-4)'))
+        self.assertEqual(['20-22/L'], seperate_sizes('20-22/L'))
+        self.assertEqual(['LARGE/X-LARGE'], seperate_sizes('LARGE/X-LARGE'))
+        # self.assertEqual(['11 - 12 YEARS (US)'], seperate_sizes('11 - 12 YEARS (US)')) # hopefully will be removed when products correctly filtered by age
+        self.assertEqual(['LARGE/X-LARGE','MEDIUM','X-SMALL/SMALL'], seperate_sizes('LARGE/X-LARGE,MEDIUM,X-SMALL/SMALL'))
+        self.assertEqual(['LARGE (10)','SMALL(2-4)','XSMALL(12-18 MONTHS)','XXSMALL(6-9 MONTHS)'], seperate_sizes('LARGE (10),SMALL(2-4),XSMALL(12-18 MONTHS),XXSMALL(6-9 MONTHS),'))
+
 
 # class MappingsTestCase(TestCase):
 #     """

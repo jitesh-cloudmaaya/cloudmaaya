@@ -212,6 +212,7 @@ input.search {
 #results div.item div.image a.item-detail{
   display:block;
   height:100%;
+  position:relative;
   text-decoration: none;
   width:100%;  
 }
@@ -221,7 +222,31 @@ input.search {
   position:absolute;
   right:10px;
   top:5px;
+  z-index:3;
 }
+#results div.item div.image a.item-detail span {
+  background:rgba(0,0,0,0.6);
+  border-radius:3px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.3);
+  color:#fff;
+  font-size:20px;
+  font-variant: small-caps;
+  font-weight:300;
+  left:50%;
+  opacity:0;
+  padding:6px 0 10px;
+  position: absolute;
+  top: 50%;
+  text-align: center;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  -webkit-transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out;   
+  width:60%;
+}
+#results div.item div.image a.item-detail:hover span {opacity:1;}
+#results div.item div.image a.item-detail:active span {color:#F2987E;}
+
 #results div.item a.name {
   background:#fafafa;
   border-bottom:1px solid #eee;
@@ -773,6 +798,7 @@ div#rack-btns span {
 #close-lb-pre,
 #look-indepth a.close-indepth,
 #close-crop-image,
+#close-pg-crop-image,
 #inspect-item a.close-inspect {
   color:#bbb;
   font-size:20px;
@@ -790,6 +816,7 @@ div#rack-btns span {
 #close-design-look:hover,
 #cancel-edit-look:hover,
 #close-crop-image:hover,
+#close-pg-crop-image:hover,
 #look-indepth a.close-indepth:hover,
 #inspect-item a.close-inspect:hover,
 #close-lb:hover,
@@ -801,6 +828,7 @@ div#rack-btns span {
 #close-crop-image:active,
 #close-lb:active,
 #close-lb-pre:active,
+#close-pg-crop-image:active,
 #look-indepth a.close-indepth:active,
 #inspect-item a.close-inspect:active {color:#0090D9;}
 a.add-to-rack {
@@ -1314,6 +1342,7 @@ div.layout-option span.name {
 #create-look,
 #creating-look,
 #crop-look-image,
+#pg-crop-look-image,
 #updating-crop,
 #publish-lookbook-overlay,
 #preview-lookbook-overlay,
@@ -1344,7 +1373,8 @@ div.indepth-loading {
   width:600px;
   z-index:201;
 }
-#crop-look-image div.stage {
+#crop-look-image div.stage,
+#pg-crop-look-image div.stage {
   background:#fff;
   border-radius:5px;
   box-shadow:0 0 3px rgba(0,0,0,0.8);
@@ -1443,11 +1473,12 @@ div.indepth-loading {
 }
 #creating-look div.stage span.pulse_loader,
 #updating-crop div.stage span.pulse_loader,
-div.indepth-loading span.pulse_loader {margin:45px 0 0 75px;}
+div.indepth-loading span.pulse_loader {margin:49px 0 0 75px;}
 #create-look div.stage h2,
 #publish-lookbook-overlay h2,
 #preview-lookbook-overlay h2,
-#crop-look-image div.stage h2{
+#crop-look-image div.stage h2,
+#pg-crop-look-image div.stage h2{
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;
@@ -2473,9 +2504,26 @@ div.publish-section label.toggle input:checked + span > small,
   background:#fff;
   box-shadow:0 1px 2px rgba(0,0,0,0.4);
   display:none;
-  width:250px;
+  max-height:148px;
+  overflow:auto;
   position:absolute;
   z-index:2;
+  width:250px;
+}
+#inspect-item #color-options.with-header {max-height:186px;}
+#inspect-item #color-options h6 {
+  border-bottom:1px solid #eee;
+  background:#fff;
+  color:#000;
+  display:block;
+  font-size:14px;
+  font-weight:300;
+  margin:0;
+  padding:10px;  
+}
+#inspect-item #color-options div {
+  max-height:148px;
+  overflow:auto;
 }
 #inspect-item #color-options a {
   background:#fff;
@@ -2738,14 +2786,14 @@ div.publish-looks-layout div.layout-block div.item img,
 
 #compare-looks div.comp-look.editing a.edit-look-btn,
 #compare-looks div.comp-look.editing a.delete-look-btn,
+#compare-looks div.comp-look.editing a.view-look-btn,
 #compare-looks div.comp-look.editing span.layout,
 #compare-looks div.comp-look.editing div.comp-look-display,
 #compare-looks div.comp-look.updating a.edit-look-btn,
 #compare-looks div.comp-look.updating a.delete-look-btn,
+#compare-looks div.comp-look.updating a.view-look-btn,
 #compare-looks div.comp-look.updating span.layout,
-#compare-looks div.comp-look.updating div.comp-look-display,
-#compare-looks div.comp-look.off a.edit-look-btn { display:none; }
-#compare-looks div.comp-look.off a.delete-look-btn {right:-10px;}
+#compare-looks div.comp-look.updating div.comp-look-display{ display:none; }
 #compare-looks div.comp-look.editing div.editing,
 #compare-looks div.comp-look.updating div.editing  {display:block;}
 #compare-looks div.comp-look img.collage { 
@@ -2916,7 +2964,8 @@ div.lookbook-btns a#publish-lookbook:active{
 }
 #add-new-look-to-lookbook i {margin-right:3px; font-size:15px;}
 #compare-looks div.comp-look a.edit-look-btn,
-#compare-looks div.comp-look a.delete-look-btn{
+#compare-looks div.comp-look a.delete-look-btn,
+#compare-looks div.comp-look a.view-look-btn{
   background:#f2987e;
   border-radius:15px;
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 1px 5px 0 rgba(0,0,0,0.12),0 3px 1px -2px rgba(0,0,0,0.2);
@@ -2932,9 +2981,14 @@ div.lookbook-btns a#publish-lookbook:active{
   width:30px;
   z-index:3;
 }
+#compare-looks div.comp-look a.view-look-btn {
+  background:#222;
+  right:26px;
+  top:-10px;
+}
 #compare-looks div.comp-look a.delete-look-btn {
   background:#F44336;
-  right:26px;
+  right:62px;
   top:-10px;
 }
 #compare-looks div.comp-look a.edit-look-btn:hover {
@@ -2942,8 +2996,10 @@ div.lookbook-btns a#publish-lookbook:active{
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.2),0 3px 1px -2px rgba(0,0,0,0.3);
 }
 #compare-looks div.comp-look a.delete-look-btn:hover { background:#E53935; }
+#compare-looks div.comp-look a.view-look-btn:hover { background:#000; }
 #compare-looks div.comp-look a.edit-look-btn:active,
-#compare-looks div.comp-look a.delete-look-btn:active{  
+#compare-looks div.comp-look a.delete-look-btn:active,
+#compare-looks div.comp-look a.view-look-btn:active{  
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
   color:#474747;
@@ -3419,7 +3475,8 @@ div.rd-time-option:hover {background:#eee;color:#000;}
 
 
 div#canvas-container,
-div#cropper-container {
+div#cropper-container,
+#pg-cropper-container {
   border:1px solid #d0d0d0;
   background-image: url(data:image/gif;base64,R0lGODlhCgAKAIAAAOLi4v///yH5BAAHAP8ALAAAAAAKAAoAAAIRhB2ZhxoM3GMSykqd1VltzxQAOw==);
   height:415px;
@@ -3427,13 +3484,16 @@ div#cropper-container {
   width:760px;
 }
 div#canvas-container.white {background:#fff;}
-div#cropper-container { width:415px;  }
+div#cropper-container,
+#pg-cropper-container { width:415px;  }
 
 div#canvas-container div.item {display:none;}
 div.collage-controls {margin:15px 16px;}
-#cropper-btns {margin:15px auto; width:340px;}
+#cropper-btns {margin:15px auto; width:255px;}
+#pg-cropper-btns {margin:15px auto; width:260px;}
 div.collage-controls a,
-#cropper-btns a {
+#cropper-btns a,
+#pg-cropper-btns a {
   background:#fafafa;
   border:1px solid #ccc;
   border-right:0px;
@@ -3456,17 +3516,17 @@ div.collage-controls a.bg-toggle em {
 div.collage-controls a.bg-toggle.checker-bg em {background-image: url(data:image/gif;base64,R0lGODlhCgAKAIAAAOLi4v///yH5BAAHAP8ALAAAAAAKAAoAAAIRhB2ZhxoM3GMSykqd1VltzxQAOw==);}
 div.collage-controls a.bg-toggle.checker-bg.white em {background:#fff;}
 #cropper-btns a:nth-of-type(1),
-#cropper-btns a:nth-of-type(3),
+#pg-cropper-btns a:nth-of-type(1),
 div.collage-controls a:nth-of-type(2),
 div.collage-controls a:nth-of-type(3),
 div.collage-controls a.send-back {
   border-top-left-radius:5px;
   border-bottom-left-radius:5px;
 }
-#cropper-btns a:nth-of-type(2),
 div.collage-controls a:nth-of-type(2),
-#cropper-btns a:nth-of-type(4),
-div.collage-controls a.crop-image
+#cropper-btns a:nth-of-type(3),
+#pg-cropper-btns a:nth-of-type(3),
+div.collage-controls a.polygon-crop
 /*,div.collage-controls a.send-front*/ {
   border-top-right-radius:5px;
   border-bottom-right-radius:5px;
@@ -3475,18 +3535,23 @@ div.collage-controls a.crop-image
 }
 div.collage-controls a.send-back,
 div.collage-controls a.send-front {height:16px; width:16px;}
+div.collage-controls a.polygon-crop { height: 21px; padding: 3px 6px 3px; width: 21px;}
 
-#cropper-btns a:nth-of-type(5) {margin:0;}
+#cropper-btns a:nth-of-type(3) {margin:0;}
 div.collage-controls a#finish-editing-look {float:right; border-radius:5px; border-right:1px solid #ccc; margin-left:35px;}
 div.collage-controls a.trash-obj {border-radius:5px; border-right:1px solid #ccc;}
 div.collage-controls a#finish-editing-look i,
-#cropper-btns a i {padding-right:5px;}
+#cropper-btns a i,
+#pg-cropper-btns a i {padding-right:5px;}
 #cropper-btns a i.fa-times,
+#pg-cropper-btns a i.fa-times,
 div.collage-controls a i {font-size:15px;}
 div.collage-controls a:hover,
+#pg-cropper-btns a:hover,
 #cropper-btns a:hover {background:#eee;}
 div.collage-controls a:active,
-#cropper-btns a:active {
+#cropper-btns a:active,
+#pg-cropper-btns a:active {
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.2);
 }

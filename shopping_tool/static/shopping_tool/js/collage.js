@@ -22,7 +22,7 @@ var collage = {
               matching_object = product;
             }
             /* create color object for payload */
-            var clr = product.color.toLowerCase();
+            var clr = product.merchant_color.toLowerCase();
             if(tmp.color_names.indexOf(clr) == -1){
               tmp.color_names.push(clr);
               tmp.color_objects[clr] = { sizes: [], size_data : {}};
@@ -127,11 +127,13 @@ var collage = {
             scaleY: scale,
             prod_id: response.id
           });
+          fImg.originalImgSrc = look_proxy + '' + src;
           collage.canvas.add(fImg);
           collage.canvas.setActiveObject(fImg);
           collage.canvas.discardActiveObject();
           $('#adding-product').remove();
           collage.product_cache.push(response);
+          collage.setWatermark();
         };
         collage.addAllumeProduct(response.product, response.id);
       },
@@ -150,11 +152,10 @@ var collage = {
   /**
   * @description crop and load new image to cropper
   */
-  cropImage: function(){
+  cropImage: function(link){
     var rectangle = collage.cropper.getActiveObject();
-    var cropped = new Image();
     rectangle.visible = false
-    cropped.src = collage.cropper.toDataURL({
+    var new_image = collage.cropper.toDataURL({
       format: 'jpeg',
       quality: 1,
       left: rectangle.aCoords.tl.x,
@@ -162,40 +163,7 @@ var collage = {
       width: rectangle.width * rectangle.scaleX,
       height: rectangle.height * rectangle.scaleY
     });
-    $('#cropper-btns').find('a.save').data('path', cropped.src);
-    cropped.onload = function() {
-      collage.cropper.clear();
-      var image = new fabric.Image(cropped);
-      image.left = rectangle.left;
-      image.top = rectangle.top;
-      image.originX = 'center';
-      image.originY = 'center';
-      image.setCoords();
-      collage.cropper.add(image);
-      collage.cropper.setActiveObject(image);
-      var el = new fabric.Rect({
-        fill: 'transparent',
-        originX: 'center',
-        originY: 'center',
-        stroke: '#555',
-        strokeDashArray: [7, 7],
-        opacity: 1,
-        width: 1,
-        height: 1,
-        cornerColor: '#333',
-        borderColor: 'transparent',
-        hasRotatingPoint:false,
-        objectCaching: false
-      });
-      el.left = rectangle.left + 1;
-      el.top = rectangle.top + 1;
-      el.width = (image.width * image.scaleX) - 2;
-      el.height = (image.height * image.scaleY) - 2;
-      collage.cropper.add(el);
-      collage.cropper.setActiveObject(el);
-      image.selectable = false
-      collage.cropper.renderAll();
-    };    
+    collage.saveCrop(link, new_image);  
   },
   /**
   * @description field to hold reference to cropper canvas object
@@ -223,6 +191,25 @@ var collage = {
     collage.canvas = new fabric.Canvas('c');
     collage.product_cache = products;
     collage.initial_load = products.length - 1;
+    /* add in the watermark */
+    var img = new Image(); 
+    /* watermark path */
+    img.src = '/static/shopping_tool/image/allume_watermark.png';
+    img.onload = function() {
+      /* scale: 0.1, left: 690, and top: 400 based upon 1365 x 284 watermark dimensions */
+      var scale = 0.1;
+      var fImg = new fabric.Cropzoomimage(this, {
+        originX: 'center',
+        originY: 'center',
+        left: 690,
+        top: 400,
+        scaleX: scale,
+        scaleY: scale,
+        prod_id: 'watermark'
+      });
+      collage.canvas.add(fImg);
+      fImg.selectable = false;
+    }
     if(collage.initial_load > -1){
       collage.loadImg()
     }
@@ -265,16 +252,14 @@ var collage = {
           dims.prod_id = prod.id;
         }
         var fImg = new fabric.Cropzoomimage(this, dims);
+        fImg.originalImgSrc = look_proxy + '' + prod.product.product_image_url;
         collage.canvas.add(fImg);
-        /* if picture was zoomed call the zoom function and correctly display zoomed object */
-        if(dims.zoomedXY){
-          collage.zoomBy(dims.zoomX, dims.zoomY, dims.zoomZ);
-        }
         /* keep track of loaded object count lood next product if some still remain */
         collage.initial_load--;
         if(collage.initial_load > -1){
           collage.loadImg();
         }else{
+          collage.setWatermark();
           collage.canvas.renderAll();
         }
       };
@@ -289,6 +274,7 @@ var collage = {
       if(collage.initial_load > -1){
         collage.loadImg();
       }else{
+        collage.setWatermark();
         collage.canvas.renderAll();
       }
     }
@@ -298,59 +284,62 @@ var collage = {
   */  
   product_cache: null,
   /**
-  * @description save cropped image on the look product, swap new image with old in collage
-  * @param {DOM object} link - the save link
+  * @description save cropped image function
+  * @param {DOM Object} link - save link
+  * @param {string} new_image - base 64 encoded image data 
   */
-  saveCrop: function(link){
+  saveCrop: function(link, new_image){
+    /* get the link data for the product id */
     var data = link.data();
-    var restart = $('#cropper-btns').find('a.restart').data();
-    if(data.path != restart.path){
-      var collage_objects = collage.canvas.toObject().objects;
-      var correct_canvas_obj, correct_canvas_idx, cache_obj;
-      for(var i = 0, l = collage_objects.length; i<l; i++){
-        if(collage_objects[i].prod_id == data.prodid){
-          correct_canvas_obj = collage_objects[i];
-          correct_canvas_idx = i;
-          break;
-        }
+    var collage_objects = collage.canvas.toObject().objects;
+    var correct_canvas_obj, correct_canvas_idx, cache_obj;
+    /* find and update the collage object with the new image data */
+    for(var i = 0, l = collage_objects.length; i<l; i++){
+      if(collage_objects[i].prod_id == data.prodid){
+        correct_canvas_obj = collage_objects[i];
+        correct_canvas_idx = i;
+        break;
       }
-      for(var i = 0, l = collage.product_cache.length; i<l; i++){
-        if(collage.product_cache[i].id === data.prodid){
-          cache_obj = collage.product_cache[i];
-          break;
-        }
-      }
-      cache_obj.cropped_image_code = data.path;
-      $.ajax({
-        contentType : 'application/json',
-        data: JSON.stringify({cropped_image_code: data.path}),
-        success:function(response){},
-        type: 'PUT',
-        url: '/shopping_tool_api/update_cropped_image_code/' + cache_obj.id + '/'
-      });
-      $('#crop-look-image').fadeOut();
-      collage.canvas.remove(collage.canvas.item(correct_canvas_idx));
-      var img = new Image(); 
-      img.src = data.path;
-      img.onload = function() {
-        var scale = 1;
-        if(this.naturalHeight > 395){
-          scale = 395 / this.naturalHeight 
-        }
-        var fImg = new fabric.Cropzoomimage(this, {
-          originX: 'center',
-          originY: 'center',
-          left: collage.canvas.getWidth()/2,
-          top: collage.canvas.getHeight()/2,
-          scaleX: scale,
-          scaleY: scale,
-          prod_id: data.prodid
-        });
-        collage.canvas.add(fImg);
-      };
-    }else{
-      alert('Nothing to save. You have not cropped the image...')
     }
+    for(var i = 0, l = collage.product_cache.length; i<l; i++){
+      if(collage.product_cache[i].id === data.prodid){
+        cache_obj = collage.product_cache[i];
+        break;
+      }
+    }
+    cache_obj.cropped_image_code = new_image;
+    /* update the look product database */
+    $.ajax({
+      contentType : 'application/json',
+      data: JSON.stringify({cropped_image_code: new_image}),
+      success:function(response){},
+      type: 'PUT',
+      url: '/shopping_tool_api/update_cropped_image_code/' + cache_obj.id + '/'
+    });
+    /* fade out the various cropper overlays */
+    $('#crop-look-image').fadeOut();
+    $('#pg-crop-look-image').fadeOut();
+    collage.canvas.remove(collage.canvas.item(correct_canvas_idx));
+    /* add the new image to the collage */
+    var img = new Image(); 
+    img.src = new_image;
+    img.onload = function() {
+      var scale = 1;
+      if(this.naturalHeight > 395){
+        scale = 395 / this.naturalHeight 
+      }
+      var fImg = new fabric.Cropzoomimage(this, {
+        originX: 'center',
+        originY: 'center',
+        left: collage.canvas.getWidth()/2,
+        top: collage.canvas.getHeight()/2,
+        scaleX: scale,
+        scaleY: scale,
+        prod_id: data.prodid
+      });
+      fImg.originalImgSrc = link.siblings('a.restart').data('path');
+      collage.canvas.add(fImg);
+    };
   },
   /**
   * @description set the current active object to bottom of layer stack 
@@ -368,6 +357,7 @@ var collage = {
     var activeObject = collage.canvas.getActiveObject();
     if (activeObject) {
       collage.canvas.bringToFront(activeObject);
+      collage.setWatermark();
     }
   },
   /**
@@ -382,9 +372,8 @@ var collage = {
       /* add the image to be cropped to the cropper canvas */
       collage.setUpCropperImage(activeObject.orgSrc, activeObject.prod_id, 'initial');
       /* set initial states of cropper buttons */
-      $('#cropper-btns').find('a.restart').data('path', activeObject.orgSrc)
-      .end().find('a.save').data('path', activeObject.orgSrc)
-      .data('prodid', activeObject.prod_id);
+      $('#cropper-btns').find('a.restart').data('path', activeObject.originalImgSrc).data('prodid', activeObject.prod_id)
+      .end().find('a.crop').data('prodid', activeObject.prod_id);
     }    
   },
   /**
@@ -538,7 +527,8 @@ var collage = {
           zoomX: this.zoomX,
           zoomY: this.zoomY,
           zoomZ: this.zoomZ,
-          zoomedXY: this.zoomedXY
+          zoomedXY: this.zoomedXY,
+          originalImgSrc: this.originalImgSrc
         });
       }
     });
@@ -552,6 +542,175 @@ var collage = {
         });
       }, null, object.crossOrigin);
     };
+  },
+  /**
+  * @description set up the polygon cropper overlay
+  */
+  setUpPolygonCrop: function(){
+    var activeObject = collage.canvas.getActiveObject();
+    if (activeObject) {
+      /* add the new canvas and initialize with fabric */
+      $('#pg-cropper-container').html('<canvas id="pg-cropper" width="415" height="415"></canvas>');
+      $('#pg-crop-look-image').fadeIn();
+      collage.setUpPolygonCropper(activeObject.orgSrc, activeObject.prod_id);
+      $('#pg-cropper-btns').find('a.restart').data('path', activeObject.originalImgSrc).end()
+      .find('a.save').data('prodid', activeObject.prod_id);
+    }
+  },
+  /**
+  * @description set up the polygon cropper canvas object and functionality
+  * @param {string} src - the path or data of image to be cropped
+  */
+  setUpPolygonCropper: function(src){
+    var canvas = document.getElementById("pg-cropper");
+    var ctx = canvas.getContext("2d");
+    ctx.strokeStyle = 'black';
+    ctx.imageSmoothingEnabled = false;    
+    var cw = canvas.width 
+    var ch = canvas.height 
+    var $canvas = $("#pg-cropper");
+    var canvasOffset = $canvas.offset();
+    var offsetX = canvasOffset.left;
+    var offsetY = canvasOffset.top;
+    var img_scale = 1
+    /* an array to hold user's click-points that define the clipping area */
+    var points = [];
+    /* load the image */
+    var img = new Image();
+    img.src = src;
+    img.onload = function(){
+      if(this.naturalHeight > 415){
+        img_scale = 415 / this.naturalHeight 
+      }else if(this.naturalWidth > 415){
+        img_scale = 415 / this.naturalWidth 
+      }
+      /* draw the image to the canvas */
+      drawImage();
+      /* listen for mousedown */
+      $('#pg-cropper').mousedown(function(e){ handleMouseDown(e); });
+    }
+    /*
+    * @description private function to add the image to the canvas 
+    */
+    function drawImage(){
+      ctx.clearRect(0, 0, cw, ch);
+      var img_width = img.naturalWidth * img_scale;
+      var img_height = img.naturalHeight * img_scale;
+      var start_x = 0;
+      var start_y = 0;
+      if(img_width < 415){ start_x = (415 - img_width) / 2 }
+      if(img_height < 415){ start_y = (415 - img_height) / 2 }
+      ctx.drawImage(img, start_x, start_y, img_width, img_height);
+    }
+    /**
+    * @description private function to draw the point by point polygon outline 
+    */
+    function outlineIt(){
+      drawImage();
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for(var i = 0, l = points.length; i<l; i++){
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(points[0].x, points[0].y, 5, 0, Math.PI*2);
+      ctx.closePath();
+      ctx.stroke();
+    }
+    /**
+    * @descritpion private function allowing for mousedown tracking to build the polygon 
+    */
+    function handleMouseDown(e){
+      e.preventDefault();
+      e.stopPropagation();
+      /* calculate the xy relative to browser window */
+      var mx =parseInt(e.clientX - offsetX);
+      var my =parseInt(e.clientY - offsetY);
+      /* push the clicked point to the points array */
+      points.push({ x: mx, y: my });
+      /* show the user an outline of their current clipping path */
+      outlineIt();
+      /* if the user clicked back in the original circle then complete the clip */
+      if( points.length > 1) {
+        var dx = mx - points[0].x;
+        var dy = my - points[0].y;
+        if(dx * dx + dy * dy < 10*10){
+          clipIt();
+        }
+      }
+    }
+    /**
+    * @description private function to clip the image and display to user 
+    */
+    function clipIt(){
+      /* calculate the size of the user's clipping area */
+      var minX = 10000;
+      var minY = 10000;
+      var maxX = -10000;
+      var maxY = -10000;
+      for(var i = 1, l = points.length; i<l; i++){
+        var p = points[i];
+        if( p.x < minX ){ minX = p.x; }
+        if( p.y < minY ){ minY = p.y; }
+        if( p.x > maxX ){ maxX = p.x; }
+        if( p.y > maxY ){ maxY = p.y; }
+      }
+      var width = maxX - minX;
+      var height = maxY - minY;
+      /* clip the image into the user's clipping area */
+      ctx.save();
+      ctx.clearRect(0,0,cw,ch);
+      ctx.beginPath();
+      ctx.moveTo(points[0].x,points[0].y);
+      for(var i=1;i<points.length;i++){
+        var p=points[i];
+        ctx.lineTo(points[i].x,points[i].y);
+      }
+      ctx.closePath();
+      ctx.clip();
+      var img_width = img.naturalWidth * img_scale;
+      var img_height = img.naturalHeight * img_scale;
+      var start_x = 0;
+      var start_y = 0;
+      if(img_width < 415){ start_x = (415 - img_width) / 2 }
+      if(img_height < 415){ start_y = (415 - img_height) / 2 }
+      ctx.drawImage(img, start_x, start_y, img_width, img_height);
+      ctx.restore();
+      /* create a new canvas to get the image data */
+      $('body').append('<canvas id="tmp-crop"></canvas>')
+      var c = document.getElementById("tmp-crop");
+      var cx = c.getContext('2d');
+      /* resize the new canvas to the size of the clipping area */
+      c.width = width;
+      c.height = height;
+      /* set the background to white */
+      cx.fillStyle = "#ffffff";
+      cx.fillRect(0, 0, c.width, c.height);
+      /* draw the clipped image from the main canvas to the new canvas */
+      cx.drawImage(canvas, minX, minY, width, height, 0, 0, width, height);
+      /* get the image data */
+      var pg_crop = c.toDataURL('image/jpeg', 1.0);
+      $('#pg-cropper-btns a.save').data('path', pg_crop);
+      /* clear previous clip points */ 
+      points.length = 0;
+      /* remove the tmp crop canvas */
+      $('#tmp-crop').remove();
+    }
+  },
+  /**
+  * @description funtion to place the watermark object on top of the stack
+  */ 
+  setWatermark: function(){
+    var cv_objs = collage.canvas.toObject();
+    for(var i = 0, l = cv_objs.objects.length; i<l; i++){
+      var prod = cv_objs.objects[i];
+      if(prod.prod_id == 'watermark'){
+        collage.canvas.bringToFront(collage.canvas.item(i));
+        break;
+      }
+    }
   },
   /**
   * @description removal of object from canvas and from look products
@@ -632,7 +791,8 @@ var collage = {
           zoomX: prod.zoomX,
           zoomY: prod.zoomY,
           zoomZ: prod.zoomZ,
-          zoomedXY: prod.zoomedXY
+          zoomedXY: prod.zoomedXY,
+          originalImgSrc: prod.originalImgSrc
         }
         /* set the look_product object */
         var look_product_obj = {
@@ -653,6 +813,10 @@ var collage = {
         });
       }
     }
+    /* reset the collage cache holders so collage is ready for new look to edit */
+    collage.canvas = null;
+    collage.initial_load = null;
+    collage.product_cache = null;  
   },
   /**
   * @description zoomBy function for image cropping
