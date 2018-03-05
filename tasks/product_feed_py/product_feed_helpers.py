@@ -41,7 +41,7 @@ def parse_raw_product_url(product_url, raw_product_attribute):
 
     return joined
 
-def generate_product_id(product_name, size, color): # what should arguments be....
+def generate_product_id(product_name, size, color):
     """
     In the event that a product_id cannot be found, deterministically generate a product_id
     using that product's product_name, size, and color.

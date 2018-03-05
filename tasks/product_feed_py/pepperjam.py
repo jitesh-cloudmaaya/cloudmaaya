@@ -177,7 +177,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     record['manufacturer_part_number'] = product['mpn']
                     record['SKU'] = product['sku']
 
-                    product_id = generate_product_id(product['sku'], merchant_id)
+                    product_id = generate_product_id_pepperjam(product['sku'], merchant_id)
                     # print product_id
                     # print type(product_id)
                     record['product_id'] = product_id
@@ -305,7 +305,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
     print('Updating non-upserted records')
     product_feed_helpers.set_deleted_network_products('PepperJam')
 
-def generate_product_id(SKU, merchant_id):
+def generate_product_id_pepperjam(SKU, merchant_id):
     """
     Takes in the product's SKU as unicode and merchant_id as unicode and generates
     a product_id as unicode to be used. Necessary because PepperJam data does not
