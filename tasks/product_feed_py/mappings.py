@@ -1,6 +1,25 @@
 from django.db import connection
 from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap
 
+def create_test_mapping():
+    """
+    Using the dynamic model declarations, read in the model instances from a yaml file....
+    """
+    import os
+    import yaml
+    from catalogue_service.settings import BASE_DIR
+    filepath = os.path.join(BASE_DIR, 'product_api/temp_models.yaml')
+    f = open(filepath, 'r')
+    size_maps = yaml.load(f)
+    print size_maps # returns list of what could be understood as sizemap objects
+    size_mapping = {}
+    for size_map in size_maps:
+        sm = SizeMap(merchant_size = size_map['merchant_size'], allume_size = size_map['allume_size'])
+        size_mapping[sm.merchant_size] = sm.allume_size
+    print size_mapping
+    return size_mapping
+
+
 def create_merchant_mapping():
     """
     Returns a dict of merchant_ids as longs mapped to whether or not that
