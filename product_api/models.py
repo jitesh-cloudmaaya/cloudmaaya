@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
+import json
+from catalogue_service.settings import BASE_DIR
 from django.db import models
 from rest_framework import serializers
 
@@ -143,68 +146,31 @@ class CategoryMap(models.Model):
             models.Index(fields=['external_cat2']),
         ]
 
-# class SizeMap(models.Model):
-#     merchant_size = models.CharField(max_length=128, blank=True, null=True)
-#     allume_size = models.CharField(max_length=128, blank=True, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True, null=True)
-#     updated_at = models.DateTimeField(auto_now=True, null=True)
-
-#     def __str__(self):
-#         return self.merchant_size
-
-# class ShoeSizeMap(models.Model):
-#     merchant_size = models.CharField(max_length=128, blank=True, null=True)
-#     allume_size = models.CharField(max_length=128, blank=True, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True, null=True)
-#     updated_at = models.DateTimeField(auto_now=True, null=True)
-
-#     def __str__(self):
-#         return self.merchant_size
-
-# class SizeTermMap(models.Model):
-#     merchant_phrase = models.CharField(max_length=128, blank=True, null=True)
-#     allume_attribute = models.CharField(max_length=128, blank=True, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True, null=True)
-#     updated_at = models.DateTimeField(auto_now=True, null=True)
-
-#     def __str__(self):
-#         return self.merchant_phrase
-
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
 
 
+sizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/SizeMap.json')
+shoesizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/ShoeSizeMap.json')
+sizetermmap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/SizeTermMap.json')
 
+sizemap_attrs = json.load(open(sizemap_filepath, 'r'))
+for attr in sizemap_attrs:
+    sizemap_attrs[attr] = eval(sizemap_attrs[attr])
+sizemap_attrs['__module__'] = 'product_api.models'
 
-sizemap_attrs = {
-    'merchant_size': models.CharField(max_length=128, blank=True, null=True),
-    'allume_size': models.CharField(max_length=128, blank=True, null=True),
-    'created_at': models.DateTimeField(auto_now_add=True, null=True),
-    'updated_at': models.DateTimeField(auto_now=True, null=True),
-    '__module__': 'product_api.models'
-}
-shoesizemap_attrs = {
-    'merchant_size': models.CharField(max_length=128, blank=True, null=True),
-    'allume_size': models.CharField(max_length=128, blank=True, null=True),
-    'created_at': models.DateTimeField(auto_now_add=True, null=True),
-    'updated_at': models.DateTimeField(auto_now=True, null=True),
-    '__module__': 'product_api.models'
-}
-sizetermmap_attrs = {
-    'merchant_phrase': models.CharField(max_length=128, blank=True, null=True),
-    'allume_attribute': models.CharField(max_length=128, blank=True, null=True),
-    'created_at': models.DateTimeField(auto_now_add=True, null=True),
-    'updated_at': models.DateTimeField(auto_now=True, null=True),
-    '__module__': 'product_api.models'
-}
+shoesizemap_attrs = json.load(open(shoesizemap_filepath, 'r'))
+for attr in shoesizemap_attrs:
+    shoesizemap_attrs[attr] = eval(shoesizemap_attrs[attr])
+shoesizemap_attrs['__module__'] = 'product_api.models'
+
+sizetermmap_attrs = json.load(open(sizetermmap_filepath, 'r'))
+for attr in sizetermmap_attrs:
+    sizetermmap_attrs[attr] = eval(sizetermmap_attrs[attr])
+sizetermmap_attrs['__module__'] = 'product_api.models'
 
 SizeMap = type(str("SizeMap"), (models.Model,), sizemap_attrs)
 ShoeSizeMap = type(str("ShoeSizeMap"), (models.Model,), shoesizemap_attrs)
 SizeTermMap = type(str("SizeTermMap"), (models.Model,), sizetermmap_attrs)
-
-
-
-
-
