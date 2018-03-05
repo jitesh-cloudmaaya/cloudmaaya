@@ -32,7 +32,7 @@ class SizeTestCase(TestCase):
     are not hard and fast, but should be a good guide to enforce correct behavior of determining an allume
     size, given the current restraints, such as the lack of support for parsing sizes containing slashes.
     """
-    fixtures = ['SizeMap', 'ShoeSizeMap', 'SizeTermMap']
+    # fixtures = ['SizeMap', 'ShoeSizeMap', 'SizeTermMap']
 
     def test_determine_allume_size_shoe(self):
         # setup
