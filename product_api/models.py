@@ -204,17 +204,6 @@ SizeMap = type(str("SizeMap"), (models.Model,), sizemap_attrs)
 ShoeSizeMap = type(str("ShoeSizeMap"), (models.Model,), shoesizemap_attrs)
 SizeTermMap = type(str("SizeTermMap"), (models.Model,), sizetermmap_attrs)
 
-# attrs 2 reading from json?
-# from catalogue_service.settings import BASE_DIR
-# import os
-# import json
-# filepath = os.path.join(BASE_DIR, 'product_api/temp_dir_for_yaml_model_defs/SizeMap.json')
-# attrs2 = json.load(open(filepath))
-# print attrs2
-
-# Test = type(b"Test", (models.Model,), attrs)
-# Test2 = type(b"Test", (models.Model,), attrs2)
-
 
 
 

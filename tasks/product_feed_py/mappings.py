@@ -1,24 +1,8 @@
+import os
+import yaml
 from django.db import connection
 from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap
-
-def create_test_mapping():
-    """
-    Using the dynamic model declarations, read in the model instances from a yaml file....
-    """
-    import os
-    import yaml
-    from catalogue_service.settings import BASE_DIR
-    filepath = os.path.join(BASE_DIR, 'product_api/temp_models.yaml')
-    f = open(filepath, 'r')
-    size_maps = yaml.load(f)
-    print size_maps # returns list of what could be understood as sizemap objects
-    size_mapping = {}
-    for size_map in size_maps:
-        sm = SizeMap(merchant_size = size_map['merchant_size'], allume_size = size_map['allume_size'])
-        size_mapping[sm.merchant_size] = sm.allume_size
-    print size_mapping
-    return size_mapping
-
+from catalogue_service.settings import BASE_DIR
 
 def create_merchant_mapping():
     """
@@ -83,38 +67,47 @@ def create_allume_category_mapping():
 
 def create_size_mapping():
     """
-    Returns a dict of merchant_sized mapped to the allume_size. Both values are strings.
+    Returns a dict of merchant_size mapped to the allume_size. Both values are strings.
     """
+    filepath = os.path.join(BASE_DIR, 'product_api/fixtures/SizeMap.yaml')
+    f = open(filepath, 'r')
+    size_maps = yaml.load(f)
     size_mapping = {}
-
-    size_maps = SizeMap.objects.values_list('merchant_size', 'allume_size')
-
     for size_map in size_maps:
-        size_mapping[size_map[0]] = size_map[1]
+        fields = size_map['fields']
+        sm = SizeMap(merchant_size = fields['merchant_size'], allume_size = fields['allume_size'])
+        size_mapping[sm.merchant_size] = sm.allume_size
 
     return size_mapping
 
 def create_shoe_size_mapping():
     """
+    Returns a dict of merchant_size mapped to the allume_size for shoes. Both values are strings.
     """
+    filepath = os.path.join(BASE_DIR, 'product_api/fixtures/ShoeSizeMap.yaml')
+    f = open(filepath, 'r')
+    shoe_size_maps = yaml.load(f)
     shoe_size_mapping = {}
-
-    shoe_size_maps = ShoeSizeMap.objects.values_list('merchant_size', 'allume_size')
-
     for shoe_size_map in shoe_size_maps:
-        shoe_size_mapping[shoe_size_map[0]] = shoe_size_map[1]
+        fields = shoe_size_map['fields']
+        ssm = ShoeSizeMap(merchant_size = fields['merchant_size'], allume_size = fields['allume_size'])
+        shoe_size_mapping[ssm.merchant_size] = ssm.allume_size
 
     return shoe_size_mapping
 
 def create_size_term_mapping():
     """
+    Returns a dict of merchant_phrase mapped to the allume_attribute for term expansion.
+    Both values are strings.
     """
+    filepath = os.path.join(BASE_DIR, 'product_api/fixtures/SizeTermMap.yaml')
+    f = open(filepath, 'r')
+    size_term_maps = yaml.load(f)
     size_term_mapping = {}
-
-    size_term_maps = SizeTermMap.objects.values_list('merchant_phrase', 'allume_attribute')
-
-    for size_term in size_term_maps:
-        size_term_mapping[size_term[0]] = size_term[1]
+    for size_term_map in size_term_maps:
+        fields = size_term_map['fields']
+        stm = SizeTermMap(merchant_phrase = fields['merchant_phrase'], allume_attribute = fields['allume_attribute'])
+        size_term_mapping[stm.merchant_phrase] = stm.allume_attribute
 
     return size_term_mapping
 
