@@ -285,7 +285,7 @@ var search_page = {
       '<a href="#" class="item-detail" data-name="' + details.product_name + 
       '" data-brand="' + details.manufacturer_name + 
       '" data-productid="' + details.id + '" data-merchantid="' + details.merchant_id + 
-      '"><img src="' + details.product_image_url + '"></a></div>' +
+      '"><img src="' + details.product_image_url + '"><span>view details</span></a></div>' +
       '<a href="' + details.product_url + '"  title="' + details.product_name + 
       '" target="_blank" class="name">' + details.product_name + '</a><span class="manu"' + 
       ' title="' + manu + '' + merch + '">' + manu + '' + merch + 
