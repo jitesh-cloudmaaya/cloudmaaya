@@ -73,7 +73,7 @@ class EProductSearch(FacetedSearch):
     # fields that should be searched
     index = PRODUCT_INDEX
 
-    fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category^2', 'color^2', 'allume_category^2', 'merchant_color']
+    fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category^2', 'secondary_category^2', 'color^2', 'allume_category^2', 'merchant_color']
     price_ranges=[("$0 - $50", (0, 50)), ("$50 - $100", (50, 100)), ("$100 - $150", (100, 150)), ("$150 - $200", (150, 200)), ("$200+", (200, None))]
     
     facets = collections.OrderedDict((
@@ -158,7 +158,12 @@ class EProductSearch(FacetedSearch):
                     fields=self.fields,
                     query=query,
                     type='cross_fields',
-                    operator='and'
+                    #type='cross_fields',
+                    operator='and',
+                   # fuzziness="Auto",
+                   # prefix_length=2,
+                    #analyzer="my_synonyms"
+                   # auto_generate_synonyms_phrase_query="true"
                 )
 
         #Add in Filter for Fav Products
