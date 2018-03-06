@@ -138,7 +138,10 @@ class CategoryMap(models.Model):
         return self.external_cat1 + ": " + self.external_cat2
 
     def merchant_name_formatted(self):
-        return self.merchant_name.replace("|", ", ")
+        if self.merchant_name != None:
+            return self.merchant_name.replace("|", ", ")
+        else:
+            return self.merchant_name
 
     class Meta:
         indexes = [
