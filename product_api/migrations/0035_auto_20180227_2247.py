@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-
+import sys
 
 class Migration(migrations.Migration):
 
@@ -11,9 +11,13 @@ class Migration(migrations.Migration):
         ('product_api', '0034_sizetermsmap'),
     ]
 
-    operations = [
-        migrations.RenameModel(
-            old_name='SizeTermsMap',
-            new_name='SizeTermMap',
-        ),
-    ]
+    if 'test' in sys.argv:
+        operations = [
+            migrations.RenameModel(
+                old_name='SizeTermsMap',
+                new_name='SizeTermMap',
+            ),
+        ]
+    else:
+        operations = [
+        ]
