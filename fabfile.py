@@ -43,8 +43,6 @@ env.deploy_current_dir = 'current'
 def qa(docker_tag=''):
   env.user = 'ec2-user'
   env.environment = 'qa'
-  #env.hosts = ['ec2-52-8-79-129.us-west-1.compute.amazonaws.com']
-
 
   env.roledefs = {
       'web': ['ec2-13-56-37-140.us-west-1.compute.amazonaws.com'],
@@ -55,6 +53,17 @@ def qa(docker_tag=''):
     env.docker_tag = 'develop'
   else:
     env.docker_tag = docker_tag
+
+def prod(docker_tag=''):
+  env.user = 'ec2-user'
+  env.environment = 'prod'
+  env.docker_tag = 'master'
+
+  env.roledefs = {
+      'web': ['ec2-13-56-37-140.us-west-1.compute.amazonaws.com'],
+      'worker': ['ec2-52-8-79-129.us-west-1.compute.amazonaws.com'],
+  }
+
 
 @roles(['web', 'worker'])
 def df():
