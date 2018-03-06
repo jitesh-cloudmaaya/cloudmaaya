@@ -60,8 +60,8 @@ def prod(docker_tag=''):
   env.docker_tag = 'master'
 
   env.roledefs = {
-      'web': ['ec2-13-56-37-140.us-west-1.compute.amazonaws.com'],
-      'worker': ['ec2-52-8-79-129.us-west-1.compute.amazonaws.com'],
+      'web': ['ec2-54-177-92-201.us-west-1.compute.amazonaws.com'],
+      'worker': ['ec2-54-176-139-176.us-west-1.compute.amazonaws.com'],
   }
 
 
