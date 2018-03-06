@@ -189,6 +189,7 @@ var look_builder = {
             var cropped_images = [];
             var look_occasions = [];
             var look_styles = [];
+            var show_do_not_send = false;
             for(var i = 0, l = style_types.length; i<l; i++){
               var ls = style_types[i];
               look_styles.push(
@@ -211,6 +212,9 @@ var look_builder = {
             var first_half_occs = look_occasions.splice(0,half_occs);
             for(var i = 0, l = response.looks.length; i<l; i++){
               var look = response.looks[i];
+              if(look.status == 'published'){
+                show_do_not_send = true;
+              }
               var collage_img = '<div class="collage-placeholder">no collage</div>';
               if(look.collage != null){
                 collage_img = '<img class="collage" src="' + look.collage + '"/>';
@@ -233,6 +237,13 @@ var look_builder = {
               '<a href="#" class="next-tab">next<i class="fa fa-chevron-right"></i></a>' +
               markup.join('')
             );
+            if(show_do_not_send == true){
+              $('#do-not-send-toggle').closest('label').show();
+              $('#send-later-wrapper').removeClass('higher');
+            }else{
+              $('#do-not-send-toggle').closest('label').hide();
+              $('#send-later-wrapper').addClass('higher');
+            }            
             /* settings the styles/occasions if they exist */
             for(var i = 0, l = response.looks.length; i<l; i++){
               var look = response.looks[i];
@@ -258,7 +269,7 @@ var look_builder = {
           '</div>'
         ).addClass('on').siblings('div').removeClass('on');
         $('#pub-wizard-step1').addClass('on').siblings('a').removeClass('on');
-        $('#send-toggle').prop('checked', false);
+        $('#send-now').prop('checked', true);
         $('#send-later-wrapper').hide();
         var start_id = document.getElementById('send-later')
         rome(start_id, {
@@ -279,6 +290,8 @@ var look_builder = {
     $('#close-lb-pre').click(function(e){
       e.preventDefault();
       $('#preview-lookbook-overlay').fadeOut();
+      /* set iframe src back to empty so it will force a reload when preview is opened again */
+      $('#previewIframe').attr('src','');
     }); 
     /* wizard tabs, their status checking and other functionality for publish lookbook */
     $('#pub-section1').on('click', 'a.next-tab', function(e){
@@ -303,12 +316,19 @@ var look_builder = {
       e.preventDefault();
       look_builder.toTabThree($(this));
     });
-    $('#send-toggle').change(function(e){
+    $('#send-later-toggle').change(function(e){
       var box = $(this);
       var div = $('#send-later-wrapper')
       if(box.prop('checked')){
         div.show();
       }else{
+        div.hide();
+      }
+    });
+    $('#do-not-send-toggle, #send-now').change(function(e){
+      var box = $(this);
+      var div = $('#send-later-wrapper')
+      if(box.prop('checked')){
         div.hide();
       }
     });
@@ -320,14 +340,18 @@ var look_builder = {
         text_content: $('#publish-email').val().replace(
           /\[Link to Lookbook\]/g, 
           '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
-        )
+        ),
+        notify_user : true
       }
-      if($('#send-toggle').prop('checked') == true){
+      if($('#send-later-toggle').prop('checked') == true){
         var t = rome.find(document.getElementById('send-later'))
         var tz = $('#send-later').data('tz')
         var reg_str = t.getMoment().format('YYYY-MM-DD HH:MM');
         var send_string = moment.tz(reg_str, tz).format('X');
         lookbook.send_at = parseInt(send_string);
+      }
+      if($('#do-not-send-toggle').prop('checked') == true){
+        lookbook.notify_user = false;
       }
       $.ajax({       
         contentType : 'application/json',
@@ -380,27 +404,6 @@ var look_builder = {
       $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
       $('#publish-lookbook').data('allowed', 'false');
     });
-    /*
-    .on('click', 'a.zoom-in', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,0,10);
-    }).on('click', 'a.zoom-out', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,0,-10);
-    }).on('click', 'a.shift-left', function(e){
-      e.preventDefault();
-      collage.zoomBy(5,0,0);
-    }).on('click', 'a.shift-right', function(e){
-      e.preventDefault();
-      collage.zoomBy(-5,0,0);
-    }).on('click', 'a.shift-up', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,5,0);
-    }).on('click', 'a.shift-down', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,-5,0);
-    })
-    */
     /* rack functionality */
     $('#rack-draggable').on('click', 'a.add', function(e){
       e.preventDefault();
@@ -1071,18 +1074,22 @@ var look_builder = {
           });
           look_summary.push(
             '<div class="look-summary"><span class="name">' + div.data('lookname') + 
-            '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
+            '</span><img class="final-review" src="' + div.find('img.collage').attr('src')+ '"/>' +
+            '<span class="categories"><em>style:</em>' + styles.join(', ') + 
             '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
             '</span></div>'
           )
         });
         var step_div = $(link.attr('href'));
         var email_at = '<span class="summary-sent">Text will be sent <strong>now</strong>.</span>';
-        if($('#send-toggle').prop('checked')){
+        if($('#send-later-toggle').prop('checked')){
           var t = rome.find(document.getElementById('send-later'))
           email_at = '<span class="summary-sent">Text will be sent <strong>' + 
           t.getMoment().format('MMMM Do, YYYY h:mm a') + 
           ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
+        }
+        if($('#do-not-send-toggle').prop('checked') == true){
+          email_at = '<span class="summary-sent">A text will <strong>NOT</strong> be sent.</span>';
         }
         var email_text = $('#publish-email').val();
         email_text = email_text.replace(
@@ -1090,16 +1097,16 @@ var look_builder = {
           '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +
           '" target="_blank">Your Lookbook</a>'
         );
-
         step_div.html(
-          '<h5>Looks</h5><div class="look-summary-section">' +
-          look_summary.join('') + '</div>' +
-          '<h5>Text</h5>' + email_at +
-          '<div class="summary-email">' + email_text +
-          '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
+          '<div id="final-text-preview"><h5>Text</h5>' + email_at +
+          '<div class="summary-email">' + email_text + '</div></div>' +
+          '<div id="final-looks-preview">' +
+          '<h5>Looks</h5><div class="look-summary-section">' + look_summary.join('') + 
+          '</div></div><a href="#" id="submit-lookbook">complete publishing</a>' 
         );
         link.addClass('on').siblings('a').removeClass('on');
         step_div.addClass('on').siblings('div').removeClass('on');
+        utils.equalHeight($('#final-looks-preview div.look-summary'));
       }
     }    
   },

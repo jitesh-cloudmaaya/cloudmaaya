@@ -3352,12 +3352,15 @@ div.publish-loading {margin:25px;}
 #pub-section3 div.look-summary-section {overflow:auto; margin-bottom:15px;}
 #pub-section3 div.look-summary {
   box-shadow:0 0 3px rgba(0,0,0,0.3);
-  float:left;
   margin:3px 12px 12px 3px;
+  float:left;
   padding:0 0 5px;
-  width:calc(25% - 13px);
+  width:230px;
 }
-#pub-section3 div.look-summary:nth-child(4n) {margin-right:0;}
+#pub-section3 #final-text-preview {float:left; margin:0 25px 25px 0; width:45%;}
+#pub-section3 #final-looks-preview {float:left; width:727px;}
+#pub-section3 div.look-summary img.final-review {display:block; margin:10px 10px 5px; width:210px;}
+#pub-section3 div.look-summary:nth-child(3n) {margin-right:0;}
 #pub-section3 div.look-summary span.name{
   background:#fafafa;
   border-bottom:1px solid #ddd;
@@ -3385,7 +3388,6 @@ div.publish-loading {margin:25px;}
   padding:15px 20px;
   position: relative;
   white-space: pre-wrap;
-  width:45%;
 }
 #pub-section3 div.summary-email a {color:blue;}
 #pub-section3 div.summary-email:before {
@@ -3424,7 +3426,8 @@ a.next-tab {
 a.next-tab i {font-size:14px; margin-left:10px;}
 
 /* date picker css over writes */
-#send-later-wrapper {display:none; left:70%;position:absolute; top:75px; }
+#send-later-wrapper {display:none; left:70%;position:absolute; top:142px; }
+#send-later-wrapper.higher {top:112px; }
 #send-later-wrapper label {display:block; font-size:14px; font-weight:300; margin-bottom:10px;}
 div.rd-container { border:1px solid #d0d0d0; border-radius:3px; font-size:20px; font-weight:100; z-index:5;}
 div.rd-container div.rd-month-label {font-weight:400;}
@@ -3690,5 +3693,56 @@ div#non-collage-items div.item a.remove:hover {color:#F44336; opacity:1;}
   margin:5px;
 }
 
+#publication-send-type { left:calc(70% + 2px); position:absolute; top:46px;}
+label.switch { cursor: pointer; display:block; margin:0 0 10px; vertical-align: top; }
+label.switch em.label{
+  color:#999;
+  display:inline-block;
+  font-size:14px;
+  font-variant: small-caps;
+  font-weight:300;
+  padding:0 10px;
+  position:relative; 
+  top:0px;
+  -webkit-transition: color 0.2s ease 0s;
+  transition: color 0.2s ease 0s;  
+  vertical-align: top;
+  white-space: nowrap;
+}
+label.switch span {
+  background-color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  height:20px;
+  position: relative;
+  width: 50px;
+}
+label.switch span em{ height:20px; position:absolute; top:0; width:25px; }
+label.switch span em i {
+  color:#fff; 
+  display:block; 
+  font-size: 16px;
+  position: relative;
+  text-align: center;
+  top: 1.5px;
+}
+label.switch span em.left {background:#ed8365; border-top-left-radius: 3px; border-bottom-left-radius:3px;  left:0; }
+label.switch span em.right {background:#222; border-top-right-radius: 3px; border-bottom-right-radius:3px; left:25px;}
+label.switch span em.left i {color:#fafafa; text-indent:-2px; text-shadow:0 1px #f2987e;}
+label.switch span em.right i {color:#ccc; text-indent:1px; text-shadow: 0 1px #000;}
+label.switch span small {
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  height: 20px;
+  position: absolute;
+  top: 0;
+  left:0;
+  -webkit-transition: left 0.2s ease 0s;
+  transition: left 0.2s ease 0s;
+  width: 27px;
+}
+label.switch input {display:none;}
+label.switch input:checked + span  > small{ left:23px; }
 
 
