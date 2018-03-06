@@ -40,10 +40,10 @@ def create_category_mapping():
     """
     category_mapping = {}
 
-    category_maps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'active', 'id')
+    category_maps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'turned_on', 'id', 'merchant_name')
     for category_map in category_maps:
         key_tup = (category_map[0], category_map[1])
-        val_tup = (category_map[2], category_map[3], category_map[4])
+        val_tup = (category_map[2], category_map[3], category_map[4], category_map[5])
         category_mapping[key_tup] = val_tup
 
     return category_mapping
@@ -117,9 +117,32 @@ def add_new_merchant(external_merchant_id, name, network, active = False):
 def get_network(network_name):
     return Network.objects.get(name = network_name)
 
+def is_merchant_in_category(category_mapping, identifier, merchant_name):
+    allume_category_id, categories_are_active, category_map_id, merchant_name_list = category_mapping[identifier]
+
+    if merchant_name_list:
+        merchants_list = merchant_name_list.split("|")
+    else:
+        merchants_list = []
+
+    if merchant_name not in merchants_list:
+
+        merchants_list.append(merchant_name)
+
+        cm = CategoryMap.objects.get(id = category_map_id)
+        #print merchants_list
+        merchants_list.sort()
+        cm.merchant_name = '|'.join(set(merchants_list))
+        cm.save()
+
+    return True
+
+
 def add_category_map(external_cat1, external_cat2, merchant_name, allume_category, active = False, pending_review=True):
     CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
-                               allume_category = None, active = active, pending_review=pending_review)
+                               allume_category = None, turned_on = active, pending_review=pending_review)
+    return True
+    
 
 def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     """
@@ -143,7 +166,7 @@ def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     except KeyError:
         return False
 
-def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name):
+def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, input_merchant_name):
     """
     Takes in a primary category and a secondary category as strings and a
     category_mapping dictionary and checks to see if they constitute an
@@ -156,21 +179,18 @@ def are_categories_active(primary_category, secondary_category, category_mapping
     try:
         identifier = (primary_category, secondary_category)
         if identifier not in category_mapping.keys():
-            add_category_map(primary_category, secondary_category, merchant_name, None, False, True)
+            add_category_map(primary_category, secondary_category, input_merchant_name, None, False, True)
             # edit the mapping instance
-            category_mapping[identifier] = (None, False, -1)
+            category_mapping[identifier] = (None, False, -1, input_merchant_name)
             # print discovered categories pair
-            print identifier
-        allume_category_id, categories_are_active, category_map_id = category_mapping[identifier]
+            #print identifier
+
+        allume_category_id, categories_are_active, category_map_id, merchant_name = category_mapping[identifier]
         # if id == -1, then category is newly added with merchant_name, no need to backfill
         if category_map_id != -1:
-            # check if the merchant_name for this category exists
-            cm = CategoryMap.objects.get(pk=category_map_id)
-            # if it does not
-            if cm.merchant_name == None:
-                # print 'backfilling occurs'
-                cm.merchant_name = merchant_name
-                cm.save()
+            # check if the merchant_name for this category exists, if not add it
+            is_merchant_in_category(category_mapping, identifier, input_merchant_name)
+
         if allume_category_id == None:
             # allume_category_id is None because it is either a newly discovered category
             # or a category that is still pending review post-discovery
@@ -183,5 +203,6 @@ def are_categories_active(primary_category, secondary_category, category_mapping
         if not allume_category_is_active:
             return False
         return allume_category
+
     except KeyError:
         return False

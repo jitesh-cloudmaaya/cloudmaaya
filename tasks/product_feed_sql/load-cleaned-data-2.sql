@@ -74,7 +74,7 @@ SELECT
     papt.end_date,
     papt.merchant_name,
     papt.created_at,
-    papt.updated_at,
+    NOW(),
     papt.allume_score,
     papt.brand,
     papt.is_best_seller,
