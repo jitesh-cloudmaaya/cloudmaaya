@@ -25,7 +25,6 @@ class CategoryMap_MerchantFilter(SimpleListFilter):
 
         merch_tuples_list = []
         for merchant in merchants:
-        	print merchant
         	merch_tuples_list.append((merchant, merchant))
 
         merch_tuples_list.sort()
