@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('product_api', '0031_auto_20180221_1724'),
     ]
+
     if 'test' in sys.argv:
         operations = [
             migrations.CreateModel(
@@ -26,4 +27,3 @@ class Migration(migrations.Migration):
     else:
         operations = [
         ]
-

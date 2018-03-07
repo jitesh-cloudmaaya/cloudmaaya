@@ -165,7 +165,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         gender = gender.replace('MAN', 'MEN')
 
                         # check if gender makes record 'inactive'
-                        if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS': # girls and boys?
+                        skippedGenders = ['MEN', 'CHILD', 'KIDS', 'BOYS', 'GIRLS', 'BABY']
+                        if gender in skippedGenders:
                             genderSkipped += 1
                             continue
 
@@ -214,21 +215,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
 
                             record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
-                            # # replace below with above
-                            # if allume_category == 'Shoes':
-                            #     # use the shoe size mapping
-                            #     if attribute_3_size in shoe_size_mapping.keys():
-                            #         record['allume_size'] = shoe_size_mapping[attribute_3_size]
-                            #     else:
-                            #         # double check no existing mapping case?
-                            #         record['allume_size'] = attribute_3_size
-                            # else:
-                            #     # use the size mapping
-                            #     if attribute_3_size in size_mapping.keys():
-                            #         record['allume_size'] = size_mapping[attribute_3_size]
-                            #     else:
-                            #         record['allume_size'] = attribute_3_size
-
 
                             record['material'] = attribute_4_material
 
@@ -304,25 +290,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
-    # test the theory   
+    # test the theory
     # UPDATE: Csn't use on the Delta File as it will not include records that didn't change but are still live
     if not is_delta:
         print('Setting deleted for non-upserted products')
-        set_deleted_ran_products()
-
-def set_deleted_ran_products(threshold = 12):
-    """
-    Sets RAN products for the current run to deleted if they were not upserted.
-    """
-    ran_id = Network.objects.get(name ='RAN')
-    merchants = Merchant.objects.filter(active = True, network_id = ran_id)
-    merchant_ids = merchants.values_list('external_merchant_id')
-    products = Product.objects.filter(merchant_id__in = merchant_ids, is_deleted = False)
-    datetime_threshold = datetime.now() - timedelta(hours = threshold)
-    # print datetime_threshold # in case behavior is not as expected
-    deleted_products = products.filter(updated_at__lte = datetime_threshold)
-    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    deleted_products.update(is_deleted = True, updated_at = updated_at)
-    print('Set %s non-upserted products to deleted' % deleted_products.count())
-
-
+        product_feed_helpers.set_deleted_network_products('RAN')

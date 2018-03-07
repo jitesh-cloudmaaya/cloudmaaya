@@ -2,6 +2,8 @@ import urlparse
 import urllib
 import hashlib
 import re
+from product_api.models import Merchant, CategoryMap, Network, Product
+from datetime import datetime, timedelta
 
 def parse_raw_product_url(product_url, raw_product_attribute):
     """
@@ -39,6 +41,28 @@ def parse_raw_product_url(product_url, raw_product_attribute):
 
     return joined
 
+def generate_product_id(product_name, size, color):
+    """
+    In the event that a product_id cannot be found, deterministically generate a product_id
+    using that product's product_name, size, and color.
+
+    Args:
+      product_name (str): The product's name.
+      size (str): The merchant provided size field for the product.
+      color (str): The merchant provided color field for the product.
+
+    Returns:
+      str: A string to use as the product's product_id.
+    """
+    step1 = int(hashlib.sha256(size).hexdigest(), 16) % (10 ** 15)
+    step2 = int(hashlib.sha256(size).hexdigest(), 16) % (10 ** 15)
+    step3 = int(hashlib.sha256(size).hexdigest(), 16) % (10 ** 15)
+
+    product_id = step1 + step2 + step3
+    product_id = product_id % (2 ** 60) # keep within mysql bigint
+    product_id = str(product_id)
+
+    return product_id
 
 def assign_product_id_size(product_id, size):
     """
@@ -97,7 +121,7 @@ def _comma_seperate_sizes(sizes):
       arr[i] = arr[i].strip()
     arr = filter(bool, arr)
     return arr
-
+  
 def _hyphen_seperate_sizes(sizes):
     """
     Takes in a size attribute, intended t obe from a product which has a hyphen seperated list as a size,
@@ -334,3 +358,44 @@ def _lingerie_match(characters):
     if len(characters) == 0:
         return False
     return not bool(re.compile(r'[^abcedfghABCDEFGH]').search(characters))
+
+def set_deleted_network_products(network, threshold = 12):
+    """
+    Helper method for use in the main data feed method. Collects a list data feed products
+    that should have been upserted in the current run. For those that were determined to not have
+    been upserted, set those products to a status of is_deleted = True.
+
+    Args:
+      network (str): The network name. Should correspond to the network name used in the
+      product_api_network table.
+      threshold (int): The time threshold in hours. If the updated-at value of a record is threshold
+      or more hours old, conclude that it was not updated in the current upsert and set to deleted.
+    """
+    network_id = Network.objects.get(name=network)
+    merchants = Merchant.objects.filter(active=True, network_id=network_id)
+    merchant_ids = merchants.values_list('external_merchant_id')
+    products = Product.objects.filter(merchant_id__in = merchant_ids)
+    datetime_threshold = datetime.now() - timedelta(hours = threshold)
+    deleted_products = products.filter(updated_at__lte = datetime_threshold)
+    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    deleted_products.update(is_deleted = True, updated_at = updated_at)
+    print('Set %s non-upserted products to deleted' % deleted_products.count())
+
+def generate_merchant_id(merchant_name):
+    """
+    In the event of an absent merchant id from data, generate it using the merchant name.
+    Necessary due to the need for a unique merchant id and product id pair as a unique index
+    on the products table for the upsert process.
+
+    Args:
+      merchant_name (str):
+    Returns:
+      str: A string corresponding of purely numbers. Intended for use as a product's
+      merchant id.
+    """
+    # value needs to fit in a mysql int because the values of merchant_id 
+    # and external_merchant id do not match between the product_api_product
+    # and product_api_merchant tables...
+    converted = int(hashlib.sha256(merchant_name).hexdigest(), 16) % (10 ** 7) # the power to raise to has wiggle room
+    merchant_id = str(converted)
+    return merchant_id

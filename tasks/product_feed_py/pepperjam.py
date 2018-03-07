@@ -64,29 +64,6 @@ def get_merchants(status='joined'):
     merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
     return merchant_mapping
 
-def set_deleted_pepperjam_products(threshold = 12):
-    """
-    Helper method for use in the main get_data method. Collects a list of Pepperjam products
-    that should have been upserted in the current run. For those that were not upserted, determined
-    by a settable time threshold, set those products to a status of is_deleted = True.
-
-    Args:
-        threshold (int): The time threshold in hours. If the updated_at value of a record is threshold
-        or more hours old, conclude it was not updated in the current upsert and set to deleted. 
-    """
-    # id of the pepperjam network for use in merchants' network_id
-    pepperjam_id = Network.objects.get(name='PepperJam').id
-    # get the pepperjam merchants that were active (and hence were just updated)
-    merchants = Merchant.objects.filter(active=True, network_id = pepperjam_id) # multiple arguments over chaining for performance
-    merchant_ids = merchants.values_list('external_merchant_id')
-    # get the products of these merchants
-    products = Product.objects.filter(merchant_id__in = merchant_ids) # up to here is confirmed what we want
-    datetime_threshold = datetime.now() - timedelta(hours = threshold) # comparison threshold is 12 hours ago or more
-    deleted_products = products.filter(updated_at__lte = datetime_threshold)
-    # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
-    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    deleted_products.update(is_deleted = True, updated_at = updated_at)
-
 def get_data(local_temp_dir, cleaned_fieldnames):
 
      # Set Up PepperJam URL
@@ -200,7 +177,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     record['manufacturer_part_number'] = product['mpn']
                     record['SKU'] = product['sku']
 
-                    product_id = generate_product_id(product['sku'], merchant_id)
+                    product_id = generate_product_id_pepperjam(product['sku'], merchant_id)
                     # print product_id
                     # print type(product_id)
                     record['product_id'] = product_id
@@ -231,8 +208,8 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     if shipping != None:
                         record['shipping_price'] = shipping
 
-                    merchant_color = product['color']
-                    record['merchant_color'] = merchant_color
+                    record['merchant_color'] = product['color']
+                    merchant_color = product['color'].lower()
                     try:
                         allume_color = color_mapping[merchant_color]
                     except:
@@ -326,9 +303,9 @@ def get_data(local_temp_dir, cleaned_fieldnames):
 
     # call update_pepperjam here?
     print('Updating non-upserted records')
-    set_deleted_pepperjam_products()
+    product_feed_helpers.set_deleted_network_products('PepperJam')
 
-def generate_product_id(SKU, merchant_id):
+def generate_product_id_pepperjam(SKU, merchant_id):
     """
     Takes in the product's SKU as unicode and merchant_id as unicode and generates
     a product_id as unicode to be used. Necessary because PepperJam data does not

@@ -54,6 +54,18 @@ def ran_full_pull():
     pf.load_cleaned_data()
     print("Successfully updated API products table")
 
+@task(base=QueueOnce)
+def impact_radius_pull():
+    pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/impact_radius.yaml'))
+    print("Pulling files from FTP")
+    pf.get_files_ftp()
+    print("Decompressing files")
+    pf.decompress_data()
+    print("Cleaning files")
+    pf.clean_data()
+    print("Update API products table")
+    pf.load_cleaned_data()
+    print("Sucessfully updated API products table")
 
 @task(base=QueueOnce)
 def build_client_360():
