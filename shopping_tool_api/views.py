@@ -559,7 +559,7 @@ def look_list(request):
         }
     """
     looks = Look.objects.all()  
-    # looks = looks.filter(look_layout__isnull=False)
+    looks = looks.filter(is_legacy=False)
     # looks = looks.exclude(look_layout = 0)
 
     page = 1
