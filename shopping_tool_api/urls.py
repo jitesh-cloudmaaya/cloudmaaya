@@ -22,4 +22,6 @@ urlpatterns = [
     url(r'^update_look_position/(?P<pk>[0-9]+)/$', views.update_look_position, name='update_look_position'),
     url(r'^update_look_collage_image_data/(?P<pk>[0-9]+)/$', views.update_look_collage_image_data, name='update_look_collage_image_data'),
     url(r'^update_cropped_image_code/(?P<pk>[0-9]+)/$', views.update_cropped_image_code, name='update_cropped_image_code'),
+    url(r'^get_allume_size/$', views.get_allume_size, name='get_allume_size'),
+    
 ]

@@ -98,6 +98,10 @@ def get_data(local_temp_dir, cleaned_fieldnames):
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+    size_mapping = mappings.create_size_mapping()
+    shoe_size_mapping = mappings.create_shoe_size_mapping()
+    size_term_mapping = mappings.create_size_term_mapping()
+
     network = mappings.get_network('PepperJam')
 
     # Set Up PepeprJam URL
@@ -243,6 +247,8 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     attribute_3_size = attribute_3_size.replace('~', ',')
                     record['size'] = attribute_3_size
 
+                    record['allume_size'] = product_feed_helpers.determine_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+
                     record['material'] = product['material']
 
                     attribute_8_age = product['age_range']
@@ -296,8 +302,9 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     product_id = parent_attributes['product_id']
                     if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                         for size in sizes:
-                            parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                            parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                             parent_attributes['size'] = size
+                            parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
                             writer.writerow(parent_attributes)
                             writtenCount += 1
                         # set the parent record to is_deleted

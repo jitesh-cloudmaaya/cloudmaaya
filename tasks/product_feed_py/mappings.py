@@ -1,5 +1,8 @@
+import os
+import yaml
 from django.db import connection
-from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory
+from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap
+from catalogue_service.settings import BASE_DIR
 
 def create_merchant_mapping():
     """
@@ -60,6 +63,53 @@ def create_allume_category_mapping():
         allume_category_mapping[allume_category[0]] = val_tup
 
     return allume_category_mapping
+
+
+def create_size_mapping():
+    """
+    Returns a dict of merchant_size mapped to the allume_size. Both values are strings.
+    """
+    filepath = os.path.join(BASE_DIR, 'product_api/fixtures/SizeMap.yaml')
+    f = open(filepath, 'r')
+    size_maps = yaml.load(f)
+    size_mapping = {}
+    for size_map in size_maps:
+        fields = size_map['fields']
+        sm = SizeMap(merchant_size = fields['merchant_size'], allume_size = fields['allume_size'])
+        size_mapping[sm.merchant_size] = sm.allume_size
+
+    return size_mapping
+
+def create_shoe_size_mapping():
+    """
+    Returns a dict of merchant_size mapped to the allume_size for shoes. Both values are strings.
+    """
+    filepath = os.path.join(BASE_DIR, 'product_api/fixtures/ShoeSizeMap.yaml')
+    f = open(filepath, 'r')
+    shoe_size_maps = yaml.load(f)
+    shoe_size_mapping = {}
+    for shoe_size_map in shoe_size_maps:
+        fields = shoe_size_map['fields']
+        ssm = ShoeSizeMap(merchant_size = fields['merchant_size'], allume_size = fields['allume_size'])
+        shoe_size_mapping[ssm.merchant_size] = ssm.allume_size
+
+    return shoe_size_mapping
+
+def create_size_term_mapping():
+    """
+    Returns a dict of merchant_phrase mapped to the allume_attribute for term expansion.
+    Both values are strings.
+    """
+    filepath = os.path.join(BASE_DIR, 'product_api/fixtures/SizeTermMap.yaml')
+    f = open(filepath, 'r')
+    size_term_maps = yaml.load(f)
+    size_term_mapping = {}
+    for size_term_map in size_term_maps:
+        fields = size_term_map['fields']
+        stm = SizeTermMap(merchant_phrase = fields['merchant_phrase'], allume_attribute = fields['allume_attribute'])
+        size_term_mapping[stm.merchant_phrase] = stm.allume_attribute
+
+    return size_term_mapping
 
 def add_new_merchant(external_merchant_id, name, network, active = False):
     Merchant.objects.create(external_merchant_id = external_merchant_id, name = name, network = network, active = active)

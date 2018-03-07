@@ -18,6 +18,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+    size_mapping = mappings.create_size_mapping()
+    shoe_size_mapping = mappings.create_shoe_size_mapping()
+    size_term_mapping = mappings.create_size_term_mapping()
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('RAN')
@@ -209,6 +212,24 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             attribute_3_size = attribute_3_size.replace('~', ',')
                             record['size'] = attribute_3_size
 
+
+                            record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+                            # # replace below with above
+                            # if allume_category == 'Shoes':
+                            #     # use the shoe size mapping
+                            #     if attribute_3_size in shoe_size_mapping.keys():
+                            #         record['allume_size'] = shoe_size_mapping[attribute_3_size]
+                            #     else:
+                            #         # double check no existing mapping case?
+                            #         record['allume_size'] = attribute_3_size
+                            # else:
+                            #     # use the size mapping
+                            #     if attribute_3_size in size_mapping.keys():
+                            #         record['allume_size'] = size_mapping[attribute_3_size]
+                            #     else:
+                            #         record['allume_size'] = attribute_3_size
+
+
                             record['material'] = attribute_4_material
 
                             attribute_8_age = attribute_8_age.upper()
@@ -260,8 +281,10 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    # use the size mapping here also
                                     parent_attributes['size'] = size
+                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
                                     writer.writerow(parent_attributes)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
@@ -281,13 +304,11 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
-
     # test the theory   
     # UPDATE: Csn't use on the Delta File as it will not include records that didn't change but are still live
     if not is_delta:
         print('Setting deleted for non-upserted products')
         set_deleted_ran_products()
-
 
 def set_deleted_ran_products(threshold = 12):
     """

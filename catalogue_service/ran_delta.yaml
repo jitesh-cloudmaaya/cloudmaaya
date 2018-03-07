@@ -37,6 +37,7 @@ fields:
 - is_best_seller
 - is_trending
 - allume_score
+- allume_size
 - current_price
 - is_deleted
 file_pattern: .*_mp_delta\.txt\.gz
