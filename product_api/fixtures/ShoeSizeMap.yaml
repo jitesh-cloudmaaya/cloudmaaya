@@ -1,90 +1,90 @@
 -   model: product_api.shoesizemap
     pk: 1
-    fields: {merchant_size: 5, allume_size: 5}
+    fields: {merchant_size: '5', allume_size: '5'}
 -   model: product_api.shoesizemap
     pk: 2
-    fields: {merchant_size: 5.5, allume_size: 5.5}
+    fields: {merchant_size: '5.5', allume_size: '5.5'}
 -   model: product_api.shoesizemap
     pk: 3
-    fields: {merchant_size: 6.5, allume_size: 6.5}
+    fields: {merchant_size: '6.5', allume_size: '6.5'}
 -   model: product_api.shoesizemap
     pk: 4
-    fields: {merchant_size: 6.6, allume_size: 6.5}
+    fields: {merchant_size: '6.6', allume_size: '6.5'}
 -   model: product_api.shoesizemap
     pk: 5
-    fields: {merchant_size: 6.75, allume_size: 6.5}
+    fields: {merchant_size: '6.75', allume_size: '6.5'}
 -   model: product_api.shoesizemap
     pk: 6
-    fields: {merchant_size: 39, allume_size: 6 & 6.5}
+    fields: {merchant_size: '39', allume_size: '6 & 6.5'}
 -   model: product_api.shoesizemap
     pk: 7
-    fields: {merchant_size: 7, allume_size: 7}
+    fields: {merchant_size: '7', allume_size: '7'}
 -   model: product_api.shoesizemap
     pk: 8
-    fields: {merchant_size: 7.25, allume_size: 7}
+    fields: {merchant_size: '7.25', allume_size: '7'}
 -   model: product_api.shoesizemap
     pk: 9
-    fields: {merchant_size: 40, allume_size: 7 & 7.5}
+    fields: {merchant_size: '40', allume_size: '7 & 7.5'}
 -   model: product_api.shoesizemap
     pk: 10
-    fields: {merchant_size: 41, allume_size: 7.5 & 8 & 8.5}
+    fields: {merchant_size: '41', allume_size: '7.5 & 8 & 8.5'}
 -   model: product_api.shoesizemap
     pk: 11
-    fields: {merchant_size: 7.5, allume_size: 7.5}
+    fields: {merchant_size: '7.5', allume_size: '7.5'}
 -   model: product_api.shoesizemap
     pk: 12
-    fields: {merchant_size: 8.5, allume_size: 8.5}
+    fields: {merchant_size: '8.5', allume_size: '8.5'}
 -   model: product_api.shoesizemap
     pk: 13
-    fields: {merchant_size: 8.75, allume_size: 8.5}
+    fields: {merchant_size: '8.75', allume_size: '8.5'}
 -   model: product_api.shoesizemap
     pk: 14
-    fields: {merchant_size: 42, allume_size: 8.5 & 9}
+    fields: {merchant_size: '42', allume_size: '8.5 & 9'}
 -   model: product_api.shoesizemap
     pk: 15
-    fields: {merchant_size: 9, allume_size: 9}
+    fields: {merchant_size: '9', allume_size: '9'}
 -   model: product_api.shoesizemap
     pk: 16
-    fields: {merchant_size: 43, allume_size: 9 & 9.5 & 10 & 10.5}
+    fields: {merchant_size: '43', allume_size: '9 & 9.5 & 10 & 10.5'}
 -   model: product_api.shoesizemap
     pk: 17
-    fields: {merchant_size: 9.5, allume_size: 9.5}
+    fields: {merchant_size: '9.5', allume_size: '9.5'}
 -   model: product_api.shoesizemap
     pk: 18
-    fields: {merchant_size: 44, allume_size: 9.5 & 10 & 11 & 11.5}
+    fields: {merchant_size: '44', allume_size: '9.5 & 10 & 11 & 11.5'}
 -   model: product_api.shoesizemap
     pk: 19
-    fields: {merchant_size: 10.5, allume_size: 10.5}
+    fields: {merchant_size: '10.5', allume_size: '10.5'}
 -   model: product_api.shoesizemap
     pk: 20
-    fields: {merchant_size: 44.5, allume_size: 10.5}
+    fields: {merchant_size: '44.5', allume_size: '10.5'}
 -   model: product_api.shoesizemap
     pk: 21
-    fields: {merchant_size: 11, allume_size: 11}
+    fields: {merchant_size: '11', allume_size: '11'}
 -   model: product_api.shoesizemap
     pk: 22
-    fields: {merchant_size: 45, allume_size: 11 & 11.5 & 12 & 12.5}
+    fields: {merchant_size: '45', allume_size: '11 & 11.5 & 12 & 12.5'}
 -   model: product_api.shoesizemap
     pk: 23
-    fields: {merchant_size: 11.5, allume_size: 11.5}
+    fields: {merchant_size: '11.5', allume_size: '11.5'}
 -   model: product_api.shoesizemap
     pk: 24
-    fields: {merchant_size: 46, allume_size: 12 & 12.5 & 13 & 13.5}
+    fields: {merchant_size: '46', allume_size: '12 & 12.5 & 13 & 13.5'}
 -   model: product_api.shoesizemap
     pk: 25
-    fields: {merchant_size: 12.5, allume_size: 12.5}
+    fields: {merchant_size: '12.5', allume_size: '12.5'}
 -   model: product_api.shoesizemap
     pk: 26
-    fields: {merchant_size: 13, allume_size: 13}
+    fields: {merchant_size: '13', allume_size: '13'}
 -   model: product_api.shoesizemap
     pk: 27
-    fields: {merchant_size: 47, allume_size: 13 & 13.5 & 14}
+    fields: {merchant_size: '47', allume_size: '13 & 13.5 & 14'}
 -   model: product_api.shoesizemap
     pk: 28
-    fields: {merchant_size: 13.5, allume_size: 13.5}
+    fields: {merchant_size: '13.5', allume_size: '13.5'}
 -   model: product_api.shoesizemap
     pk: 29
-    fields: {merchant_size: 48, allume_size: 14}
+    fields: {merchant_size: '48', allume_size: '14'}
 -   model: product_api.shoesizemap
     pk: 30
-    fields: {merchant_size: 49, allume_size: 14}
+    fields: {merchant_size: '49', allume_size: '14'}

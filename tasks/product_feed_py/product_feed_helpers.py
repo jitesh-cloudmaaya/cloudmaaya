@@ -182,7 +182,7 @@ def _hyphen_seperate_sizes(sizes):
         return splitSizes
     except IndexError as e:
         return [sizes]
-  
+
 def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping):
     """
     Takes in an allume_category and size and uses the relevant size mappings to determine an allume

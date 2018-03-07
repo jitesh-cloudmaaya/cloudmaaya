@@ -139,7 +139,7 @@ def index_deleted_products_cleanup(days_threshold = 5):
     statement1 += ' SET is_deleted = 1 WHERE pac.active = 0'
 
     statement2 = 'UPDATE %s pap' % product_table
-    statement2 += ' INNER JOIN %s pam ON pap.merchant_name = pam.name' % merchant_table
+    statement2 += ' INNER JOIN %s pam ON pap.merchant_id = pam.external_merchant_id' % merchant_table
     statement2 += ' SET is_deleted = 1 WHERE pam.active = 0'
 
     statement3 = 'UPDATE %s pap' % product_table
