@@ -733,6 +733,11 @@ def look_item(request, pk=None):
 
         try:
             look_item = LookProduct.objects.get(id=pk)
+
+            #Test to see if product_clipped_stylist_id is already set, if so keep o.g. value
+            if look_item.product_clipped_stylist_id:
+                item['product_clipped_stylist_id'] = look_item.product_clipped_stylist_id
+
             serializer = LookProductCreateSerializer(look_item, data=item)
 
         except LookProduct.DoesNotExist:
