@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
+import json
+from catalogue_service.settings import BASE_DIR
 from django.db import models
 from rest_framework import serializers
 
@@ -155,3 +158,25 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+sizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/SizeMap.json')
+shoesizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/ShoeSizeMap.json')
+sizetermmap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/SizeTermMap.json')
+
+sizemap_attrs = json.load(open(sizemap_filepath, 'r'))
+for attr in sizemap_attrs:
+    sizemap_attrs[attr] = eval(sizemap_attrs[attr])
+sizemap_attrs['__module__'] = 'product_api.models'
+
+shoesizemap_attrs = json.load(open(shoesizemap_filepath, 'r'))
+for attr in shoesizemap_attrs:
+    shoesizemap_attrs[attr] = eval(shoesizemap_attrs[attr])
+shoesizemap_attrs['__module__'] = 'product_api.models'
+
+sizetermmap_attrs = json.load(open(sizetermmap_filepath, 'r'))
+for attr in sizetermmap_attrs:
+    sizetermmap_attrs[attr] = eval(sizetermmap_attrs[attr])
+sizetermmap_attrs['__module__'] = 'product_api.models'
+
+SizeMap = type(str("SizeMap"), (models.Model,), sizemap_attrs)
+ShoeSizeMap = type(str("ShoeSizeMap"), (models.Model,), shoesizemap_attrs)
+SizeTermMap = type(str("SizeTermMap"), (models.Model,), sizetermmap_attrs)

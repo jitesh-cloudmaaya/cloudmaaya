@@ -1,4 +1,13 @@
-etl_file_name: tasks/product_feed_sql/ran.sql
+remote_dir: /Designer-Shoe-Warehouse/
+file_pattern: .*\.txt\.gz
+leave_temp_files: false
+local_temp_dir: pd_temp/impact_radius
+ftp_config:
+  host: products.impactradius.com
+  user: ps-ftp_380198
+  password: 4JC:)nto7P
+file_ending: .txt
+clean_data_method: impact_radius.impact_radius(self._local_temp_dir, self._file_ending, self._fields)
 fields:
 - product_id
 - merchant_id
@@ -23,6 +32,7 @@ fields:
 - gender
 - style
 - size
+- allume_size
 - material
 - age
 - currency
@@ -37,17 +47,7 @@ fields:
 - is_best_seller
 - is_trending
 - allume_score
-- allume_size
 - current_price
 - is_deleted
-file_pattern: .*_mp_delta\.txt\.gz
-ftp_config:
-  host: aftp.linksynergy.com
-  password: yT%6-Pl@h
-  user: allumestye
-leave_temp_files: false
-local_temp_dir: pd_temp/ran
-remote_dir: /
 table: product_api_product_temp
-clean_data_method: ran.clean_ran(self._local_temp_dir, self._file_ending, self._fields, True)
-file_ending: mp_delta.txt
+etl_file_name: deprecated

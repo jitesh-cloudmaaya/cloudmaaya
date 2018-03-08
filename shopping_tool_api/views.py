@@ -23,6 +23,54 @@ from serializers import *
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from tasks.product_feed_py.product_feed_helpers import determine_allume_size
+from tasks.product_feed_py import mappings
+
+
+@api_view(['POST'])
+@permission_classes((AllowAny, ))
+def get_allume_size(request):
+    """
+    post:
+        Get Allume Size
+
+        /shopping_tool_api/get_allume_size/  
+
+        Sample JSON Object 1
+
+        {
+          "size": "x-small",
+          "category": "Tops"
+        }    
+
+        Sample JSON Response 1
+        {
+          "allume_size": "XS"
+        }
+
+        Sample JSON Object 2
+
+        {
+          "size": "46",
+          "category": "Shoes"
+        }
+
+        Sample JSON Response 2
+        {
+          "allume_size": "12 & 12.5 & 13 & 13.5"
+        }
+
+    """
+
+    size_mapping = mappings.create_size_mapping()
+    shoe_size_mapping = mappings.create_shoe_size_mapping()
+    size_term_mapping = mappings.create_size_term_mapping()
+    allume_category = request.data['category']
+    size = request.data['size'].upper()
+
+    allume_size = determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+
+    return JsonResponse({"allume_size": allume_size}, safe=False)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
