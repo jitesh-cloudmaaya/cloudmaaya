@@ -82,7 +82,7 @@ var collage = {
             crossDomain: true,
             data: $.param({look_product_id: look_item_id, product: payload}),
             type: 'POST',
-            url: 'https://ecommerce-service-prod.allume.co/wp-json/products/create_or_update_product_from_affiliate_feeds_and_link_to_look/',
+            url: 'https://ecommerce-service-' + local_environment + '.allume.co/wp-json/products/create_or_update_product_from_affiliate_feeds_and_link_to_look/',
             xhrFields: {
               withCredentials: true
             }
