@@ -167,7 +167,7 @@ var look_builder = {
       if(edit_status != 1){
         alert('You must finish editing your selected look before you can preview the lookbook.')
       }else{
-        $('#previewIframe').attr('src', 'https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
+        $('#previewIframe').attr('src', 'https://www.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
         $('#preview-lookbook-overlay').fadeIn();
         $('#publish-lookbook').data('allowed', 'true');
       }
@@ -339,7 +339,7 @@ var look_builder = {
         send_at: null,
         text_content: $('#publish-email').val().replace(
           /\[Link to Lookbook\]/g, 
-          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
+          '<a href="https://www.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
         ),
         notify_user : true
       }
@@ -358,7 +358,7 @@ var look_builder = {
         crossDomain: true,
         data: JSON.stringify(lookbook),
         type: 'POST',
-        url: 'https://styling-service-stage.allume.co/publish_looks/',
+        url: 'https://styling-service-prod.allume.co/publish_looks/',
         xhrFields: {
           withCredentials: true
         }
@@ -1094,7 +1094,7 @@ var look_builder = {
         var email_text = $('#publish-email').val();
         email_text = email_text.replace(
           /\[Link to Lookbook\]/g, 
-          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +
+          '<a href="https://www.allume.co/looks/' + $('body').data('sessiontoken') +
           '" target="_blank">Your Lookbook</a>'
         );
         step_div.html(

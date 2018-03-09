@@ -33,6 +33,19 @@ import imgkit
 
 # Create your views here. 
 
+def category_samples(request):
+    cat1 = request.GET['external_cat1']
+    cat2 = request.GET['external_cat2']
+    
+    products = Product.objects.filter(primary_category = cat1).filter(secondary_category = cat2).all()[:20]
+    for product in products:
+        print product
+
+    context = {'products': products, 'cat1': cat1, 'cat2': cat2}
+
+    return render(request, 'shopping_tool/category_samples.html', context) 
+
+
 @check_login
 def index(request, styling_session_id=None):
 
