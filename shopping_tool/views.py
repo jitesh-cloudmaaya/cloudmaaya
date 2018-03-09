@@ -26,6 +26,7 @@ from PIL import Image
 from catalogue_service.settings_local import PRODUCT_IMAGE_PROXY
 from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY, DEV_AUTH_EMAIL
 from catalogue_service.settings_local import IMGKIT_URL, IMGKIT_OPTIONS
+from catalogue_service.settings_local import ENV_LOCAL
 
 from weather_service.models import Weather
 import imgkit
@@ -72,7 +73,7 @@ def index(request, styling_session_id=None):
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
                'looks': looks, 'weather_info': weather_info,'styles': styles,
-               'occasions': occasions}
+               'occasions': occasions, 'env': env}
                
     return render(request, 'shopping_tool/index.html', context)
 
@@ -98,12 +99,13 @@ def look_builder(request, styling_session_id=None):
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()
     product_image_proxy = PRODUCT_IMAGE_PROXY
+    env = ENV_LOCAL
 
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
                'looks': looks, 'weather_info': weather_info, 'styles': styles,
-               'occasions': occasions}
+               'occasions': occasions, 'env': env}
                
     return render(request, 'shopping_tool/look_builder.html', context)
 

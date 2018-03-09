@@ -167,7 +167,8 @@ var look_builder = {
       if(edit_status != 1){
         alert('You must finish editing your selected look before you can preview the lookbook.')
       }else{
-        $('#previewIframe').attr('src', 'https://www.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
+        var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
+        $('#previewIframe').attr('src', 'https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
         $('#preview-lookbook-overlay').fadeIn();
         $('#publish-lookbook').data('allowed', 'true');
       }
@@ -334,12 +335,13 @@ var look_builder = {
     });
     $('#pub-section3').on('click', 'a#submit-lookbook', function(e){
       e.preventDefault();
+      var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
       var lookbook = {
         styling_session_id: look_builder.session_id,
         send_at: null,
         text_content: $('#publish-email').val().replace(
           /\[Link to Lookbook\]/g, 
-          '<a href="https://www.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
+          '<a href="https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
         ),
         notify_user : true
       }
@@ -358,7 +360,7 @@ var look_builder = {
         crossDomain: true,
         data: JSON.stringify(lookbook),
         type: 'POST',
-        url: 'https://styling-service-prod.allume.co/publish_looks/',
+        url: 'https://styling-service-' + local_environment + '.allume.co/publish_looks/',
         xhrFields: {
           withCredentials: true
         }
@@ -1092,9 +1094,12 @@ var look_builder = {
           email_at = '<span class="summary-sent">A text will <strong>NOT</strong> be sent.</span>';
         }
         var email_text = $('#publish-email').val();
+        var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
+
+
         email_text = email_text.replace(
           /\[Link to Lookbook\]/g, 
-          '<a href="https://www.allume.co/looks/' + $('body').data('sessiontoken') +
+          '<a href="https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') +
           '" target="_blank">Your Lookbook</a>'
         );
         step_div.html(
