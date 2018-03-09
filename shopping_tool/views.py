@@ -73,7 +73,7 @@ def index(request, styling_session_id=None):
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
                'looks': looks, 'weather_info': weather_info,'styles': styles,
-               'occasions': occasions, 'env': env}
+               'occasions': occasions}
                
     return render(request, 'shopping_tool/index.html', context)
 
