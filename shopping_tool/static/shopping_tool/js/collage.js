@@ -693,7 +693,6 @@ var collage = {
       cx.drawImage(canvas, minX, minY, width, height, 0, 0, width, height);
       /* get the image data */
       var pg_crop = c.toDataURL('image/jpeg', 1.0);
-      console.log(pg_crop)
       $('#pg-cropper-btns a.save').data('path', pg_crop);
       /* clear previous clip points */ 
       points.length = 0;
