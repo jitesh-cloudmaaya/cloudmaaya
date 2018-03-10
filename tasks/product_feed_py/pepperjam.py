@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 # Set Up PepeprJam URL
 PEPPER_JAM_API_BASE_URL = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_API_VERSION)
 
-def get_merchants(status='joined'):
+def get_merchants(status='joined', dev=False):
 
     # Set Up PepperJam URL
     pepper_jam_api_merchant_url = PEPPER_JAM_API_BASE_URL + "publisher/advertiser?apiKey=%s&status=%s&format=json" % (PEPPERJAM_API_KEY, status)
@@ -29,23 +29,25 @@ def get_merchants(status='joined'):
 
     ## Dev Only
     # # Test Merchants Data
-    # print("Getting local test data")
-    # json_data = open('tasks/product_feed_py/sample_data/pepperjam_merchant.json')
-    # merchants = json.load(json_data)
-    # json_data.close()
+    if dev:
+        print("Getting local test data")
+        json_data = open('tasks/product_feed_py/sample_data/pepperjam_merchant.json')
+        merchants = json.load(json_data)
+        json_data.close()
 
     # Get Merchants
     ## Prod & Staging Only
-    print 'Getting merchants using API call'
+    else:
+        print 'Getting merchants using API call'
 
-    # set api call variables
-    numTries = 4 # total number of tries
-    timeout = 60 # in seconds
-    delay = 3 # pause in seconds between retries
-    backoff = 2 # multiplier on timeout between retries
+        # set api call variables
+        numTries = 4 # total number of tries
+        timeout = 60 # in seconds
+        delay = 3 # pause in seconds between retries
+        backoff = 2 # multiplier on timeout between retries
 
-    json_data = open_w_timeout_retry(pepper_jam_api_merchant_url, numTries, timeout, delay, backoff)
-    merchants = json.load(json_data)
+        json_data = open_w_timeout_retry(pepper_jam_api_merchant_url, numTries, timeout, delay, backoff)
+        merchants = json.load(json_data)
     
     # Create some variables to count process metrics
     new_merchants = 0
@@ -64,14 +66,14 @@ def get_merchants(status='joined'):
     merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
     return merchant_mapping
 
-def get_data(local_temp_dir, cleaned_fieldnames):
+def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
 
      # Set Up PepperJam URL
     pepper_jam_api_product_url = PEPPER_JAM_API_BASE_URL + "publisher/creative/product?apiKey=%s&format=json" % (PEPPERJAM_API_KEY)
     #pepper_jam_api_product_url = "https://api.pepperjamnetwork.com/20120402/publisher/creative/product?apiKey=48db78a072444a019989822d21aa513a5f0f67bb2363d6370b9e59b23bd4b29d&format=json&page=26"
 
     # Get Mapping Data
-    merchant_mapping = get_merchants(status='joined') # new way to create merchant_mapping?
+    merchant_mapping = get_merchants(status='joined',dev=dev) # new way to create merchant_mapping?
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
@@ -108,26 +110,28 @@ def get_data(local_temp_dir, cleaned_fieldnames):
 
         while more_pages:
             ## Dev Only
-            # print("Getting Data")
-            # print(pepper_jam_api_product_url)
-            # json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
-            # product_feed = json.load(json_data)
-            # json_data.close()
+            if dev:
+                print("Getting Data")
+                print(pepper_jam_api_product_url)
+                json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
+                product_feed = json.load(json_data)
+                json_data.close()
 
             # commenting out because API only has X amount of access allowed in a day
             ## Prod & Staging Only
-            print 'Getting data using the API calls'
-            print("Getting Data")
+            else:
+                print 'Getting data using the API calls'
+                print("Getting Data")
 
-            # set api call variables
-            numTries = 4 # total number of tries
-            timeout = 60 # in seconds
-            delay = 3 # pause in seconds between retries
-            backoff = 2 # multiplier on timeout between retries
+                # set api call variables
+                numTries = 4 # total number of tries
+                timeout = 60 # in seconds
+                delay = 3 # pause in seconds between retries
+                backoff = 2 # multiplier on timeout between retries
 
-            print(pepper_jam_api_product_url)
-            json_data = open_w_timeout_retry(pepper_jam_api_product_url, numTries, timeout, delay, backoff)
-            product_feed = json.load(json_data)
+                print(pepper_jam_api_product_url)
+                json_data = open_w_timeout_retry(pepper_jam_api_product_url, numTries, timeout, delay, backoff)
+                product_feed = json.load(json_data)
 
 
             if 'next' in product_feed['meta']['pagination']:
