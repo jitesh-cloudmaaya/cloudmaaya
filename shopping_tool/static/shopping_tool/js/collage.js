@@ -113,7 +113,6 @@ var collage = {
       success:function(response){
         var img = new Image(); 
         img.src = look_proxy + '' + src;
-        console.log(response)
         img.onload = function() {
           var scale = 1;
           if(this.naturalHeight > 395){
