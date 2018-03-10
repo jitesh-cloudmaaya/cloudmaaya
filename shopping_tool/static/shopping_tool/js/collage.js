@@ -113,6 +113,7 @@ var collage = {
       success:function(response){
         var img = new Image(); 
         img.src = look_proxy + '' + src;
+        console.log(response)
         img.onload = function() {
           var scale = 1;
           if(this.naturalHeight > 395){
@@ -125,7 +126,8 @@ var collage = {
             top: collage.canvas.getHeight()/2,
             scaleX: scale,
             scaleY: scale,
-            prod_id: response.id
+            prod_id: response.id,
+            product_id: product_id
           });
           fImg.originalImgSrc = look_proxy + '' + src;
           collage.canvas.add(fImg);
@@ -236,6 +238,8 @@ var collage = {
         if(this.naturalHeight > 395){
           scale = 395 / this.naturalHeight 
         }
+        var prod_id = prod.id != undefined ? prod.id : '' ;
+        var product_id = prod.product != undefined ? prod.product.id : '' ;
         var dims = {
           originX: 'center',
           originY: 'center',
@@ -243,13 +247,15 @@ var collage = {
           top: collage.canvas.getHeight()/2,
           scaleX: scale,
           scaleY: scale,
-          prod_id: prod.id
+          prod_id: prod_id,
+          product_id: product_id
         };
         if(prod.cropped_dimensions != null){
           dims = $.extend(true, {}, JSON.parse(prod.cropped_dimensions));
           dims.originX = 'center';
           dims.originY = 'center';
-          dims.prod_id = prod.id;
+          dims.prod_id = prod_id;
+          dims.product_id = product_id;
         }
         var fImg = new fabric.Cropzoomimage(this, dims);
         fImg.originalImgSrc = look_proxy + '' + prod.product.product_image_url;
@@ -335,7 +341,8 @@ var collage = {
         top: collage.canvas.getHeight()/2,
         scaleX: scale,
         scaleY: scale,
-        prod_id: data.prodid
+        prod_id: data.prodid,
+        product_id: data.productid
       });
       fImg.originalImgSrc = link.siblings('a.restart').data('path');
       collage.canvas.add(fImg);
@@ -373,7 +380,7 @@ var collage = {
       collage.setUpCropperImage(activeObject.orgSrc, activeObject.prod_id, 'initial');
       /* set initial states of cropper buttons */
       $('#cropper-btns').find('a.restart').data('path', activeObject.originalImgSrc).data('prodid', activeObject.prod_id)
-      .end().find('a.crop').data('prodid', activeObject.prod_id);
+      .end().find('a.crop').data('prodid', activeObject.prod_id).data('productid', activeObject.product_id);
     }    
   },
   /**
@@ -524,6 +531,7 @@ var collage = {
           cw: this.cw,
           ch: this.ch,
           prod_id: this.prod_id,
+          product_id: this.product_id,
           zoomX: this.zoomX,
           zoomY: this.zoomY,
           zoomZ: this.zoomZ,
@@ -554,7 +562,7 @@ var collage = {
       $('#pg-crop-look-image').fadeIn();
       collage.setUpPolygonCropper(activeObject.orgSrc, activeObject.prod_id);
       $('#pg-cropper-btns').find('a.restart').data('path', activeObject.originalImgSrc).end()
-      .find('a.save').data('prodid', activeObject.prod_id);
+      .find('a.save').data('prodid', activeObject.prod_id).data('productid', activeObject.product_id);
     }
   },
   /**
@@ -762,11 +770,6 @@ var collage = {
         for(var ix = 0, lx = collage.product_cache.length; ix<lx; ix++){
           var record = collage.product_cache[ix];
           if(record.id == prod.prod_id){
-            if(typeof record.product == 'object'){
-              product_id = record.product.id;
-            }else{
-              product_id = record.product;
-            }
             if(record.cropped_image_code != undefined){
               crop_src = record.cropped_image_code;
             }
@@ -799,7 +802,7 @@ var collage = {
         var look_product_obj = {
           layout_position: i,
           look: look_id,
-          product: product_id,
+          product: prod.product_id,
           cropped_dimensions: JSON.stringify(dims),
           in_collage: 'True',
           cropped_image_code: crop_src     
