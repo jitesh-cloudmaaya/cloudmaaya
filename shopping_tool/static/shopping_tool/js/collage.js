@@ -685,6 +685,7 @@ var collage = {
       /* resize the new canvas to the size of the clipping area */
       c.width = width;
       c.height = height;
+      cx.clearRect(0, 0, c.width, c.height);
       /* set the background to white */
       cx.fillStyle = "#ffffff";
       cx.fillRect(0, 0, c.width, c.height);
@@ -692,6 +693,7 @@ var collage = {
       cx.drawImage(canvas, minX, minY, width, height, 0, 0, width, height);
       /* get the image data */
       var pg_crop = c.toDataURL('image/jpeg', 1.0);
+      console.log(pg_crop)
       $('#pg-cropper-btns a.save').data('path', pg_crop);
       /* clear previous clip points */ 
       points.length = 0;
