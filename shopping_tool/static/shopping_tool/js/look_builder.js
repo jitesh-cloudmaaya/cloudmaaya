@@ -348,7 +348,7 @@ var look_builder = {
       if($('#send-later-toggle').prop('checked') == true){
         var t = rome.find(document.getElementById('send-later'))
         var tz = $('#send-later').data('tz')
-        var reg_str = t.getMoment().format('YYYY-MM-DD HH:MM');
+        var reg_str = t.getMoment().format('YYYY-MM-DD HH:mm');
         var send_string = moment.tz(reg_str, tz).format('X');
         lookbook.send_at = parseInt(send_string);
       }
