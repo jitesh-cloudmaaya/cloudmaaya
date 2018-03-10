@@ -327,6 +327,12 @@ var search_page = {
     */
     if(lastSearch == true){ new_search = false; }
     if(category != ''){
+      facets.push('&primary_category=' + category);
+      selection_markup.push(
+        '<a href="#" class="remove-category" data-qparam="primary_category" ' +
+        'data-facet="' + category + '">' + category + 
+        '<i class="fa fa-times-circle"></i></a>'
+      );
       /**
       * if it is a new search we need to see if we have any client
       * data to prepopulate some of our facets with
@@ -419,21 +425,12 @@ var search_page = {
       $('#facet-bar').addClass('show');
     }
     /* set the session search cookie so search will persist */
-    var saved_search = q;
-    if(category != ''){
-      saved_search += '&primary_category=' + category;
-    }
-    if(text != '') { 
-      saved_search += '&text=' + encodeURIComponent(text); 
-    }    
-    utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
     if(text != '') { 
       var text_term = '&text=' + encodeURIComponent(text);
-      if(category != ''){
-        text_term += ' ' + category;
-      }
       q += text_term; 
     }
+    var saved_search = q;  
+    utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
     $.ajax({
       beforeSend: function(){
         $('#results').html(
