@@ -6,6 +6,7 @@ from django.contrib import admin
 from .models import *
 from django.contrib.admin import SimpleListFilter
 from django.utils.html import format_html
+import urllib
 
 
 
@@ -57,7 +58,10 @@ class CategoryMapAdmin(admin.ModelAdmin):
     readonly_fields = ['external_cat1', 'external_cat2', 'merchant_name']
 
     def show_product_examples_url(self, obj):
-        return format_html("<a href='/category_samples?external_cat1={cat1}&external_cat2={cat2}' target='new'>Samples</a>", cat1=obj.external_cat1, cat2=obj.external_cat2)
+
+        param_values = urllib.urlencode({'external_cat1': obj.external_cat1, 'external_cat2': obj.external_cat2})
+
+        return format_html("<a href='/category_samples?{params}' target='new'>Samples</a>", params=param_values)
 
     show_product_examples_url.short_description = "Samples"
 

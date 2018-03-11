@@ -37,6 +37,9 @@ import imgkit
 def category_samples(request):
     cat1 = request.GET['external_cat1']
     cat2 = request.GET['external_cat2']
+
+    print cat1
+    print cat2
     
     products = Product.objects.filter(primary_category = cat1).filter(secondary_category = cat2)
     products = products.filter(is_deleted = 0)
