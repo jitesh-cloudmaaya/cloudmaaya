@@ -1,8 +1,9 @@
 
+SET SESSION group_concat_max_len=5000;
 
-/*
+DELETE from allume_client_360 WHERE wp_user_id = $WPUSERID;
 
-INSERT INTO allume_client_360_temp (
+INSERT INTO allume_client_360 (
 wp_user_id, 
 first_name, 
 last_name, 
@@ -69,8 +70,6 @@ ears_pierced,
 jewelry_style,
 jewelry_type)
 
-
-*/
 SELECT 
 wu.id,
 wu.first_name, 
@@ -93,9 +92,6 @@ quiz.linkedin,
 quiz.photo,
 styling_sessions.styling_count, 
 styling_sessions.last_styling_date,
-
-last_ord_amt.amt as last_order_amt,
-
 social_actions.heart_count,
 social_actions.comment_count,
 social_actions.star_count,
@@ -232,19 +228,6 @@ GROUP BY user_email) quiz
 ON wu.user_email = quiz.user_email
 LEFT JOIN
 (SELECT 
-ol.wp_user_id, 
-ol.amt
-FROM 
-order_list ol
-INNER JOIN 
-(SELECT wp_user_id, MAX(order_date) as last_order_date
-FROM order_list
-GROUP BY wp_user_id) AS lod ON 
-lod.last_order_date = ol.order_date 
-AND lod.wp_user_id = ol.wp_user_id) last_ord_amt
-ON wu.ID = last_ord_amt.wp_user_id
-LEFT JOIN
-(SELECT 
 user_id, 
 count(case when action = 'hearted' then 1 end) heart_count, 
 count(case when action = 'commented' then 1 end) comment_count,
@@ -253,11 +236,12 @@ FROM
 allume_social_actions 
 GROUP BY
 user_id) social_actions
-ON wu.ID = social_actions.user_id;
+ON wu.ID = social_actions.user_id
+where wu.id = $WPUSERID;
 
 
-DROP TABLE IF EXISTS allume_client_360;
+-- DROP TABLE IF EXISTS allume_client_360;
 
 
-RENAME TABLE allume_client_360_temp TO allume_client_360;
+-- RENAME TABLE allume_client_360_temp TO allume_client_360;
 
