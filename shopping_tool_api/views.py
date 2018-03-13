@@ -37,8 +37,8 @@ def add_client_to_360_api(request, wp_user_id):
         /shopping_tool_api/add_client_to_360/{wp_user_id}
 
     """
-    print wp_user_id
-    wp_user_id = 200
+    #print wp_user_id
+    #wp_user_id = 200
 
     add_client_to_360.delay(wp_user_id)
     return JsonResponse({"Status": "Success"}, safe=False)
