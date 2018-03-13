@@ -348,7 +348,7 @@ var look_builder = {
       if($('#send-later-toggle').prop('checked') == true){
         var t = rome.find(document.getElementById('send-later'))
         var tz = $('#send-later').data('tz')
-        var reg_str = t.getMoment().format('YYYY-MM-DD HH:MM');
+        var reg_str = t.getMoment().format('YYYY-MM-DD HH:mm');
         var send_string = moment.tz(reg_str, tz).format('X');
         lookbook.send_at = parseInt(send_string);
       }
@@ -773,6 +773,7 @@ var look_builder = {
       '</h2><div class="look-builder-rack">' + 
       rack_items.join('') + '</div>'
     );
+    look_builder.rackDragDrop(false, 'ordered');
   },
   /**
   * @description helper fuction to verify user has selected at least 
@@ -801,6 +802,44 @@ var look_builder = {
       return 'pass';
     }
   },
+  /**
+  * @description helper function to dry up drag and drop
+  * @param {boolean} sort - whether to allow sorting in the drag list
+  * @param {string} type - display type 
+  */
+  rackDragDrop: function(sort, type){
+    if(type == 'unordered'){
+      new Sortable($('#rack-draggable div.look-builder-rack')[0], {
+        handle: ".handle",
+        group: { name: "look", pull: 'clone', put: false },
+        sort: sort,
+        draggable: ".item",
+        onStart: function(){
+          var cc = $('#canvas-container');
+          if(cc.length > 0){
+            collage.collageSortable.option('disabled', false);
+          }
+        }
+      });
+    }else{
+      var blocks = $('#rack-draggable div.look-builder-rack div.block');
+      $.each(blocks, function(idx){
+        var block = $(this)[0]
+        new Sortable(block, {
+          handle: ".handle",
+          group: { name: "look", pull: 'clone', put: false },
+          sort: sort,
+          draggable: ".item",
+          onStart: function(){
+            var cc = $('#canvas-container');
+            if(cc.length > 0){
+              collage.collageSortable.option('disabled', false);
+            }
+          }
+        });        
+      })
+    }
+  },  
   /**
   * @description generate rack itmes for favorits
   * @param {array} faves - array of jquery items
@@ -1028,8 +1067,8 @@ var look_builder = {
       '</div>'
     );
     var div = drag_rack.find('div.look-builder-rack')
-    /* attahc same functionality to search results as regular unoredered rack */
-    look_builder.unorderedDrag();
+    /* attach same functionality to search results as regular unoredered rack */
+    look_builder.rackDragDrop(true, 'unordered');
     /* attached event listener to filter results */
     $('#rack-search').keyup(function(e){
       var q = $(this).val();
@@ -1116,23 +1155,6 @@ var look_builder = {
     }    
   },
   /**
-  * @description helper function to dry up drag and drop
-  */
-  unorderedDrag: function(){
-    new Sortable($('#rack-draggable div.look-builder-rack')[0], {
-      handle: ".handle",
-      group: { name: "look", pull: 'clone', put: false },
-      sort: true,
-      draggable: ".item",
-      onStart: function(){
-        var cc = $('#canvas-container');
-        if(cc.length > 0){
-          collage.collageSortable.option('disabled', false);
-        }
-      }
-    });
-  },
-  /**
   * @description the unordered look and feel for look builder rack
   */
   unorderedRack: function(){
@@ -1177,7 +1199,7 @@ var look_builder = {
       '</h2><div class="look-builder-rack">' + 
       rack_items.join('') + '</div>'
     );
-    look_builder.unorderedDrag();  
+    look_builder.rackDragDrop(true, 'unordered');  
   },  
   /**
   * @description update a look with any changes to its fields
