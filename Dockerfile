@@ -31,7 +31,7 @@ RUN apt-get install -y python3-setuptools
 RUN apt-get install -y nano
 #RUN apt-get install -y wkhtmltopdf
 RUN apt-get install -y wget
-RUN apt-get install mysql-client
+RUN apt-get install -y mysql-client
 
 RUN cd ~
 RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz
