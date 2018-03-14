@@ -64,7 +64,7 @@ def index(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
@@ -95,7 +95,7 @@ def look_builder(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
@@ -157,7 +157,7 @@ def explore(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
