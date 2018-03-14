@@ -67,7 +67,7 @@ def impact_radius_pull():
     pf.load_cleaned_data()
     print("Sucessfully updated API products table")
 
-@task(base=QueueOnce):
+@task(base=QueueOnce)
 def cj_pull():
     pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/cj.yaml'))
     print("Pulling files from FTP")
