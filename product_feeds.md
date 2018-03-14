@@ -146,7 +146,25 @@ high-level summary of impact radius
 - Another thing to note is the special way product_id is found in Impact Radius
 - Another thing to note involves handling the generation of the merchhant id
 
+##### information from a merchant comes from two files
+Unlike the other product feed networks, the product information for a given merchant on Impact Radius is obtained from two files. One has a filename ending in 'GOOGLE_TXT' and the other has a filename ending in 'IR'. The two files should contain an identical number of product records, but the files contain some non-overlapping information for each one.
+
+##### missing fields from ir
+Some of the expected data used to construct a product is not available in the information from the Impact Radius data. These fields include *retail_price*, *sale_price*, *discount*, *discount_type*, *style*, *currency*, *keywords*, *secondary_category*, and *merchant_id*. The way most of these missing fields are handled is to leave the value of the field blank in the product record that is written. In the case of *retail_price* and *sale_price*, they are set to the value of *current_price*, a field available in the data. Because *merchant_id* cannot be left blank for several reasons, a helper method is used to generate the *merchant_id* based on the *merchant_name* taken from the filenames.
+
+##### sometimes maybe generate prodcut id?
+The *product_id* field occurs, if it does it all, in one of any number of optional fields in the Impact Radius data of the format custom_label_[n], where n is a number from 0 to 4 (e.g. 'custom_label_4'). When constructing the product data, all these optional fields are searched for a value that contains only numbers, with the rationale being that a value that meets these conditions is likely the *product_id*.
+
+In the event that all the known locations for *product_id* are searched and none is found, a helper function is called to deterministically construct a *product_id*. The generated *product_id* is constructed using a combination of the product's *product_name*, *size*, and *merchant_color*.
+
+
+
+
+
 
 # CJ
 TBD
+
+
+
 
