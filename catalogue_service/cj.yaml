@@ -4,8 +4,8 @@ leave_temp_files: false
 local_temp_dir: pd_temp/cj
 ftp_config:
   host: datatransfer.cj.com
-  user: 4894108
-  password: P9X*BeM8
+  user: '4894108'
+  password: 8feSt+2Q
 file_ending: TBD
 clean_data_method: cj.cj(self._local_temp_dir, self._file_ending, self._fields)
 fields:
