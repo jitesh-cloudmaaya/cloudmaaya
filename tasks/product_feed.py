@@ -1,5 +1,6 @@
 import os
 import ftplib
+import pysftp
 import re
 import zipfile
 import subprocess
@@ -114,6 +115,22 @@ class ProductFeed(object):
             ftp.retrbinary("RETR " + remote_file ,open(local_file, 'wb').write)
  
         ftp.quit()
+
+
+
+    def get_files_sftp(self):
+        with pysftp.Connection(self._ftp_host, username=self._ftp_user, password=self._ftp_password) as sftp:
+            sftp.get_d(self._remote_dir, self._local_temp_dir, preserve_mtime=True)
+        return
+
+# copy all files under public to a local path, preserving modification time
+# sftp.get_d('public', 'local-backup', preserve_mtime=True)
+
+    #### example
+    # with pysftp.Connection('hostname', username='me', password='secret') as sftp:
+    # with sftp.cd('public'):             # temporarily chdir to public
+    #     sftp.put('/my/local/filename')  # upload file to public/ on remote
+    #     sftp.get('remote_file')         # get a remote file
 
     def remove_temp_file(self, filename):
         try:

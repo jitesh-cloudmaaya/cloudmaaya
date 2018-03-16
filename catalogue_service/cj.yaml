@@ -1,11 +1,11 @@
-remote_dir: # TBD
+remote_dir: /outgoing/productcatalog/207812/
 file_pattern: # TBD
 leave_temp_files: false
 local_temp_dir: pd_temp/cj
 ftp_config:
   host: datatransfer.cj.com
   user: '4894108'
-  password: 8feSt+2Q
+  password: '#Gs264in'
 file_ending: TBD
 clean_data_method: cj.cj(self._local_temp_dir, self._file_ending, self._fields)
 fields:
