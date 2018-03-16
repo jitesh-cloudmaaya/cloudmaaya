@@ -71,7 +71,7 @@ def impact_radius_pull():
 def cj_pull():
     pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/cj.yaml'))
     print("Pulling files from FTP")
-    pf.get_files_ftp()
+    pf.get_files_sftp()
     print("Decompressing files")
     pf.decompress_data()
     print("Cleaning files")

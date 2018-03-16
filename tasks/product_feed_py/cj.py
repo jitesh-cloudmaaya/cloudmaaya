@@ -78,6 +78,8 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                         pattern = re.compile('^[^-]*') # pattern matches until the first hyphen
                         match = re.search(pattern, f)
                         merchant_name = match.group(0) # match will be the entire filename in absence of a dash
+                        merchant_name = merchant_name.replace('_', ' ')
+
                         merchant_id = product_feed_helpers.generate_merchant_id(merchant_name)
 
                         # because we need to generate the merchant id also, we need to name the configuration files
@@ -88,9 +90,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                         with open(config_filepath, "r") as config_file:
                             y = yaml.load(config_file)
                             mapping_dict = y['fields']
-
-
-                        # no gender skipping because no gender information?
 
                         # if i see any instances of it, need to handle how to try and unpack values that exist for some merchants but not for others
 
@@ -128,6 +127,17 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                        # add a null mapping to each data point
                         datum['N/A'] = ''
 
+                        gender = datum[gender_key]
+                        gender = gender.upper()
+                        gender = gender.replace('FEMALE', 'WOMEN')
+                        gender = gender.replace('MALE', 'MEN')
+                        gender = gender.replace('MAN', 'MEN')
+
+                        skippedGenders = ['MEN', 'CHILD', 'KIDS', 'BOYS', 'GIRLS', 'BABY']
+                        if gender in skippedGenders:
+                            genderSkipped += 1
+                            continue
+
                         primary_category = datum[primary_category_key]
                         secondary_category = datum[secondary_category_key]
 
@@ -149,9 +159,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
                             product_name = datum[product_name_key]
                             record['product_name'] = product_name
-
-                            # how do we handle blanks or unmappeds...
-                            # record['age'] = datum[age_key]
 
                             size = datum[size_key].upper()
                             size = size.replace('~', ',')
@@ -196,7 +203,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['retail_price'] = retail_price
 
                             record['shipping_price'] = datum[shipping_price_key]
-                            record['gender'] = datum[gender_key]
+                            record['gender'] = gender
                             record['style'] = datum[style_key]
                             record['material'] = datum[material_key]
                             record['age'] = datum[age_key]

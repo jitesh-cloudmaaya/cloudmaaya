@@ -7,7 +7,7 @@ class Command(BaseCommand):
         pf = ProductFeed('catalogue_service/cj.yaml')
 
         self.stdout.write(self.style.WARNING("Pulling full files from FTP"))
-        pf.get_files_ftp()
+        pf.get_files_sftp()
 
         self.stdout.write(self.style.WARNING("Decompressing files"))
         pf.decompress_data()
