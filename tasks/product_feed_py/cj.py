@@ -5,6 +5,7 @@ import yaml
 from copy import copy
 from . import mappings, product_feed_helpers
 from product_api.models import Merchant, CategoryMap
+from datetime import datetime, timedelta
 
 def cj(local_temp_dir, file_ending, cleaned_fields):
     # mappings
@@ -55,23 +56,13 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                     # omit fieldnames arg to use headerlines
                     reader = csv.DictReader(lines, restval = '', dialect = 'reading')
 
-                    tempCount = 0
                     for datum in reader:
                         totalCount += 1
-                        tempCount += 1
 
                         # unicode
                         for key, value in datum.iteritems():
                             datum[key] = value.decode('UTF-8')
-                        
-                        # temporary examining of datum (remove eventually)
-                        # print '========================== Examining product %s ================================' % tempCount
-                        # for key, value in datum.iteritems():
-                        #     print (key, value)
-                        # print '========================== Finish product %s ================================' % tempCount
 
-                        if tempCount > 10:
-                            return
                         ### need to examine more files, but if the keys used actually change between merchants
                         ### then maybe need configuration files kind of like with RAN except probably more annoying?
                         ### thought dictionary of terms that we want (such as color) to the labels that the specific merchant uses
@@ -107,30 +98,49 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                         # unpack the keys
                         merchant_color_key = mapping_dict['merchant_color']
                         size_key = mapping_dict['size']
-                        primary_category_key = mapping_dict['primary_category']
+                        merchant_name_key = mapping_dict['merchant_name']
+                        keywords_key = mapping_dict['keywords']
+                        currency_key = mapping_dict['currency']
+                        SKU_key = mapping_dict['SKU']
                         product_name_key = mapping_dict['product_name']
-
-
+                        availability_key = mapping_dict['availability']
+                        product_image_url_key = mapping_dict['product_image_url']
+                        product_url_key = mapping_dict['product_url']
+                        buy_url_key = mapping_dict['buy_url']
+                        retail_price_key = mapping_dict['retail_price']
+                        sale_price_key = mapping_dict['sale_price']
+                        long_product_description_key = mapping_dict['long_product_description']
+                        primary_category_key = mapping_dict['primary_category']
+                        shipping_price_key = mapping_dict['shipping_price']
+                        manufacturer_name_key = mapping_dict['manufacturer_name']
                         secondary_category_key = mapping_dict['secondary_category']
+                        short_product_description_key = mapping_dict['short_product_description']
+                        manufacturer_part_number_key = mapping_dict['manufacturer_part_number']
+                        product_type_key = mapping_dict['product_type']
+                        discount_key = mapping_dict['discount']
+                        discount_type_key = mapping_dict['discount_type']
+                        gender_key = mapping_dict['gender']
+                        style_key = mapping_dict['style']
+                        material_key = mapping_dict['material']
+                        age_key = mapping_dict['age']
+                        brand_key = mapping_dict['brand']
 
-                        # add a null mapping to each data point
+                       # add a null mapping to each data point
                         datum['N/A'] = ''
-                        print '========================== Examining product %s ================================' % tempCount
-                        for key, value in datum.iteritems():
-                            print (key, value)
-                        print '========================== Finish product %s ================================' % tempCount
 
                         primary_category = datum[primary_category_key]
-                        secondary_category = ''
+                        secondary_category = datum[secondary_category_key]
 
                         allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
                         allume_category = 'allume_category'
                         if allume_category:
                             record = {}
 
+                            record['merchant_name'] = merchant_name
+
                             merchant_color = datum[merchant_color_key]
                             record['merchant_color'] = merchant_color
-                            merchant_color = merchant_color.lower()
+                            merchant_color = merchant_color.split(',')[0].lower()
                             try:
                                 allume_color = color_mapping[merchant_color]
                             except:
@@ -151,52 +161,72 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['product_id'] = product_feed_helpers.generate_product_id(product_name, size, merchant_color)
                             record['merchant_id'] = merchant_id
 
-                            record['buy_url'] = u'' # buy_url is derived with no derivation method?
-                            # record['raw_product_url'] = # derived
 
+                            record['product_image_url'] = datum[product_image_url_key]
+                            record['buy_url'] = datum[buy_url_key]
+                            record['product_url'] = datum[product_url_key]
+                            try:
+                                record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(record['product_url'], 'url')
+                            except KeyError as e:
+                                print e
+                                record['raw_product_url'] = u''
 
+                            record['long_product_description'] = datum[long_product_description_key]
+                            record['short_product_description'] = datum[short_product_description_key]
+                            record['manufacturer_name'] = datum[manufacturer_name_key]
+                            record['manufacturer_part_number'] = datum[manufacturer_part_number_key]
+                            record['SKU'] = datum[SKU_key]
+                            record['product_type'] = datum[product_type_key]
 
-                            # ultimately we need these fields for every record
-                            # - product_id
-                            # - merchant_id
-                            # - product_name
-                            # - long_product_description
-                            # - short_product_description
-                            # - product_url
-                            # - raw_product_url
-                            # - product_image_url
-                            # - buy_url
-                            # - manufacturer_name
-                            # - manufacturer_part_number
-                            # - SKU
-                            # - product_type
-                            # - discount
-                            # - discount_type
-                            # - sale_price
-                            # - retail_price
-                            # - shipping_price
-                            # - color
-                            # - merchant_color
-                            # - gender
-                            # - style
-                            # - size
-                            # - allume_size
-                            # - material
-                            # - age
-                            # - currency
-                            # - availability
-                            # - keywords
-                            # - primary_category
-                            # - secondary_category
-                            # - allume_category
-                            # - brand
-                            # - updated_at
-                            # - merchant_name
-                            # - is_best_seller
-                            # - is_trending
-                            # - allume_score
-                            # - current_price
-                            # - is_deleted
+                            discount_type = datum[discount_type_key]
+                            discount = datum[discount_key]
+                            if discount_type != 'amount' or discount_type != 'percentage':
+                                record['discount'] = u'0.00'
+                                record['discount_type'] = u'amount'
+                            else:
+                                record['discount'] = discount
+                                record['discount_type'] = discount_type
+
+                            record['discount'] = datum[discount_key]
+                            record['discount_type'] = datum[discount_type_key]
+
+                            sale_price = datum[sale_price_key]
+                            retail_price = datum[retail_price_key]
+                            record['sale_price'] = sale_price
+                            record['retail_price'] = retail_price
+
+                            record['shipping_price'] = datum[shipping_price_key]
+                            record['gender'] = datum[gender_key]
+                            record['style'] = datum[style_key]
+                            record['material'] = datum[material_key]
+                            record['age'] = datum[age_key]
+                            record['currency'] = datum[currency_key]
+
+                            availability = datum[availability_key]
+                            if availability == '':
+                                availability = 'out-of-stock'
+                            record['availability'] = availability
+
+                            record['keywords'] = datum[keywords_key]
+                            record['primary_category'] = primary_category
+                            record['secondary_category'] = secondary_category
+                            record['allume_category'] = allume_category
+                            record['brand'] = datum[brand_key]
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+                            try:
+                                if float(sale_price) > 0:
+                                    record['current_price'] = sale_price
+                                else:
+                                    record['current_price'] = retail_price
+                            except ValueError:
+                                record['current_price'] = retail_price
+
+                            # defaults
+                            record['is_best_seller'] = u'0'
+                            record['is_trending'] = u'0'
+                            record['allume_score'] = u'0'
+                            record['is_deleted'] = u'0'
 
                             # finish unicode sandwich
                             for key, value in record.iteritems():
@@ -204,32 +234,34 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
                             # size splitting stuff
                             parent_attributes = copy(record)
-                            # TO-DO finish size splitting stuff
+                            sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
+                            product_id = parent_attributes['product_id']
+                            if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+                                for size in sizes:
+                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    # use the size mapping here also
+                                    parent_attributes['size'] = size
+                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    writer.writerow(parent_attributes)
+                                    writtenCount += 1
+                                # set the parent record to is_deleted
+                                record['is_deleted'] = 1
+
 
                             # write the record
                             writer.writerow(record)
                             writtenCount += 1
+                        else:
+                            categoriesSkipped += 1
 
+    print('Processed %s records' % totalCount)
+    print('Wrote %s records' % writtenCount)
+    print('Discovered %s unmapped primary and secondary category pairs' % (CategoryMap.objects.count() - categoryCount))
+    print('Discovered %s new merchant(s)' % (Merchant.objects.count() - merchantCount))
+    print('Dropped %s records due to gender' % genderSkipped)
+    print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
-                        # merchant_color = datum[key_that_represents_merchant_color]
-
-                        # some fields might be missing
-                        # may need to generate product_id and merchant_id
-
-                        # print merchant_color
-
-                        # return
-
-
-
-
-
-# I know that we want an attribute color (in a general sense)
-# from the data
-# however, we know that the data sources on CJ do not agree what to call color
-# so, we have a translation dictionary, read from a yaml file, that maps these terms
-# such that 'color': 'label' (where 'label' is the term the merchant stores color at)\
-# so, we index into this dictionary and, using the specific configuration file for each merchant,
-# set key_that_represents_color = mapping_dict['color'] # should map to the string 'label'
-# then when we read in the data, we access color via datum[key_that_represents_color]
+    if 0: # remove this later
+        print('Updating non-upserted Impact Radius products')
+        product_feed_helpers.set_deleted_network_products('Impact Radius')
 
