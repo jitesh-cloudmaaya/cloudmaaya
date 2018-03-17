@@ -1,6 +1,6 @@
 fields:
-    merchant_color: LABEL
-    size: TITLE
+    merchant_color: FORMAT
+    size: LABEL
     merchant_name: PROGRAMNAME
     keywords: KEYWORDS
     currency: CURRENCY
@@ -10,17 +10,17 @@ fields:
     product_image_url: IMAGEURL
     product_url: BUYURL
     buy_url: BUYURL
-    retail_price: PRICE
+    retail_price: RETAILPRICE
     sale_price: SALEPRICE
     long_product_description: DESCRIPTION
     primary_category: ADVERTISERCATEGORY
     shipping_price: STANDARDSHIPPINGCOST
     manufacturer_name: MANUFACTURER
+    manufacturer_part_number: MANUFACTURERID
 
     # fields that don't seem to appear in the data
     secondary_category: N/A
     short_product_description: N/A
-    manufacturer_part_number: N/A
     product_type: N/A
     discount: N/A
     discount_type: N/A

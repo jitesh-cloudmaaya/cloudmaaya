@@ -117,6 +117,9 @@ class ProductFeed(object):
         ftp.quit()
 
     def get_files_sftp(self):
+
+        # use file patterns to grab .gz and .zip files off sftp server?
+
         self.make_temp_dir()
         with pysftp.Connection(self._ftp_host, username=self._ftp_user, password=self._ftp_password) as sftp:
             sftp.get_d(self._remote_dir, self._local_temp_dir, preserve_mtime=True)

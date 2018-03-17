@@ -6,6 +6,7 @@ from copy import copy
 from . import mappings, product_feed_helpers
 from product_api.models import Merchant, CategoryMap
 from datetime import datetime, timedelta
+from catalogue_service.settings import BASE_DIR
 
 def cj(local_temp_dir, file_ending, cleaned_fields):
     # mappings
@@ -26,7 +27,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
         file_directory = os.listdir(local_temp_dir)
 
         for f in file_directory:
-            if f.endswith('.txt'):
+            if f.endswith(file_ending):
                 # file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
                 file_list.append(f)
 
@@ -51,53 +52,66 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                 lines = data.readlines()
 
                 # merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
-                merchant_is_active = 1
-                if merchant_is_active:
-                    # omit fieldnames arg to use headerlines
-                    reader = csv.DictReader(lines, restval = '', dialect = 'reading')
+                # omit fieldnames arg to use headerlines
+                reader = csv.DictReader(lines, restval = '', dialect = 'reading')
 
-                    for datum in reader:
+                for datum in reader:
+                    # totalCount += 1 # depening on how we want to count records skipped because of inactive merchants
+
+                    # unicode
+                    for key, value in datum.iteritems():
+                        datum[key] = value.decode('UTF-8')
+
+                    for key, value in datum.iteritems():
+                        print (key, value)
+
+                    ### need to examine more files, but if the keys used actually change between merchants
+                    ### then maybe need configuration files kind of like with RAN except probably more annoying?
+                    ### thought dictionary of terms that we want (such as color) to the labels that the specific merchant uses
+                    ## reminds me of my interview problem lol
+
+
+
+                    # merchant name is the filename until the first dash (at least for all present examples)
+                    pattern = re.compile('^[^-]*') # pattern matches until the first hyphen
+                    match = re.search(pattern, f)
+                    merchant_name = match.group(0) # match will be the entire filename in absence of a dash
+                    merchant_name = merchant_name.lower() # make configuration file detection case agnostic
+                    
+
+                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config_cj/'
+                    fd = os.listdir(config_path)
+
+                    default = 'default'
+                    extension = '.yaml'
+                    default_filename = default + extension
+                    merchant_filename = merchant_name + extension
+
+                    full_path = config_path + default_filename
+
+                    if merchant_filename in fd:
+                        full_path = config_path + merchant_filename
+
+                    with open(full_path, "r") as config:
+                        print full_path # figure out what configuration file is being used
+                        config_dict = yaml.load(config)
+                        mapping_dict = config_dict['fields']
+
+                    merchant_name_key = mapping_dict['merchant_name']
+                    merchant_name = datum[merchant_name_key]
+                    merchant_id = product_feed_helpers.generate_merchant_id(merchant_name)
+
+                    # move activity check here
+                    merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
+                    # merchant_is_active = 1
+                    if merchant_is_active:
+                        # increment totalCount here??
                         totalCount += 1
 
-                        # unicode
-                        for key, value in datum.iteritems():
-                            datum[key] = value.decode('UTF-8')
-
-                        ### need to examine more files, but if the keys used actually change between merchants
-                        ### then maybe need configuration files kind of like with RAN except probably more annoying?
-                        ### thought dictionary of terms that we want (such as color) to the labels that the specific merchant uses
-                        ## reminds me of my interview problem lol
-
-
-                        # attempt to load this yaml file in
-                        # i'll need to make this more general...
-                        # need to find the filepath
-
-
-                        # merchant name is the filename until the first dash (at least for all present examples)
-                        pattern = re.compile('^[^-]*') # pattern matches until the first hyphen
-                        match = re.search(pattern, f)
-                        merchant_name = match.group(0) # match will be the entire filename in absence of a dash
-                        merchant_name = merchant_name.replace('_', ' ')
-
-                        merchant_id = product_feed_helpers.generate_merchant_id(merchant_name)
-
-                        # because we need to generate the merchant id also, we need to name the configuration files
-                        # after merchant name and search for them based on that
-                        config_filename = merchant_name + '.yaml'
-                        config_filepath = os.path.join(os.getcwd(), 'tasks/product_feed_py/merchants_config_cj', config_filename)
-                        config_file = open(config_filepath, "r")
-                        with open(config_filepath, "r") as config_file:
-                            y = yaml.load(config_file)
-                            mapping_dict = y['fields']
-
-                        # if i see any instances of it, need to handle how to try and unpack values that exist for some merchants but not for others
-
-                        # first way is to go key by key and retrieve from dictionary, but there is proooobably a faster method to do so
+                        # faster way to perform the below?
                         # unpack the keys
                         merchant_color_key = mapping_dict['merchant_color']
                         size_key = mapping_dict['size']
-                        merchant_name_key = mapping_dict['merchant_name']
                         keywords_key = mapping_dict['keywords']
                         currency_key = mapping_dict['currency']
                         SKU_key = mapping_dict['SKU']
@@ -254,6 +268,8 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                                 # set the parent record to is_deleted
                                 record['is_deleted'] = 1
 
+                            # print record
+                            return
 
                             # write the record
                             writer.writerow(record)

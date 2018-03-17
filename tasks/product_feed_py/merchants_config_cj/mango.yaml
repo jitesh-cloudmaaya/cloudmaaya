@@ -1,6 +1,6 @@
 fields:
-    merchant_color: LABEL
-    size: TITLE
+    merchant_color: FORMAT
+    size: LABEL
     merchant_name: PROGRAMNAME
     keywords: KEYWORDS
     currency: CURRENCY

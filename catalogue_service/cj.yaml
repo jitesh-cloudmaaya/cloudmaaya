@@ -6,7 +6,7 @@ ftp_config:
   host: datatransfer.cj.com
   user: '4894108'
   password: '#Gs264in'
-file_ending: TBD
+file_ending: .txt
 clean_data_method: cj.cj(self._local_temp_dir, self._file_ending, self._fields)
 fields:
 - product_id
