@@ -165,7 +165,7 @@ def get_allume_product(self, product_id):
 
     get:
         Convert product data to allume product data by id
-        URL: /product_api/super_get_product/1570
+        URL: /product_api/get_allume_product/1570
     """
     product = Product.objects.get(id = product_id)
     p_name = product.product_name
