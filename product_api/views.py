@@ -222,6 +222,10 @@ def get_allume_product(self, product_id):
                 size_data = {'image': product['product_image_url'], 'price': product['current_price'], 'text': size, 'value': size} # change formatting?
                 tmp['color_objects'][clr]['size_data'][size] = size_data
 
+    # a mapping of the text field, 'availability', to a boolean flag, 'available'
+    availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False}
+    # either update above as more or fields are added or mold availability field across feeds to the same form
+
     # create payload object
     merchant_node = str(matching_object['product_api_merchant'])
     product_node = str(product_id)
@@ -234,6 +238,14 @@ def get_allume_product(self, product_id):
     payload['sites'][merchant_node]['add_to_cart'][product_node]['original_price'] = matching_object['retail_price']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['image'] = matching_object['product_image_url']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['description'] = matching_object['long_product_description']
+
+    try:
+        payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = availability_mapping[matching_object['availability']]
+    except KeyError as e:
+        print "The 'availablity' text field value present in this product does not have a known mapping, it was assumed to 'available' = False"
+        print matching_object['availability']
+        payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = False
+
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_names'] = ["color", "size", "quantity"]
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_values'] = {}
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_values']['color'] = []
