@@ -157,6 +157,10 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         # in a delta file, there is 1 additional field for modification
                         modification = datum['modification']
 
+                        # whenever secondary category is missing and product type given, use product type as the primary and primary as the secondary
+                        if not secondary_category and attribute_2_product_type:
+                            primary_category, secondary_category, attribute_2_product_type = attribute_2_product_type, primary_category, secondary_category
+
                         # moving gender check above categories check
                         # as all men categories have no entries in category tables
                         gender = attribute_6_gender.upper()
