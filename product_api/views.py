@@ -224,7 +224,7 @@ def get_allume_product(self, product_id):
                 tmp['color_objects'][clr]['size_data'][size] = size_data
 
     # a mapping of the text field, 'availability', to a boolean flag, 'available'
-    availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False}
+    availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False, 'yes': True, 'no': False}
     # either update above as more or fields are added or mold availability field across feeds to the same form
 
     # create payload object

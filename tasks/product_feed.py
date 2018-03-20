@@ -1,5 +1,6 @@
 import os
 import ftplib
+import pysftp
 import re
 import zipfile
 import subprocess
@@ -61,7 +62,6 @@ class ProductFeed(object):
 
         # need to escape the backslash for python and then also for mySQL
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\n' %s" % (f, table, fields)
-        print statement
         full_script.append(statement)
 
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
@@ -112,8 +112,17 @@ class ProductFeed(object):
         for remote_file in self._remote_files:
             local_file = os.path.join(self._local_temp_dir, remote_file)
             ftp.retrbinary("RETR " + remote_file ,open(local_file, 'wb').write)
- 
+
         ftp.quit()
+
+    def get_files_sftp(self):
+
+        # use file patterns to grab .gz and .zip files off sftp server?
+
+        self.make_temp_dir()
+        with pysftp.Connection(self._ftp_host, username=self._ftp_user, password=self._ftp_password) as sftp:
+            sftp.get_d(self._remote_dir, self._local_temp_dir, preserve_mtime=True)
+        return
 
     def remove_temp_file(self, filename):
         try:

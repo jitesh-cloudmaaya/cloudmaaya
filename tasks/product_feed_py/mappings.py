@@ -115,7 +115,11 @@ def add_new_merchant(external_merchant_id, name, network, active = False):
     Merchant.objects.create(external_merchant_id = external_merchant_id, name = name, network = network, active = active)
 
 def get_network(network_name):
-    return Network.objects.get(name = network_name)
+    try:
+        return Network.objects.get(name = network_name)
+    except Network.DoesNotExist:
+        Network.objects.create(name = network_name, active = True)
+        return Network.objects.get(name = network_name)
 
 def is_merchant_in_category(category_mapping, identifier, merchant_name):
     allume_category_id, categories_are_active, category_map_id, merchant_name_list = category_mapping[identifier]
