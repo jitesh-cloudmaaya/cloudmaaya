@@ -1,6 +1,8 @@
 import os
 import ftplib
 import pysftp
+import paramiko
+from paramiko.py3compat import decodebytes
 import re
 import zipfile
 import subprocess
@@ -9,7 +11,7 @@ import yaml
 import datetime
 import time
 from product_feed_py import *
-from catalogue_service.settings import BASE_DIR
+from catalogue_service.settings import BASE_DIR, CJ_HOST_KEY
 
 class ProductFeed(object):
 
@@ -115,12 +117,20 @@ class ProductFeed(object):
 
         ftp.quit()
 
+    # from base64 import decodebytes
     def get_files_sftp(self):
+
+# attempt to handle the case where we our first connection doesn't know that datatransfer.cj.com is a known host
+# datatransfer.cj.com,64.156.167.125 ssh-dss
 
         # use file patterns to grab .gz and .zip files off sftp server?
 
+        key = paramiko.DSSKey(data=decodebytes(CJ_HOST_KEY))
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys.add(self._ftp_host, 'ssh-dss', key)
+
         self.make_temp_dir()
-        with pysftp.Connection(self._ftp_host, username=self._ftp_user, password=self._ftp_password) as sftp:
+        with pysftp.Connection(self._ftp_host, username=self._ftp_user, password=self._ftp_password, cnopts=cnopts) as sftp:
             sftp.get_d(self._remote_dir, self._local_temp_dir, preserve_mtime=True)
         return
 
