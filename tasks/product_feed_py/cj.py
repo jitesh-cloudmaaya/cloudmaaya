@@ -26,8 +26,9 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
         file_list = []
         file_directory = os.listdir(local_temp_dir)
 
+        pattern = re.compile(file_ending)
         for f in file_directory:
-            if f.endswith(file_ending):
+            if re.search(pattern, f):
                 # file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
                 file_list.append(f)
 
@@ -46,6 +47,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
         writer = csv.DictWriter(cleaned, cleaned_fieldnames, dialect = 'writing')
 
         for f in file_list:
+            print f
             # might need to do some merchant name stuff here
             full_filepath = os.path.join(os.getcwd(), local_temp_dir, f)
             with open(full_filepath, "r") as data:
@@ -57,13 +59,9 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
                 for datum in reader:
                     # totalCount += 1 # depening on how we want to count records skipped because of inactive merchants
-
                     # unicode
                     for key, value in datum.iteritems():
                         datum[key] = value.decode('UTF-8')
-
-                    for key, value in datum.iteritems():
-                        print (key, value)
 
                     ### need to examine more files, but if the keys used actually change between merchants
                     ### then maybe need configuration files kind of like with RAN except probably more annoying?
@@ -93,7 +91,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                         full_path = config_path + merchant_filename
 
                     with open(full_path, "r") as config:
-                        print full_path # figure out what configuration file is being used
                         config_dict = yaml.load(config)
                         mapping_dict = config_dict['fields']
 
@@ -103,7 +100,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
                     # move activity check here
                     merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
-                    # merchant_is_active = 1
                     if merchant_is_active:
                         # increment totalCount here??
                         totalCount += 1
@@ -156,7 +152,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                         secondary_category = datum[secondary_category_key]
 
                         allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
-                        allume_category = 'allume_category'
                         if allume_category:
                             record = {}
 
@@ -267,9 +262,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                                     writtenCount += 1
                                 # set the parent record to is_deleted
                                 record['is_deleted'] = 1
-
-                            # print record
-                            return
 
                             # write the record
                             writer.writerow(record)

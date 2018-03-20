@@ -11,7 +11,7 @@ fields:
     product_url: BUYURL
     buy_url: BUYURL
     retail_price: RETAILPRICE
-    sale_price: SALEPRICE # could be PRICE ?
+    sale_price: SALEPRICE
     long_product_description: DESCRIPTION
     primary_category: ADVERTISERCATEGORY
     shipping_price: STANDARDSHIPPINGCOST

@@ -6,7 +6,9 @@ ftp_config:
   host: datatransfer.cj.com
   user: '4894108'
   password: '#Gs264in'
-file_ending: .txt
+# file_ending: _Catalog.txt # this is instead of .txt because REVOLVE
+file_ending: '[Cc]atalog[^a-zA-Z]*.txt$'
+# given that merchants do not have a uniform file structure, may need to change configs to 'future-proof'?
 clean_data_method: cj.cj(self._local_temp_dir, self._file_ending, self._fields)
 fields:
 - product_id
