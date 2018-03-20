@@ -119,6 +119,7 @@ class ProductFeed(object):
 
     # from base64 import decodebytes
     # in theory, this makes get_files_sftp hardcoded to cj. change the CJ_HOST_KEY to a list to make it more generic
+    # we could also include the algorithm used as part of a tuple containing the info for the hosts
     def get_files_sftp(self):
 
 # attempt to handle the case where we our first connection doesn't know that datatransfer.cj.com is a known host
