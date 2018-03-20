@@ -61,6 +61,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                     # totalCount += 1 # depening on how we want to count records skipped because of inactive merchants
                     # unicode
                     for key, value in datum.iteritems():
+                        value = str(value) # check later, REVOLVE had an issue where a value was being read as [value] for some reason (as opposed to str)
                         datum[key] = value.decode('UTF-8')
 
                     ### need to examine more files, but if the keys used actually change between merchants
