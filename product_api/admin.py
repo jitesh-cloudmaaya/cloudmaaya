@@ -59,7 +59,10 @@ class CategoryMapAdmin(admin.ModelAdmin):
 
     def show_product_examples_url(self, obj):
 
-        param_values = urllib.urlencode({'external_cat1': obj.external_cat1, 'external_cat2': obj.external_cat2})
+        ext_cat_1 = unicode(obj.external_cat1).encode('utf-8')
+        ext_cat_2 = unicode(obj.external_cat2).encode('utf-8')
+
+        param_values = urllib.urlencode({'external_cat1': ext_cat_1, 'external_cat2': ext_cat_2})
 
         return format_html("<a href='/category_samples?{params}' target='new'>Samples</a>", params=param_values)
 
