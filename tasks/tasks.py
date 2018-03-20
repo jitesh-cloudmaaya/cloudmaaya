@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
-from celery import task
+from celery import task, shared_task
 from django.db import connection, transaction
 import os
 import time
@@ -100,6 +100,24 @@ def update_client_360():
     cursor = connection.cursor()
     etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/update_client_360.sql'))
     statement = etl_file.read()
+    statements = statement.split(';')
+
+    try:
+        with transaction.atomic():
+            for i in range(0, len(statements)):
+                statement = statements[i]
+                if statement.strip(): # avoid 'query was empty' operational error
+                    cursor.execute(statement)
+    finally:
+        cursor.close()
+
+@shared_task
+def add_client_to_360(wp_user_id):
+    cursor = connection.cursor()
+    etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360_one.sql'))
+    statement = etl_file.read()
+    print "Adding User to Client 360"
+    statement = statement.replace('$WPUSERID', str(wp_user_id))
     statements = statement.split(';')
 
     try:

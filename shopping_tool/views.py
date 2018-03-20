@@ -26,12 +26,31 @@ from PIL import Image
 from catalogue_service.settings_local import PRODUCT_IMAGE_PROXY
 from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY, DEV_AUTH_EMAIL
 from catalogue_service.settings_local import IMGKIT_URL, IMGKIT_OPTIONS
+from catalogue_service.settings_local import ENV_LOCAL
 
 from weather_service.models import Weather
 import imgkit
 
 
 # Create your views here. 
+
+def category_samples(request):
+    cat1 = request.GET['external_cat1']
+    cat2 = request.GET['external_cat2']
+
+    print cat1
+    print cat2
+    
+    products = Product.objects.filter(primary_category = cat1).filter(secondary_category = cat2)
+    products = products.filter(is_deleted = 0)
+    products = products.all()[:20]
+    for product in products:
+        print product
+
+    context = {'products': products, 'cat1': cat1, 'cat2': cat2}
+
+    return render(request, 'shopping_tool/category_samples.html', context) 
+
 
 @check_login
 def index(request, styling_session_id=None):
@@ -45,7 +64,7 @@ def index(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
@@ -76,7 +95,7 @@ def look_builder(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
@@ -85,12 +104,13 @@ def look_builder(request, styling_session_id=None):
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()
     product_image_proxy = PRODUCT_IMAGE_PROXY
+    env = ENV_LOCAL
 
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
                'looks': looks, 'weather_info': weather_info, 'styles': styles,
-               'occasions': occasions}
+               'occasions': occasions, 'env': env}
                
     return render(request, 'shopping_tool/look_builder.html', context)
 
@@ -137,7 +157,7 @@ def explore(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)

@@ -5,6 +5,9 @@ from django.contrib import admin
 
 from .models import *
 from django.contrib.admin import SimpleListFilter
+from django.utils.html import format_html
+import urllib
+
 
 
 # Register your models here.
@@ -49,9 +52,21 @@ class NetworkAdmin(admin.ModelAdmin):
     list_display = ('name', 'active')
 
 class CategoryMapAdmin(admin.ModelAdmin):
-    list_display = ('id', 'external_cat1', 'external_cat2', 'merchant_name_formatted', 'allume_category', 'turned_on', 'pending_review')
+    list_display = ('id', 'external_cat1', 'external_cat2', 'merchant_name_formatted', 'allume_category', 'turned_on', 'pending_review', 'show_product_examples_url')
     list_filter = ('pending_review', 'turned_on', 'allume_category', CategoryMap_MerchantFilter,)
     search_fields = ('external_cat1', 'external_cat2', 'allume_category__name', 'merchant_name')
+    readonly_fields = ['external_cat1', 'external_cat2', 'merchant_name']
+
+    def show_product_examples_url(self, obj):
+
+        ext_cat_1 = unicode(obj.external_cat1).encode('utf-8')
+        ext_cat_2 = unicode(obj.external_cat2).encode('utf-8')
+
+        param_values = urllib.urlencode({'external_cat1': ext_cat_1, 'external_cat2': ext_cat_2})
+
+        return format_html("<a href='/category_samples?{params}' target='new'>Samples</a>", params=param_values)
+
+    show_product_examples_url.short_description = "Samples"
 
 #class MerchantCategoryAdmin(admin.ModelAdmin):
 #    list_display = ('name', 'active', 'network')

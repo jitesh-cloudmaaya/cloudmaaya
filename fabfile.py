@@ -1,12 +1,14 @@
 from fabric.api import local, run, env, put, abort, run, cd, sudo, roles, execute
 from fabric.contrib.console import confirm
 import os, time, datetime
+from fabric.network import ssh
 
 
 # remote ssh credentials
 #env.hosts = ['shopping-tool-stage.allume.co']
 env.path = '/home/ec2-user'
 env.user = 'ec2-user'
+#ssh.util.log_to_file("paramiko.log", 10)
 
 
 env.current_path = "%s/current" % (env.path)
@@ -59,9 +61,13 @@ def prod(docker_tag=''):
   env.environment = 'prod'
   env.docker_tag = 'master'
 
+  env.gateway = 'ec2-52-53-136-112.us-west-1.compute.amazonaws.com'
+
   env.roledefs = {
       'web': ['ec2-54-177-92-201.us-west-1.compute.amazonaws.com'],
       'worker': ['ec2-54-176-139-176.us-west-1.compute.amazonaws.com'],
+      #'web': ['127.0.0.1:8022'],
+      #'worker': ['127.0.0.1:8023'],
   }
 
 

@@ -25,6 +25,24 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from tasks.product_feed_py.product_feed_helpers import determine_allume_size
 from tasks.product_feed_py import mappings
+from tasks.tasks import add_client_to_360
+
+@api_view(['GET'])
+@permission_classes((AllowAny, ))
+def add_client_to_360_api(request, wp_user_id):
+    """
+    post:
+        Get Allume Size
+
+        /shopping_tool_api/add_client_to_360/{wp_user_id}
+
+    """
+    #print wp_user_id
+    #wp_user_id = 200
+
+    add_client_to_360.delay(wp_user_id)
+    return JsonResponse({"Status": "Success"}, safe=False)
+
 
 
 @api_view(['POST'])
@@ -733,6 +751,11 @@ def look_item(request, pk=None):
 
         try:
             look_item = LookProduct.objects.get(id=pk)
+
+            #Test to see if product_clipped_stylist_id is already set, if so keep o.g. value
+            if look_item.product_clipped_stylist_id:
+                item['product_clipped_stylist_id'] = look_item.product_clipped_stylist_id
+
             serializer = LookProductCreateSerializer(look_item, data=item)
 
         except LookProduct.DoesNotExist:
