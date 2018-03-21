@@ -184,8 +184,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
 @receiver(pre_save, sender=Merchant)
 def update_allume_merchant_pre_save(sender, instance, *args, **kwargs):
-    if not instance.update_allume_status() :
-        raise Exception('Allume API Update Failed')
+
+    #Skip if ENV <> Stage or Prod (So Circle Ci and Dev can function)
+    if (ENV_LOCAL == 'Stage') or ('Prod'):
+        if not instance.update_allume_status() :
+            raise Exception('Allume API Update Failed')
 
 sizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/SizeMap.json')
 shoesizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/ShoeSizeMap.json')
