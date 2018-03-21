@@ -186,7 +186,7 @@ class ProductSerializer(serializers.ModelSerializer):
 def update_allume_merchant_pre_save(sender, instance, *args, **kwargs):
 
     #Skip if ENV <> Stage or Prod (So Circle Ci and Dev can function)
-    if (ENV_LOCAL == 'Stage') or ('Prod'):
+    if (ENV_LOCAL == 'Stage') or (ENV_LOCAL == 'Prod'):
         if not instance.update_allume_status() :
             raise Exception('Allume API Update Failed')
 
