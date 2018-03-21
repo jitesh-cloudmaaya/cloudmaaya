@@ -135,9 +135,10 @@
           <label style="margin-top:10px">{{ client.first_name }} {{ client.last_name }} timezone: <strong>{{client.timezone}}</strong></label>
         </div>
         <h5>Client text:</h5>
-        <textarea id="publish-email">
-Hi {{ client.first_name }}, your new Looks are ready! You can buy right from your Lookbook & prices are never marked up.  Leave me feedback by 'hearting' and commenting on each Look or texting back! Items do sell out fast, so be sure to purchase quickly. Don't hesitate to reach out. I'm here to help! I'm excited to hear what you think! https://www.allume.co/looks/{{ styling_session.token }}#intro
+        <textarea id="publish-email" data-urllink="https://www.allume.co/looks/{{ styling_session.token }}#intro">
+Hi {{ client.first_name }}, your new Looks are ready! You can buy right from your Lookbook & prices are never marked up.  Leave me feedback by 'hearting' and commenting on each Look or texting back! Items do sell out fast, so be sure to purchase quickly. Don't hesitate to reach out. I'm here to help! I'm excited to hear what you think! 
 </textarea>
+<em class="help">The following link will be appended to your message: <strong>https://www.allume.co/looks/{{ styling_session.token }}#intro</strong></em>
       </div>
       <div class="publish-section" id="pub-section3"></div>
     </div>

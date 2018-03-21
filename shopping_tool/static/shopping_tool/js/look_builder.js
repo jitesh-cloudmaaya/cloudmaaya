@@ -338,7 +338,7 @@ var look_builder = {
       var lookbook = {
         styling_session_id: look_builder.session_id,
         send_at: null,
-        text_content: $('#publish-email').val(),
+        text_content: $('#publish-email').val() + '' + $('#publish-email').data('urllink'),
         notify_user : true
       }
       if($('#send-later-toggle').prop('checked') == true){
@@ -346,14 +346,11 @@ var look_builder = {
         var tz = $('#send-later').data('tz')
         var reg_str = t.getMoment().format('YYYY-MM-DD HH:mm');
         var send_string = moment.tz(reg_str, tz).format('X');
-        console.log(reg_str)
-        console.log(send_string)
         lookbook.send_at = parseInt(send_string);
       }
       if($('#do-not-send-toggle').prop('checked') == true){
         lookbook.notify_user = false;
       }
-      console.log(lookbook)
       $.ajax({       
         contentType : 'application/json',
         crossDomain: true,
@@ -1150,6 +1147,7 @@ var look_builder = {
   */
   unorderedRack: function(){
     var rack_items = [];
+    /* old version that used dom instead of js array
     var rack_items_dom = $('#rack-list').find('div.item');
     if(rack_items_dom.length > 0){
       rack_items.push(
@@ -1179,6 +1177,45 @@ var look_builder = {
         '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
       );
     });
+    */
+    var compare_array = [];
+    if(initial_rack.length > 0){
+      rack_items.push(
+        '<a href="#" class="lb-search-link">' +
+        '<i class="fa fa-search"></i>search rack</a>' +
+        '<a class="sort-link sort-items" href="#">' +
+        '<i class="fa fa-th-list"></i>sort items</a>'
+      );
+
+      $.each($('#rack-list').find('div.item'), function(idx){
+        var item = $(this);
+        compare_array.push(item.find('a.remove-from-rack').data('rackid'));
+      });
+    }else{
+      rack_items.push('<div class="empty">Your rack is empty...</div>');
+    }
+    initial_rack.sort(function(a,b){
+      if(a.added > b.added){ return -1}
+      if(a.added < b.added){ return 1}
+      return 0;      
+    });
+    for(var i = 0, l = initial_rack.length; i<l; i++){
+      var data = initial_rack[i];
+      var src = data.product_image_url;
+      var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
+      if(compare_array.indexOf(data.rack_id) > -1){
+        rack_items.push(
+          '<div class="item" data-productid="' + data.product_id + 
+          '" data-url="' + src + '"><img class="handle" src="' + src + 
+          '"/><a href="#" class="add" data-productid="' + data.product_id + '" data-imgsrc="' + 
+          src + '"><i class="fa fa-plus-circle"></i></a>' +
+          '<a href="#"  class="view" data-productid="' + data.product_id + 
+          '"><i class="fa fa-search"></i></a>' +
+          '<a href="#" class="remove" data-sku="' + sku + 
+          '" data-rackid="' + data.rack_id + '"><i class="fa fa-times"></i></a></div>'
+        ); 
+      }     
+    }
     var faves = $('#fave-prods div.item');
     if(faves.length > 0){
       rack_items.push(look_builder.rackFavorites(faves));
