@@ -776,7 +776,6 @@ var collage = {
     collage.canvas.discardActiveObject();
     /* get canvas object so that we can update look products */
     var changes = collage.canvas.toObject();
-    console.log(changes)
     /* update the look */
     look_builder.updateLook(div, $('input#look-id').val(), $('#look-name').val(), $('#look-desc').val());
     /* cahce the look id so we have it for the update calls for look products */

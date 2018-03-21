@@ -338,7 +338,7 @@ var look_builder = {
       var lookbook = {
         styling_session_id: look_builder.session_id,
         send_at: null,
-        text_content: $('#publish-email').val() + '' + $('#publish-email').data('urllink'),
+        text_content: $('#publish-email').val(),
         notify_user : true
       }
       if($('#send-later-toggle').prop('checked') == true){
