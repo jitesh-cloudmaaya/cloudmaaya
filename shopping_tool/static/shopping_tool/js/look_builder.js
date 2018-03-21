@@ -1147,37 +1147,6 @@ var look_builder = {
   */
   unorderedRack: function(){
     var rack_items = [];
-    /* old version that used dom instead of js array
-    var rack_items_dom = $('#rack-list').find('div.item');
-    if(rack_items_dom.length > 0){
-      rack_items.push(
-        '<a href="#" class="lb-search-link">' +
-        '<i class="fa fa-search"></i>search rack</a>' +
-        '<a class="sort-link sort-items" href="#">' +
-        '<i class="fa fa-th-list"></i>sort items</a>'
-      );
-    }else{
-      rack_items.push('<div class="empty">Your rack is empty...</div>');
-    }
-    $.each(rack_items_dom, function(index){
-      var item = $(this);
-      var data = item.data();
-      var src = item.find('img').attr('src');
-      var link = item.find('a.remove-from-rack')
-      var sku = link.data('sku');
-      var rack_id = link.data('rackid');
-      rack_items.push(
-        '<div class="item" data-productid="' + data.productid + 
-        '" data-url="' + src + '"><img class="handle" src="' + src + 
-        '"/><a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
-        src + '"><i class="fa fa-plus-circle"></i></a>' +
-        '<a href="#"  class="view" data-productid="' + data.productid + 
-        '"><i class="fa fa-search"></i></a>' +
-        '<a href="#" class="remove" data-sku="' + sku + 
-        '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
-      );
-    });
-    */
     var compare_array = [];
     if(initial_rack.length > 0){
       rack_items.push(

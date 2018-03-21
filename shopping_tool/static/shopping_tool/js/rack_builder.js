@@ -75,7 +75,6 @@ var rack_builder = {
     var details = item.data('details');
     var idx = item.closest('div.item').index();
     var items = rack.find('div.item').length;
-    console.log(details)
     var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
     var add_to_list = false;
     if(existing == undefined){
