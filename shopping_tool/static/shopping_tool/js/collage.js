@@ -6,8 +6,11 @@ var collage = {
   * @description function to create and submit newly added look products to the allum db
   * @param {integer} product_id - the id of the product being added
   * @param {integer} look_item_id - the app look item id
+  * @param {object} product_obj - the app object added
+  * @param {string||null} image_url - path for the image
+  * @param {integer||null} link_product_id - product id being added
   */
-  addAllumeProduct: function(product_id, look_item_id){
+  addAllumeProduct: function(product_id, look_item_id, product_obj, image_url, link_product_id){
     console.log('firing addAllumeProduct')
     $.ajax({
       success: function(results){
@@ -85,6 +88,44 @@ var collage = {
             url: 'https://ecommerce-service-' + local_environment + '.allume.co/wp-json/products/create_or_update_product_from_affiliate_feeds_and_link_to_look/',
             xhrFields: {
               withCredentials: true
+            },
+            success: function(response){
+              if(image_url != null){
+                var img = new Image(); 
+                img.src = look_proxy + '' + image_url;
+                img.onload = function() {
+                  var scale = 1;
+                  if(this.naturalHeight > 395){
+                    scale = 395 / this.naturalHeight 
+                  }
+                  var fImg = new fabric.Cropzoomimage(this, {
+                    originX: 'center',
+                    originY: 'center',
+                    left: collage.canvas.getWidth()/2,
+                    top: collage.canvas.getHeight()/2,
+                    scaleX: scale,
+                    scaleY: scale,
+                    prod_id: product_obj.id,
+                    product_id: link_product_id
+                  });
+                  fImg.originalImgSrc = look_proxy + '' + image_url;
+                  collage.canvas.add(fImg);
+                  collage.canvas.setActiveObject(fImg);
+                  collage.canvas.discardActiveObject();
+                  $('#adding-product').remove();
+                  collage.product_cache.push(product_obj);
+                  collage.setWatermark();
+                };
+              }
+            },
+            error: function(response){
+              alert('There was a problem adding that product. Please try another.');
+              $('#adding-product').remove();
+              $.ajax({
+                success:function(response){},
+                type: 'DELETE',
+                url: '/shopping_tool_api/look_item/' + product_obj.id + '/'
+              });
             }
           });
         }
@@ -111,32 +152,11 @@ var collage = {
       contentType : 'application/json',
       data: JSON.stringify(look_product_obj),
       success:function(response){
-        var img = new Image(); 
-        img.src = look_proxy + '' + src;
-        img.onload = function() {
-          var scale = 1;
-          if(this.naturalHeight > 395){
-            scale = 395 / this.naturalHeight 
-          }
-          var fImg = new fabric.Cropzoomimage(this, {
-            originX: 'center',
-            originY: 'center',
-            left: collage.canvas.getWidth()/2,
-            top: collage.canvas.getHeight()/2,
-            scaleX: scale,
-            scaleY: scale,
-            prod_id: response.id,
-            product_id: product_id
-          });
-          fImg.originalImgSrc = look_proxy + '' + src;
-          collage.canvas.add(fImg);
-          collage.canvas.setActiveObject(fImg);
-          collage.canvas.discardActiveObject();
-          $('#adding-product').remove();
-          collage.product_cache.push(response);
-          collage.setWatermark();
-        };
-        collage.addAllumeProduct(response.product, response.id);
+        collage.addAllumeProduct(response.product, response.id, response, src, product_id);
+      },
+      error: function(response){
+        alert('There was a problem adding that product. Please try another.');
+        $('#adding-product').remove();
       },
       type: 'PUT',
       url: '/shopping_tool_api/look_item/0/'
@@ -224,6 +244,7 @@ var collage = {
   */
   loadImg:function(){
     var prod = collage.product_cache[collage.initial_load]
+    //console.log(prod)
     /* if product in collage add to collage other wise add to additional items */
     if(prod.in_collage == true){
       var img = new Image();
@@ -739,7 +760,7 @@ var collage = {
           type: 'DELETE',
           url: '/shopping_tool_api/look_item/' + collage.product_cache[idx].id + '/'
         });        
-        collage.product_cache.splice(idx,i);
+        collage.product_cache.splice(idx,1);
       }
       collage.canvas.remove(activeObject);
     }
@@ -755,6 +776,7 @@ var collage = {
     collage.canvas.discardActiveObject();
     /* get canvas object so that we can update look products */
     var changes = collage.canvas.toObject();
+    console.log(changes)
     /* update the look */
     look_builder.updateLook(div, $('input#look-id').val(), $('#look-name').val(), $('#look-desc').val());
     /* cahce the look id so we have it for the update calls for look products */

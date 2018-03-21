@@ -1014,7 +1014,11 @@ var look_builder = {
               data: JSON.stringify(look_product_obj),
               success:function(response){
                 item.find('a.remove').data('lookitemid', response.id)
-                collage.addAllumeProduct(response.product, response.id);
+                collage.addAllumeProduct(response.product, response.id, response, null, null);
+              },
+              error: function(){
+                alert('There was a problem adding that product. Please try another.');
+                item.remove();
               },
               type: 'PUT',
               url: '/shopping_tool_api/look_item/0/'
