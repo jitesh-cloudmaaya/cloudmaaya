@@ -6,6 +6,12 @@ import json
 from catalogue_service.settings import BASE_DIR
 from django.db import models
 from rest_framework import serializers
+import json
+import urllib2
+import requests
+from catalogue_service.settings_local import ENV_LOCAL
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -84,6 +90,24 @@ class Merchant(models.Model):
     def __str__(self):
         return self.name
 
+    ## Used to Update the Allume API ##
+    def update_allume_status(self):
+        data = {'affiliate_feed_external_merchant_url_host': "?",
+                'affiliate_feed_merchant_id': self.id,
+                'active': self.active,
+                'affiliate_feed_external_merchant_id': self.external_merchant_id,
+                'affiliate_feed_network_id': self.network_id,
+                'affiliate_feed_external_merchant_name': self.name
+                }
+
+        api_url = "https://styling-service-%s.allume.co/update_retailer_info/" % (ENV_LOCAL)
+        response = requests.post(api_url, json=data)
+
+        if json.loads(response.content)['status'] == "success":
+            return True
+        else:
+            return False
+
     class Meta:
         indexes = [
             models.Index(fields=['name'])
@@ -157,6 +181,11 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
+
+@receiver(pre_save, sender=Merchant)
+def update_allume_merchant_pre_save(sender, instance, *args, **kwargs):
+    if not instance.update_allume_status() :
+        raise Exception('Allume API Update Failed')
 
 sizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/SizeMap.json')
 shoesizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/ShoeSizeMap.json')
