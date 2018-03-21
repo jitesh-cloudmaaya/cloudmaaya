@@ -228,7 +228,7 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                     attribute_3_size = attribute_3_size.replace('~', ',')
                     record['size'] = attribute_3_size
 
-                    record['allume_size'] = product_feed_helpers.determine_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+                    record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
 
                     record['material'] = product['material']
 
