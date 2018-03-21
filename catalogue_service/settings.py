@@ -27,7 +27,12 @@ SECRET_KEY = '=pygr69-)_vctwqfo-(09@n15h3z&byq9-m-(#+7a5k9jb5ew+'
 # SECURITY WARNING: don't run with debug turned on in production!
 # In Setting Local
 
-ALLOWED_HOSTS = ['shopping-tool-stage.allume.co', 'localhost', '127.0.0.1', 'shopping-tool-web-stage.allume.co', 'shopping-tool-web-prod.allume.co']
+ALLOWED_HOSTS = ['shopping-tool-web-dev.allume.co', 
+                 'shopping-tool-stage.allume.co', 
+                 'localhost', 
+                 '127.0.0.1', 
+                 'shopping-tool-web-stage.allume.co', 
+                 'shopping-tool-web-prod.allume.co']
 
 
 # Application definition
