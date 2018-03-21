@@ -280,6 +280,11 @@ class RanHelpersTestCase(TestCase):
         fieldname = 'primary_category'
         datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
         self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        tiered_assignments = {'primary_category': ['attribute_2_product_type', 'primary_category']}
+        fieldname = 'primary_category'
+        datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
+        self.assertEqual('Beauty & Fragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+
 
         # no tiered assignments case
         tiered_assignments = {}

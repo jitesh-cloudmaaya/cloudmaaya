@@ -40,5 +40,5 @@ fields:
     - modification
 tiered_assignment_fields:
     primary_category:
-        - primary_category
         - attribute_2_product_type
+        - primary_category
