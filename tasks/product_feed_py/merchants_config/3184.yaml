@@ -38,3 +38,7 @@ fields:
     - attribute_9
     - attribute_10
     - modification
+tiered_assignment_fields:
+    primary_category:
+        - primary_category
+        - attribute_2_product_type
