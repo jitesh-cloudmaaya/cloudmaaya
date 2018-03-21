@@ -1067,7 +1067,7 @@ var look_builder = {
     );
     var div = drag_rack.find('div.look-builder-rack')
     /* attach same functionality to search results as regular unoredered rack */
-    look_builder.rackDragDrop(true, 'unordered');
+    look_builder.rackDragDrop(false, 'unordered');
     /* attached event listener to filter results */
     $('#rack-search').keyup(function(e){
       var q = $(this).val();
@@ -1190,7 +1190,7 @@ var look_builder = {
       '</h2><div class="look-builder-rack">' + 
       rack_items.join('') + '</div>'
     );
-    look_builder.rackDragDrop(true, 'unordered');  
+    look_builder.rackDragDrop(false, 'unordered');  
   },  
   /**
   * @description update a look with any changes to its fields
