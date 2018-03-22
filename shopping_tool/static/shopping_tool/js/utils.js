@@ -28,7 +28,11 @@ var utils = {
     Mousetrap.bind('shift+a+s', function(e) {
       $('#user-card').toggleClass('show')
       return false;
-    });    
+    });
+    $('#close-user-clip').click(function(e){
+      e.preventDefault();
+      $('#user-card').removeClass('show looker');
+    })    
     var clip = $('#user-clip');
     clip.delay(750)
       .queue(function (next) { 
