@@ -111,9 +111,15 @@ var collage = {
                     product_id: link_product_id
                   });
                   fImg.originalImgSrc = look_proxy + '' + image_url;
+                  /* lancoz resampling filter for sharper images */
+                  fImg.resizeFilter = new fabric.Image.filters.Resize({
+                    scaleX: 1,
+                    scaleY: 1,
+                    resizeType: 'lanczos',
+                    lanczosLobes: 3,
+                  });
+                  fImg.applyFilters();                  
                   collage.canvas.add(fImg);
-                  collage.canvas.setActiveObject(fImg);
-                  collage.canvas.discardActiveObject();
                   $('#adding-product').remove();
                   collage.product_cache.push(product_obj);
                   collage.setWatermark();
@@ -212,6 +218,8 @@ var collage = {
   */
 	init: function(products){
     collage.canvas = new fabric.Canvas('c');
+    var ctx = collage.canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
     collage.product_cache = products;
     collage.initial_load = products.length - 1;
     /* add in the watermark */
@@ -281,8 +289,15 @@ var collage = {
         }
         var fImg = new fabric.Cropzoomimage(this, dims);
         fImg.originalImgSrc = look_proxy + '' + prod.product.product_image_url;
+        /* lancoz resampling filter for sharper images */
+        fImg.resizeFilter = new fabric.Image.filters.Resize({
+          scaleX: 1,
+          scaleY: 1,
+          resizeType: 'lanczos',
+          lanczosLobes: 3,
+        });
         collage.canvas.add(fImg);
-        /* keep track of loaded object count lood next product if some still remain */
+        /* keep track of loaded object count load next product if some still remain */
         collage.initial_load--;
         if(collage.initial_load > -1){
           collage.loadImg();
@@ -367,7 +382,15 @@ var collage = {
         product_id: data.productid
       });
       fImg.originalImgSrc = link.siblings('a.restart').data('path');
-      collage.canvas.add(fImg);
+      /* lancoz resampling filter for sharper images */
+      fImg.resizeFilter = new fabric.Image.filters.Resize({
+        scaleX: 1,
+        scaleY: 1,
+        resizeType: 'lanczos',
+        lanczosLobes: 3,
+      });
+      fImg.applyFilters();       
+      collage.canvas.add(fImg);     
     };
   },
   /**
@@ -398,6 +421,8 @@ var collage = {
       /* add the new canvas and initialize with fabric */
       $('#cropper-container').html('<canvas id="crop-canvas" width="415" height="415"></canvas>');
       collage.cropper = new fabric.Canvas('crop-canvas');
+      var ctx = collage.cropper.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
       /* add the image to be cropped to the cropper canvas */
       collage.setUpCropperImage(activeObject.orgSrc, activeObject.prod_id, 'initial');
       /* set initial states of cropper buttons */
@@ -456,6 +481,14 @@ var collage = {
         prod_id: prod_id
       }
       var fImg = new fabric.Cropzoomimage(this, dims);
+      /* lancoz resampling filter for sharper images */
+      fImg.resizeFilter = new fabric.Image.filters.Resize({
+        scaleX: 1,
+        scaleY: 1,
+        resizeType: 'lanczos',
+        lanczosLobes: 3,
+      });
+      fImg.applyFilters();       
       collage.cropper.add(fImg);
       collage.cropper.setActiveObject(fImg);
       collage.setUpCropper();
@@ -541,7 +574,7 @@ var collage = {
             obj.setCoords();
             if (callback) { callback(obj); }
           };
-          img.src = canvas.toDataURL('image/png');
+          img.src = canvas.toDataURL('image/jpeg', 1.0);
         };
         img.src = this.orgSrc;
       },
