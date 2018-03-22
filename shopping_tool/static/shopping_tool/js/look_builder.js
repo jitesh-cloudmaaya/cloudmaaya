@@ -548,6 +548,7 @@ var look_builder = {
     if(at_load_look != null){
       look_builder.setUpBuilder(at_load_look);
     }
+    $('#stylist-timezone').html(moment.tz.guess());
   },
   /**
   * @description view indepth product and look details
@@ -1124,7 +1125,7 @@ var look_builder = {
         var step_div = $(link.attr('href'));
         var email_at = '<span class="summary-sent">Text will be sent <strong>now</strong>.</span>';
         if($('#send-later-toggle').prop('checked')){
-          var t = rome.find(document.getElementById('send-later'))
+          var t = rome.find(document.getElementById('send-later'));
           email_at = '<span class="summary-sent">Text will be sent <strong>' + 
           t.getMoment().format('MMMM Do, YYYY h:mm a') + 
           ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
