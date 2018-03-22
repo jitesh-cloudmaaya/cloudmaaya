@@ -335,14 +335,10 @@ var look_builder = {
     });
     $('#pub-section3').on('click', 'a#submit-lookbook', function(e){
       e.preventDefault();
-      var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
       var lookbook = {
         styling_session_id: look_builder.session_id,
         send_at: null,
-        text_content: $('#publish-email').val().replace(
-          /\[Link to Lookbook\]/g, 
-          '<a href="https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
-        ),
+        text_content: $('#publish-email').val(),
         notify_user : true
       }
       if($('#send-later-toggle').prop('checked') == true){
@@ -552,6 +548,7 @@ var look_builder = {
     if(at_load_look != null){
       look_builder.setUpBuilder(at_load_look);
     }
+    $('#stylist-timezone').html(moment.tz.guess());
   },
   /**
   * @description view indepth product and look details
@@ -1018,7 +1015,11 @@ var look_builder = {
               data: JSON.stringify(look_product_obj),
               success:function(response){
                 item.find('a.remove').data('lookitemid', response.id)
-                collage.addAllumeProduct(response.product, response.id);
+                collage.addAllumeProduct(response.product, response.id, response, null, null);
+              },
+              error: function(){
+                alert('There was a problem adding that product. Please try another.');
+                item.remove();
               },
               type: 'PUT',
               url: '/shopping_tool_api/look_item/0/'
@@ -1068,7 +1069,7 @@ var look_builder = {
     );
     var div = drag_rack.find('div.look-builder-rack')
     /* attach same functionality to search results as regular unoredered rack */
-    look_builder.rackDragDrop(true, 'unordered');
+    look_builder.rackDragDrop(false, 'unordered');
     /* attached event listener to filter results */
     $('#rack-search').keyup(function(e){
       var q = $(this).val();
@@ -1124,7 +1125,7 @@ var look_builder = {
         var step_div = $(link.attr('href'));
         var email_at = '<span class="summary-sent">Text will be sent <strong>now</strong>.</span>';
         if($('#send-later-toggle').prop('checked')){
-          var t = rome.find(document.getElementById('send-later'))
+          var t = rome.find(document.getElementById('send-later'));
           email_at = '<span class="summary-sent">Text will be sent <strong>' + 
           t.getMoment().format('MMMM Do, YYYY h:mm a') + 
           ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
@@ -1133,14 +1134,6 @@ var look_builder = {
           email_at = '<span class="summary-sent">A text will <strong>NOT</strong> be sent.</span>';
         }
         var email_text = $('#publish-email').val();
-        var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
-
-
-        email_text = email_text.replace(
-          /\[Link to Lookbook\]/g, 
-          '<a href="https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') +
-          '" target="_blank">Your Lookbook</a>'
-        );
         step_div.html(
           '<div id="final-text-preview"><h5>Text</h5>' + email_at +
           '<div class="summary-email">' + email_text + '</div></div>' +
@@ -1159,35 +1152,44 @@ var look_builder = {
   */
   unorderedRack: function(){
     var rack_items = [];
-    var rack_items_dom = $('#rack-list').find('div.item');
-    if(rack_items_dom.length > 0){
+    var compare_array = [];
+    if(initial_rack.length > 0){
       rack_items.push(
         '<a href="#" class="lb-search-link">' +
         '<i class="fa fa-search"></i>search rack</a>' +
         '<a class="sort-link sort-items" href="#">' +
         '<i class="fa fa-th-list"></i>sort items</a>'
       );
+
+      $.each($('#rack-list').find('div.item'), function(idx){
+        var item = $(this);
+        compare_array.push(item.find('a.remove-from-rack').data('rackid'));
+      });
     }else{
       rack_items.push('<div class="empty">Your rack is empty...</div>');
     }
-    $.each(rack_items_dom, function(index){
-      var item = $(this);
-      var data = item.data();
-      var src = item.find('img').attr('src');
-      var link = item.find('a.remove-from-rack')
-      var sku = link.data('sku');
-      var rack_id = link.data('rackid');
-      rack_items.push(
-        '<div class="item" data-productid="' + data.productid + 
-        '" data-url="' + src + '"><img class="handle" src="' + src + 
-        '"/><a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
-        src + '"><i class="fa fa-plus-circle"></i></a>' +
-        '<a href="#"  class="view" data-productid="' + data.productid + 
-        '"><i class="fa fa-search"></i></a>' +
-        '<a href="#" class="remove" data-sku="' + sku + 
-        '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
-      );
+    initial_rack.sort(function(a,b){
+      if(a.added > b.added){ return -1}
+      if(a.added < b.added){ return 1}
+      return 0;      
     });
+    for(var i = 0, l = initial_rack.length; i<l; i++){
+      var data = initial_rack[i];
+      var src = data.product_image_url;
+      var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
+      if(compare_array.indexOf(data.rack_id) > -1){
+        rack_items.push(
+          '<div class="item" data-productid="' + data.id + 
+          '" data-url="' + src + '"><img class="handle" src="' + src + 
+          '"/><a href="#" class="add" data-productid="' + data.id + '" data-imgsrc="' + 
+          src + '"><i class="fa fa-plus-circle"></i></a>' +
+          '<a href="#"  class="view" data-productid="' + data.id + 
+          '"><i class="fa fa-search"></i></a>' +
+          '<a href="#" class="remove" data-sku="' + sku + 
+          '" data-rackid="' + data.rack_id + '"><i class="fa fa-times"></i></a></div>'
+        ); 
+      }     
+    }
     var faves = $('#fave-prods div.item');
     if(faves.length > 0){
       rack_items.push(look_builder.rackFavorites(faves));
@@ -1199,7 +1201,7 @@ var look_builder = {
       '</h2><div class="look-builder-rack">' + 
       rack_items.join('') + '</div>'
     );
-    look_builder.rackDragDrop(true, 'unordered');  
+    look_builder.rackDragDrop(false, 'unordered');  
   },  
   /**
   * @description update a look with any changes to its fields

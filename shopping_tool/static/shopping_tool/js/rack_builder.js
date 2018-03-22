@@ -125,6 +125,24 @@ var rack_builder = {
           }
           rack.find('div.block[data-category="' + sanitized_cat + '"]').append(itm)
           rack_builder.updateRackCount();
+          var new_rack_obj = { 
+            "rack_id": response.id,
+            "id": details.id,
+            "added": moment().format("MM/DD/YYYY HH:mm"),
+            "product_id": details.product_id,
+            "sku": details.sku,
+            "merchant_id": details.merchant_id,
+            "merchant_name": details.merchant_name,
+            "manufacturer_name": details.manufacturer_name,
+            "product_name": details.product_name,
+            "product_image_url": details.product_image_url,
+            "primary_category": details.primary_category,
+            "allume_category": details.allume_category,
+            "retail_price": details.retail_price,
+            "sale_price" : details.sale_price
+          }
+          console.log(new_rack_obj)
+          initial_rack.push(new_rack_obj);
           if(from_compare == true){
             var sorted_racks = $('#rack-draggable').find('a.sort-items').length
             if(sorted_racks == 0){
