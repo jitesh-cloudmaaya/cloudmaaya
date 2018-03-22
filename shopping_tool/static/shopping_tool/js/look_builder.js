@@ -1179,11 +1179,11 @@ var look_builder = {
       var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
       if(compare_array.indexOf(data.rack_id) > -1){
         rack_items.push(
-          '<div class="item" data-productid="' + data.product_id + 
+          '<div class="item" data-productid="' + data.id + 
           '" data-url="' + src + '"><img class="handle" src="' + src + 
-          '"/><a href="#" class="add" data-productid="' + data.product_id + '" data-imgsrc="' + 
+          '"/><a href="#" class="add" data-productid="' + data.id + '" data-imgsrc="' + 
           src + '"><i class="fa fa-plus-circle"></i></a>' +
-          '<a href="#"  class="view" data-productid="' + data.product_id + 
+          '<a href="#"  class="view" data-productid="' + data.id + 
           '"><i class="fa fa-search"></i></a>' +
           '<a href="#" class="remove" data-sku="' + sku + 
           '" data-rackid="' + data.rack_id + '"><i class="fa fa-times"></i></a></div>'
