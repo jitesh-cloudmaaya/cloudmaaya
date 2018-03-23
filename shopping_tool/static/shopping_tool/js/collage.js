@@ -223,7 +223,6 @@ var collage = {
     var ctx = collage.canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
     collage.product_cache = products;
-    console.log(products)
     collage.initial_load = products.length - 1;
     /* add in the watermark */
     var img = new Image(); 
@@ -249,7 +248,7 @@ var collage = {
         '<div id="adding-product"><div class="loading-prod">' +
         '</div><span class="loading-prod-msg">loading products...</span></div>'
       );
-      collage.loadImg()
+      collage.loadImg();
     }
   },
   /**
