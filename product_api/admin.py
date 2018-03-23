@@ -36,7 +36,7 @@ class CategoryMap_MerchantFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(merchant_name__contains=self.value())
+            return queryset.filter(merchant_name=self.value())
 
 
 class ColorMapAdmin(admin.ModelAdmin):

@@ -2,7 +2,7 @@ fields:
     - product_id
     - product_name
     - SKU
-    - attribute_2_product_type
+    - primary_category
     - secondary_category
     - product_url
     - product_image_url
@@ -28,7 +28,7 @@ fields:
     - M1
     - pixel
     - attribute_1_misc
-    - primary_category
+    - attribute_2_product_type
     - attribute_3_size
     - attribute_4_material
     - attribute_5_color
