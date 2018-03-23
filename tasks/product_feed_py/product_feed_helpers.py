@@ -76,7 +76,7 @@ def assign_product_id_size(product_id, size):
       str: The product_id to use in the associated child record.
     """
 
-    converted = int(hashlib.sha256(size).hexdigest(), 16) % (10 ** 15)
+    converted = int(hashlib.sha256(size.encode('UTF-8')).hexdigest(), 16) % (10 ** 15)
     product_id = int(product_id) + converted
     product_id = product_id % (2 ** 60) # keep id under bigint max signed value
     product_id = str(product_id)
@@ -396,6 +396,6 @@ def generate_merchant_id(merchant_name):
     # value needs to fit in a mysql int because the values of merchant_id 
     # and external_merchant id do not match between the product_api_product
     # and product_api_merchant tables...
-    converted = int(hashlib.sha256(merchant_name).hexdigest(), 16) % (10 ** 7) # the power to raise to has wiggle room
+    converted = int(hashlib.sha256(merchant_name.encode('UTF-8')).hexdigest(), 16) % (10 ** 7) # the power to raise to has wiggle room
     merchant_id = str(converted)
     return merchant_id
