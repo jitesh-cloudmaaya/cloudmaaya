@@ -9,7 +9,8 @@ from rest_framework import serializers
 import json
 import urllib2
 import requests
-from catalogue_service.settings_local import ENV_LOCAL
+from catalogue_service.settings_local import ENV_LOCAL, ALLUME_API_AUTH_USER, ALLUME_API_AUTH_PASS
+from requests.auth import HTTPBasicAuth
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
@@ -92,16 +93,18 @@ class Merchant(models.Model):
 
     ## Used to Update the Allume API ##
     def update_allume_status(self):
-        data = {'affiliate_feed_external_merchant_url_host': "?",
-                'affiliate_feed_merchant_id': self.id,
-                'active': self.active,
-                'affiliate_feed_external_merchant_id': self.external_merchant_id,
-                'affiliate_feed_network_id': self.network_id,
-                'affiliate_feed_external_merchant_name': self.name
+        data = {"affiliate_feed_external_merchant_url_host": "NONE",
+                "affiliate_feed_merchant_id": self.id,
+                "active": self.active,
+                "affiliate_feed_external_merchant_id": self.external_merchant_id,
+                "affiliate_feed_network_id": self.network_id,
+                "affiliate_feed_external_merchant_name": self.name
                 }
 
         api_url = "https://styling-service-%s.allume.co/update_retailer_info/" % (ENV_LOCAL)
-        response = requests.post(api_url, json=data)
+        response = requests.post(api_url, json=data, auth=HTTPBasicAuth(ALLUME_API_AUTH_USER, ALLUME_API_AUTH_PASS))
+
+        print response.content
 
         if json.loads(response.content)['status'] == "success":
             return True
@@ -186,7 +189,7 @@ class ProductSerializer(serializers.ModelSerializer):
 def update_allume_merchant_pre_save(sender, instance, *args, **kwargs):
 
     #Skip if ENV <> Stage or Prod (So Circle Ci and Dev can function)
-    if (ENV_LOCAL == 'Stage') or (ENV_LOCAL == 'Prod'):
+    if (ENV_LOCAL == 'stage') or (ENV_LOCAL == 'prod'):
         if not instance.update_allume_status() :
             raise Exception('Allume API Update Failed')
 
