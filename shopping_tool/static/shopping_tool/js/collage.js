@@ -188,6 +188,7 @@ var collage = {
     var new_image = collage.cropper.toDataURL({
       format: 'jpeg',
       quality: 1,
+      multiplier: 4,
       left: rectangle.aCoords.tl.x,
       top: rectangle.aCoords.tl.y,
       width: rectangle.width * rectangle.scaleX,
@@ -243,7 +244,11 @@ var collage = {
       fImg.selectable = false;
     }
     if(collage.initial_load > -1){
-      collage.loadImg()
+      $('#look-drop').append(
+        '<div id="adding-product"><div class="loading-prod">' +
+        '</div><span class="loading-prod-msg">loading products...</span></div>'
+      );
+      collage.loadImg();
     }
   },
   /**
@@ -305,6 +310,7 @@ var collage = {
         }else{
           collage.setWatermark();
           collage.canvas.renderAll();
+          $('#adding-product').remove();
         }
       };
     }else{
@@ -320,6 +326,7 @@ var collage = {
       }else{
         collage.setWatermark();
         collage.canvas.renderAll();
+        $('#adding-product').remove();
       }
     }
   },

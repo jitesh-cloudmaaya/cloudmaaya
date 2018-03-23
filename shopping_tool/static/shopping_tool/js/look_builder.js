@@ -1218,6 +1218,7 @@ var look_builder = {
     var src = collage.canvas.toDataURL({
       format: 'jpeg',
       quality: 1,
+      multiplier: 4
     });
     /* the look object to save */
     var look_obj = {
