@@ -64,6 +64,8 @@ def generate_product_id(product_name, size, color):
 
     return product_id
 
+# comment test cirlceCI
+
 def assign_product_id_size(product_id, size):
     """
     This helper function is used for deaggregating product records based on size. It generates
