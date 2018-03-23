@@ -548,7 +548,6 @@ var look_builder = {
     if(at_load_look != null){
       look_builder.setUpBuilder(at_load_look);
     }
-    $('#stylist-timezone').html(moment.tz.guess());
   },
   /**
   * @description view indepth product and look details

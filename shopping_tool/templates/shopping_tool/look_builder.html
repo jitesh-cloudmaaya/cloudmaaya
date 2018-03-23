@@ -130,10 +130,9 @@
           </label>
         </div>
         <div id="send-later-wrapper">
-          <label>Please select a date and time to send the text:</label>
+          <label>Please select a date and time to send the text.</label>
+          <label style="margin-top:10px">Time is in {{ client.first_name }} {{ client.last_name }} timezone: <strong>{{client.timezone}}</strong></label>
           <div id="send-later" data-tz="{{client.timezone}}"></div>
-          <label style="margin-top:10px">{{ client.first_name }} {{ client.last_name }} timezone: <strong>{{client.timezone}}</strong></label>
-          <label style="margin-top:10px">{{ user.first_name }} {{ user.last_name }} timezone: <strong id="stylist-timezone"></strong></label>
         </div>
         <h5>Client text:</h5>
         <textarea id="publish-email" data-urllink="https://www.allume.co/looks/{{ styling_session.token }}#intro">
