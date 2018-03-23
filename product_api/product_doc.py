@@ -117,7 +117,7 @@ class EProductSearch(FacetedSearch):
 
     @classmethod
     def sort_options(cls):
-        return ['price_range', 'size', 'brand', 'merchant_name', 'allume_score']
+        return ['current_price', 'size.keyword', 'brand.keyword', 'merchant_name.keyword', 'allume_score']
 
     def filter(self, search):
         """
