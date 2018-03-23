@@ -44,7 +44,7 @@ var search_page = {
           '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
           general + '</div>'
         );  
-      }else if(val == 'Pants'){
+      }else if(val == "Bottoms"){
         def_div.html(
           '<div class="client-settings">' + header +
           '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
@@ -344,7 +344,7 @@ var search_page = {
         var cleaned_spend = [];
         if(["Dresses", "Jackets"].indexOf(category) > -1){
           spend = client_360.categories[category].spend.split(', ');       
-        }else if(["Jeans", "Shoes", "Tops", "Pants"].indexOf(category) > -1){
+        }else if(["Jeans", "Shoes", "Tops", "Pants", "Bottoms"].indexOf(category) > -1){
           spend = client_360.categories[category].spend.split(', ');
           sizes = client_360.categories[category].size.split(',');   
         }
