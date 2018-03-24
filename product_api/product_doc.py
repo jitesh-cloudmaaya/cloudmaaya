@@ -91,7 +91,7 @@ class EProductSearch(FacetedSearch):
         ('allume_score', TermsFacet(field='allume_score')), #HistogramFacet
         ('is_trending', TermsFacet(field='is_trending')),
         ('is_best_seller', TermsFacet(field='is_best_seller')),
-        ('price_range', RangeFacet(field='sale_price', ranges=price_ranges)), #current_price
+        ('price_range', RangeFacet(field='current_price', ranges=price_ranges)), #current_price
     )) 
 
     def __init__(self, query=None, filters={}, sort=(), favs=[], card_count = False):
