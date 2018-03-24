@@ -41,24 +41,31 @@ def parse_raw_product_url(product_url, raw_product_attribute):
 
     return joined
 
-def generate_product_id(product_name, size, color):
+# some notes on generate_product_id usage
+# be very careful about which fields are used when generating the product id
+# for example, to preserve the final count of products, use the merchant_color instead of the allume
+# color and probably the merchant_size instead of the allume size (even if the products are then functionally identical)
+
+def generate_product_id(product_name, merchant_size, merchant_color, SKU):
     """
     In the event that a product_id cannot be found, deterministically generate a product_id
     using that product's product_name, size, and color.
 
     Args:
       product_name (str): The product's name. Expects a unicode string.
-      size (str): The merchant provided size field for the product. Expects a unicode string.
-      color (str): The merchant provided color field for the product. Expects a unicode string.
+      merchant_size (str): The merchant provided size field for the product. Expects a unicode string.
+      merchant_color (str): The merchant provided color field for the product. Expects a unicode string.
+      SKU (str): The SKU of the product. Expacts a unicode string.
 
     Returns:
       str: A string to use as the product's product_id.
     """
     step1 = int(hashlib.sha256(product_name.encode('UTF-8')).hexdigest(), 16) % (10 ** 15)
-    step2 = int(hashlib.sha256(size.encode('UTF-8')).hexdigest(), 16) % (10 ** 15)
-    step3 = int(hashlib.sha256(color.encode('UTF-8')).hexdigest(), 16) % (10 ** 15)
+    step2 = int(hashlib.sha256(merchant_size.encode('UTF-8')).hexdigest(), 16) % (10 ** 15)
+    step3 = int(hashlib.sha256(merchant_color.encode('UTF-8')).hexdigest(), 16) % (10 ** 15)
+    step4 = int(hashlib.sha256(SKU.encode('UTF-8')).hexdigest(), 16) % (10 ** 15)
 
-    product_id = step1 + step2 + step3
+    product_id = step1 + step2 + step3 + step4
     product_id = product_id % (2 ** 60) # keep within mysql bigint
     product_id = str(product_id).decode('UTF-8')
 

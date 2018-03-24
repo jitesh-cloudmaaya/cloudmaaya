@@ -177,7 +177,9 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['size'] = size
                             record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
 
-                            record['product_id'] = product_feed_helpers.generate_product_id(product_name, size, allume_color)
+                            record['SKU'] = datum[SKU_key]
+
+                            record['product_id'] = product_feed_helpers.generate_product_id(product_name, size, record['merchant_color'], record['SKU'])
                             record['merchant_id'] = merchant_id
 
 
@@ -194,7 +196,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['short_product_description'] = datum[short_product_description_key]
                             record['manufacturer_name'] = datum[manufacturer_name_key]
                             record['manufacturer_part_number'] = datum[manufacturer_part_number_key]
-                            record['SKU'] = datum[SKU_key]
                             record['product_type'] = datum[product_type_key]
 
                             discount_type = datum[discount_type_key]
