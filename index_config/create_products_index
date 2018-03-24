@@ -1,7 +1,7 @@
 #DELETE /products_synonym
 
 
-PUT /products
+PUT /products2
 {
   "settings": {
     "analysis": {
@@ -61,7 +61,6 @@ PUT /products
         },
         "allume_category": {
           "type": "text",
-          "analyzer":  "my_synonyms",
           "fields": {
             "keyword": {
               "type": "keyword",

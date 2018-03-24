@@ -3744,5 +3744,26 @@ label.switch span small {
 }
 label.switch input {display:none;}
 label.switch input:checked + span  > small{ left:23px; }
+a#close-user-clip {
+  color:#fff;
+  cursor:pointer;
+  font-size:16px;
+  opacity:0;
+  padding:8px;
+  position:absolute;
+  right:0;
+  -webkit-transition: all 1s ease-in-out;
+  transition: all 1s ease-in-out;
+  text-align:center;
+  text-decoration: none;
+  top:-5px;
+  z-index:0;
+}
+#user-card.show a#close-user-clip {opacity:0.6; z-index:10;}
+#user-card.show a#close-user-clip:hover { 
+  -webkit-transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out;  
+  opacity:1;
+}
 
 

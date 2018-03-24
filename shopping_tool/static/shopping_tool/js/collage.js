@@ -6,8 +6,11 @@ var collage = {
   * @description function to create and submit newly added look products to the allum db
   * @param {integer} product_id - the id of the product being added
   * @param {integer} look_item_id - the app look item id
+  * @param {object} product_obj - the app object added
+  * @param {string||null} image_url - path for the image
+  * @param {integer||null} link_product_id - product id being added
   */
-  addAllumeProduct: function(product_id, look_item_id){
+  addAllumeProduct: function(product_id, look_item_id, product_obj, image_url, link_product_id){
     console.log('firing addAllumeProduct')
     $.ajax({
       success: function(results){
@@ -43,6 +46,7 @@ var collage = {
           }
           /* create payload object */
           console.log('merchant product api ' + matching_object.product_api_merchant)
+          //console.log(matching_object)
           var merchant_node = matching_object.product_api_merchant.toString();
           var product_node = product_id.toString();
           payload.sites[merchant_node] = {}
@@ -54,6 +58,7 @@ var collage = {
           payload.sites[merchant_node].add_to_cart[product_node].original_price = matching_object.retail_price;
           payload.sites[merchant_node].add_to_cart[product_node].image = matching_object.product_image_url;
           payload.sites[merchant_node].add_to_cart[product_node].description = matching_object.long_product_description;
+          payload.sites[merchant_node].add_to_cart[product_node].availability = matching_object.availability;
           payload.sites[merchant_node].add_to_cart[product_node].required_field_names = ["color", "size", "quantity"];
           payload.sites[merchant_node].add_to_cart[product_node].required_field_values = {};
           payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color = [];
@@ -85,6 +90,50 @@ var collage = {
             url: 'https://ecommerce-service-' + local_environment + '.allume.co/wp-json/products/create_or_update_product_from_affiliate_feeds_and_link_to_look/',
             xhrFields: {
               withCredentials: true
+            },
+            success: function(response){
+              if(image_url != null){
+                var img = new Image(); 
+                img.src = look_proxy + '' + image_url;
+                img.onload = function() {
+                  var scale = 1;
+                  if(this.naturalHeight > 395){
+                    scale = 395 / this.naturalHeight 
+                  }
+                  var fImg = new fabric.Cropzoomimage(this, {
+                    originX: 'center',
+                    originY: 'center',
+                    left: collage.canvas.getWidth()/2,
+                    top: collage.canvas.getHeight()/2,
+                    scaleX: scale,
+                    scaleY: scale,
+                    prod_id: product_obj.id,
+                    product_id: link_product_id
+                  });
+                  fImg.originalImgSrc = look_proxy + '' + image_url;
+                  /* lancoz resampling filter for sharper images */
+                  fImg.resizeFilter = new fabric.Image.filters.Resize({
+                    scaleX: 1,
+                    scaleY: 1,
+                    resizeType: 'lanczos',
+                    lanczosLobes: 3,
+                  });
+                  fImg.applyFilters();                  
+                  collage.canvas.add(fImg);
+                  $('#adding-product').remove();
+                  collage.product_cache.push(product_obj);
+                  collage.setWatermark();
+                };
+              }
+            },
+            error: function(response){
+              alert('There was a problem adding that product. Please try another.');
+              $('#adding-product').remove();
+              $.ajax({
+                success:function(response){},
+                type: 'DELETE',
+                url: '/shopping_tool_api/look_item/' + product_obj.id + '/'
+              });
             }
           });
         }
@@ -111,31 +160,11 @@ var collage = {
       contentType : 'application/json',
       data: JSON.stringify(look_product_obj),
       success:function(response){
-        var img = new Image(); 
-        img.src = look_proxy + '' + src;
-        img.onload = function() {
-          var scale = 1;
-          if(this.naturalHeight > 395){
-            scale = 395 / this.naturalHeight 
-          }
-          var fImg = new fabric.Cropzoomimage(this, {
-            originX: 'center',
-            originY: 'center',
-            left: collage.canvas.getWidth()/2,
-            top: collage.canvas.getHeight()/2,
-            scaleX: scale,
-            scaleY: scale,
-            prod_id: response.id
-          });
-          fImg.originalImgSrc = look_proxy + '' + src;
-          collage.canvas.add(fImg);
-          collage.canvas.setActiveObject(fImg);
-          collage.canvas.discardActiveObject();
-          $('#adding-product').remove();
-          collage.product_cache.push(response);
-          collage.setWatermark();
-        };
-        collage.addAllumeProduct(response.product, response.id);
+        collage.addAllumeProduct(response.product, response.id, response, src, product_id);
+      },
+      error: function(response){
+        alert('There was a problem adding that product. Please try another.');
+        $('#adding-product').remove();
       },
       type: 'PUT',
       url: '/shopping_tool_api/look_item/0/'
@@ -189,6 +218,8 @@ var collage = {
   */
 	init: function(products){
     collage.canvas = new fabric.Canvas('c');
+    var ctx = collage.canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
     collage.product_cache = products;
     collage.initial_load = products.length - 1;
     /* add in the watermark */
@@ -223,6 +254,7 @@ var collage = {
   */
   loadImg:function(){
     var prod = collage.product_cache[collage.initial_load]
+    //console.log(prod)
     /* if product in collage add to collage other wise add to additional items */
     if(prod.in_collage == true){
       var img = new Image();
@@ -236,6 +268,8 @@ var collage = {
         if(this.naturalHeight > 395){
           scale = 395 / this.naturalHeight 
         }
+        var prod_id = prod.id != undefined ? prod.id : '' ;
+        var product_id = prod.product != undefined ? prod.product.id : '' ;
         var dims = {
           originX: 'center',
           originY: 'center',
@@ -243,18 +277,27 @@ var collage = {
           top: collage.canvas.getHeight()/2,
           scaleX: scale,
           scaleY: scale,
-          prod_id: prod.id
+          prod_id: prod_id,
+          product_id: product_id
         };
         if(prod.cropped_dimensions != null){
           dims = $.extend(true, {}, JSON.parse(prod.cropped_dimensions));
           dims.originX = 'center';
           dims.originY = 'center';
-          dims.prod_id = prod.id;
+          dims.prod_id = prod_id;
+          dims.product_id = product_id;
         }
         var fImg = new fabric.Cropzoomimage(this, dims);
         fImg.originalImgSrc = look_proxy + '' + prod.product.product_image_url;
+        /* lancoz resampling filter for sharper images */
+        fImg.resizeFilter = new fabric.Image.filters.Resize({
+          scaleX: 1,
+          scaleY: 1,
+          resizeType: 'lanczos',
+          lanczosLobes: 3,
+        });
         collage.canvas.add(fImg);
-        /* keep track of loaded object count lood next product if some still remain */
+        /* keep track of loaded object count load next product if some still remain */
         collage.initial_load--;
         if(collage.initial_load > -1){
           collage.loadImg();
@@ -335,10 +378,19 @@ var collage = {
         top: collage.canvas.getHeight()/2,
         scaleX: scale,
         scaleY: scale,
-        prod_id: data.prodid
+        prod_id: data.prodid,
+        product_id: data.productid
       });
       fImg.originalImgSrc = link.siblings('a.restart').data('path');
-      collage.canvas.add(fImg);
+      /* lancoz resampling filter for sharper images */
+      fImg.resizeFilter = new fabric.Image.filters.Resize({
+        scaleX: 1,
+        scaleY: 1,
+        resizeType: 'lanczos',
+        lanczosLobes: 3,
+      });
+      fImg.applyFilters();       
+      collage.canvas.add(fImg);     
     };
   },
   /**
@@ -369,11 +421,13 @@ var collage = {
       /* add the new canvas and initialize with fabric */
       $('#cropper-container').html('<canvas id="crop-canvas" width="415" height="415"></canvas>');
       collage.cropper = new fabric.Canvas('crop-canvas');
+      var ctx = collage.cropper.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
       /* add the image to be cropped to the cropper canvas */
       collage.setUpCropperImage(activeObject.orgSrc, activeObject.prod_id, 'initial');
       /* set initial states of cropper buttons */
       $('#cropper-btns').find('a.restart').data('path', activeObject.originalImgSrc).data('prodid', activeObject.prod_id)
-      .end().find('a.crop').data('prodid', activeObject.prod_id);
+      .end().find('a.crop').data('prodid', activeObject.prod_id).data('productid', activeObject.product_id);
     }    
   },
   /**
@@ -427,6 +481,14 @@ var collage = {
         prod_id: prod_id
       }
       var fImg = new fabric.Cropzoomimage(this, dims);
+      /* lancoz resampling filter for sharper images */
+      fImg.resizeFilter = new fabric.Image.filters.Resize({
+        scaleX: 1,
+        scaleY: 1,
+        resizeType: 'lanczos',
+        lanczosLobes: 3,
+      });
+      fImg.applyFilters();       
       collage.cropper.add(fImg);
       collage.cropper.setActiveObject(fImg);
       collage.setUpCropper();
@@ -512,7 +574,7 @@ var collage = {
             obj.setCoords();
             if (callback) { callback(obj); }
           };
-          img.src = canvas.toDataURL('image/png');
+          img.src = canvas.toDataURL('image/jpeg', 1.0);
         };
         img.src = this.orgSrc;
       },
@@ -524,6 +586,7 @@ var collage = {
           cw: this.cw,
           ch: this.ch,
           prod_id: this.prod_id,
+          product_id: this.product_id,
           zoomX: this.zoomX,
           zoomY: this.zoomY,
           zoomZ: this.zoomZ,
@@ -554,7 +617,7 @@ var collage = {
       $('#pg-crop-look-image').fadeIn();
       collage.setUpPolygonCropper(activeObject.orgSrc, activeObject.prod_id);
       $('#pg-cropper-btns').find('a.restart').data('path', activeObject.originalImgSrc).end()
-      .find('a.save').data('prodid', activeObject.prod_id);
+      .find('a.save').data('prodid', activeObject.prod_id).data('productid', activeObject.product_id);
     }
   },
   /**
@@ -685,6 +748,7 @@ var collage = {
       /* resize the new canvas to the size of the clipping area */
       c.width = width;
       c.height = height;
+      cx.clearRect(0, 0, c.width, c.height);
       /* set the background to white */
       cx.fillStyle = "#ffffff";
       cx.fillRect(0, 0, c.width, c.height);
@@ -731,7 +795,7 @@ var collage = {
           type: 'DELETE',
           url: '/shopping_tool_api/look_item/' + collage.product_cache[idx].id + '/'
         });        
-        collage.product_cache.splice(idx,i);
+        collage.product_cache.splice(idx,1);
       }
       collage.canvas.remove(activeObject);
     }
@@ -761,11 +825,6 @@ var collage = {
         for(var ix = 0, lx = collage.product_cache.length; ix<lx; ix++){
           var record = collage.product_cache[ix];
           if(record.id == prod.prod_id){
-            if(typeof record.product == 'object'){
-              product_id = record.product.id;
-            }else{
-              product_id = record.product;
-            }
             if(record.cropped_image_code != undefined){
               crop_src = record.cropped_image_code;
             }
@@ -798,7 +857,7 @@ var collage = {
         var look_product_obj = {
           layout_position: i,
           look: look_id,
-          product: product_id,
+          product: prod.product_id,
           cropped_dimensions: JSON.stringify(dims),
           in_collage: 'True',
           cropped_image_code: crop_src     

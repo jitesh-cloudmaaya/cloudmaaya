@@ -64,7 +64,7 @@ def index(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
@@ -95,7 +95,7 @@ def look_builder(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
@@ -157,7 +157,7 @@ def explore(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
@@ -198,7 +198,7 @@ def image_proxy(request):
 # without Having Access to The WP Login Application
 ########################################################
 def set_cookie(request):
-    if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
+    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-web-dev.allume.co:8000']:
         response_redirect = HttpResponseRedirect('/')
         response_redirect.set_cookie(AUTH_EMAIL_KEY, DEV_AUTH_EMAIL)
         return response_redirect
@@ -206,7 +206,7 @@ def set_cookie(request):
         raise PermissionDenied
 
 def delete_cookie(request):
-    if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
+    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-web-dev.allume.co:8000']:
         response_redirect = HttpResponseRedirect('/')
         response_redirect.delete_cookie(AUTH_EMAIL_KEY)
         return response_redirect

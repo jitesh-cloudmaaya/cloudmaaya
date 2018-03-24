@@ -1,3 +1,14 @@
+remote_dir: /outgoing/productcatalog/207812/
+file_pattern: # TBD
+leave_temp_files: false
+local_temp_dir: pd_temp/cj
+ftp_config:
+  host: datatransfer.cj.com
+  user: '4894108'
+  password: '#Gs264in'
+file_ending: '[Cc]atalog[^a-zA-Z]*.txt$'
+# given that merchants do not have a uniform file structure, may need to change configs to 'future-proof'?
+clean_data_method: cj.cj(self._local_temp_dir, self._file_ending, self._fields)
 fields:
 - product_id
 - merchant_id
@@ -39,16 +50,5 @@ fields:
 - allume_score
 - current_price
 - is_deleted
-local_temp_dir: pd_temp/pepperjam
 table: product_api_product_temp
-clean_data_method: pepperjam.get_data(self._local_temp_dir_cleaned, self._fields, dev=False)
-# not used
-leave_temp_files: false
-etl_file_name: tasks/product_feed_sql/ran.sql
-file_pattern: .*_mp\.txt\.gz
-ftp_config:
-  host: aftp.linksynergy.com
-  password: yT%6-Pl@h
-  user: allumestye
-file_ending: mp.txt
-remote_dir: /
+etl_file_name: deprecated

@@ -68,6 +68,19 @@ def impact_radius_pull():
     print("Sucessfully updated API products table")
 
 @task(base=QueueOnce)
+def cj_pull():
+    pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/cj.yaml'))
+    print("Pulling files from FTP")
+    pf.get_files_sftp()
+    print("Decompressing files")
+    pf.decompress_data()
+    print("Cleaning files")
+    pf.clean_data()
+    print("Update API products table")
+    pf.load_cleaned_data()
+    print("Successfully updated API products table")
+
+@task(base=QueueOnce)
 def build_client_360():
     cursor = connection.cursor()
     etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360.sql'))

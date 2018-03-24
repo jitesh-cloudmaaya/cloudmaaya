@@ -1,5 +1,8 @@
 import os
 import ftplib
+import pysftp
+import paramiko
+from paramiko.py3compat import decodebytes
 import re
 import zipfile
 import subprocess
@@ -8,7 +11,7 @@ import yaml
 import datetime
 import time
 from product_feed_py import *
-from catalogue_service.settings import BASE_DIR
+from catalogue_service.settings import BASE_DIR, CJ_HOST_KEY
 
 class ProductFeed(object):
 
@@ -61,7 +64,6 @@ class ProductFeed(object):
 
         # need to escape the backslash for python and then also for mySQL
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\n' %s" % (f, table, fields)
-        print statement
         full_script.append(statement)
 
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
@@ -112,8 +114,27 @@ class ProductFeed(object):
         for remote_file in self._remote_files:
             local_file = os.path.join(self._local_temp_dir, remote_file)
             ftp.retrbinary("RETR " + remote_file ,open(local_file, 'wb').write)
- 
+
         ftp.quit()
+
+    # from base64 import decodebytes
+    # in theory, this makes get_files_sftp hardcoded to cj. change the CJ_HOST_KEY to a list to make it more generic
+    # we could also include the algorithm used as part of a tuple containing the info for the hosts
+    def get_files_sftp(self):
+
+# attempt to handle the case where we our first connection doesn't know that datatransfer.cj.com is a known host
+# datatransfer.cj.com,64.156.167.125 ssh-dss
+
+        # use file patterns to grab .gz and .zip files off sftp server?
+
+        key = paramiko.DSSKey(data=decodebytes(CJ_HOST_KEY))
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys.add(self._ftp_host, 'ssh-dss', key)
+
+        self.make_temp_dir()
+        with pysftp.Connection(self._ftp_host, username=self._ftp_user, password=self._ftp_password, cnopts=cnopts) as sftp:
+            sftp.get_d(self._remote_dir, self._local_temp_dir, preserve_mtime=True)
+        return
 
     def remove_temp_file(self, filename):
         try:
