@@ -127,6 +127,9 @@ var collage = {
                   collage.product_cache.push(product_obj);
                   collage.setWatermark();
                 };
+                img.addEventListener('error', function(){
+                  console.log('image errored')
+                });
               }
             },
             error: function(response){
@@ -245,6 +248,9 @@ var collage = {
       collage.canvas.add(fImg);
       fImg.selectable = false;
     }
+    img.addEventListener('error', function(){
+      console.log('image errored')
+    });
     if(collage.initial_load > -1){
       $('#look-drop').append(
         '<div id="adding-product"><div class="loading-prod">' +
@@ -317,6 +323,9 @@ var collage = {
           $('#adding-product').remove();
         }
       };
+      img.addEventListener('error', function(){
+        console.log('image errored')
+      });      
     }else{
       $('#non-collage-items').append(
         '<div class="item"><img class="handle" src="' + prod.product.product_image_url + 
@@ -404,6 +413,9 @@ var collage = {
       fImg.applyFilters();       
       collage.canvas.add(fImg);     
     };
+    img.addEventListener('error', function(){
+      console.log('image errored')
+    });    
   },
   /**
   * @description set the current active object to bottom of layer stack 
@@ -509,6 +521,9 @@ var collage = {
         $('#adding-product').remove();
       }
     };
+    img.addEventListener('error', function(){
+      console.log('image errored')
+    });
   },
   /**
   * @description extend fabric with our new object class name 
