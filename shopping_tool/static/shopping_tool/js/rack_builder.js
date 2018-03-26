@@ -29,19 +29,21 @@ var rack_builder = {
       var index = rack_builder.favorites_product_ids.indexOf(product_id);
       rack_builder.favorites_product_ids.splice(index, 1);
       rack_builder.favorites.splice(index, 1);
-      link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
-      $.ajax({
-        contentType : 'application/json',
-        error: function(response){
-          console.log(response);
-        },
-        success:function(response){
-          $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
-          
-        },
-        type: 'DELETE',
-        url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
-      }); 
+      if(fave != ''){
+        link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+        $.ajax({
+          contentType : 'application/json',
+          error: function(response){
+            console.log(response);
+          },
+          success:function(response){
+            $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
+            
+          },
+          type: 'DELETE',
+          url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
+        }); 
+      }
     }else{
       var fave = {
         "stylist": parseInt($('#stylist').data('stylistid')) ,
