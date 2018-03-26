@@ -182,7 +182,7 @@ input.search {
   width:calc(100% - 130px);
 }
 #facet-bar {}
-#results {overflow:auto; width:100%;}
+#results {clear: both; padding-top: 4px; overflow:auto; width:100%;}
 #results div.no-results {
   color:#474747;
   font-size:18px;
@@ -552,7 +552,7 @@ div.loader {padding:10px 20px; text-align:center;}
   font-size:16px;
   font-weight:100;
   margin:10px 0;
-  padding:0 5px;
+  padding:8px 5px 0;
 }
 #pager-message strong {font-weight:400;}
 a#rack-toggle {
@@ -3765,5 +3765,15 @@ a#close-user-clip {
   transition: opacity 0.3s ease-in-out;  
   opacity:1;
 }
+#sort-selection {display:none;}
+#sort-selection span.label {
+  color:#777;
+  font-size:16px;
+  font-weight:300;
+  float:right; 
+  padding-top:8px;
+  margin-right:8px;
+}
+#sort-dd + .selectize-control {float:right; margin-right:5px; width:150px;}
 
 
