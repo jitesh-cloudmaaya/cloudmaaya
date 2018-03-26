@@ -509,7 +509,7 @@ var rack_builder = {
         var option = data.details[i];
         if(option._source.merchant_color.toLowerCase() == color){
           matching = option;
-          price_display = numeral(matching._source.current_price).format('$0,0.00');
+          price_display = '<em class="label">price:</em>' + numeral(matching._source.current_price).format('$0,0.00');
           fave_link = '<a href="#" class="favorite" data-productid="' + 
             matching._source.id + '"><i class="fa fa-heart-o"></i></a>';
           var fave_idx = rack_builder.favorites_product_ids.indexOf(matching._source.id);
@@ -632,7 +632,7 @@ var rack_builder = {
             rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
               product.id + '"><i class="fa fa-check"></i> in rack</a>';
           }
-          var price_display = '<span class="price" id="inspected-item-price">' + numeral(product.current_price).format('$0,0.00') + '</span>';
+          var price_display = '<span class="price" id="inspected-item-price"><em class="label">price:</em>' + numeral(product.current_price).format('$0,0.00') + '</span>';
           var merch = '<span class="merch">' + product.merchant_name + '</span>';
           var manu = '<span class="manu">by ' + product.manufacturer_name + '</span>';  
           if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }

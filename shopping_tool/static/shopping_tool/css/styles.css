@@ -2439,7 +2439,7 @@ div.publish-section label.toggle input:checked + span > small,
 #inspect-item div.stage table td#inspect-sizes span.header {margin-bottom:10px;}
 #inspect-item div.stage table td#inspect-sizes td.size-img {width:90px;}
 #inspect-item div.stage table td#inspect-sizes table {margin:0;}
-#inspect-item span.price em {color:#D32F2F; display:inline-block; padding-right: 8px; text-decoration: line-through;}
+#inspect-item span.price em {display:inline-block; font-variant: small-caps; padding-right: 5px;}
 #inspect-item #inspect-sizes div.inspect-alt-size img {
   box-shadow:0 0 3px rgba(0,0,0,0.25);
   display:block;
