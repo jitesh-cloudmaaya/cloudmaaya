@@ -28,8 +28,7 @@ var initial_rack = [
     "product_image_url": "{{ item.product.product_image_url }}",
     "primary_category": "{{ item.product.primary_category }}",
     "allume_category": "{{ item.product.allume_category }}",
-    "retail_price": {{ item.product.retail_price }},
-    "sale_price" : {{ item.product.sale_price }}
+    "current_price": {{ item.product.current_price }}
   },
 {% endfor %} 
 ];
@@ -50,8 +49,7 @@ var stylist_favorites = [
     "product_image_url": "{{ item.product.product_image_url }}",
     "primary_category": "{{ item.product.primary_category }}",
     "allume_category": "{{ item.product.allume_category }}",
-    "retail_price": {{ item.product.retail_price }},
-    "sale_price" : {{ item.product.sale_price }}
+    "current_price": {{ item.product.current_price }}
   },
 {% endfor %} 
 ];

@@ -251,17 +251,9 @@ var search_page = {
   itemTemplate: function(details, view){
     var w = $('#results').width() / 3;   
     var desc = details.long_product_description == '' ? details.short_product_description : details.long_product_description ;
-    var retail = details.retail_price;
-    var sale = details.sale_price;
-    var price_display = '';
+    var price_display = '<span class="price">' + numeral(details.current_price).format('$0,0.00') + '</span>';
     var merch = ' at ' + details.merchant_name;
     var manu = details.manufacturer_name;    
-    if((sale >= retail)||(sale == 0)){
-      price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-    }else{
-      price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-        ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-    }
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
 
