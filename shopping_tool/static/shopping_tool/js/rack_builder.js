@@ -101,6 +101,11 @@ var rack_builder = {
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(obj),
+        error:function(response){
+          console.log(response);
+          alert("Sorry, we could not add this product to your rack at this time.")
+          item.removeClass('selected').html('<i class="icon-hanger"></i> add to rack');
+        },
         success:function(response){
           var itm = rack_builder.itemTemplate(details, 'rack', idx, response.id);
           var categories = [];
