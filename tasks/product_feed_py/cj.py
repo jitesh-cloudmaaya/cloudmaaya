@@ -56,6 +56,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                 # merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
                 # omit fieldnames arg to use headerlines
                 reader = csv.DictReader(lines, restval = '', dialect = 'reading')
+                # i = 0
 
                 for datum in reader:
                     # totalCount += 1 # depening on how we want to count records skipped because of inactive merchants
@@ -63,13 +64,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                     for key, value in datum.iteritems():
                         value = str(value) # check later, REVOLVE had an issue where a value was being read as [value] for some reason (as opposed to str)
                         datum[key] = value.decode('UTF-8')
-
-                    ### need to examine more files, but if the keys used actually change between merchants
-                    ### then maybe need configuration files kind of like with RAN except probably more annoying?
-                    ### thought dictionary of terms that we want (such as color) to the labels that the specific merchant uses
-                    ## reminds me of my interview problem lol
-
-
 
                     # merchant name is the filename until the first dash (at least for all present examples)
                     pattern = re.compile('^[^-]*') # pattern matches until the first hyphen
@@ -98,12 +92,20 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                     merchant_name_key = mapping_dict['merchant_name']
                     merchant_name = datum[merchant_name_key]
                     merchant_id = product_feed_helpers.generate_merchant_id(merchant_name)
-
                     # move activity check here
                     merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
                     if merchant_is_active:
                         # increment totalCount here??
                         totalCount += 1
+
+                        # i += 1
+                        # print '=========================================== BEGIN Product %s ===========================================' % i
+                        # for key, value in datum.iteritems():
+                        #     print (key, value)
+                        # print '============================================ END Product %s ============================================' % i
+
+                        # if i > 11:
+                            # return
 
                         # faster way to perform the below?
                         # unpack the keys
@@ -175,7 +177,9 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['size'] = size
                             record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
 
-                            record['product_id'] = product_feed_helpers.generate_product_id(product_name, size, merchant_color)
+                            record['SKU'] = datum[SKU_key]
+
+                            record['product_id'] = product_feed_helpers.generate_product_id(product_name, size, record['merchant_color'], record['SKU'])
                             record['merchant_id'] = merchant_id
 
 
@@ -192,7 +196,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['short_product_description'] = datum[short_product_description_key]
                             record['manufacturer_name'] = datum[manufacturer_name_key]
                             record['manufacturer_part_number'] = datum[manufacturer_part_number_key]
-                            record['SKU'] = datum[SKU_key]
                             record['product_type'] = datum[product_type_key]
 
                             discount_type = datum[discount_type_key]
