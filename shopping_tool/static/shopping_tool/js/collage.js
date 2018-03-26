@@ -96,7 +96,9 @@ var collage = {
               if(image_url != null){
                 var img = new Image(); 
                 img.src = look_proxy + '' + image_url;
+                console.log(img.src)
                 img.onload = function() {
+                  console.log('loaded ' + img.src)
                   var scale = 1;
                   if(this.naturalHeight > 395){
                     scale = 395 / this.naturalHeight 
@@ -269,7 +271,9 @@ var collage = {
       }else{
         img.src = look_proxy + '' + prod.product.product_image_url;
       }
+      console.log(img.src)
       img.onload = function() {
+        console.log('loaded ' + img.src)
         var scale = 1;
         if(this.naturalHeight > 395){
           scale = 395 / this.naturalHeight 
