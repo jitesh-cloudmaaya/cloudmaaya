@@ -29,6 +29,7 @@ var rack_builder = {
       var index = rack_builder.favorites_product_ids.indexOf(product_id);
       rack_builder.favorites_product_ids.splice(index, 1);
       rack_builder.favorites.splice(index, 1);
+      link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
       $.ajax({
         contentType : 'application/json',
         error: function(response){
@@ -36,7 +37,7 @@ var rack_builder = {
         },
         success:function(response){
           $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
-          link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+          
         },
         type: 'DELETE',
         url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
@@ -46,6 +47,7 @@ var rack_builder = {
         "stylist": parseInt($('#stylist').data('stylistid')) ,
         "product": parseInt(link.data('productid'))     
       }
+      link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(fave),
@@ -55,7 +57,7 @@ var rack_builder = {
         success:function(response){
           rack_builder.favorites.push(response);
           rack_builder.favorites_product_ids.push(response.product);
-          link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+          link.data('faveid', response.id);
           $('#fave-prods').append(rack_builder.favoriteTemplate(link.data('details')))
         },
         type: 'PUT',
