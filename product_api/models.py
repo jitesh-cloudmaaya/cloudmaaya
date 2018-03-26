@@ -46,7 +46,7 @@ class Product(models.Model):
     end_date = models.DateTimeField(blank=True, null=True)
     merchant_name = models.CharField(max_length=2000, blank=True, null=True)
     keywords = models.CharField(max_length=1000, blank=True, null=True)
-    primary_category = models.CharField(max_length=150, blank=True, null=True)
+    primary_category = models.CharField(max_length=500, blank=True, null=True)
     secondary_category = models.CharField(max_length=500, blank=True, null=True)
     allume_score = models.IntegerField(blank=True, null=True)
     is_trending = models.BooleanField(default=0)
@@ -155,7 +155,7 @@ class AllumeCategory(models.Model):
         ]
 
 class CategoryMap(models.Model):
-    external_cat1 = models.CharField(max_length=150, blank=True, null=True)
+    external_cat1 = models.CharField(max_length=500, blank=True, null=True)
     external_cat2 = models.CharField(max_length=500, blank=True, null=True)
     allume_category = models.ForeignKey(AllumeCategory, blank=True, null=True)
     turned_on = models.BooleanField(default=False, db_column='active')

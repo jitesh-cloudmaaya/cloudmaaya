@@ -59,7 +59,7 @@ var collage = {
           payload.sites[merchant_node].add_to_cart[product_node].image = matching_object.product_image_url;
           payload.sites[merchant_node].add_to_cart[product_node].description = matching_object.long_product_description;
           var avail = matching_object.availability == 'in-stock' ? true : false;
-          payload.sites[merchant_node].add_to_cart[product_node].availability = avail;
+          payload.sites[merchant_node].add_to_cart[product_node].available = avail;
           payload.sites[merchant_node].add_to_cart[product_node].required_field_names = ["color", "size", "quantity"];
           payload.sites[merchant_node].add_to_cart[product_node].required_field_values = {};
           payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color = [];
@@ -96,7 +96,9 @@ var collage = {
               if(image_url != null){
                 var img = new Image(); 
                 img.src = look_proxy + '' + image_url;
+                console.log(img.src)
                 img.onload = function() {
+                  console.log('loaded ' + img.src)
                   var scale = 1;
                   if(this.naturalHeight > 395){
                     scale = 395 / this.naturalHeight 
@@ -125,6 +127,9 @@ var collage = {
                   collage.product_cache.push(product_obj);
                   collage.setWatermark();
                 };
+                img.addEventListener('error', function(){
+                  console.log('image errored')
+                });
               }
             },
             error: function(response){
@@ -243,6 +248,9 @@ var collage = {
       collage.canvas.add(fImg);
       fImg.selectable = false;
     }
+    img.addEventListener('error', function(){
+      console.log('image errored')
+    });
     if(collage.initial_load > -1){
       $('#look-drop').append(
         '<div id="adding-product"><div class="loading-prod">' +
@@ -269,7 +277,9 @@ var collage = {
       }else{
         img.src = look_proxy + '' + prod.product.product_image_url;
       }
+      console.log(img.src)
       img.onload = function() {
+        console.log('loaded ' + img.src)
         var scale = 1;
         if(this.naturalHeight > 395){
           scale = 395 / this.naturalHeight 
@@ -313,6 +323,9 @@ var collage = {
           $('#adding-product').remove();
         }
       };
+      img.addEventListener('error', function(){
+        console.log('image errored')
+      });      
     }else{
       $('#non-collage-items').append(
         '<div class="item"><img class="handle" src="' + prod.product.product_image_url + 
@@ -400,6 +413,9 @@ var collage = {
       fImg.applyFilters();       
       collage.canvas.add(fImg);     
     };
+    img.addEventListener('error', function(){
+      console.log('image errored')
+    });    
   },
   /**
   * @description set the current active object to bottom of layer stack 
@@ -505,6 +521,9 @@ var collage = {
         $('#adding-product').remove();
       }
     };
+    img.addEventListener('error', function(){
+      console.log('image errored')
+    });
   },
   /**
   * @description extend fabric with our new object class name 

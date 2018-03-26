@@ -29,23 +29,27 @@ var rack_builder = {
       var index = rack_builder.favorites_product_ids.indexOf(product_id);
       rack_builder.favorites_product_ids.splice(index, 1);
       rack_builder.favorites.splice(index, 1);
-      $.ajax({
-        contentType : 'application/json',
-        error: function(response){
-          console.log(response);
-        },
-        success:function(response){
-          $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
-          link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
-        },
-        type: 'DELETE',
-        url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
-      }); 
+      if(fave != ''){
+        link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+        $.ajax({
+          contentType : 'application/json',
+          error: function(response){
+            console.log(response);
+          },
+          success:function(response){
+            $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
+            
+          },
+          type: 'DELETE',
+          url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
+        }); 
+      }
     }else{
       var fave = {
         "stylist": parseInt($('#stylist').data('stylistid')) ,
         "product": parseInt(link.data('productid'))     
       }
+      link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(fave),
@@ -55,7 +59,7 @@ var rack_builder = {
         success:function(response){
           rack_builder.favorites.push(response);
           rack_builder.favorites_product_ids.push(response.product);
-          link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+          link.data('faveid', response.id);
           $('#fave-prods').append(rack_builder.favoriteTemplate(link.data('details')))
         },
         type: 'PUT',
@@ -101,6 +105,11 @@ var rack_builder = {
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(obj),
+        error:function(response){
+          console.log(response);
+          alert("Sorry, we could not add this product to your rack at this time.")
+          item.removeClass('selected').html('<i class="icon-hanger"></i> add to rack');
+        },
         success:function(response){
           var itm = rack_builder.itemTemplate(details, 'rack', idx, response.id);
           var categories = [];
@@ -138,8 +147,7 @@ var rack_builder = {
             "product_image_url": details.product_image_url,
             "primary_category": details.primary_category,
             "allume_category": details.allume_category,
-            "retail_price": details.retail_price,
-            "sale_price" : details.sale_price
+            "current_price": details.current_price
           }
           console.log(new_rack_obj)
           initial_rack.push(new_rack_obj);
@@ -192,16 +200,7 @@ var rack_builder = {
     var favorite_object = rack_builder.favorites[fave_idx];
     var fave_link = '<span class="favorited" data-productid="' + 
       obj.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></span>';
-         
-    var retail = obj.retail_price;
-    var sale = obj.sale_price;
-    var price_display = '';   
-    if((sale >= retail)||(sale == 0)){
-      price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-    }else{
-      price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-        ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-    }      
+    var price_display = '<span class="price">' + numeral(obj.current_price).format('$0,0.00') + '</span>';     
     var itm = '<div class="item" data-productid="' + obj.id + '" title="' + obj.merchant_name + ' by ' + 
     obj.manufacturer_name + '" data-productname="' + obj.product_name + 
     '" data-src="' + obj.product_image_url + '" data-fave="' + favorite_object.id  + '"><a href="#" ' +
@@ -519,13 +518,7 @@ var rack_builder = {
         var option = data.details[i];
         if(option._source.merchant_color.toLowerCase() == color){
           matching = option;
-          var retail = matching._source.retail_price;
-          var sale =  matching._source.sale_price;
-          if((sale >= retail)||(sale == 0)){
-            price_display = numeral(retail).format('$0,0.00');
-          }else{
-            price_display = '<em>(' + numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00');
-          }
+          price_display = '<em class="label">price:</em>' + numeral(matching._source.current_price).format('$0,0.00');
           fave_link = '<a href="#" class="favorite" data-productid="' + 
             matching._source.id + '"><i class="fa fa-heart-o"></i></a>';
           var fave_idx = rack_builder.favorites_product_ids.indexOf(matching._source.id);
@@ -648,17 +641,9 @@ var rack_builder = {
             rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
               product.id + '"><i class="fa fa-check"></i> in rack</a>';
           }
-          var retail = product.retail_price;
-          var sale = product.sale_price;
-          var price_display = '';
+          var price_display = '<span class="price" id="inspected-item-price"><em class="label">price:</em>' + numeral(product.current_price).format('$0,0.00') + '</span>';
           var merch = '<span class="merch">' + product.merchant_name + '</span>';
           var manu = '<span class="manu">by ' + product.manufacturer_name + '</span>';  
-          if((sale >= retail)||(sale == 0)){
-            price_display = '<span class="price" id="inspected-item-price">' + numeral(retail).format('$0,0.00') + '</span>';
-          }else{
-            price_display = '<span class="price" id="inspected-item-price"><em>(' + numeral(retail).format('$0,0.00') + 
-              ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-          }
           if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }
           if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }  
           var options_header = '';
@@ -707,15 +692,7 @@ var rack_builder = {
   * @returns {string} HTML
   */   
   itemTemplate: function(details, view, idx, rack_item_id){
-    var retail = details.retail_price;
-    var sale = details.sale_price;
-    var price_display = '';   
-    if((sale >= retail)||(sale == 0)){
-      price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-    }else{
-      price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-        ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-    }
+    var price_display = '<span class="price">' + numeral(details.current_price).format('$0,0.00') + '</span>';
     var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
     return '<div class="item" data-productid="' + details.id + '" title="' + details.merchant_name + ' by ' + 
       details.manufacturer_name + '" data-productname="' + details.product_name + '" data-sku="' + sku + 
