@@ -308,7 +308,7 @@ var utils = {
   * @param {integer} total - total number of items in result set
   * @param {integer} per_page - number of items per page payload
   */  
-  pagerTemplate: function(page, total, per_page, request){
+  pagerTemplate: function(page, total, per_page){
     var markup = [];
     var total_pages = Math.floor(total / per_page);
     var excess = total % per_page;

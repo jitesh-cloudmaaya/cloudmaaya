@@ -454,7 +454,7 @@ var search_page = {
       success: function(results){
         if(new_search == false){
           if(results.data != undefined && results.data.length > 0){
-            utils.pagerTemplate(results.page, results.total_items, results.num_per_page, results.request);
+            utils.pagerTemplate(results.page, results.total_items, results.num_per_page);
           }
           search_page.resultTemplate(results.data);
         }
