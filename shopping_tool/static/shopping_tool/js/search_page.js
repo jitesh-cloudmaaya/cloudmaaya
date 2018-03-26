@@ -22,6 +22,10 @@ var search_page = {
         search_page.performSearch(1, false, null);
       }
     });
+
+    $('#sort-dd').val(' ').selectize({ create: false, sortField: 'text'}).change(function(e){
+      search_page.performSearch(1, false, null);
+    })
     $('#search-categories').val('').selectize({ create: false, sortField: 'text'}).change(function(){
       var dd = $(this);
       var val = dd.val();
@@ -187,7 +191,7 @@ var search_page = {
                   checked = "checked";
                 }
               }
-              if(facet.key != ''){
+              if((facet.key != '')&&(facet.key != 'sort')){
                 group_markup.markup[display_name].push(
                   '<label class="facet">' +
                   '<input class="facet-box" type="checkbox" value="' + 
@@ -251,17 +255,9 @@ var search_page = {
   itemTemplate: function(details, view){
     var w = $('#results').width() / 3;   
     var desc = details.long_product_description == '' ? details.short_product_description : details.long_product_description ;
-    var retail = details.retail_price;
-    var sale = details.sale_price;
-    var price_display = '';
+    var price_display = '<span class="price">' + numeral(details.current_price).format('$0,0.00') + '</span>';
     var merch = ' at ' + details.merchant_name;
     var manu = details.manufacturer_name;    
-    if((sale >= retail)||(sale == 0)){
-      price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-    }else{
-      price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-        ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-    }
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
 
@@ -295,7 +291,7 @@ var search_page = {
   * @description ajax call to get search results
   * @param {integer} page - the page to fetch
   * @param {boolean} lastSearch - boolen is performSearh is being called via cookie
-  * @param {object} additionalCriteria - other searcj settings if from cookie
+  * @param {object} additionalCriteria - other search settings if from cookie
   */
   performSearch: function(page, lastSearch, additionalCriteria){
     $('#facet-bar').removeClass('show');
@@ -402,7 +398,9 @@ var search_page = {
       var keys = Object.keys(additionalCriteria);
       for(var i = 0, l = keys.length; i<l; i++){
         var key = keys[i];
-        if(['page', 'text', 'primary_category'].indexOf(key) == -1){
+        if(key == 'sort'){
+          $('#sort-dd')[0].selectize.setValue(additionalCriteria[key], true);
+        }else if(['page', 'text', 'primary_category'].indexOf(key) == -1){
           var terms = additionalCriteria[key].split('|');
           for(var ix = 0, lx = terms.length; ix < lx; ix++){
             var term = terms[ix];
@@ -424,12 +422,16 @@ var search_page = {
     if(selection_markup.length > 0){
       $('#facet-bar').addClass('show');
     }
+    var sort_value = $('#sort-dd').val();
+    if((sort_value != '')&&(sort_value != ' ')){
+      q += '&sort=' + sort_value;
+    }
     /* set the session search cookie so search will persist */
     if(text != '') { 
       var text_term = '&text=' + encodeURIComponent(text);
       q += text_term; 
     }
-    var saved_search = q;  
+    var saved_search = q;
     utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
     $.ajax({
       beforeSend: function(){
@@ -439,6 +441,7 @@ var search_page = {
           '<span class="pulse_message">Finding things you\'ll love...</span>' +
           '</div>'
         );
+        $('#sort-selection').hide();
         $('#pager-message').html('');
         $('#pager').html('');
         if(new_search == true){
@@ -465,7 +468,7 @@ var search_page = {
             var keys = Object.keys(additionalCriteria);
             for(var i = 0, l = keys.length; i<l; i++){
               var key = keys[i];
-              if(['page', 'text', 'primary_category'].indexOf(key) == -1){
+              if(['page', 'text', 'primary_category', 'sort'].indexOf(key) == -1){
                 var facet_block = $('#facets div.facet-list[data-qparam="' + key + '"]');
                 var terms = additionalCriteria[key].split('|');
                 for(var ix = 0, lx = terms.length; ix < lx; ix++){
@@ -503,6 +506,7 @@ var search_page = {
         }
       }
       utils.equalHeight($('#results div.item'));
+      $('#sort-selection').show()
     }else{
       $('#results').html('<div class="no-results">There were no products matching your supplied criteria...</div>');
     }

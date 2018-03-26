@@ -571,21 +571,13 @@ var look_builder = {
       for(var i = 0, l = result.look_products.length; i<l; i++){
         var prod = result.look_products[i];
         if(prod.product != undefined){
-          var retail = prod.product.retail_price;
-          var sale = prod.product.sale_price;
-          var price_display = '';
+          var price_display = '<span class="price"><em class="label">price:</em>' + 
+              numeral(prod.product.current_price).format('$0,0.00') + '</span>'
           var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
           var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>'; 
           var fave_link = '';
           var rack_link = '';  
           merchants.push(prod.product.merchant_name); 
-          if((sale >= retail)||(sale == 0)){
-            price_display = '<span class="price"><em class="label">price:</em>' + 
-              numeral(retail).format('$0,0.00') + '</span>';
-          }else{
-            price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
-              numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-          }
           fave_link = '<a href="#" class="favorite" data-productid="' + 
             prod.product.id + '"><i class="fa fa-heart-o"></i></a>';
           var fave_idx = rack_builder.favorites_product_ids.indexOf(prod.product.id);
