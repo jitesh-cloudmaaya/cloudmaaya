@@ -112,6 +112,13 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         primary_category = _product_field_tiered_assignment(tiered_assignments, 'primary_category', datum)
 
                         secondary_category = datum['secondary_category']
+
+                        # or try / accept?
+                        # if config_method:
+                        #     secondary_category = config_method(args)
+                        # else:
+                        #     secondary_category = datum['secondary_category']
+
                         product_url = datum['product_url']
 
                         try:
