@@ -277,7 +277,8 @@ var look_builder = {
           initialValue:  moment().startOf('day').format('YYYY-MM-DD'),
           min: moment().startOf('day').format('YYYY-MM-DD'),
           time: true,
-          timeFormat: 'h:mm a'
+          timeFormat: 'h:mm a',
+          timeInterval: 900
         });
         $('#publish-lookbook-overlay').fadeIn();
       }else{
