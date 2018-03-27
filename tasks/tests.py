@@ -5,7 +5,7 @@ from django.test import TestCase
 from product_feed_py.pepperjam import generate_product_id_pepperjam
 from product_feed_py.mappings import *
 from product_feed_py.product_feed_helpers import *
-from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes, _parse_category_from_product_name
+from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes
 from product_feed_py.ran import _product_field_tiered_assignment
 
 # Create your tests here.
