@@ -18,7 +18,6 @@ var look_builder = {
   */
   calcRemaining: function(box, limit){
     var remain = parseInt(limit - box.val().length);
-    console.log(remain)
     return remain;
   },
   /**
@@ -981,13 +980,10 @@ var look_builder = {
           '"><i class="fa fa-search"></i>view more details about this look</a></td></tr></table>' +
           '<input type="hidden" id="look-id" value="' + id + '"/>'
         );
-
-
         $('#look-desc').keyup(function(e) {
           var box = $(this)
           var num = look_builder.calcRemaining(box, 600);
           var desc_words = num == 1 ? 'character' : 'characters';
-          console.log(typeof num)
           if(num <= 0){
             num = 0;
             var str = box.val()
