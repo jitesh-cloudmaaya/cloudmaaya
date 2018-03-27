@@ -5,7 +5,7 @@ from django.test import TestCase
 from product_feed_py.pepperjam import generate_product_id_pepperjam
 from product_feed_py.mappings import *
 from product_feed_py.product_feed_helpers import *
-from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes
+from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes, _parse_category_from_product_name
 from product_feed_py.ran import _product_field_tiered_assignment
 
 # Create your tests here.
@@ -35,6 +35,8 @@ class ProductFeedHelpersTestCase(TestCase):
     more requirements are illuminated.
     """
 
+    fixtures = ['SynonymCategoryMap']
+
     def test_parse_raw_product_url(self):
         """
         Tests that the parse_raw_product_url function grabs the appropriate parameter.
@@ -53,6 +55,12 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('https://www.nordstromrack.com/shop/product/1877489', parse_raw_product_url(pepperjam_product_url0, 'url'))
         # impact_radius
         self.assertEqual('https://www.dsw.com/en/us/product/hue-hosiery-opaque-tights/211920', parse_raw_product_url(impact_radius_product_url0, 'u'))
+
+    def test_parse_category_from_product_name(self):
+        self.assertEqual('', parse_category_from_product_name(''))
+        self.assertEqual('', parse_category_from_product_name('Soko Teardrop Choker'))
+        self.assertEqual('Shoes', parse_category_from_product_name('Zerogrand Slip-On  Flat'))
+        self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings'))
 
 class SizeTestCase(TestCase):
     """

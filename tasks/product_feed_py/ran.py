@@ -8,7 +8,7 @@ from django.db import connection
 from . import mappings
 from . import product_feed_helpers
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap, Network, Product
+from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
 from datetime import datetime, timedelta
 
 ### attempt at writing record with logic
@@ -311,20 +311,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     if not is_delta:
         print('Setting deleted for non-upserted products')
         product_feed_helpers.set_deleted_network_products('RAN')
-
-
-# try to write the helper method that will be used in the new RAN config file structure
-# then update the structure and code accordingly once I have that working
-def parse_category_from_product_name(product_name):
-    """
-    Args:
-      product_name (str):
-
-    Returns:
-      str: The category that was parsed from a synonym appearing in the product name.
-    """
-    pass
-
 
 # a mocked call might look like
 # primary_category = product_field_tiered_assignment(tiered_assignments, 'primary_category', datum)
