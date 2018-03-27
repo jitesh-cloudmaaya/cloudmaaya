@@ -11,6 +11,16 @@ var look_builder = {
   */
   stylist_id: '',    
   /**
+  * @description calculate the remaining character for look descriptions
+  * @param {DOM Object} box - DOM textarea for calculation
+  * @param {integer} limit - number of max characters allowed
+  * @param returns {integer}
+  */
+  calcRemaining: function(box, limit){
+    var remain = parseInt(limit - box.val().length);
+    return remain;
+  },
+  /**
   * @description gather the compare looks objects and create markup for display
   * @param {object} lookup - json data for API call
   * @param {integer} at_load - id of currently being edited look or null
@@ -277,7 +287,8 @@ var look_builder = {
           initialValue:  moment().startOf('day').format('YYYY-MM-DD'),
           min: moment().startOf('day').format('YYYY-MM-DD'),
           time: true,
-          timeFormat: 'h:mm a'
+          timeFormat: 'h:mm a',
+          timeInterval: 900
         });
         $('#publish-lookbook-overlay').fadeIn();
       }else{
@@ -571,21 +582,13 @@ var look_builder = {
       for(var i = 0, l = result.look_products.length; i<l; i++){
         var prod = result.look_products[i];
         if(prod.product != undefined){
-          var retail = prod.product.retail_price;
-          var sale = prod.product.sale_price;
-          var price_display = '';
+          var price_display = '<span class="price"><em class="label">price:</em>' + 
+              numeral(prod.product.current_price).format('$0,0.00') + '</span>'
           var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
           var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>'; 
           var fave_link = '';
           var rack_link = '';  
           merchants.push(prod.product.merchant_name); 
-          if((sale >= retail)||(sale == 0)){
-            price_display = '<span class="price"><em class="label">price:</em>' + 
-              numeral(retail).format('$0,0.00') + '</span>';
-          }else{
-            price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
-              numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-          }
           fave_link = '<a href="#" class="favorite" data-productid="' + 
             prod.product.id + '"><i class="fa fa-heart-o"></i></a>';
           var fave_idx = rack_builder.favorites_product_ids.indexOf(prod.product.id);
@@ -972,11 +975,25 @@ var look_builder = {
           '<table class="collage-meta-fields"><tr><td>' +
           '<label>Name</label><input id="look-name" value="' + 
           result.name + '"/><label>Description</label><textarea id="look-desc">' + 
-          result.description + '</textarea></td><td><label>Additional Products</label>' +
+          result.description + '</textarea><p id="look-desc-count"></p></td><td><label>Additional Products</label>' +
           '<div id="non-collage-items"></div><a href="#" class="look-more-details" data-look="' + id + 
           '"><i class="fa fa-search"></i>view more details about this look</a></td></tr></table>' +
           '<input type="hidden" id="look-id" value="' + id + '"/>'
         );
+        $('#look-desc').keyup(function(e) {
+          var box = $(this)
+          var num = look_builder.calcRemaining(box, 600);
+          var desc_words = num == 1 ? 'character' : 'characters';
+          if(num <= 0){
+            num = 0;
+            var str = box.val()
+            box.val(box.val().substring(0, 600));
+          }
+          $('#look-desc-count').html(num + ' ' + desc_words + ' remaining...');
+        })
+        var initial_desc_length = look_builder.calcRemaining($('#look-desc'), 600);
+        var initial_desc_word = initial_desc_length == 1 ? 'character' : 'characters';
+        $('#look-desc-count').html(initial_desc_length + ' ' + initial_desc_word + ' remaining...');
         collage.collageSortable = null;
         collage.collageSortable = new Sortable($('#canvas-container')[0], {
           group: { name: "look", pull: false, put: true },

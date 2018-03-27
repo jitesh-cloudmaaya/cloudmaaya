@@ -177,7 +177,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                                     record['product_id'] = datum2[key]
                                     break
                             if not record['product_id']: # it did not get set in above
-                                record['product_id'] = product_feed_helpers.generate_product_id(record['product_name'], size, merchant_color)
+                                record['product_id'] = product_feed_helpers.generate_product_id(record['product_name'], size, merchant_color, record['SKU'])
 
                             availability = datum2['availability']
                             availability = availability.replace(' ', '-')

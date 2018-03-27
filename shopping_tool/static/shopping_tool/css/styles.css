@@ -182,7 +182,7 @@ input.search {
   width:calc(100% - 130px);
 }
 #facet-bar {}
-#results {overflow:auto; width:100%;}
+#results {clear: both; padding-top: 4px; overflow:auto; width:100%;}
 #results div.no-results {
   color:#474747;
   font-size:18px;
@@ -552,7 +552,7 @@ div.loader {padding:10px 20px; text-align:center;}
   font-size:16px;
   font-weight:100;
   margin:10px 0;
-  padding:0 5px;
+  padding:8px 5px 0;
 }
 #pager-message strong {font-weight:400;}
 a#rack-toggle {
@@ -2439,7 +2439,7 @@ div.publish-section label.toggle input:checked + span > small,
 #inspect-item div.stage table td#inspect-sizes span.header {margin-bottom:10px;}
 #inspect-item div.stage table td#inspect-sizes td.size-img {width:90px;}
 #inspect-item div.stage table td#inspect-sizes table {margin:0;}
-#inspect-item span.price em {color:#D32F2F; display:inline-block; padding-right: 8px; text-decoration: line-through;}
+#inspect-item span.price em {display:inline-block; font-variant: small-caps; padding-right: 5px;}
 #inspect-item #inspect-sizes div.inspect-alt-size img {
   box-shadow:0 0 3px rgba(0,0,0,0.25);
   display:block;
@@ -3026,9 +3026,9 @@ div.lookbook-btns a#publish-lookbook:active{
 }
 #look-drop #look-name {margin-bottom:10px;}
 #look-drop #look-desc {
-  height:105px;
-  max-height:105px;
-  min-height:105px;  
+  height:85px;
+  max-height:85px;
+  min-height:85px;  
   max-width:374px;
   min-width:374px;
 }
@@ -3765,5 +3765,16 @@ a#close-user-clip {
   transition: opacity 0.3s ease-in-out;  
   opacity:1;
 }
+#sort-selection {display:none;}
+#sort-selection span.label {
+  color:#777;
+  font-size:16px;
+  font-weight:300;
+  float:right; 
+  padding-top:8px;
+  margin-right:8px;
+}
+#sort-dd + .selectize-control {float:right; margin-right:5px; width:150px;}
+#look-desc-count {color:#777; font-size:11px; padding:3px 0 0;}
 
 

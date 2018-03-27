@@ -71,7 +71,7 @@ var explore_page = {
           "stylist": parseInt($('#stylist').data('stylistid')) ,
           "look": parseInt(link.data('lookid'))     
         }
-        link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+        link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
         $.ajax({
           contentType : 'application/json',
           data: JSON.stringify(fave),
@@ -82,7 +82,7 @@ var explore_page = {
             //console.log(response);
             explore_page.favorite_looks.push(response);
             explore_page.favorite_look_ids.push(response.look);
-            
+            link.data('faveid', response.id)
             rack_builder.getRackLooks('favorites', '#fave-looks');
           },
           type: 'PUT',
