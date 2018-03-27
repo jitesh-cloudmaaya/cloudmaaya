@@ -313,6 +313,19 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
         product_feed_helpers.set_deleted_network_products('RAN')
 
 
+# try to write the helper method that will be used in the new RAN config file structure
+# then update the structure and code accordingly once I have that working
+def parse_category_from_product_name(product_name):
+    """
+    Args:
+      product_name (str):
+
+    Returns:
+      str: The category that was parsed from a synonym appearing in the product name.
+    """
+    pass
+
+
 # a mocked call might look like
 # primary_category = product_field_tiered_assignment(tiered_assignments, 'primary_category', datum)
 

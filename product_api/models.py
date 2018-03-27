@@ -186,7 +186,7 @@ class SynonymCategoryMap(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.synonym
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
