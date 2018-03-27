@@ -184,8 +184,9 @@ def explore(request, styling_session_id=None):
 def image_proxy(request):
     
     url = request.GET.get('image_url')
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
-    image_data = requests.get(url, stream=True)
+    image_data = requests.get(url, headers=headers, stream=True)
     image_data.raw.decode_content = True
     im = Image.open(image_data.raw)
     response = HttpResponse(content_type="image/png")
