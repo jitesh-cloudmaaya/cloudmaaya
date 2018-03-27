@@ -1,0 +1,141 @@
+-   model: product_api.synonymcategorymap
+    pk: 1
+    fields: {synonym: trouser, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 2
+    fields: {synonym: trousers, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 3
+    fields: {synonym: slacks, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 4
+    fields: {synonym: pant, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 5
+    fields: {synonym: britches, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 6
+    fields: {synonym: shorts, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 7
+    fields: {synonym: pants, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 8
+    fields: {synonym: skirts, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 9
+    fields: {synonym: skirt, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 10
+    fields: {synonym: legging, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 11
+    fields: {synonym: leggings, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 12
+    fields: {synonym: culotte, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 13
+    fields: {synonym: culottes, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 14
+    fields: {synonym: shirt, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 15
+    fields: {synonym: blouse, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 16
+    fields: {synonym: camisole, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 17
+    fields: {synonym: tee, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 18
+    fields: {synonym: button up, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 19
+    fields: {synonym: collared, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 20
+    fields: {synonym: top, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 21
+    fields: {synonym: tank, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 22
+    fields: {synonym: sweatshirt, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 23
+    fields: {synonym: sweater, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 24
+    fields: {synonym: knitwear, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 25
+    fields: {synonym: hoodie, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 26
+    fields: {synonym: tunic, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 27
+    fields: {synonym: turtleneck, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 28
+    fields: {synonym: polo, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 29
+    fields: {synonym: mock neck, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 30
+    fields: {synonym: cardigan, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 31
+    fields: {synonym: knit, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 32
+    fields: {synonym: shirts, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 33
+    fields: {synonym: hoodies, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 34
+    fields: {synonym: sweaters, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 35
+    fields: {synonym: raincoat, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 36
+    fields: {synonym: overcoat, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 37
+    fields: {synonym: jacket, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 38
+    fields: {synonym: jackets, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 39
+    fields: {synonym: coats, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 40
+    fields: {synonym: heels, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 41
+    fields: {synonym: flat, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 42
+    fields: {synonym: flats, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 43
+    fields: {synonym: sandals, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 44
+    fields: {synonym: pump, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 45
+    fields: {synonym: sneaker, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 46
+    fields: {synonym: sneakers, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 47
+    fields: {synonym: sandal, category: Shoes}
