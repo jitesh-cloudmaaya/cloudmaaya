@@ -424,7 +424,7 @@ def parse_category_from_product_name(product_name):
     synonyms_list = SynonymCategoryMap.objects.values_list('synonym', flat = True)
     product_name = product_name.lower()
     for synonym in synonyms_list:
-        pattern = re.compile(r'\b' + synonym + r'\b')
+        pattern = re.compile(r'\b' + synonym.lower() + r'\b')
         if re.search(pattern, product_name):
             try:
                 category = SynonymCategoryMap.objects.get(synonym = synonym).category
