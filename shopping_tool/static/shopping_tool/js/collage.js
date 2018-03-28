@@ -129,6 +129,8 @@ var collage = {
                 };
                 img.addEventListener('error', function(){
                   console.log('image errored')
+                  alert('There was a problem adding that product. Please try another.');
+                  $('#adding-product').remove();
                 });
               }
             },
@@ -325,6 +327,17 @@ var collage = {
       };
       img.addEventListener('error', function(){
         console.log('image errored')
+
+        alert('There was a problem adding that product. Please try another.');
+        // some sort of removal from the array should go here
+        collage.initial_load--;
+        if(collage.initial_load > -1){
+          collage.loadImg();
+        }else{
+          collage.setWatermark();
+          collage.canvas.renderAll();
+          $('#adding-product').remove();
+        }
       });      
     }else{
       $('#non-collage-items').append(
