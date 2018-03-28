@@ -395,7 +395,7 @@ def generate_merchant_id(merchant_name):
     on the products table for the upsert process.
 
     Args:
-      merchant_name (str):
+      merchant_name (str): A string representing the name of the merchant.
     Returns:
       str: A string corresponding of purely numbers. Intended for use as a product's
       merchant id.
