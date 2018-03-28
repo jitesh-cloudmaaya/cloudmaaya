@@ -69,7 +69,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                 merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
                 if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
                     # check config files
-                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/'
+                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config_ran/'
                     fd = os.listdir(config_path)
 
                     default = 'default'

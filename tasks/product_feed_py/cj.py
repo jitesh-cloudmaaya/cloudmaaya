@@ -29,7 +29,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
         pattern = re.compile(file_ending)
         for f in file_directory:
             if re.search(pattern, f):
-                # file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
                 file_list.append(f)
 
         # metric variables
