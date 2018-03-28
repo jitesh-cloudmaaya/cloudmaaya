@@ -139,3 +139,51 @@
 -   model: product_api.synonymcategorymap
     pk: 47
     fields: {synonym: sandal, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 48
+    fields: {synonym: outerwear, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 49
+    fields: {synonym: blazer, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 50
+    fields: {synonym: blazers, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 51
+    fields: {synonym: coat, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 52
+    fields: {synonym: vest, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 53
+    fields: {synonym: trenchcoat, category: Jackets}
+-   model: product_api.synonymcategorymap
+    pk: 54
+    fields: {synonym: dress, category: Dresses}
+-   model: product_api.synonymcategorymap
+    pk: 55
+    fields: {synonym: frock, category: Dresses}
+-   model: product_api.synonymcategorymap
+    pk: 56
+    fields: {synonym: gown, category: Dresses}
+-   model: product_api.synonymcategorymap
+    pk: 57
+    fields: {synonym: footwear, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 58
+    fields: {synonym: boot, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 59
+    fields: {synonym: boots, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 60
+    fields: {synonym: bootie, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 61
+    fields: {synonym: booties, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 62
+    fields: {synonym: heel, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 63
+    fields: {synonym: pumps, category: Shoes}
