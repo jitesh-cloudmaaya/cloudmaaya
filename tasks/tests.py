@@ -35,6 +35,8 @@ class ProductFeedHelpersTestCase(TestCase):
     more requirements are illuminated.
     """
 
+    fixtures = ['SynonymCategoryMap']
+
     def test_parse_raw_product_url(self):
         """
         Tests that the parse_raw_product_url function grabs the appropriate parameter.
@@ -53,6 +55,14 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('https://www.nordstromrack.com/shop/product/1877489', parse_raw_product_url(pepperjam_product_url0, 'url'))
         # impact_radius
         self.assertEqual('https://www.dsw.com/en/us/product/hue-hosiery-opaque-tights/211920', parse_raw_product_url(impact_radius_product_url0, 'u'))
+
+    def test_parse_category_from_product_name(self):
+        self.assertEqual('', parse_category_from_product_name(''))
+        self.assertEqual('', parse_category_from_product_name('Soko Teardrop Choker'))
+        self.assertEqual('Shoes', parse_category_from_product_name('Zerogrand Slip-On  Flat'))
+        self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings'))
+        self.assertEqual('', parse_category_from_product_name('Polosko Lace-Up Platform'))
+        self.assertEqual('Tops', parse_category_from_product_name('Pratt Denim Button Up'))
 
 class SizeTestCase(TestCase):
     """
@@ -267,6 +277,9 @@ class ParserTestCase(TestCase):
         self.assertEqual(['LARGE (10)','SMALL(2-4)','XSMALL(12-18 MONTHS)','XXSMALL(6-9 MONTHS)'], seperate_sizes('LARGE (10),SMALL(2-4),XSMALL(12-18 MONTHS),XXSMALL(6-9 MONTHS),'))
 
 class RanHelpersTestCase(TestCase):
+
+    fixtures = ['SynonymCategoryMap']
+
     def test_tiered_assignment(self):
         """
         Tests the product_field_tiered_assignment function helper used in the RAN clean data method.
@@ -276,15 +289,15 @@ class RanHelpersTestCase(TestCase):
         # fieldname is the initial fieldname
 
         # typical case
-        tiered_assignments = {'primary_category': ['primary_category', 'attribute_2_product_type']}
+        tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
         fieldname = 'primary_category'
         datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
         self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
-        tiered_assignments = {'primary_category': ['attribute_2_product_type', 'primary_category']}
+
+        tiered_assignments = {'primary_category': ["datum['attribute_2_product_type']", "datum['primary_category']"]}
         fieldname = 'primary_category'
         datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
         self.assertEqual('Beauty & Fragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
-
 
         # no tiered assignments case
         tiered_assignments = {}
@@ -293,16 +306,27 @@ class RanHelpersTestCase(TestCase):
         self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
         # use one of the alternatives case
-        tiered_assignments = {'primary_category': ['primary_category', 'attribute_2_product_type']}
+        tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
         fieldname = 'primary_category'
         datum = {'primary_category': '', 'attribute_2_product_type': 'Beauty & Fragrance'}
         self.assertEqual('Beauty & Fragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
         # exhaust the alternatives case
-        tiered_assignments = {'primary_category': ['primary_category', 'attribute_2_product_type']}
+        tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
         fieldname = 'primary_category'
         datum = {'primary_category': '', 'attribute_2_product_type': ''}
         self.assertEqual('', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+
+        # test the method case
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        fieldname = 'secondary_category'
+        datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': ''}
+        self.assertEqual('Tops', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        fieldname = 'secondary_category'
+        datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': 'groomingfragrance'}
+        self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
 # class MappingsTestCase(TestCase):
 #     """

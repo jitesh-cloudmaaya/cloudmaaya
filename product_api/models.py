@@ -180,6 +180,15 @@ class CategoryMap(models.Model):
             models.Index(fields=['external_cat2']),
         ]
 
+class SynonymCategoryMap(models.Model):
+    synonym = models.CharField(max_length=255, blank=True, null=True)
+    category = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return self.synonym
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
