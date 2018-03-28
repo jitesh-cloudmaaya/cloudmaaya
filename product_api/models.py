@@ -144,6 +144,7 @@ class AllumeCategory(models.Model):
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+    position = models.IntegerField(default=100)
 
     def __str__(self):
         return self.name
