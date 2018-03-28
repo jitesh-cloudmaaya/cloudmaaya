@@ -146,7 +146,7 @@ def add_category_map(external_cat1, external_cat2, merchant_name, allume_categor
     CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
                                allume_category = None, turned_on = active, pending_review=pending_review)
     return True
-    
+
 
 def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     """

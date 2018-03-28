@@ -171,7 +171,7 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                     record['product_url'] = buy_url # product_url == buy_url?
                     try:
                         record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(buy_url, 'url')
-                    except Exception as e:
+                    except KeyError as e:
                         print e
                         record['raw_product_url'] = u''
                     # record['raw_product_url'] = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]

@@ -187,7 +187,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             # derived
                             try:
                                 record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(record['product_url'], 'u')
-                            except Exception as e:
+                            except KeyError as e:
                                 print e
                                 record['raw_product_url'] = u''
                             record['allume_category'] = allume_category
