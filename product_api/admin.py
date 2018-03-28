@@ -74,7 +74,7 @@ class CategoryMapAdmin(admin.ModelAdmin):
 class AllumeCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'active', 'position')
     readonly_fields = ['name']
-
+    ordering = ['position']
 
 class MerchantInLine(admin.TabularInline):
 
