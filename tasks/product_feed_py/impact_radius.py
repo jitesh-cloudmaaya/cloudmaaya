@@ -3,7 +3,7 @@ import yaml
 import urlparse
 import re
 import csv
-from . import mappings, product_feed_helpers
+from tasks.product_feed_py import mappings, product_feed_helpers
 from copy import copy
 from catalogue_service.settings import BASE_DIR
 from product_api.models import Merchant, CategoryMap, Network, Product

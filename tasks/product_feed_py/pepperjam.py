@@ -9,8 +9,7 @@ import time
 import re
 from copy import copy
 from django.db import connection
-from . import mappings
-from . import product_feed_helpers
+from tasks.product_feed_py import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
 from product_api.models import CategoryMap, Network, Merchant, Product
 from datetime import datetime, timedelta
@@ -239,7 +238,7 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                     record['currency'] = product['currency']
 
                     if product['in_stock'] == '':
-                        availability = 'out-of-stock'
+                        availability = 'no'
                     else:
                         availability = product['in_stock']
                     record['availability'] = availability

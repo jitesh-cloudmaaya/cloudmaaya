@@ -3,7 +3,7 @@ import re
 import csv
 import yaml
 from copy import copy
-from . import mappings, product_feed_helpers
+from tasks.product_feed_py import mappings, product_feed_helpers
 from product_api.models import Merchant, CategoryMap
 from datetime import datetime, timedelta
 from catalogue_service.settings import BASE_DIR
@@ -58,10 +58,9 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                 # i = 0
 
                 for datum in reader:
-                    # totalCount += 1 # depening on how we want to count records skipped because of inactive merchants
                     # unicode
                     for key, value in datum.iteritems():
-                        value = str(value) # check later, REVOLVE had an issue where a value was being read as [value] for some reason (as opposed to str)
+                        value = str(value)
                         datum[key] = value.decode('UTF-8')
 
                     # merchant name is the filename until the first dash (at least for all present examples)
@@ -223,7 +222,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
                             availability = datum[availability_key]
                             if availability == '':
-                                availability = 'out-of-stock'
+                                availability = 'no'
                             record['availability'] = availability
 
                             record['keywords'] = datum[keywords_key]
@@ -279,6 +278,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
-    print('Updating non-upserted Impact Radius products')
-    product_feed_helpers.set_deleted_network_products('CJ')
+    # print('Updating non-upserted Impact Radius products')
+    # product_feed_helpers.set_deleted_network_products('CJ')
 
