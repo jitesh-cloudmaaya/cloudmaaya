@@ -44,12 +44,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
         # different dialects for reading and writing
         csv.register_dialect('reading', delimiter='|', quoting=csv.QUOTE_NONE, quotechar='')
-        # second dialect
-        # set the delimiter as a pipe character
-        # quote all the fields when written to flat file
-        # use " as the quoting character
-        # use the escapecharacter and set it to \
-        # match line terminator with what is used in load data
         csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\', lineterminator='\n')
 
         cleaned_fieldnames = cleaned_fields.split(',')
