@@ -25,8 +25,10 @@ var search_page = {
 
     $('#sort-dd').val(' ').selectize({ create: false, sortField: 'text'}).change(function(e){
       search_page.performSearch(1, false, null);
-    })
-    $('#search-categories').val('').selectize({ create: false, sortField: 'text'}).change(function(){
+    });
+    $('#search-categories').val('').selectize({ 
+      create: false
+    }).change(function(){
       var dd = $(this);
       var val = dd.val();
       var def_div = $('#client-defaults');

@@ -3026,9 +3026,9 @@ div.lookbook-btns a#publish-lookbook:active{
 }
 #look-drop #look-name {margin-bottom:10px;}
 #look-drop #look-desc {
-  height:105px;
-  max-height:105px;
-  min-height:105px;  
+  height:85px;
+  max-height:85px;
+  min-height:85px;  
   max-width:374px;
   min-width:374px;
 }
@@ -3775,5 +3775,6 @@ a#close-user-clip {
   margin-right:8px;
 }
 #sort-dd + .selectize-control {float:right; margin-right:5px; width:150px;}
+#look-desc-count {color:#777; font-size:11px; padding:3px 0 0;}
 
 
