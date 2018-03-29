@@ -11,6 +11,16 @@ var look_builder = {
   */
   stylist_id: '',    
   /**
+  * @description calculate the remaining character for look descriptions
+  * @param {DOM Object} box - DOM textarea for calculation
+  * @param {integer} limit - number of max characters allowed
+  * @param returns {integer}
+  */
+  calcRemaining: function(box, limit){
+    var remain = parseInt(limit - box.val().length);
+    return remain;
+  },
+  /**
   * @description gather the compare looks objects and create markup for display
   * @param {object} lookup - json data for API call
   * @param {integer} at_load - id of currently being edited look or null
@@ -277,7 +287,8 @@ var look_builder = {
           initialValue:  moment().startOf('day').format('YYYY-MM-DD'),
           min: moment().startOf('day').format('YYYY-MM-DD'),
           time: true,
-          timeFormat: 'h:mm a'
+          timeFormat: 'h:mm a',
+          timeInterval: 900
         });
         $('#publish-lookbook-overlay').fadeIn();
       }else{
@@ -335,14 +346,10 @@ var look_builder = {
     });
     $('#pub-section3').on('click', 'a#submit-lookbook', function(e){
       e.preventDefault();
-      var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
       var lookbook = {
         styling_session_id: look_builder.session_id,
         send_at: null,
-        text_content: $('#publish-email').val().replace(
-          /\[Link to Lookbook\]/g, 
-          '<a href="https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
-        ),
+        text_content: $('#publish-email').val(),
         notify_user : true
       }
       if($('#send-later-toggle').prop('checked') == true){
@@ -575,21 +582,13 @@ var look_builder = {
       for(var i = 0, l = result.look_products.length; i<l; i++){
         var prod = result.look_products[i];
         if(prod.product != undefined){
-          var retail = prod.product.retail_price;
-          var sale = prod.product.sale_price;
-          var price_display = '';
+          var price_display = '<span class="price"><em class="label">price:</em>' + 
+              numeral(prod.product.current_price).format('$0,0.00') + '</span>'
           var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
           var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>'; 
           var fave_link = '';
           var rack_link = '';  
           merchants.push(prod.product.merchant_name); 
-          if((sale >= retail)||(sale == 0)){
-            price_display = '<span class="price"><em class="label">price:</em>' + 
-              numeral(retail).format('$0,0.00') + '</span>';
-          }else{
-            price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
-              numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-          }
           fave_link = '<a href="#" class="favorite" data-productid="' + 
             prod.product.id + '"><i class="fa fa-heart-o"></i></a>';
           var fave_idx = rack_builder.favorites_product_ids.indexOf(prod.product.id);
@@ -976,11 +975,25 @@ var look_builder = {
           '<table class="collage-meta-fields"><tr><td>' +
           '<label>Name</label><input id="look-name" value="' + 
           result.name + '"/><label>Description</label><textarea id="look-desc">' + 
-          result.description + '</textarea></td><td><label>Additional Products</label>' +
+          result.description + '</textarea><p id="look-desc-count"></p></td><td><label>Additional Products</label>' +
           '<div id="non-collage-items"></div><a href="#" class="look-more-details" data-look="' + id + 
           '"><i class="fa fa-search"></i>view more details about this look</a></td></tr></table>' +
           '<input type="hidden" id="look-id" value="' + id + '"/>'
         );
+        $('#look-desc').keyup(function(e) {
+          var box = $(this)
+          var num = look_builder.calcRemaining(box, 600);
+          var desc_words = num == 1 ? 'character' : 'characters';
+          if(num <= 0){
+            num = 0;
+            var str = box.val()
+            box.val(box.val().substring(0, 600));
+          }
+          $('#look-desc-count').html(num + ' ' + desc_words + ' remaining...');
+        })
+        var initial_desc_length = look_builder.calcRemaining($('#look-desc'), 600);
+        var initial_desc_word = initial_desc_length == 1 ? 'character' : 'characters';
+        $('#look-desc-count').html(initial_desc_length + ' ' + initial_desc_word + ' remaining...');
         collage.collageSortable = null;
         collage.collageSortable = new Sortable($('#canvas-container')[0], {
           group: { name: "look", pull: false, put: true },
@@ -1018,7 +1031,11 @@ var look_builder = {
               data: JSON.stringify(look_product_obj),
               success:function(response){
                 item.find('a.remove').data('lookitemid', response.id)
-                collage.addAllumeProduct(response.product, response.id);
+                collage.addAllumeProduct(response.product, response.id, response, null, null);
+              },
+              error: function(){
+                alert('There was a problem adding that product. Please try another.');
+                item.remove();
               },
               type: 'PUT',
               url: '/shopping_tool_api/look_item/0/'
@@ -1068,7 +1085,7 @@ var look_builder = {
     );
     var div = drag_rack.find('div.look-builder-rack')
     /* attach same functionality to search results as regular unoredered rack */
-    look_builder.rackDragDrop(true, 'unordered');
+    look_builder.rackDragDrop(false, 'unordered');
     /* attached event listener to filter results */
     $('#rack-search').keyup(function(e){
       var q = $(this).val();
@@ -1124,7 +1141,7 @@ var look_builder = {
         var step_div = $(link.attr('href'));
         var email_at = '<span class="summary-sent">Text will be sent <strong>now</strong>.</span>';
         if($('#send-later-toggle').prop('checked')){
-          var t = rome.find(document.getElementById('send-later'))
+          var t = rome.find(document.getElementById('send-later'));
           email_at = '<span class="summary-sent">Text will be sent <strong>' + 
           t.getMoment().format('MMMM Do, YYYY h:mm a') + 
           ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
@@ -1133,14 +1150,6 @@ var look_builder = {
           email_at = '<span class="summary-sent">A text will <strong>NOT</strong> be sent.</span>';
         }
         var email_text = $('#publish-email').val();
-        var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
-
-
-        email_text = email_text.replace(
-          /\[Link to Lookbook\]/g, 
-          '<a href="https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') +
-          '" target="_blank">Your Lookbook</a>'
-        );
         step_div.html(
           '<div id="final-text-preview"><h5>Text</h5>' + email_at +
           '<div class="summary-email">' + email_text + '</div></div>' +
@@ -1159,35 +1168,44 @@ var look_builder = {
   */
   unorderedRack: function(){
     var rack_items = [];
-    var rack_items_dom = $('#rack-list').find('div.item');
-    if(rack_items_dom.length > 0){
+    var compare_array = [];
+    if(initial_rack.length > 0){
       rack_items.push(
         '<a href="#" class="lb-search-link">' +
         '<i class="fa fa-search"></i>search rack</a>' +
         '<a class="sort-link sort-items" href="#">' +
         '<i class="fa fa-th-list"></i>sort items</a>'
       );
+
+      $.each($('#rack-list').find('div.item'), function(idx){
+        var item = $(this);
+        compare_array.push(item.find('a.remove-from-rack').data('rackid'));
+      });
     }else{
       rack_items.push('<div class="empty">Your rack is empty...</div>');
     }
-    $.each(rack_items_dom, function(index){
-      var item = $(this);
-      var data = item.data();
-      var src = item.find('img').attr('src');
-      var link = item.find('a.remove-from-rack')
-      var sku = link.data('sku');
-      var rack_id = link.data('rackid');
-      rack_items.push(
-        '<div class="item" data-productid="' + data.productid + 
-        '" data-url="' + src + '"><img class="handle" src="' + src + 
-        '"/><a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
-        src + '"><i class="fa fa-plus-circle"></i></a>' +
-        '<a href="#"  class="view" data-productid="' + data.productid + 
-        '"><i class="fa fa-search"></i></a>' +
-        '<a href="#" class="remove" data-sku="' + sku + 
-        '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
-      );
+    initial_rack.sort(function(a,b){
+      if(a.added > b.added){ return -1}
+      if(a.added < b.added){ return 1}
+      return 0;      
     });
+    for(var i = 0, l = initial_rack.length; i<l; i++){
+      var data = initial_rack[i];
+      var src = data.product_image_url;
+      var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
+      if(compare_array.indexOf(data.rack_id) > -1){
+        rack_items.push(
+          '<div class="item" data-productid="' + data.id + 
+          '" data-url="' + src + '"><img class="handle" src="' + src + 
+          '"/><a href="#" class="add" data-productid="' + data.id + '" data-imgsrc="' + 
+          src + '"><i class="fa fa-plus-circle"></i></a>' +
+          '<a href="#"  class="view" data-productid="' + data.id + 
+          '"><i class="fa fa-search"></i></a>' +
+          '<a href="#" class="remove" data-sku="' + sku + 
+          '" data-rackid="' + data.rack_id + '"><i class="fa fa-times"></i></a></div>'
+        ); 
+      }     
+    }
     var faves = $('#fave-prods div.item');
     if(faves.length > 0){
       rack_items.push(look_builder.rackFavorites(faves));
@@ -1199,7 +1217,7 @@ var look_builder = {
       '</h2><div class="look-builder-rack">' + 
       rack_items.join('') + '</div>'
     );
-    look_builder.rackDragDrop(true, 'unordered');  
+    look_builder.rackDragDrop(false, 'unordered');  
   },  
   /**
   * @description update a look with any changes to its fields
@@ -1217,6 +1235,7 @@ var look_builder = {
     var src = collage.canvas.toDataURL({
       format: 'jpeg',
       quality: 1,
+      multiplier: 4
     });
     /* the look object to save */
     var look_obj = {

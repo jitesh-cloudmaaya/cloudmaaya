@@ -91,7 +91,7 @@ class EProductSearch(FacetedSearch):
         ('allume_score', TermsFacet(field='allume_score')), #HistogramFacet
         ('is_trending', TermsFacet(field='is_trending')),
         ('is_best_seller', TermsFacet(field='is_best_seller')),
-        ('price_range', RangeFacet(field='sale_price', ranges=price_ranges)), #current_price
+        ('price_range', RangeFacet(field='current_price', ranges=price_ranges)), #current_price
     )) 
 
     def __init__(self, query=None, filters={}, sort=(), favs=[], card_count = False):
@@ -105,16 +105,19 @@ class EProductSearch(FacetedSearch):
         self._filters = {}
         self._card_count = card_count
         # TODO: remove in 6.0
-        if isinstance(sort, string_types):
-            self._sort = (sort,)
-        else:
-            self._sort = sort
+        #if isinstance(sort, string_types):
+        #    self._sort = (sort,)
+        #else:
+        self._sort = sort
         self.filter_values = {}
         for name, value in iteritems(filters):
             self.add_filter(name, value)
 
         self._s = self.build_search()
 
+    @classmethod
+    def sort_options(cls):
+        return ['current_price', 'size.keyword', 'brand.keyword', 'merchant_name.keyword', 'allume_score']
 
     def filter(self, search):
         """
@@ -179,11 +182,13 @@ class EProductSearch(FacetedSearch):
         collapse_dict = {"field": "raw_product_url.keyword","inner_hits": {"name": "collapsed_by_product_name","from": 1}}
         cardinality_dict = {"unique_count" : {"cardinality" : {"field" : "raw_product_url.keyword"}}}
 
+        
+
         if self._card_count:
             return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
         else:
             #search.aggs.bucket("unique_product_name_count", {"cardinality" : {"field" : "product_name.keyword"}})
-            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict)
+            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).sort(self._sort)
         #.sort('-p')
 
 def remove_deleted_items(self, days_back = 14):

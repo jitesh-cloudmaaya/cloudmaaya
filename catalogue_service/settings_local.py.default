@@ -73,4 +73,6 @@ PEPPERJAM_API_KEY = ''
 
 COLLAGE_IMAGE_ROOT = 'https://shopping-tool-web-stage.allume.co/collage_image'
 
-ENV_LOCAL = 'stage'
+ENV_LOCAL = 'dev'
+ALLUME_API_AUTH_USER = 'admin'
+ALLUME_API_AUTH_PASS = 'xxxx'

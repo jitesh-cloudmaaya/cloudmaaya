@@ -2,7 +2,7 @@ import urlparse
 import urllib
 import hashlib
 import re
-from product_api.models import Merchant, CategoryMap, Network, Product
+from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
 from datetime import datetime, timedelta
 
 def parse_raw_product_url(product_url, raw_product_attribute):
@@ -395,7 +395,7 @@ def generate_merchant_id(merchant_name):
     on the products table for the upsert process.
 
     Args:
-      merchant_name (str):
+      merchant_name (str): A string representing the name of the merchant.
     Returns:
       str: A string corresponding of purely numbers. Intended for use as a product's
       merchant id.
@@ -406,3 +406,29 @@ def generate_merchant_id(merchant_name):
     converted = int(hashlib.sha256(merchant_name.encode('UTF-8')).hexdigest(), 16) % (10 ** 7) # the power to raise to has wiggle room
     merchant_id = str(converted)
     return merchant_id
+
+def parse_category_from_product_name(product_name):
+    """
+    Using SynonymCategoryMap, checks a product_name for presence of any synonyms. If one is found,
+    leverages the SynonymCategoryMap objects to find the category that synonym should map to. This
+    category is then returned.
+
+    Args:
+      product_name (str): The name of a product, with elements separated by an arbitrary amount
+      of whitespace.
+
+    Returns:
+      str: The category that was parsed from a synonym appearing in the product name.
+    """
+    category = ''
+    synonyms_list = SynonymCategoryMap.objects.values_list('synonym', flat = True)
+    product_name = product_name.lower()
+    for synonym in synonyms_list:
+        pattern = re.compile(r'\b' + synonym.lower() + r'\b')
+        if re.search(pattern, product_name):
+            try:
+                category = SynonymCategoryMap.objects.get(synonym = synonym).category
+            except MultipleObjectsReturned:
+                print 'There should not be multiple entries for a synonym, this needs to be corrected.'
+            break
+    return category

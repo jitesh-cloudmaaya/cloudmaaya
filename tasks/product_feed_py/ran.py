@@ -7,7 +7,7 @@ from copy import copy
 from django.db import connection
 from tasks.product_feed_py import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap, Network, Product
+from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
 from datetime import datetime, timedelta
 
 ### attempt at writing record with logic
@@ -81,6 +81,13 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         # we shall use the default
                         config_dict = yaml.load(config)
                         fields = config_dict['fields'] # grabs the fields as an array
+
+                        try: # not all merchants will have this field
+                            # the above will now be a dictionary like {'primary_category': ['primary_category', 'product_type']}
+                            tiered_assignments = config_dict['tiered_assignment_fields']
+                        except KeyError:
+                            tiered_assignments = {}
+
                     # print fields
                     reader = csv.DictReader(lines, fieldnames = fields, restval='', dialect = 'reading')
                     for datum in reader:
@@ -94,12 +101,12 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         product_id = datum['product_id']
                         product_name = datum['product_name']
                         SKU = datum['SKU']
-                        primary_category = datum['primary_category']
-                        secondary_category = datum['secondary_category']
+                        primary_category = _product_field_tiered_assignment(tiered_assignments, 'primary_category', datum)
+                        secondary_category = _product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum)
                         product_url = datum['product_url']
 
                         try:
-                            raw_product_url = product_feed_helpers.parse_raw_product_url(product_url, 'murl')
+                            raw_product_url = parse_raw_product_url(product_url, 'murl')
                             # raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
                         except KeyError as e:
                             print e
@@ -207,7 +214,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             record['size'] = attribute_3_size
 
 
-                            record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+                            record['allume_size'] = determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
 
                             record['material'] = attribute_4_material
 
@@ -256,14 +263,14 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
                             # check size here to see if we should write additional 'child' records?
                             parent_attributes = copy(record)
-                            sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
+                            sizes = seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    parent_attributes['allume_size'] = determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
                                     parent_attributes['size'] = size
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    parent_attributes['product_id'] = assign_product_id_size(product_id, size)
                                     writer.writerow(parent_attributes)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
@@ -287,4 +294,36 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     # UPDATE: Csn't use on the Delta File as it will not include records that didn't change but are still live
     if not is_delta:
         print('Setting deleted for non-upserted products')
-        product_feed_helpers.set_deleted_network_products('RAN')
+        set_deleted_network_products('RAN')
+
+def _product_field_tiered_assignment(tiered_assignments, fieldname, datum):
+    """
+    Attempts a best effort assignment of fieldname using tiered_assigments and the information encoded in datum.
+    Uses the first field label from tiered_assignments that has a non-empty value. If a non-empty value cannot be
+    resolved, the function returns an empty value.
+    Example: _product_field_tiered_assignment({'primary_category': ['primary_category', 'attribute_2_product_type']},
+        'primary_category', {'primary_category': '', 'attribute_2_product_type': 'Beauty & Fragrance'}) -> 'Beauty & Fragrance'
+
+    Args:
+        tiered_assignments (dict): A dictionary representing categories with tiered assignment possibilities.
+        The dictionary has keys of strings that are fieldnames in the datum and the values are list of strings,
+        with each string representing code that is a strategy to generate an assignment. The list is sequential.
+        fieldname (str): A string denoting the fieldname label that is used as a key in datum.
+        datum (dict): A dictionary representing the raw data from a RAN file. Maps field attribute labels to
+        a string representing their value.
+
+    Returns:
+      str: The assignment that was found and used. Can be the empty string.
+    """
+    try:
+        strategy_list = tiered_assignments[fieldname]
+    except KeyError:
+        return datum[fieldname]
+
+    assignment = ''
+    for strategy in strategy_list:
+        assignment = eval(strategy)
+        if assignment:
+            break
+
+    return assignment

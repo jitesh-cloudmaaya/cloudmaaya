@@ -29,6 +29,14 @@ from product_doc import EProductSearch#, EProduct
 
 
 @api_view(['GET'])
+def sort_options(self):
+    options = EProductSearch.sort_options()
+
+    return Response(options) 
+
+
+
+@api_view(['GET'])
 @permission_classes((AllowAny, ))
 def facets(self):
     """
@@ -45,6 +53,10 @@ def facets(self):
     text_query = self.query_params.get('text', '*')
     num_per_page = int(self.query_params.get('num_per_page', 100))
     page = int(self.query_params.get('page', 1))
+
+    sort_order = self.query_params.get('sort')
+    if not sort_order:
+        sort_order = "_score"
 
     filter_favs = self.query_params.get('favs')
     if filter_favs:
@@ -64,7 +76,7 @@ def facets(self):
             whitelisted_facet_args[key] = urllib.unquote(value).split("|")
 
 
-    es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs)
+    es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, sort=sort_order)
     es_count = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, card_count=True)
     es = es[start_record:end_record]
     results = es.execute().to_dict()

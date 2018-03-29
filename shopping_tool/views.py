@@ -68,7 +68,7 @@ def index(request, styling_session_id=None):
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
-    categories = AllumeCategory.objects.filter(active = True)
+    categories = AllumeCategory.objects.filter(active = True).order_by('position')
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
@@ -184,8 +184,9 @@ def explore(request, styling_session_id=None):
 def image_proxy(request):
     
     url = request.GET.get('image_url')
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
-    image_data = requests.get(url, stream=True)
+    image_data = requests.get(url, headers=headers, stream=True)
     image_data.raw.decode_content = True
     im = Image.open(image_data.raw)
     response = HttpResponse(content_type="image/png")
@@ -198,7 +199,7 @@ def image_proxy(request):
 # without Having Access to The WP Login Application
 ########################################################
 def set_cookie(request):
-    if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
+    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-web-dev.allume.co:8000']:
         response_redirect = HttpResponseRedirect('/')
         response_redirect.set_cookie(AUTH_EMAIL_KEY, DEV_AUTH_EMAIL)
         return response_redirect
@@ -206,7 +207,7 @@ def set_cookie(request):
         raise PermissionDenied
 
 def delete_cookie(request):
-    if request.get_host() in ['localhost:8000', '127.0.0.1:8000']:
+    if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-web-dev.allume.co:8000']:
         response_redirect = HttpResponseRedirect('/')
         response_redirect.delete_cookie(AUTH_EMAIL_KEY)
         return response_redirect

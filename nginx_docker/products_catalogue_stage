@@ -2,6 +2,7 @@ server {
         listen       443 ssl;
         listen       [::]:443 ssl;
         server_name  products-catalogue-stage.allume.co;
+        client_max_body_size 200M;
         ssl on;
         ssl_certificate "/etc/pki/nginx/server.crt";
         ssl_certificate_key "/etc/pki/nginx/private/server.key";
