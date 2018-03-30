@@ -51,30 +51,13 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
             full_filepath = os.path.join(os.getcwd(), local_temp_dir, f)
             with open(full_filepath, "r") as data:
                 lines = data.readlines()
-
-                # merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
-                # omit fieldnames arg to use headerlines
                 reader = csv.DictReader(lines, restval = '', dialect = 'reading')
+
                 # i = 0
-
                 for datum in reader:
-                    # unicode
-                    pass
-                    # print '========================== BEGIN FILES AS READ IN =========================='
                     for key, value in datum.iteritems():
-                    #     print '=========== this is what is read from the file ================'
-                    #     print type(value)
-                    #     print (key, value)
-                    #     print '=========== this is after the type casting ================'
                         value = str(value)
-                    #     print type(value)
-                    #     print (key, value)
-                    #     print '=========== this is after the attempted decoding to unicode ================'
                         datum[key] = value.decode('UTF-8')
-                    #     print type(datum[key])
-                    #     print (key, datum[key])
-                    # print '========================== END FIRST FOR LOOP =========================='
-
 
                     # merchant name is the filename until the first dash (at least for all present examples)
                     pattern = re.compile('^[^-]*') # pattern matches until the first hyphen
@@ -259,9 +242,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['allume_score'] = u'0'
                             record['is_deleted'] = u'0'
 
-                            # print size
-                            # print type(size)
-
                             # size splitting stuff
                             parent_attributes = copy(record)
                             sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
@@ -271,19 +251,12 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                                     child_record = copy(parent_attributes)
                                     child_record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
+
                                     child_record['size'] = size
                                     child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-
-                                    # print '====== we are back in the cj main function ====='
-                                    # print size
-                                    # print type(size)
                                     for key, value in child_record.iteritems():
-                                        # print type(value)
-                                        # print (key, value)
                                         child_record[key] = value.encode('UTF-8')
 
-
-                                    # before this record is written we would want to amke sure everything is back to bytestrings
                                     writer.writerow(child_record)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
@@ -306,6 +279,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
-    # print('Updating non-upserted Impact Radius products')
-    # product_feed_helpers.set_deleted_network_products('CJ')
+    print('Updating non-upserted Impact Radius products')
+    product_feed_helpers.set_deleted_network_products('CJ')
 
