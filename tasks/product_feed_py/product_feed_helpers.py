@@ -4,6 +4,7 @@ import hashlib
 import re
 from datetime import datetime, timedelta
 from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
+from string import capwords
 
 def parse_raw_product_url(product_url, raw_product_attribute):
     """
@@ -428,15 +429,23 @@ def parse_category_from_product_name(product_name):
     Returns:
       str: The category that was parsed from a synonym appearing in the product name.
     """
-    category = u''
+    matched_synonym = None
+    currIndex = -1
     synonyms_list = SynonymCategoryMap.objects.values_list('synonym', flat = True)
     product_name = product_name.lower()
     for synonym in synonyms_list:
         pattern = re.compile(r'\b' + synonym.lower() + r'\b')
-        if re.search(pattern, product_name):
-            try:
-                category = SynonymCategoryMap.objects.get(synonym = synonym).category
-            except MultipleObjectsReturned:
-                print 'There should not be multiple entries for a synonym, this needs to be corrected.'
-            break
+        match = re.search(pattern, product_name)
+        if match:
+            index = match.end()
+            if index > currIndex:
+                currIndex = index
+                matched_synonym = synonym
+
+    category = u''
+    if matched_synonym:
+        try:
+            category = capwords(SynonymCategoryMap.objects.get(synonym = matched_synonym).category)
+        except SynonymCategoryMap.MultipleObjectsReturned:
+            print 'There should not be multiple entries for a synonym, this needs to be corrected.'
     return category
