@@ -86,7 +86,7 @@ def assign_product_id_size(product_id, size):
     converted = int(hashlib.sha256(size.encode('UTF-8')).hexdigest(), 16) % (10 ** 15)
     product_id = int(product_id) + converted
     product_id = product_id % (2 ** 60) # keep id under bigint max signed value
-    product_id = str(product_id)
+    product_id = str(product_id).decode('UTF-8')
 
     return product_id
 
@@ -234,6 +234,10 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
     except AttributeError: # if match is None
         parsed_size = size
 
+    # print '========= test sep =========='
+    # print type(parsed_size)
+    # print parsed_size
+
     # if it startswith a number
     try:
         starts_with_num = parsed_size[0].isdigit()
@@ -242,18 +246,18 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
 
     if starts_with_num:
         # check for the special cases of 1X, 2X, 3X, 4X
-        special_cases = set(['0X', '1X', '2X', '3X', '4X'])
+        special_cases = set([u'0X', u'1X', u'2X', u'3X', u'4X'])
         if parsed_size in special_cases:
             # if size is 1X or above, it is plus
-            special_cases.remove('0X')
-            size_term = ''
+            special_cases.remove(u'0X')
+            size_term = u''
             if parsed_size in special_cases:
-                size_term = 'Plus'
+                size_term = u'Plus'
             allume_size = size_mapping[parsed_size]
             if size_term:
-                allume_size += ' ' + size_term
+                allume_size += u' ' + size_term
         else:
-            join_val = ''
+            join_val = u''
             # check number split from characters?
             numeric, alpha = _split_size(parsed_size)
             if _lingerie_match(alpha): # we believe this to be lingerie
@@ -263,15 +267,15 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
                     numeric = size_mapping[numeric]
                 if alpha in size_term_mapping.keys():
                     alpha = size_term_mapping[alpha]
-                    join_val = ' '
+                    join_val = u' '
                 allume_size = numeric + join_val + alpha
                 allume_size = allume_size.strip()
 
                 # plus work?
-                plus_sizes = ['18', '20', '22', '24', '26']
+                plus_sizes = [u'18', u'20', u'22', u'24', u'26']
                 for plus_size in plus_sizes:
                     if plus_size in allume_size:
-                        allume_size += ' Plus'
+                        allume_size += u' Plus'
                         break
     else:
         # DO MORE work here
@@ -280,12 +284,16 @@ def _determine_allume_size(size, size_mapping, size_term_mapping):
         if parsed_size in size_mapping.keys():
             allume_size = size_mapping[parsed_size]
 
-            if 'XXL' in allume_size or 'XXXL' in allume_size:
-                allume_size += ' Plus'
+            if u'XXL' in allume_size or u'XXXL' in allume_size:
+                allume_size += u' Plus'
         else:
             allume_size = parsed_size
+    # print 'allume size type is ' + str(type(allume_size))
+    # print 'allume size is ' + allume_size
+    # print 'parsed size type is ' + str(type(parsed_size))
+    # print 'parsed size is ' + parsed_size
 
-
+    # return allume_size.decode('UTF-8')
     return allume_size
 
 def _determine_allume_size_shoe(size, shoe_size_mapping, size_term_mapping):
@@ -313,14 +321,14 @@ def _determine_allume_size_shoe(size, shoe_size_mapping, size_term_mapping):
     # assuming that shoe sizes start with numbers, seperate the shoe size into a numeric and character component
     numeric, alpha = _split_size(parsed_size)
 
-    join_val = ''
+    join_val = u''
     # check if the seperated numeric value exists in the shoe size mapping
     if numeric in shoe_size_mapping.keys():
         numeric = shoe_size_mapping[numeric]
     if alpha in size_term_mapping.keys():
         # then attempt to expand the character part of the parsed size (there is also additional logic surrounding plus to be implemented here)
         alpha = size_term_mapping[alpha]
-        join_val = ' '
+        join_val = u' '
 
     # then concatenate these values in some form or fashion (perhaps with only 1 space? or a space determined by whether or not there was a dict hit)
     allume_size = numeric + join_val + alpha
@@ -338,7 +346,7 @@ def _split_size(size):
 
     Returns:
       tup: Returns a two argument tuple where the first element is the numeric component of the
-      size and the second element is the alphabetic componenet of the size.
+      size and the second element is the alphabetic component of the size.
     """
     match = re.compile("[^\W\d]").search(size)
     try:
@@ -346,7 +354,7 @@ def _split_size(size):
         alpha = size[match.start():].strip()
     except AttributeError: # match is None
         numeric = size
-        alpha = ''
+        alpha = u''
     return (numeric, alpha)
 
 # mostly considered necessary because lingerie sizes occur when the allume_category is 'Other'
@@ -404,7 +412,7 @@ def generate_merchant_id(merchant_name):
     # and external_merchant id do not match between the product_api_product
     # and product_api_merchant tables...
     converted = int(hashlib.sha256(merchant_name.encode('UTF-8')).hexdigest(), 16) % (10 ** 7) # the power to raise to has wiggle room
-    merchant_id = str(converted)
+    merchant_id = str(converted).decode('UTF-8')
     return merchant_id
 
 def parse_category_from_product_name(product_name):
@@ -420,7 +428,7 @@ def parse_category_from_product_name(product_name):
     Returns:
       str: The category that was parsed from a synonym appearing in the product name.
     """
-    category = ''
+    category = u''
     synonyms_list = SynonymCategoryMap.objects.values_list('synonym', flat = True)
     product_name = product_name.lower()
     for synonym in synonyms_list:

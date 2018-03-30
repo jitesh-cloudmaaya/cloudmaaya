@@ -59,9 +59,22 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
                 for datum in reader:
                     # unicode
+                    pass
+                    # print '========================== BEGIN FILES AS READ IN =========================='
                     for key, value in datum.iteritems():
+                    #     print '=========== this is what is read from the file ================'
+                    #     print type(value)
+                    #     print (key, value)
+                    #     print '=========== this is after the type casting ================'
                         value = str(value)
+                    #     print type(value)
+                    #     print (key, value)
+                    #     print '=========== this is after the attempted decoding to unicode ================'
                         datum[key] = value.decode('UTF-8')
+                    #     print type(datum[key])
+                    #     print (key, datum[key])
+                    # print '========================== END FIRST FOR LOOP =========================='
+
 
                     # merchant name is the filename until the first dash (at least for all present examples)
                     pattern = re.compile('^[^-]*') # pattern matches until the first hyphen
@@ -136,7 +149,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                         brand_key = mapping_dict['brand']
 
                        # add a null mapping to each data point
-                        datum['N/A'] = ''
+                        datum['N/A'] = u''
 
                         gender = datum[gender_key]
                         gender = gender.upper()
@@ -221,7 +234,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['currency'] = datum[currency_key]
 
                             availability = datum[availability_key]
-                            if availability == '':
+                            if availability == '': # might want to double check this
                                 availability = 'no'
                             record['availability'] = availability
 
@@ -230,7 +243,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['secondary_category'] = secondary_category
                             record['allume_category'] = allume_category
                             record['brand'] = datum[brand_key]
-                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
 
                             try:
                                 if float(sale_price) > 0:
@@ -246,9 +259,8 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['allume_score'] = u'0'
                             record['is_deleted'] = u'0'
 
-                            # finish unicode sandwich
-                            for key, value in record.iteritems():
-                                record[key] = value.encode('UTF-8')
+                            # print size
+                            # print type(size)
 
                             # size splitting stuff
                             parent_attributes = copy(record)
@@ -256,14 +268,30 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    child_record = copy(parent_attributes)
+                                    child_record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
-                                    parent_attributes['size'] = size
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                                    writer.writerow(parent_attributes)
+                                    child_record['size'] = size
+                                    child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+
+                                    # print '====== we are back in the cj main function ====='
+                                    # print size
+                                    # print type(size)
+                                    for key, value in child_record.iteritems():
+                                        # print type(value)
+                                        # print (key, value)
+                                        child_record[key] = value.encode('UTF-8')
+
+
+                                    # before this record is written we would want to amke sure everything is back to bytestrings
+                                    writer.writerow(child_record)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
-                                record['is_deleted'] = 1
+                                record['is_deleted'] = u'1'
+
+                            # finish unicode sandwich
+                            for key, value in record.iteritems():
+                                record[key] = value.encode('UTF-8')
 
                             # write the record
                             writer.writerow(record)

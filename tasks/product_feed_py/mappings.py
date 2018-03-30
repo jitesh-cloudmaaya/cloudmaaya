@@ -75,7 +75,7 @@ def create_size_mapping():
     size_mapping = {}
     for size_map in size_maps:
         fields = size_map['fields']
-        sm = SizeMap(merchant_size = fields['merchant_size'], allume_size = fields['allume_size'])
+        sm = SizeMap(merchant_size = fields['merchant_size'].decode('UTF-8'), allume_size = fields['allume_size'].decode('UTF-8'))
         size_mapping[sm.merchant_size] = sm.allume_size
 
     return size_mapping
@@ -90,7 +90,7 @@ def create_shoe_size_mapping():
     shoe_size_mapping = {}
     for shoe_size_map in shoe_size_maps:
         fields = shoe_size_map['fields']
-        ssm = ShoeSizeMap(merchant_size = fields['merchant_size'], allume_size = fields['allume_size'])
+        ssm = ShoeSizeMap(merchant_size = fields['merchant_size'].decode('UTF-8'), allume_size = fields['allume_size'].decode('UTF-8'))
         shoe_size_mapping[ssm.merchant_size] = ssm.allume_size
 
     return shoe_size_mapping
@@ -106,7 +106,7 @@ def create_size_term_mapping():
     size_term_mapping = {}
     for size_term_map in size_term_maps:
         fields = size_term_map['fields']
-        stm = SizeTermMap(merchant_phrase = fields['merchant_phrase'], allume_attribute = fields['allume_attribute'])
+        stm = SizeTermMap(merchant_phrase = fields['merchant_phrase'].decode('UTF-8'), allume_attribute = fields['allume_attribute'].decode('UTF-8'))
         size_term_mapping[stm.merchant_phrase] = stm.allume_attribute
 
     return size_term_mapping
