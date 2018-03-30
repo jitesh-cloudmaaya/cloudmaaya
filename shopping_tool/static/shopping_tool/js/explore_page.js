@@ -319,10 +319,20 @@ var explore_page = {
       explore_page.generateSearch();
     });
     explore_page.searchSliders();
+    $("#explore-form input.ranger").keydown(function(event) {
+      // Allowing backspace, delete, enter
+      if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 13 ) {
+        
+      }else {
+        // Ensure that it is a number and stop the keypress
+        if (event.keyCode < 48 || event.keyCode > 57 ) {
+          event.preventDefault(); 
+        } 
+      }
+    });    
     $('#clear-filters').click(function(e){
       e.preventDefault()
       var link = $(this);
-      console.log('cleared fired')
       /* reset the stylist to all, search term, style, and occasions to blank */
       $('#stylist-select')[0].selectize.setValue(' ', true);
       $('#explore-style')[0].selectize.setValue('', true);
@@ -333,14 +343,14 @@ var explore_page = {
       /* destroy sliders */
       $('#avg-price-range')[0].noUiSlider.destroy();
       $('#total-price-range')[0].noUiSlider.destroy();
-      /* make them work again */
+      /* re-set up sliders with beginning values */
       explore_page.searchSliders();
       /* generate new search */
       explore_page.generateSearch();
     });
   },
   /*
-  * @description independent function tio set up sliders
+  * @description independent function to set up sliders allowing for destruction on clear filter press
   */
   searchSliders: function(){
     var total_slider = $('#total-price-range')[0];
@@ -394,18 +404,6 @@ var explore_page = {
         r[handle] = this.value;
         avg_slider.noUiSlider.set(r);
       });
-    });
-    $("#explore-form input.ranger").keydown(function(event) {
-      console.log(event.keyCode)
-      // Allowing backspace, delete, enter
-      if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 13 ) {
-        
-      }else {
-        // Ensure that it is a number and stop the keypress
-        if (event.keyCode < 48 || event.keyCode > 57 ) {
-          event.preventDefault(); 
-        } 
-      }
     });
   }
 }
