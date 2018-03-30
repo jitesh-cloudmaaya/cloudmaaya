@@ -2,8 +2,8 @@ import urlparse
 import urllib
 import hashlib
 import re
-from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
 from datetime import datetime, timedelta
+from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
 
 def parse_raw_product_url(product_url, raw_product_attribute):
     """

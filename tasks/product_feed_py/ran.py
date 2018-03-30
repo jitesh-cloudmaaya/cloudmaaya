@@ -106,7 +106,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         product_url = datum['product_url']
 
                         try:
-                            raw_product_url = parse_raw_product_url(product_url, 'murl')
+                            raw_product_url = product_feed_helpers.parse_raw_product_url(product_url, 'murl')
                             # raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
                         except KeyError as e:
                             print e
@@ -214,7 +214,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             record['size'] = attribute_3_size
 
 
-                            record['allume_size'] = determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+                            record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
 
                             record['material'] = attribute_4_material
 
@@ -263,14 +263,14 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
                             # check size here to see if we should write additional 'child' records?
                             parent_attributes = copy(record)
-                            sizes = seperate_sizes(parent_attributes['size'])
+                            sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['allume_size'] = determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
                                     parent_attributes['size'] = size
-                                    parent_attributes['product_id'] = assign_product_id_size(product_id, size)
+                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
                                     writer.writerow(parent_attributes)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
