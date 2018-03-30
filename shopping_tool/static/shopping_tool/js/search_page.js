@@ -325,7 +325,7 @@ var search_page = {
     */
     if(lastSearch == true){ new_search = false; }
     if(category != ''){
-      facets.push('&primary_category=' + category);
+      facets.push('&primary_category=' + category + '|Unsure');
       selection_markup.push(
         '<a href="#" class="remove-category" data-qparam="primary_category" ' +
         'data-facet="' + category + '">' + category + 
@@ -369,6 +369,8 @@ var search_page = {
         }
         search_box.data('clientsize', cleaned_sizes.join('|')).data('clientspend', cleaned_spend.join('|')).data('clientsettings', true);
       }
+    }else{
+      facets.push('&primary_category=Unsure');
     }
     if(new_search == false){
       $.each($('#facets div.facet-list'), function(idx){
