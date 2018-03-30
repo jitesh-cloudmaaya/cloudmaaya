@@ -128,6 +128,9 @@
     pk: 43
     fields: {synonym: sandals, category: Shoes}
 -   model: product_api.synonymcategorymap
+    pk: 44
+    fields: {synonym: shoes, category: Shoes}
+-   model: product_api.synonymcategorymap
     pk: 45
     fields: {synonym: sneaker, category: Shoes}
 -   model: product_api.synonymcategorymap

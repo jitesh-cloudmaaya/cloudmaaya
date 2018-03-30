@@ -66,9 +66,7 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('Tops', parse_category_from_product_name('Pratt Denim Button Up'))
         self.assertEqual('Other', parse_category_from_product_name('Loungewear Lingerie'))
         self.assertEqual('Accessories', parse_category_from_product_name('Winter Hat'))
-
-        # some additional assertions for my own thoughts
-        self.assertEqual('Tops', parse_category_from_product_name('Low-Top')) # revisit this separately
+        self.assertEqual('Tops', parse_category_from_product_name('Low-Top'))
 
         # assertions for take 2
         self.assertEqual('Shoes',  parse_category_from_product_name('Dress Shoes'))
