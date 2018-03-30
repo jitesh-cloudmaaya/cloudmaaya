@@ -128,9 +128,6 @@
     pk: 43
     fields: {synonym: sandals, category: Shoes}
 -   model: product_api.synonymcategorymap
-    pk: 44
-    fields: {synonym: pump, category: Shoes}
--   model: product_api.synonymcategorymap
     pk: 45
     fields: {synonym: sneaker, category: Shoes}
 -   model: product_api.synonymcategorymap
@@ -187,3 +184,81 @@
 -   model: product_api.synonymcategorymap
     pk: 63
     fields: {synonym: pumps, category: Shoes}
+-   model: product_api.synonymcategorymap
+    pk: 64
+    fields: {synonym: boot cut jeans, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 65
+    fields: {synonym: boot leg jeans, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 66
+    fields: {synonym: boot-cut jeans, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 67
+    fields: {synonym: boot-leg jeans, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 68
+    fields: {synonym: boot jeans, category: Bottoms}
+-   model: product_api.synonymcategorymap
+    pk: 69
+    fields: {synonym: pullover, category: Tops}
+-   model: product_api.synonymcategorymap
+    pk: 70
+    fields: {synonym: jumpsuit, category: Dresses}
+-   model: product_api.synonymcategorymap
+    pk: 71
+    fields: {synonym: jumpsuits, category: Dresses}
+-   model: product_api.synonymcategorymap
+    pk: 72
+    fields: {synonym: romper, category: Dresses}
+-   model: product_api.synonymcategorymap
+    pk: 73
+    fields: {synonym: rompers, category: Dresses}
+-   model: product_api.synonymcategorymap
+    pk: 74
+    fields: {synonym: pouch, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 75
+    fields: {synonym: wallet, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 76
+    fields: {synonym: wristlet, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 77
+    fields: {synonym: bag, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 78
+    fields: {synonym: satchel, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 79
+    fields: {synonym: tote, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 80
+    fields: {synonym: scarf, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 81
+    fields: {synonym: hat, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 82
+    fields: {synonym: charm, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 83
+    fields: {synonym: sunglasses, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 84
+    fields: {synonym: earrings, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 85
+    fields: {synonym: necklace, category: Accessories}
+-   model: product_api.synonymcategorymap
+    pk: 86
+    fields: {synonym: maternity, category: Other}
+-   model: product_api.synonymcategorymap
+    pk: 87
+    fields: {synonym: swimsuit, category: Other}
+-   model: product_api.synonymcategorymap
+    pk: 88
+    fields: {synonym: lingerie, category: Other}
+-   model: product_api.synonymcategorymap
+    pk: 89
+    fields: {synonym: activeware, category: Other}

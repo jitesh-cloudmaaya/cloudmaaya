@@ -64,6 +64,8 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings'))
         self.assertEqual('', parse_category_from_product_name('Polosko Lace-Up Platform'))
         self.assertEqual('Tops', parse_category_from_product_name('Pratt Denim Button Up'))
+        self.assertEqual('Other', parse_category_from_product_name('Loungewear Lingerie'))
+        self.assertEqual('Accessories', parse_category_from_product_name('Winter Hat'))
 
         # some additional assertions for my own thoughts
         self.assertEqual('Tops', parse_category_from_product_name('Low-Top')) # revisit this separately
@@ -78,6 +80,7 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('Jackets',  parse_category_from_product_name('Flat Facing Jacket'))
         self.assertEqual('Jackets',  parse_category_from_product_name('Gown Down Overcoat Moat'))
         self.assertEqual('Tops',  parse_category_from_product_name('Button Up Mock Neck Empty'))
+        self.assertEqual('Bottoms', parse_category_from_product_name('Dyed Boot Cut Jeans by Everlane'))
 
 
 class SizeTestCase(TestCase):
