@@ -71,6 +71,11 @@ class CategoryMapAdmin(admin.ModelAdmin):
 #class MerchantCategoryAdmin(admin.ModelAdmin):
 #    list_display = ('name', 'active', 'network')
 
+class AllumeCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'active', 'position')
+    readonly_fields = ['name']
+    ordering = ['position']
+
 class MerchantInLine(admin.TabularInline):
 
     model = Merchant
@@ -88,6 +93,6 @@ admin.site.register(Merchant, MerchantAdmin)
 admin.site.register(Network, NetworkAdmin)
 #admin.site.register(MerchantCategory, MerchantCategoryAdmin)
 admin.site.register(CategoryMap, CategoryMapAdmin)
-admin.site.register(AllumeCategory)
+admin.site.register(AllumeCategory, AllumeCategoryAdmin)
 admin.site.register(ColorMap, ColorMapAdmin)
 

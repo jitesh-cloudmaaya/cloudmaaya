@@ -239,7 +239,7 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                     record['currency'] = product['currency']
 
                     if product['in_stock'] == '':
-                        availability = 'out-of-stock'
+                        availability = 'in-stock'
                     else:
                         availability = product['in_stock']
                     record['availability'] = availability

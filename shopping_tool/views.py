@@ -68,7 +68,7 @@ def index(request, styling_session_id=None):
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
-    categories = AllumeCategory.objects.filter(active = True)
+    categories = AllumeCategory.objects.filter(active = True).order_by('position')
     favorites = UserProductFavorite.objects.filter(stylist = user.id)
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
