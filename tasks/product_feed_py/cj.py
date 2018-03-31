@@ -3,7 +3,7 @@ import re
 import csv
 import yaml
 from copy import copy
-from . import mappings, product_feed_helpers
+from tasks.product_feed_py import mappings, product_feed_helpers
 from product_api.models import Merchant, CategoryMap
 from datetime import datetime, timedelta
 from catalogue_service.settings import BASE_DIR
@@ -29,7 +29,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
         pattern = re.compile(file_ending)
         for f in file_directory:
             if re.search(pattern, f):
-                # file_list.append(os.path.join(os.getcwd(), local_temp_dir, f))
                 file_list.append(f)
 
         # metric variables
@@ -52,17 +51,12 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
             full_filepath = os.path.join(os.getcwd(), local_temp_dir, f)
             with open(full_filepath, "r") as data:
                 lines = data.readlines()
-
-                # merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
-                # omit fieldnames arg to use headerlines
                 reader = csv.DictReader(lines, restval = '', dialect = 'reading')
-                # i = 0
 
+                # i = 0
                 for datum in reader:
-                    # totalCount += 1 # depening on how we want to count records skipped because of inactive merchants
-                    # unicode
                     for key, value in datum.iteritems():
-                        value = str(value) # check later, REVOLVE had an issue where a value was being read as [value] for some reason (as opposed to str)
+                        value = str(value)
                         datum[key] = value.decode('UTF-8')
 
                     # merchant name is the filename until the first dash (at least for all present examples)
@@ -70,7 +64,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                     match = re.search(pattern, f)
                     merchant_name = match.group(0) # match will be the entire filename in absence of a dash
                     merchant_name = merchant_name.lower() # make configuration file detection case agnostic
-                    
+
 
                     config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config_cj/'
                     fd = os.listdir(config_path)
@@ -138,7 +132,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                         brand_key = mapping_dict['brand']
 
                        # add a null mapping to each data point
-                        datum['N/A'] = ''
+                        datum['N/A'] = u''
 
                         gender = datum[gender_key]
                         gender = gender.upper()
@@ -223,8 +217,8 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['currency'] = datum[currency_key]
 
                             availability = datum[availability_key]
-                            if availability == '':
-                                availability = 'out-of-stock'
+                            if availability == '': # might want to double check this
+                                availability = 'no'
                             record['availability'] = availability
 
                             record['keywords'] = datum[keywords_key]
@@ -232,7 +226,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['secondary_category'] = secondary_category
                             record['allume_category'] = allume_category
                             record['brand'] = datum[brand_key]
-                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
 
                             try:
                                 if float(sale_price) > 0:
@@ -248,24 +242,29 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['allume_score'] = u'0'
                             record['is_deleted'] = u'0'
 
-                            # finish unicode sandwich
-                            for key, value in record.iteritems():
-                                record[key] = value.encode('UTF-8')
-
                             # size splitting stuff
                             parent_attributes = copy(record)
                             sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    child_record = copy(parent_attributes)
+                                    child_record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
-                                    parent_attributes['size'] = size
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                                    writer.writerow(parent_attributes)
+
+                                    child_record['size'] = size
+                                    child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    for key, value in child_record.iteritems():
+                                        child_record[key] = value.encode('UTF-8')
+
+                                    writer.writerow(child_record)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
-                                record['is_deleted'] = 1
+                                record['is_deleted'] = u'1'
+
+                            # finish unicode sandwich
+                            for key, value in record.iteritems():
+                                record[key] = value.encode('UTF-8')
 
                             # write the record
                             writer.writerow(record)
@@ -280,7 +279,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
-    if 0: # remove this later
-        print('Updating non-upserted Impact Radius products')
-        product_feed_helpers.set_deleted_network_products('Impact Radius')
+    print('Updating non-upserted Impact Radius products')
+    product_feed_helpers.set_deleted_network_products('CJ')
 

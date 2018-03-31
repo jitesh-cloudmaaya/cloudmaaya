@@ -335,12 +335,12 @@ class RanHelpersTestCase(TestCase):
         self.assertEqual('', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
         # test the method case
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "product_feed_helpers.parse_category_from_product_name(datum['product_name'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': ''}
         self.assertEqual('Tops', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "product_feed_helpers.parse_category_from_product_name(datum['product_name'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': 'groomingfragrance'}
         self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
