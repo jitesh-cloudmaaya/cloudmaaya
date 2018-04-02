@@ -614,16 +614,16 @@ def look_list(request):
          "name": "Body Suit",
          "page": 1,
          "per_page": 20,
-         "favorites_only": True,
+         "favorites_only": "True",
          "total_look_price_minimum": 500.00,
          "total_look_price_maximum": 1000.00,
          "average_item_price_minimum": 20.00,
          "average_item_price_maximum": 45.00,
-         "show_deleted": True
+         "show_deleted": "True"
           "style_type": [1,2,4],
           "style_occasion": [3,4],
-          "is_published": True,
-          "with_products": False
+          "is_published": "True",
+          "with_products": "False"
         }
     """
     looks = Look.objects.all()
@@ -644,7 +644,7 @@ def look_list(request):
         looks = looks.exclude(status = 'Deleted')
 
     if 'is_published' in request.data:
-        if request.data['is_published']:
+        if request.data['is_published'] == "True":
             looks = looks.filter(status = 'published')
 
     if 'client' in request.data:
@@ -704,7 +704,7 @@ def look_list(request):
 
     serializer = LookSerializer(looks_paged, many=True)
     if 'with_products' in request.data:
-        if request.data['with_products'] == False:
+        if request.data['with_products'] == "False":
             serializer = LookSerializerNoLookProducts(looks_paged, many=True)
     return JsonResponse({"num_pages": paginator.num_pages, "total_looks": paginator.count, "page": page, "per_page": per_page, "looks": serializer.data}, safe=False)
 
