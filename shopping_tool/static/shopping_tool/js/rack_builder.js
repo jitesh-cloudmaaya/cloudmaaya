@@ -98,6 +98,10 @@ var rack_builder = {
     }
     if(add_to_list == true){
       if(items == 0){rack.html('<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>')}
+      var list_atr = $('#results').find('a.add-to-rack[data-productid="' + details.id + '"]')
+      if((list_atr.length > 0)&&(list_atr.hasClass('selected') == false)){
+        list_atr.addClass('selected').html('<i class="fa fa-check"></i> racked');
+      }
       var obj = {
         product: parseInt(details.id),
         allume_styling_session: parseInt(rack_builder.session_id)
@@ -149,7 +153,6 @@ var rack_builder = {
             "allume_category": details.allume_category,
             "current_price": details.current_price
           }
-          console.log(new_rack_obj)
           initial_rack.push(new_rack_obj);
           if(from_compare == true){
             var sorted_racks = $('#rack-draggable').find('a.sort-items').length
