@@ -536,7 +536,7 @@ var rack_builder = {
           var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
           if(rack_idx > -1){
             rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
-              matching._source.product_id + '"><i class="fa fa-check"></i> in rack</a>';
+              matching._source.product_id + '"><i class="fa fa-check"></i> racked</a>';
           }
           break;
         }
@@ -642,7 +642,7 @@ var rack_builder = {
           var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
           if(rack_idx > -1){
             rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
-              product.id + '"><i class="fa fa-check"></i> in rack</a>';
+              product.id + '"><i class="fa fa-check"></i> racked</a>';
           }
           var price_display = '<span class="price" id="inspected-item-price"><em class="label">price:</em>' + numeral(product.current_price).format('$0,0.00') + '</span>';
           var merch = '<span class="merch">' + product.merchant_name + '</span>';
