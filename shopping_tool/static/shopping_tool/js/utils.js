@@ -221,6 +221,28 @@ var utils = {
         rack_builder.addToRack(link, 'inspect', from_compare);
       }
     });
+
+    /* add possesives to rack tabs */
+    var rack_tabs = $('#rack-tabs');
+    var rack_tab = rack_tabs.find('a.rack-tab');
+    var look_tab = rack_tabs.find('a.look-tab');
+    var fave_tab = rack_tabs.find('a.fave-tab');
+    rack_tab.html(utils.posessive(look_tab.text()) + ' Rack');
+    look_tab.html(utils.posessive(look_tab.text()) + ' Looks');
+    fave_tab.html(utils.posessive(fave_tab.text()) + ' Favorites');
+  },
+  /**
+  * @description helper function that takes a string and returns posessive version of it
+  * @params {string} str - word to turn posessive
+  * @returns {string}
+  */
+  posessive: function(str){
+    if(str == '') {
+      return str;
+    }
+    var lastChar = str.slice(-1);
+    var endOfWord = lastChar.toLowerCase() == 's' ? "'" : "'s";
+    return str + '' + endOfWord;
   },
   /**
   * @description create function which sets document cookies
