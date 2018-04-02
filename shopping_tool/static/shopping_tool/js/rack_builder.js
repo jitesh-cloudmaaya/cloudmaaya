@@ -98,6 +98,10 @@ var rack_builder = {
     }
     if(add_to_list == true){
       if(items == 0){rack.html('<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>')}
+      var list_atr = $('#results').find('a.add-to-rack[data-productid="' + details.id + '"]')
+      if((list_atr.length > 0)&&(list_atr.hasClass('selected') == false)){
+        list_atr.addClass('selected').html('<i class="fa fa-check"></i> racked');
+      }
       var obj = {
         product: parseInt(details.id),
         allume_styling_session: parseInt(rack_builder.session_id)
@@ -149,7 +153,6 @@ var rack_builder = {
             "allume_category": details.allume_category,
             "current_price": details.current_price
           }
-          console.log(new_rack_obj)
           initial_rack.push(new_rack_obj);
           if(from_compare == true){
             var sorted_racks = $('#rack-draggable').find('a.sort-items').length
@@ -533,7 +536,7 @@ var rack_builder = {
           var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
           if(rack_idx > -1){
             rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
-              matching._source.product_id + '"><i class="fa fa-check"></i> in rack</a>';
+              matching._source.product_id + '"><i class="fa fa-check"></i> racked</a>';
           }
           break;
         }
@@ -639,7 +642,7 @@ var rack_builder = {
           var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
           if(rack_idx > -1){
             rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
-              product.id + '"><i class="fa fa-check"></i> in rack</a>';
+              product.id + '"><i class="fa fa-check"></i> racked</a>';
           }
           var price_display = '<span class="price" id="inspected-item-price"><em class="label">price:</em>' + numeral(product.current_price).format('$0,0.00') + '</span>';
           var merch = '<span class="merch">' + product.merchant_name + '</span>';

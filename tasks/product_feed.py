@@ -27,6 +27,8 @@ class ProductFeed(object):
         self._ftp_host = config_dict['ftp_config']['host']
         self._ftp_user = config_dict['ftp_config']['user']
         self._ftp_password = config_dict['ftp_config']['password'] 
+        self._sftp_host_key = config_dict['ftp_config']['host_key']
+        self._sftp_algorithm = config_dict['ftp_config']['algorithm']
         self._local_temp_dir = config_dict['local_temp_dir'] if config_dict['local_temp_dir'] else settings_local.PRODUCT_FEED_TEMP
         self._remote_dir = config_dict['remote_dir']
         self._remote_files = []
@@ -117,23 +119,20 @@ class ProductFeed(object):
 
         ftp.quit()
 
-    # from base64 import decodebytes
-    # in theory, this makes get_files_sftp hardcoded to cj. change the CJ_HOST_KEY to a list to make it more generic
-    # we could also include the algorithm used as part of a tuple containing the info for the hosts
     def get_files_sftp(self):
-
-# attempt to handle the case where we our first connection doesn't know that datatransfer.cj.com is a known host
-# datatransfer.cj.com,64.156.167.125 ssh-dss
-
-        # use file patterns to grab .gz and .zip files off sftp server?
-
-        key = paramiko.DSSKey(data=decodebytes(CJ_HOST_KEY))
-        cnopts = pysftp.CnOpts()
-        cnopts.hostkeys.add(self._ftp_host, 'ssh-dss', key)
-
         self.make_temp_dir()
+        key = paramiko.DSSKey(data=decodebytes(self._sftp_host_key))
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys.add(self._ftp_host, self._sftp_algorithm, key)
+
         with pysftp.Connection(self._ftp_host, username=self._ftp_user, password=self._ftp_password, cnopts=cnopts) as sftp:
-            sftp.get_d(self._remote_dir, self._local_temp_dir, preserve_mtime=True)
+            remote_directory = sftp.listdir(remotepath=self._remote_dir)
+            # TO-DO (maybe): walktree (recursive) may be useful in the future, but it is involved to implement
+            pattern = re.compile(self._file_pattern)
+            file_list = [f for f in remote_directory for m in [re.search(pattern, f)] if m]
+            for f in file_list:
+                sftp.get(self._remote_dir + f, localpath=self._local_temp_dir + f, preserve_mtime=True)
+
         return
 
     def remove_temp_file(self, filename):
