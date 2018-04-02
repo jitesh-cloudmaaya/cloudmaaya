@@ -188,18 +188,6 @@
     pk: 63
     fields: {synonym: pumps, category: Shoes}
 -   model: product_api.synonymcategorymap
-    pk: 64
-    fields: {synonym: boot cut jeans, category: Bottoms}
--   model: product_api.synonymcategorymap
-    pk: 65
-    fields: {synonym: boot leg jeans, category: Bottoms}
--   model: product_api.synonymcategorymap
-    pk: 66
-    fields: {synonym: boot-cut jeans, category: Bottoms}
--   model: product_api.synonymcategorymap
-    pk: 67
-    fields: {synonym: boot-leg jeans, category: Bottoms}
--   model: product_api.synonymcategorymap
     pk: 68
     fields: {synonym: boot jeans, category: Bottoms}
 -   model: product_api.synonymcategorymap
@@ -262,6 +250,3 @@
 -   model: product_api.synonymcategorymap
     pk: 88
     fields: {synonym: lingerie, category: Other}
--   model: product_api.synonymcategorymap
-    pk: 89
-    fields: {synonym: activeware, category: Other}
