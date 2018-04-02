@@ -198,7 +198,8 @@ var look_builder = {
         var lookup = {
           "client": parseInt($('#user-clip').data('userid')),
           "allume_styling_session": rack_builder.session_id,
-          "page": 1
+          "page": 1,
+          "with_products": "False"
         }
         $.ajax({
           contentType : 'application/json',
