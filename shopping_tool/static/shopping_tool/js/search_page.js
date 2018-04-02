@@ -26,6 +26,12 @@ var search_page = {
     $('#sort-dd').val(' ').selectize({ create: false, sortField: 'text'}).change(function(e){
       search_page.performSearch(1, false, null);
     });
+
+    $('#client-defaults').html(
+      '<div class="client-settings"><h5>Client preferences:</h5>' +
+      '<span><em>colors:</em>' + client_360.colors + '</span>' +
+      '<span><em>styles to avoid:</em>' + client_360.avoid + '</span></div>'
+    );
     $('#search-categories').val('').selectize({ 
       create: false
     }).change(function(){
@@ -58,7 +64,11 @@ var search_page = {
           general + '</div>'
         );          
       }else{
-        def_div.html('');
+        def_div.html(
+          '<div class="client-settings"><h5>Client preferences:</h5>' +
+          '<span><em>colors:</em>' + client_360.colors + '</span>' +
+          '<span><em>styles to avoid:</em>' + client_360.avoid + '</span></div>'
+        );
       }
     });
     /* facets functionality */
@@ -128,7 +138,10 @@ var search_page = {
       var last_search = utils.parseQuery(search_cookie);
       var search_box = $('#search-field');
       var category = $('#search-categories');
-      category[0].selectize.setValue(last_search.primary_category, false);
+
+      var sanitized_primary = last_search.primary_category.replace('|Unsure','')
+
+      category[0].selectize.setValue(sanitized_primary, false);
       search_box.val(last_search.text);
       if(last_search.favs != undefined){
         $('#facet-show-faves').prop('checked', true);
