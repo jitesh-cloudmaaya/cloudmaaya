@@ -621,7 +621,8 @@ def look_list(request):
          "average_item_price_maximum": 45.00,
          "show_deleted": True
           "style_type": [1,2,4],
-          "style_occasion": [3,4]
+          "style_occasion": [3,4],
+          "published": True
         }
     """
     looks = Look.objects.all()  
@@ -640,6 +641,10 @@ def look_list(request):
         looks = looks
     else:
         looks = looks.exclude(status = 'Deleted')
+
+    if 'published' in request.data:
+        if request.data['published']:
+            looks = looks.filter(status = 'published')
 
     if 'client' in request.data:
         client = request.data['client']
