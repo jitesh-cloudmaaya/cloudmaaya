@@ -81,7 +81,7 @@ var utils = {
     var city_state = locale.data('cs');
     if((city_state != undefined)&&(typeof city_state == 'object')){
       var cs_display = city_state.city + ', ' + city_state.state;
-      locale.html('<em>location:</em>' + cs_display);
+      locale.html('<em>location:</em>' + cs_display + ' &nbsp;&nbsp;(' + locale.data('tz') + ' timezone)');
       $('#prev-client-locale').html('<em>location:</em>' + cs_display)
       $('#client-weather-locale').html('Seasonal norms for ' + cs_display + ':');
     }    

@@ -94,7 +94,7 @@ class EProductSearch(FacetedSearch):
         ('price_range', RangeFacet(field='current_price', ranges=price_ranges)), #current_price
     )) 
 
-    def __init__(self, query=None, filters={}, sort=(), favs=[], card_count = False):
+    def __init__(self, query=None, filters={}, sort="_score", favs=[], card_count = False):
         """
         :arg query: the text to search for
         :arg filters: facet values to filter
