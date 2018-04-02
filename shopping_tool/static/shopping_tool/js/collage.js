@@ -873,7 +873,7 @@ var collage = {
         }
         /* set the dimensions to be saved */
         var dims = {
-          angel: prod.angle,
+          angle: prod.angle,
           left: prod.left,
           top: prod.top,
           scaleX: prod.scaleX,
