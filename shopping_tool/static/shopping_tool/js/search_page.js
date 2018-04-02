@@ -177,7 +177,6 @@ var search_page = {
               utils.capitalizeEveryWord(pretty_name.replace(/_/g, ' ')) + 
               '</a><div class="facet-list" data-qparam="' + display_name + '">'
             );
-            console.log(display_name)
             if(display_name == 'price_range'){
               facet_list[display_name].buckets.sort(function(a,b){
                 if(a.from == undefined){a.from == 0}
@@ -193,32 +192,13 @@ var search_page = {
               var petites = [];
               /* name size sorting weight */
               var size_name_weight = {
-                "L":10,
-                "LARGE":11,
-                "M":8,
-                "MEDIUM":9,
-                "NO SIZE":18,
-                "S":6,
-                "SMALL":7,
-                "X LARGE":13,
-                "X SMALL":3,
-                "X-LARGE":14,
-                "X-SMALL":5,
-                "XL":12,
-                "XS":4,
-                "XX-SMALL":2,
-                "XXS":1,
-                "XXL": 15,
-                "XX LARGE": 16,
-                "XX-LARGE": 17,
-                "XXS P":20,
-                "P/XS":21,
-                "XS P":22,
-                "P/S":23,
-                "S P":24,
-                "P/M":25,
-                "P/L":26,
-                "P/XL":27
+                "L":10,"LARGE":11,"M":8,"MEDIUM":9,
+                "NO SIZE":18,"S":6,"SMALL":7,"X LARGE":13,
+                "X SMALL":3,"X-LARGE":14,"X-SMALL":5,
+                "XL":12,"XS":4,"XX-SMALL":2,"XXS":1,
+                "XXL": 15,"XX LARGE": 16,"XX-LARGE": 17,
+                "XXS P":20,"P/XS":21,"XS P":22,"P/S":23,
+                "S P":24,"P/M":25,"P/L":26,"P/XL":27
               }
               /* push facets into correct subcategories */
               for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
