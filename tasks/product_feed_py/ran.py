@@ -294,7 +294,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     # UPDATE: Csn't use on the Delta File as it will not include records that didn't change but are still live
     if not is_delta:
         print('Setting deleted for non-upserted products')
-        set_deleted_network_products('RAN')
+        product_feed_helpers.set_deleted_network_products('RAN')
 
 def _product_field_tiered_assignment(tiered_assignments, fieldname, datum):
     """
