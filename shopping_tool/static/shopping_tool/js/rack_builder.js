@@ -223,7 +223,8 @@ var rack_builder = {
         "client": parseInt($('#user-clip').data('userid')),
         "allume_styling_session": rack_builder.session_id,
         "stylist": parseInt($('#stylist').data('stylistid')),
-        "page": 1
+        "page": 1,
+        "with_products": "False"
       }
     if(type == 'favorites'){
       lookup.favorites_only = "True";
