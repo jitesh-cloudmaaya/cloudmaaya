@@ -161,6 +161,14 @@ var look_builder = {
         type: 'DELETE',
         url: '/shopping_tool_api/look/' + link.data('lookid') + '/'
       });
+      if(link.hasClass('inprocess')){
+        link.removeClass('inprocess');
+        $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
+        $('#publish-lookbook').data('allowed', 'false');
+        collage.canvas = null;
+        collage.initial_load = null;
+        collage.product_cache = null; 
+      }
       $('#delete-look-overlay').fadeOut();
       var remaining_looks = $('#compare-looks div.other-looks div.comp-look').length;
       if(remaining_looks == 0){
@@ -412,7 +420,12 @@ var look_builder = {
       collage.updateCollage(div);
       $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
       $('#publish-lookbook').data('allowed', 'false');
-    });
+    }).on('click', 'a#delete-look-inprocess', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var look = link.data('lookid');
+      $('#delete-look-overlay').find('a.yes').addClass('inprocess').data('lookid', look).end().fadeIn();      
+    })
     /* rack functionality */
     $('#rack-draggable').on('click', 'a.add', function(e){
       e.preventDefault();
@@ -944,6 +957,8 @@ var look_builder = {
           '</div><div class="collage-controls">'+
           '<a href="#" id="finish-editing-look" data-lookid="' + id + 
           '"><i class="fa fa-check"></i>finished editing look</a>' +
+          '<a href="#" id="delete-look-inprocess" data-lookid="' + id + 
+          '"><i class="fa fa-times"></i>delete look</a>' +
           '<a class="bg-toggle checker-bg" data-balloon="toggle collage ' +
           'background" data-balloon-pos="up" href="#"><em></em></a>' +
           '<a href="#" data-balloon="move to back" data-balloon-pos="up" class="send-back">' +
