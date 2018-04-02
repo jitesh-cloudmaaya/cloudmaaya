@@ -3776,5 +3776,5 @@ a#close-user-clip {
 }
 #sort-dd + .selectize-control {float:right; margin-right:5px; width:150px;}
 #look-desc-count {color:#777; font-size:11px; padding:3px 0 0;}
-
+#client-picture img {display:block; max-width:480px; margin:5px auto 10px;}
 
