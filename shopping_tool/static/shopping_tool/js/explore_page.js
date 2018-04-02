@@ -90,11 +90,6 @@ var explore_page = {
         }); 
       }
     });
-    /* toggle price display in looks */
-    $('#explore-looks-prices').prop('checked',false).click(function(e){
-      var box = $(this);
-      $('#all-looks-list').toggleClass('priceme');
-    });
     /* infinte scroll/paging listen for when user scrolls within 100 px of bnottom of page */
     document.addEventListener('scroll', function(evt){
       var st = $(window).scrollTop();
@@ -323,6 +318,41 @@ var explore_page = {
     $('#explore-only-faves').prop('checked', false).click(function(){
       explore_page.generateSearch();
     });
+    explore_page.searchSliders();
+    $("#explore-form input.ranger").keydown(function(event) {
+      // Allowing backspace, delete, enter
+      if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 13 ) {
+        
+      }else {
+        // Ensure that it is a number and stop the keypress
+        if (event.keyCode < 48 || event.keyCode > 57 ) {
+          event.preventDefault(); 
+        } 
+      }
+    });    
+    $('#clear-filters').click(function(e){
+      e.preventDefault()
+      var link = $(this);
+      /* reset the stylist to all, search term, style, and occasions to blank */
+      $('#stylist-select')[0].selectize.setValue(' ', true);
+      $('#explore-style')[0].selectize.setValue('', true);
+      $('#explore-occasion')[0].selectize.setValue('', true);
+      $('#search-terms').val('');
+      /* turn off favorites */
+      $('#explore-only-faves').prop('checked', false);
+      /* destroy sliders */
+      $('#avg-price-range')[0].noUiSlider.destroy();
+      $('#total-price-range')[0].noUiSlider.destroy();
+      /* re-set up sliders with beginning values */
+      explore_page.searchSliders();
+      /* generate new search */
+      explore_page.generateSearch();
+    });
+  },
+  /*
+  * @description independent function to set up sliders allowing for destruction on clear filter press
+  */
+  searchSliders: function(){
     var total_slider = $('#total-price-range')[0];
     var total_slider_min = $('#total-price-min')[0];
     var total_slider_max = $('#total-price-max')[0];
@@ -374,18 +404,6 @@ var explore_page = {
         r[handle] = this.value;
         avg_slider.noUiSlider.set(r);
       });
-    });
-    $("#explore-form input.ranger").keydown(function(event) {
-      console.log(event.keyCode)
-      // Allowing backspace, delete, enter
-      if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 13 ) {
-        
-      }else {
-        // Ensure that it is a number and stop the keypress
-        if (event.keyCode < 48 || event.keyCode > 57 ) {
-          event.preventDefault(); 
-        } 
-      }
     });
   }
 }
