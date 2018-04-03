@@ -198,7 +198,8 @@ var look_builder = {
         var lookup = {
           "client": parseInt($('#user-clip').data('userid')),
           "allume_styling_session": rack_builder.session_id,
-          "page": 1
+          "page": 1,
+          "with_products": "False"
         }
         $.ajax({
           contentType : 'application/json',
@@ -294,6 +295,7 @@ var look_builder = {
         rome(start_id, {
           initialValue:  moment().startOf('day').format('YYYY-MM-DD'),
           min: moment().startOf('day').format('YYYY-MM-DD'),
+          max: moment().add(2, 'day').endOf('day').format('YYYY-MM-DD'),
           time: true,
           timeFormat: 'h:mm a',
           timeInterval: 900
@@ -554,7 +556,56 @@ var look_builder = {
     $('#close-pg-crop-image').click(function(e){
       e.preventDefault();
       $('#pg-crop-look-image').fadeOut();
-    })
+    });
+    $('#drag-rack-tabs a').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('on') == false){
+        var div = $(link.attr('href'))
+        link.addClass('on').siblings('a').removeClass('on');
+        div.addClass('show').siblings('div.drag-section').removeClass('show');
+      }
+    });
+    $('#fave-draggable').on('click','a.view',function(e){
+      e.preventDefault();
+      var link = $(this);
+      rack_builder.inspectItem(link, 'compare');
+    }).on('click', 'a.remove-fave', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var fave = link.data('faveid');
+      var product_id = link.data('productid');
+      var index = rack_builder.favorites_product_ids.indexOf(product_id);
+      rack_builder.favorites_product_ids.splice(index, 1);
+      rack_builder.favorites.splice(index, 1);
+      $.ajax({
+        beforeSend:function(){
+          link.closest('div.item').hide();         
+        },
+        contentType : 'application/json',
+        error: function(response){
+          console.log(response);
+        },
+        success:function(response){
+          link.closest('.item').remove();
+        },
+        type: 'DELETE',
+        url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
+      });      
+    });
+    /* add drag drop to faves */
+    new Sortable($('#fave-draggable')[0], {
+      handle: ".handle",
+      group: { name: "look", pull: 'clone', put: false },
+      sort: false,
+      draggable: ".item",
+      onStart: function(){
+        var cc = $('#canvas-container');
+        if(cc.length > 0){
+          collage.collageSortable.option('disabled', false);
+        }
+      }
+    });
   },
   /**
   * @description setup look builder page
@@ -665,8 +716,9 @@ var look_builder = {
             prod.product.short_product_description + '</p>' + price_display +
             '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
             '<span class="general"><em>category:</em>' + prod.product.allume_category + 
+            '</span><span class="general"><em>availability:</em>' + prod.product.availability + 
             '</span>' + fave_link + '' + rack_link + '<a href="' + prod.product.product_url + 
-            '" target="_blank" class="link-to-store"><i class="fa fa-search"></i>' +
+            '" target="_blank" class="link-to-store"><i class="fa fa-tag"></i>' +
             'view at store</a></td>' + other_details.join('') + '</tr>'
           );
         }
@@ -781,8 +833,7 @@ var look_builder = {
     /* add the clones and assign drag/drop functionality */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(
-      '<h2>' + $('#rack').find('h2').html() + 
-      '</h2><div class="look-builder-rack">' + 
+      '<div class="look-builder-rack">' + 
       rack_items.join('') + '</div>'
     );
     look_builder.rackDragDrop(false, 'ordered');
@@ -853,30 +904,6 @@ var look_builder = {
     }
   },  
   /**
-  * @description generate rack itmes for favorits
-  * @param {array} faves - array of jquery items
-  * @returns {string} - HTML
-  */
-  rackFavorites: function(faves){
-    var markup = [];
-    $.each(faves, function(index){
-      var item = $(this);
-      var data = item.data();
-      var src = item.find('img').attr('src');
-      markup.push(
-        '<div class="item fave" data-productid="' + data.productid + 
-        '" data-url="' + src + '"><span class="fave"><i class="fa fa-heart"></i></span>' +
-        '<img class="handle" src="' + src + '"/>' +
-        '<a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
-        src + '"><i class="fa fa-plus-circle"></i></a>' +
-        '<a href="#"  class="view" data-productid="' + data.productid + 
-        '"><i class="fa fa-search"></i></a><a href="#" class="remove" ' +
-        'data-lookitemid=""><i class="fa fa-times"></i></a></div>'
-      );
-    });
-    return markup.join('');
-  },
-  /**
   * @description perform a simple name match filter against items in the rack and favroites
   * @param {string} q - the term to match against
   * @param {DOM Object} drack_rack - the look builder rack body
@@ -888,15 +915,6 @@ var look_builder = {
     var items_markup = [];
     var racked = $('#rack-list').find('div.item');
     $.each(racked, function(idx){
-      var item = $(this).data();
-      if(item.productname.toLowerCase().indexOf(q.toLowerCase()) > -1){
-        items.push(item)
-      }else if(q == ''){
-        items.push(item)
-      }
-    });
-    var faves = $('#fave-prods div.item');
-    $.each(faves, function(index){
       var item = $(this).data();
       if(item.productname.toLowerCase().indexOf(q.toLowerCase()) > -1){
         items.push(item)
@@ -916,28 +934,13 @@ var look_builder = {
     }
     for(var i = 0, l = items.length; i<l; i++){
       var datum = items[i];
-      if(datum.fave != undefined){
-        items_markup.push(
-          '<div class="item fave" data-productid="' + datum.productid + 
-          '" data-url="' + datum.src + '"><span class="fave"><i class="fa fa-heart"></i></span>' +
-          '<img class="handle" src="' + datum.src + '"/>' +
-          '<a href="#" class="add" data-productid="' + datum.productid + '" data-imgsrc="' + 
-          datum.src + '"><i class="fa fa-plus-circle"></i></a>' +
-          '<a href="#"  class="view" data-productid="' + datum.productid + 
-          '"><i class="fa fa-search"></i></a><a href="#" class="remove" ' +
-          'data-lookitemid=""><i class="fa fa-times"></i></a></div>'
-        );
-      }else{
-        items_markup.push(
-          '<div class="item" data-productid="' + datum.productid + 
-          '" data-url="' + datum.src + '"><img class="handle" src="' + datum.src + 
-          '"/><a href="#" class="add" data-productid="' + datum.productid + '" data-imgsrc="' + 
-          datum.src + '"><i class="fa fa-plus-circle"></i></a>' +
-          '<a href="#"  class="view" data-productid="' + datum.productid + 
-          '"><i class="fa fa-search"></i></a><a href="#" class="remove" data-sku="' + datum.sku + 
-          '" data-rackid="' + datum.rackid + '"><i class="fa fa-times"></i></a></div>'
-        );
-      }
+      items_markup.push(
+        '<div class="item" data-productid="' + datum.productid + 
+        '" data-url="' + datum.url + '"><img class="handle" src="' + datum.url + 
+        '"/><a href="#"  class="view" data-productid="' + datum.productid + 
+        '"><i class="fa fa-align-left"></i></a><a href="#" class="remove" data-sku="' + datum.sku + 
+        '" data-rackid="' + datum.rackid + '"><i class="fa fa-times"></i></a></div>'
+      );
     }
     drag_rack.append(items_markup.join(''));
   },
@@ -1087,13 +1090,10 @@ var look_builder = {
     /* set up the search ui */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(
-      '<h2>' + $('#rack').find('h2').html() + 
-      '</h2><div class="look-builder-rack">' +
+      '<div class="look-builder-rack">' +
       '<div id="rack-search-toggles">' +
-      '<a class="sort-link sort-items" href="#">' +
-      '<i class="fa fa-th-list"></i>back to sorted</a>' +
       '<a class="sort-link unsort-items" href="#">' +
-      '<i class="fa fa-th"></i>back to unsorted</a></div>' +      
+      '<i class="fa fa-th"></i>back to full rack</a></div>' +      
       '<input id="rack-search" placeholder="Start typing to find rack items..."/>' +
       '<div id="rack-search-term"></div>' +
       '</div>'
@@ -1187,11 +1187,8 @@ var look_builder = {
     if(initial_rack.length > 0){
       rack_items.push(
         '<a href="#" class="lb-search-link">' +
-        '<i class="fa fa-search"></i>search rack</a>' +
-        '<a class="sort-link sort-items" href="#">' +
-        '<i class="fa fa-th-list"></i>sort items</a>'
+        '<i class="fa fa-search"></i>search rack</a>'
       );
-
       $.each($('#rack-list').find('div.item'), function(idx){
         var item = $(this);
         compare_array.push(item.find('a.remove-from-rack').data('rackid'));
@@ -1208,28 +1205,22 @@ var look_builder = {
       var data = initial_rack[i];
       var src = data.product_image_url;
       var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
+      var sold_out = data.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
       if(compare_array.indexOf(data.rack_id) > -1){
         rack_items.push(
           '<div class="item" data-productid="' + data.id + 
           '" data-url="' + src + '"><img class="handle" src="' + src + 
-          '"/><a href="#" class="add" data-productid="' + data.id + '" data-imgsrc="' + 
-          src + '"><i class="fa fa-plus-circle"></i></a>' +
-          '<a href="#"  class="view" data-productid="' + data.id + 
-          '"><i class="fa fa-search"></i></a>' +
+          '"/><a href="#"  class="view" data-productid="' + data.id + 
+          '"><i class="fa fa-align-left"></i></a>' +
           '<a href="#" class="remove" data-sku="' + sku + 
-          '" data-rackid="' + data.rack_id + '"><i class="fa fa-times"></i></a></div>'
+          '" data-rackid="' + data.rack_id + '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
         ); 
       }     
-    }
-    var faves = $('#fave-prods div.item');
-    if(faves.length > 0){
-      rack_items.push(look_builder.rackFavorites(faves));
     }
     /* add the clones and assign drag/drop functionality */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(
-      '<h2>' + $('#rack').find('h2').html() + 
-      '</h2><div class="look-builder-rack">' + 
+      '<div class="look-builder-rack">' + 
       rack_items.join('') + '</div>'
     );
     look_builder.rackDragDrop(false, 'unordered');  

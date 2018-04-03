@@ -16,10 +16,24 @@
 {% include "shopping_tool/header_partial.html" %}
 {% include "shopping_tool/client_partial.html" %}
 <div id="content">
-  <div id="rack-draggable">
+
+  <div id="rack-col">
     <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
-    <div class="empty">building the rack...</div>
+    <div id="drag-rack-tabs">
+      <a href="#rack-draggable" class="tab on rack-tab">{{ client.first_name }}</a>
+      <a href="#fave-draggable" class="tab fave-tab">{{ user.first_name }}</a>
+    </div>    
+    <div id="rack-draggable" class="drag-section show">
+      <div class="empty">building the rack...</div>
+    </div>
+    <div id="fave-draggable" class="drag-section">
+
+    </div>
   </div>
+
+
+
+
   <div id="look-drop"><div class="start">Select or add a look to edit...</div></div>
   <div id="compare-looks">
     <div class="lookbook-btns">
