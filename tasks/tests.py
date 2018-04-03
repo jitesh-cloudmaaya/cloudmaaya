@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from product_feed_py.pepperjam import generate_product_id_pepperjam
 from product_feed_py.mappings import *
-from product_feed_py.mappings import _check_exclusion_terms
+from product_feed_py.mappings import _check_exclusion_terms, _check_other_term_maps
 from product_feed_py.product_feed_helpers import *
 from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes
 from product_feed_py.ran import _product_field_tiered_assignment
@@ -36,7 +36,7 @@ class ProductFeedHelpersTestCase(TestCase):
     more requirements are illuminated.
     """
 
-    fixtures = ['SynonymCategoryMap', 'ExclusionTerm', 'AllumeCategory']
+    fixtures = ['SynonymCategoryMap', 'ExclusionTerm', 'AllumeCategory', 'OtherTermMap']
 
     def test_parse_raw_product_url(self):
         """
@@ -96,6 +96,22 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual(True, _check_exclusion_terms("home", "test"))
         self.assertEqual(False, _check_exclusion_terms("toddlerstodo", ""))
         self.assertEqual(True, _check_exclusion_terms("entertainment-now", ""))
+
+    def test__check_other_term_maps(self):
+        """
+        The list of terms is found in OtherTermMap.yaml.
+        """
+        self.assertEqual(True, _check_other_term_maps('swimsuits2018', ''))
+        self.assertEqual(True, _check_other_term_maps('', 'swimsuits2018'))
+        self.assertEqual(True, _check_other_term_maps('maternity', ''))
+        self.assertEqual(True, _check_other_term_maps('lingerie-match', ''))
+        self.assertEqual(True, _check_other_term_maps('swimsuits', 'nothing'))
+        self.assertEqual(True, _check_other_term_maps('hmmm', 'swimsuits'))
+        self.assertEqual(True, _check_other_term_maps('maternityleave', 'swimsuits2018'))
+        self.assertEqual(False, _check_other_term_maps('', ''))
+        self.assertEqual(False, _check_other_term_maps('Apparel', ''))
+        self.assertEqual(False, _check_other_term_maps('Apparel', 'Accessories'))
+        self.assertEqual(False, _check_other_term_maps('', 'Accessories'))
 
     def test_add_category_map_w_exclusion_term(self):
         ac = AllumeCategory.objects.first()
