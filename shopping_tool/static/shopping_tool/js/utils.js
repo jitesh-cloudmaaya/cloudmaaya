@@ -227,9 +227,15 @@ var utils = {
     var rack_tab = rack_tabs.find('a.rack-tab');
     var look_tab = rack_tabs.find('a.look-tab');
     var fave_tab = rack_tabs.find('a.fave-tab');
-    rack_tab.html(utils.posessive(look_tab.text()) + ' Rack');
+    var rack_txt = utils.posessive(look_tab.text()) + ' Rack';
+    var fave_txt = utils.posessive(fave_tab.text()) + ' Favorites';
+    rack_tab.html(rack_txt);
     look_tab.html(utils.posessive(look_tab.text()) + ' Looks');
-    fave_tab.html(utils.posessive(fave_tab.text()) + ' Favorites');
+    fave_tab.html(fave_txt);
+    if(document.location.href.indexOf('look_builder') > -1){
+      $('#drag-rack-tabs a.fave-tab').html(fave_txt);
+      $('#drag-rack-tabs a.rack-tab').html(rack_txt);
+    }
   },
   /**
   * @description helper function that takes a string and returns posessive version of it

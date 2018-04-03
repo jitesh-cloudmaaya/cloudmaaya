@@ -466,7 +466,7 @@ var search_page = {
         search_box.data('clientsize', cleaned_sizes.join('|')).data('clientspend', cleaned_spend.join('|')).data('clientsettings', true);
       }
     }else{
-      facets.push('&primary_category=Unsure');
+      
     }
     if(new_search == false){
       $.each($('#facets div.facet-list'), function(idx){

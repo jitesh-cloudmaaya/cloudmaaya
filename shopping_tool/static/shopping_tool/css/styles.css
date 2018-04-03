@@ -624,7 +624,7 @@ div#look-list.show {left:570px;}
 div#rack h2,
 div#look-list h2,
 #compare-looks h2,
-#rack-draggable h2 {
+#rack-col h2 {
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;
@@ -634,7 +634,7 @@ div#look-list h2,
 }
 div#look-list h2 {font-size:14px; font-weight:500;}
 #compare-looks h2 {background:#fff;border-bottom:1px solid#ddd; position:relative; z-index:5;}
-#rack-draggable h2 {background:#fff; border-bottom:1px solid#ddd; margin:-5px 0 0; padding:5px 15px 0; }
+#rack-col h2 {background:#fff; border-bottom:1px solid#ddd; margin:-5px 0 0; padding:5px 15px 0; }
 #compare-looks h2 a.look-filter {
   border:1px solid #ddd;
   border-radius:5px;
@@ -680,7 +680,7 @@ div#rack h2 i {
   position:relative;
   top:10px;
 }
-#rack-draggable h2 i {
+#rack-col h2 i {
   font-size:40px;
   line-height:10px;
   margin-right:8px;
@@ -721,27 +721,43 @@ div#favorites-list #fave-prods div.item {
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   margin:7.5px;
   float:left;
-  overflow:auto;
+  overflow:hidden;
   padding:5px 10px 5px;
   position:relative;
 }
-div#rack-list div.item div.image,
-div#favorites-list #fave-prods div.item div.image { height:150px; width:150px; }
-div#rack-list div.item div.image img,
-div#favorites-list #fave-prods div.item div.image img {display:block;margin:0 auto; height:150px; max-width:100%;}
-div#rack-list div.item div.details { }
-div#rack-list div.item span.price,
-div#favorites-list div.item span.price{
+div#rack-list div.item,
+div#favorites-list #fave-prods div.item {height:115px;width:95px; padding:0;}
+div#rack-list div.item img.handle,
+#fave-prods div.item img.handle {display:block;margin:0 auto; height:95px; max-width:100%;}
+div#rack-list div.item a,
+#fave-prods div.item a {
+  border-top:1px solid #d0d0d0;
+  border-right:1px solid #d0d0d0;
+  display:inline-block;
   color:#474747;
-  display:block;
+  float:left;
   font-size:12px;
-  font-weight:500;
-  padding:5px 0 0;
+  font-weight:100;
+  line-height:19px;
+  height:19px;
   text-align:center;
-
+  vertical-align: top;
+  width:47px;
 }
-div#rack-list div.item span.price em,
-div#favorites-list div.item span.price em {color:#D32F2F; display:inline-block; text-decoration: line-through; margin-right:8px;}
+div#rack-list div.item a i,
+#fave-prods div.item a i {position:relative; top:-1px;}
+div#rack-list div.item a + a,
+#fave-prods div.item a + a {border-right:0;}
+div#rack-list div.item a:hover,
+#fave-prods div.item a:hover {background:#eee;}
+div#rack-list div.item a:active,
+#fave-prods div.item a:active {
+  background:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.2);
+}
+
+
+div#rack-list div.item div.image img {display:block;margin:0 auto; height:150px; max-width:100%;}
 div#rack-btns {
   border-top:1px solid #ddd;
   bottom:0;
@@ -751,13 +767,15 @@ div#rack-btns {
   width:525px;
 }
 
-div#favorites-list div.item span.favorited {
+div#favorites-list div.item span.favorited,
+#fave-prods span.badge {
   color:#EC407A;
   font-size:18px;
   position:absolute;
   right:5px;
   top:0;
 }
+#fave-prods span.badge {font-size:12px;}
 div#favorites-list div.item a {
   display:block;
   text-decoration:none;
@@ -900,7 +918,7 @@ a.add-to-rack.selected {
   color:#fff;
   text-shadow:0 1px #333;
 }
-a.remove-from-rack {
+/*a.remove-from-rack {
   color:#bbb;
   font-size:16px;
   padding:0 5px;
@@ -918,7 +936,7 @@ div.already-in-rack {
   position:absolute;
   width:100px;
   z-index:25;
-}
+}*/
 div.already-in-rack span.msg {
   background:rgba(0,0,0,0.75);
   border-radius:3px;
@@ -1609,9 +1627,9 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
 #new-look-error span i,
 #pub-section1-errors span i {margin-right:10px;}
 #look-drop,
-#rack-draggable,
+#rack-col,
 #compare-looks { position:absolute; top:80px; }
-#rack-draggable {
+#rack-col {
   background:#fafafa; 
   border-right:1px solid #ddd;
   height:calc(100% - 90px);
@@ -1629,10 +1647,29 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   overflow:auto;
   padding-top:5px;
 }
-#rack-draggable div.look-builder-rack { height:calc(100% - 50px); overflow:auto; }
-#rack-draggable div.look-builder-rack {padding:0 5px;}
+#rack-draggable,
+#fave-draggable {
+  background:#fafafa; 
+  height:calc(100% - 95px);
+  left:-350px;
+  padding:0;
+  position:absolute;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;   
+  top:95px;
+  width:325px;
+  z-index:1;
+}
+
+#fave-draggable {padding-top:10px; height:calc(100% - 105px);}
+#rack-draggable.show,
+#fave-draggable.show {left:0;z-index:2;}
+
+
+#rack-draggable div.look-builder-rack { height:100%; overflow:auto; padding:0 5px;}
 #look-drop{ height:calc(100% - 80px); left:325px; width:calc(100% - 645px); }
-#rack-draggable div.item {
+#rack-draggable div.item,
+#fave-draggable div.item {
   background:#fff;
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   margin:5px;
@@ -1643,7 +1680,8 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   position:relative;
   width:95px;
 }
-#rack-draggable div.item img { 
+#rack-draggable div.item img,
+#fave-draggable div.item img { 
   display:block; 
   margin:auto; 
   height:95px;
@@ -1654,19 +1692,22 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   cursor: -moz-grab;
   cursor: -webkit-grab;  
 }
-#rack-draggable div.item img:active { 
+#rack-draggable div.item img:active,
+#fave-draggable div.item img:active { 
   cursor: grabbing;
   cursor: -moz-grabbing;
   cursor: -webkit-grabbing;
 }
-#rack-draggable span.fave {
+#rack-draggable span.fave,
+#fave-draggable div.item span.badge {
   color:#EC407A;
   font-size:12px;
   position:absolute;
   right:2px;
   top:0;
 }
-#rack-draggable div.item a {
+#rack-draggable div.item a,
+#fave-draggable div.item a {
   border-top:1px solid #d0d0d0;
   border-right:1px solid #d0d0d0;
   display:inline-block;
@@ -1678,15 +1719,16 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   height:19px;
   text-align:center;
   vertical-align: top;
-  width:30.5px;
+  width:47px;
 }
-#rack-draggable div.item.fave a {width:46.5px;}
-#rack-draggable div.item.fave a.remove {display:none;}
-#rack-draggable div.item a:nth-of-type(3){border-right:0;width:32px;}
-#rack-draggable div.item.fave a:nth-of-type(2) {border-right:0;width:47.5px;}
-#rack-draggable div.item a i {position:relative; top:-1px;}
-#rack-draggable div.item a:hover {background:#eee;}
-#rack-draggable div.item a:active {
+#rack-draggable div.item a:nth-of-type(2),
+#fave-draggable div.item a:nth-of-type(2){border-right:0;}
+#rack-draggable div.item a i,
+#fave-draggable div.item a i {position:relative; top:-1px;}
+#rack-draggable div.item a:hover,
+#fave-draggable div.item a:hover {background:#eee;}
+#rack-draggable div.item a:active,
+#fave-draggable div.item a:active {
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.2);
 }
@@ -1779,7 +1821,11 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   text-shadow:0 1px #fff;
 }
 #rack-draggable div#rack-search-toggles a.sort-link  {float:left; padding:5px 15px 0 0;}
-#rack-draggable a.lb-search-link {float:right;}
+#rack-draggable a.lb-search-link {
+  display:block;
+  padding:5px 7px;
+  text-align:left;
+}
 #rack-list a.rack-section-toggle i,
 #rack-draggable a.rack-section-toggle i,
 #rack-list a.close-all-rack-sections i,
@@ -1796,11 +1842,14 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
 #rack-draggable div.block,
 #favorites-list div.block {overflow:hidden;}
 
-#rack-tabs {
+#rack-tabs,
+#drag-rack-tabs {
   border-bottom:1px solid #eee;
   padding:5px 15px 0;
 }
-#rack-tabs a.tab {
+#drag-rack-tabs {background:#fff;}
+#rack-tabs a.tab,
+#drag-rack-tabs a.tab {
   border-bottom:2px solid #fff;
   color:#000;
   display:inline-block;
@@ -1812,7 +1861,8 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   -webkit-transition: border 0.3s ease-in-out;
   transition: border 0.3s ease-in-out;   
 }
-#rack-tabs a.tab.on {border-color:#ed8365;}
+#rack-tabs a.tab.on,
+#drag-rack-tabs a.tab.on {border-color:#ed8365;}
 #add-look-btn,
 div.rack-look a.look-link,
 #collage-preview,

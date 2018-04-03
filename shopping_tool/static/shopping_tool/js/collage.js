@@ -564,8 +564,7 @@ var collage = {
           mt: false, 
           mb: false, 
           ml: false, 
-          mr: false,
-          mtr: false
+          mr: false
         });
       },
       zoomBy: function(x, y, z, callback) {
