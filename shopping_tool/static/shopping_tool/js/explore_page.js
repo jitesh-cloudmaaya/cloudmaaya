@@ -172,6 +172,9 @@ var explore_page = {
     if((typeof explore_page.fetch == 'object')&&(explore_page.fetch.readyState != 4)){
       explore_page.fetch.abort();
     }
+    /* add is_published and with_products flags */
+    lookup.is_published = 'True';
+    lookup.with_products = 'False';
     $('#looks-header h2').html('loading looks...');
     explore_page.fetch = $.ajax({
       contentType : 'application/json',
