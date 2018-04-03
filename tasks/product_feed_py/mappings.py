@@ -1,7 +1,8 @@
 import os
+import re
 import yaml
 from django.db import connection
-from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap
+from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, ExclusionTerm, OtherTermMap
 from catalogue_service.settings import BASE_DIR
 
 def create_merchant_mapping():
@@ -141,12 +142,87 @@ def is_merchant_in_category(category_mapping, identifier, merchant_name):
 
     return True
 
+def add_category_map(external_cat1, external_cat2, merchant_name, allume_category=None, active=False, pending_review=True):
+    """
+    Takes in arguments to create a new CategoryMap object. Checks for the presence of an ExclusionTerm in external_cat1
+    and external_cat2 to get additional information on how to formulate the CategoryMap.
 
-def add_category_map(external_cat1, external_cat2, merchant_name, allume_category, active = False, pending_review=True):
-    CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
-                               allume_category = None, turned_on = active, pending_review=pending_review)
-    return True
+    Args:
+      external_cat1 (str): Corresponds to the primary category of a product.
+      external_cat2 (str): Corresponds to the secondary category of a product.
+      merchant_name (str): A string representing the merchant's name.
+      allume_category (obj): The AllumeCategory object to reference. Can be None.
+      active (bool): Whether or not the CategoryMap will be used. Defaults to False.
+      pending_review (bool): Whether or not the CategoryMap is pending review for validity. Defaults to True.
 
+    Returns:
+      tup: Returns a tuple of allume category id (int), active (bool), the new categorymap id (int), and merchant_name (str).
+    """
+    if _check_exclusion_terms(external_cat1, external_cat2):
+        allume_category = AllumeCategory.objects.get(name__iexact='exclude')
+        active = False
+        pending_review = False
+    elif _check_other_term_maps(external_cat1, external_cat2):
+        allume_category = AllumeCategory.objects.get(name__iexact='other')
+
+    cm = CategoryMap(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
+                               allume_category = allume_category, turned_on = active, pending_review=pending_review)
+    cm.save()
+    new_categorymap_id = cm.id
+    if allume_category:
+        allume_category_id = allume_category.id
+    else:
+        allume_category_id = None
+
+    return (allume_category_id, active, new_categorymap_id, merchant_name)
+
+def _check_exclusion_terms(primary_category, secondary_category):
+    """
+    Takes in both a primary and secondary category. Checks the list of exclusion terms as modeled by
+    ExclusionTerm for the presence of any exclusion terms on word boundaries. If one is found, returns
+    True; else, returns False.
+
+    Args:
+      primary_category (str): A string representing a product category.
+      secondary_category (str): A string representing a product category.
+
+    Returns:
+      bool: A boolean value representing whether or not any exclusion terms were found in either string
+      argument, respecting word boundaries.
+    """
+    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+    primary_category = primary_category.lower()
+    secondary_category = secondary_category.lower()
+    for term in exclusion_terms:
+        pattern = re.compile(r'\b' + term.lower() + r'\b')
+        primary_match = re.search(pattern, primary_category)
+        secondary_match = re.search(pattern, secondary_category)
+        if primary_match or secondary_match:
+            return True
+    return False
+
+def _check_other_term_maps(primary_category, secondary_category):
+    """
+    Takes in both a primary and secondary category. Checks the list of terms that will
+    force a CategoryMap to Allume category as 'Other'. Uses terms modeled by OtherTermMap
+    and checks the strings for membership of any of the terms.
+
+    Args:
+      primary_category (str): A string representing a product category.
+      secondary_category (str): A string representing a product category.
+
+    Returns:
+      bool: A boolean value representing whether or not any other term maps were found
+      in either string argument.
+    """
+    other_term_maps = OtherTermMap.objects.values_list('term', flat = True)
+    primary_category = primary_category.lower()
+    secondary_category = secondary_category.lower()
+    for term in other_term_maps:
+        term = term.lower()
+        if term in primary_category or term in secondary_category:
+            return True
+    return False
 
 def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     """
@@ -183,18 +259,13 @@ def are_categories_active(primary_category, secondary_category, category_mapping
     try:
         identifier = (primary_category, secondary_category)
         if identifier not in category_mapping.keys():
-            add_category_map(primary_category, secondary_category, input_merchant_name, None, False, True)
             # edit the mapping instance
-            category_mapping[identifier] = (None, False, -1, input_merchant_name)
-            # print discovered categories pair
-            #print identifier
+            category_mapping[identifier] = add_category_map(primary_category, secondary_category, input_merchant_name, None, False, True)
+            # add_category_map returns a tuple of (allume_category_id, new_categorymap_id, active, merchant_name)
 
         allume_category_id, categories_are_active, category_map_id, merchant_name = category_mapping[identifier]
-        # if id == -1, then category is newly added with merchant_name, no need to backfill
-        if category_map_id != -1:
-            # check if the merchant_name for this category exists, if not add it
-            is_merchant_in_category(category_mapping, identifier, input_merchant_name)
-
+        # checks if merchant needs to be appended to a category
+        is_merchant_in_category(category_mapping, identifier, input_merchant_name)
         if allume_category_id == None:
             # allume_category_id is None because it is either a newly discovered category
             # or a category that is still pending review post-discovery
