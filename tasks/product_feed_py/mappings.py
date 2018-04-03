@@ -156,31 +156,7 @@ def add_category_map(external_cat1, external_cat2, merchant_name, allume_categor
       pending_review (bool): Whether or not the CategoryMap is pending review for validity. Defaults to True.
 
     Returns:
-      bool: Returns True on success.
-    """
-    if _check_exclusion_terms(external_cat1, external_cat2):
-        allume_category = AllumeCategory.objects.get(name__iexact='exclude')
-        active = False
-        pending_review = False
-    CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
-                               allume_category = allume_category, turned_on = active, pending_review=pending_review)
-    return True
-
-def add_category_map_take2_again(external_cat1, external_cat2, merchant_name, allume_category=None, active=False, pending_review=True):
-    """
-    Takes in arguments to create a new CategoryMap object. Checks for the presence of an ExclusionTerm in external_cat1
-    and external_cat2 to get additional information on how to formulate the CategoryMap.
-
-    Args:
-      external_cat1 (str): Corresponds to the primary category of a product.
-      external_cat2 (str): Corresponds to the secondary category of a product.
-      merchant_name (str): A string representing the merchant's name.
-      allume_category (obj): The AllumeCategory object to reference. Can be None.
-      active (bool): Whether or not the CategoryMap will be used. Defaults to False.
-      pending_review (bool): Whether or not the CategoryMap is pending review for validity. Defaults to True.
-
-    Returns:
-      bool: Returns True on success.
+      tup: Returns a tuple of allume category id (int), active (bool), the new categorymap id (int), and merchant_name (str).
     """
     if _check_exclusion_terms(external_cat1, external_cat2):
         allume_category = AllumeCategory.objects.get(name__iexact='exclude')
@@ -188,9 +164,17 @@ def add_category_map_take2_again(external_cat1, external_cat2, merchant_name, al
         pending_review = False
     elif _check_other_term_maps(external_cat1, external_cat2):
         allume_category = AllumeCategory.objects.get(name__iexact='other')
-    CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
+
+    cm = CategoryMap(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
                                allume_category = allume_category, turned_on = active, pending_review=pending_review)
-    return True
+    cm.save()
+    new_categorymap_id = cm.id
+    if allume_category:
+        allume_category_id = allume_category.id
+    else:
+        allume_category_id = None
+
+    return (allume_category_id, active, new_categorymap_id, merchant_name)
 
 def _check_exclusion_terms(primary_category, secondary_category):
     """
@@ -275,18 +259,13 @@ def are_categories_active(primary_category, secondary_category, category_mapping
     try:
         identifier = (primary_category, secondary_category)
         if identifier not in category_mapping.keys():
-            add_category_map(primary_category, secondary_category, input_merchant_name, None, False, True)
             # edit the mapping instance
-            category_mapping[identifier] = (None, False, -1, input_merchant_name)
-            # print discovered categories pair
-            #print identifier
+            category_mapping[identifier] = add_category_map(primary_category, secondary_category, input_merchant_name, None, False, True)
+            # add_category_map returns a tuple of (allume_category_id, new_categorymap_id, active, merchant_name)
 
         allume_category_id, categories_are_active, category_map_id, merchant_name = category_mapping[identifier]
-        # if id == -1, then category is newly added with merchant_name, no need to backfill
-        if category_map_id != -1:
-            # check if the merchant_name for this category exists, if not add it
-            is_merchant_in_category(category_mapping, identifier, input_merchant_name)
-
+        # checks if merchant needs to be appended to a category
+        is_merchant_in_category(category_mapping, identifier, input_merchant_name)
         if allume_category_id == None:
             # allume_category_id is None because it is either a newly discovered category
             # or a category that is still pending review post-discovery
