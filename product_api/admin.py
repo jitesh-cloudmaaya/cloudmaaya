@@ -76,6 +76,11 @@ class AllumeCategoryAdmin(admin.ModelAdmin):
     readonly_fields = ['name']
     ordering = ['position']
 
+class SynonymCategoryMapAdmin(admin.ModelAdmin):
+    list_display = ('id', 'synonym', 'category')
+    list_filter = ('category',)
+    search_fields = ('id', 'synonym', 'category')
+
 class MerchantInLine(admin.TabularInline):
 
     model = Merchant
@@ -83,6 +88,10 @@ class MerchantInLine(admin.TabularInline):
 
 class NetworkInLine(admin.TabularInline):
     model = Network
+    extra = 0
+
+class SynonymCategoryMapInLine(admin.TabularInline):
+    model = SynonymCategoryMap
     extra = 0
 
 #class MerchantCategoryInLine(admin.TabularInline):
@@ -95,4 +104,4 @@ admin.site.register(Network, NetworkAdmin)
 admin.site.register(CategoryMap, CategoryMapAdmin)
 admin.site.register(AllumeCategory, AllumeCategoryAdmin)
 admin.site.register(ColorMap, ColorMapAdmin)
-
+admin.site.register(SynonymCategoryMap, SynonymCategoryMapAdmin)
