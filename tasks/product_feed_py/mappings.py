@@ -142,21 +142,28 @@ def is_merchant_in_category(category_mapping, identifier, merchant_name):
 
     return True
 
+def add_category_map(external_cat1, external_cat2, merchant_name, allume_category=None, active=False, pending_review=True):
+    """
+    Takes in arguments to create a new CategoryMap object. Checks for the presence of an ExclusionTerm in external_cat1
+    and external_cat2 to get additional information on how to formulate the CategoryMap.
 
-def add_category_map(external_cat1, external_cat2, merchant_name, allume_category, active = False, pending_review=True):
+    Args:
+      external_cat1 (str): Corresponds to the primary category of a product.
+      external_cat2 (str): Corresponds to the secondary category of a product.
+      merchant_name (str): A string representing the merchant's name.
+      allume_category (obj): The AllumeCategory object to reference. Can be None.
+      active (bool): Whether or not the CategoryMap will be used. Defaults to False.
+      pending_review (bool): Whether or not the CategoryMap is pending review for validity. Defaults to True.
+
+    Returns:
+      bool: Returns True on success.
+    """
+    if _check_exclusion_terms(external_cat1, external_cat2):
+        allume_category = AllumeCategory.objects.get(name__iexact='exclude')
+        active = False
+        pending_review = False
     CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
-                               allume_category = None, turned_on = active, pending_review=pending_review)
-    return True
-
-
-def add_category_map_take2():
-    if check_exclusion_terms(external_cat1, external_cat2):
-        # allume_category = # look up allume category id for exclude
-        active = 0
-        pending_review = 0
-
-    # CategoryMap.objects.create()
-
+                               allume_category = allume_category, turned_on = active, pending_review=pending_review)
     return True
 
 def _check_exclusion_terms(primary_category, secondary_category):
@@ -166,8 +173,8 @@ def _check_exclusion_terms(primary_category, secondary_category):
     True; else, returns False.
 
     Args:
-      primary_category: A string representing a product category.
-      secondary_category: A string representing a product category.
+      primary_category (str): A string representing a product category.
+      secondary_category (str): A string representing a product category.
 
     Returns:
       bool: A boolean value representing whether or not any exclusion terms were found in either string

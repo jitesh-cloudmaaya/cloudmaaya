@@ -36,7 +36,7 @@ class ProductFeedHelpersTestCase(TestCase):
     more requirements are illuminated.
     """
 
-    fixtures = ['SynonymCategoryMap', 'ExclusionTerm']
+    fixtures = ['SynonymCategoryMap', 'ExclusionTerm', 'AllumeCategory']
 
     def test_parse_raw_product_url(self):
         """
@@ -96,6 +96,16 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual(True, _check_exclusion_terms("home", "test"))
         self.assertEqual(False, _check_exclusion_terms("toddlerstodo", ""))
         self.assertEqual(True, _check_exclusion_terms("entertainment-now", ""))
+
+    def test_add_category_map_w_exclusion_term(self):
+        ac = AllumeCategory.objects.first()
+        add_category_map('Clothing', 'Food', 'Raybeam', ac)
+        cm = CategoryMap.objects.get(external_cat1 = 'Clothing', external_cat2 = 'Food', merchant_name = 'Raybeam')
+        exclude = AllumeCategory.objects.get(name__iexact='exclude')
+
+        self.assertEqual(exclude, cm.allume_category)
+        self.assertEqual(False, cm.turned_on)
+        self.assertEqual(False, cm.pending_review)
 
 
 class SizeTestCase(TestCase):
