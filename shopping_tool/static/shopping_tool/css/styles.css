@@ -358,6 +358,19 @@ input.search {
   vertical-align:top; 
   width:50px;
 }
+#facets div.facet-list span.facet-clear {clear:both; display:block; height:0;}
+/* size facet styles */
+#facets div.facet-list[data-qparam="size"] { }
+#facets div.facet-list[data-qparam="size"] label.facet {float:left; width:calc(43% - 5px);}
+#facets div.facet-list[data-qparam="size"] label.facet em.key{ overflow:visible; white-space:nowrap; width:inherit;}
+#facets div.facet-list[data-qparam="size"] span.facet-breaker {
+  border-bottom:1px solid #eee;
+  clear:left;
+  display:block;
+  margin-bottom:10px;
+  padding-top:10px;
+  width:50%;
+}
 
 @-webkit-keyframes heartbeat {
   0% {
@@ -611,7 +624,7 @@ div#look-list.show {left:570px;}
 div#rack h2,
 div#look-list h2,
 #compare-looks h2,
-#rack-draggable h2 {
+#rack-col h2 {
   border-bottom:1px solid #eee;
   font-size:18px;
   font-weight:300;
@@ -621,7 +634,7 @@ div#look-list h2,
 }
 div#look-list h2 {font-size:14px; font-weight:500;}
 #compare-looks h2 {background:#fff;border-bottom:1px solid#ddd; position:relative; z-index:5;}
-#rack-draggable h2 {background:#fff; border-bottom:1px solid#ddd; margin:-5px 0 0; padding:5px 15px 0; }
+#rack-col h2 {background:#fff; border-bottom:1px solid#ddd; margin:-5px 0 0; padding:5px 15px 0; }
 #compare-looks h2 a.look-filter {
   border:1px solid #ddd;
   border-radius:5px;
@@ -667,7 +680,7 @@ div#rack h2 i {
   position:relative;
   top:10px;
 }
-#rack-draggable h2 i {
+#rack-col h2 i {
   font-size:40px;
   line-height:10px;
   margin-right:8px;
@@ -708,27 +721,64 @@ div#favorites-list #fave-prods div.item {
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   margin:7.5px;
   float:left;
-  overflow:auto;
+  overflow:hidden;
   padding:5px 10px 5px;
   position:relative;
 }
-div#rack-list div.item div.image,
-div#favorites-list #fave-prods div.item div.image { height:150px; width:150px; }
-div#rack-list div.item div.image img,
-div#favorites-list #fave-prods div.item div.image img {display:block;margin:0 auto; height:150px; max-width:100%;}
-div#rack-list div.item div.details { }
-div#rack-list div.item span.price,
-div#favorites-list div.item span.price{
+div#rack-list div.item,
+div#favorites-list #fave-prods div.item {height:115px;width:95px; padding:0;}
+div#rack-list div.item img.handle,
+#fave-prods div.item img.handle {display:block;margin:0 auto; height:95px; max-width:100%;}
+div#rack-list div.item a,
+#fave-prods div.item a {
+  border-top:1px solid #d0d0d0;
+  border-right:1px solid #d0d0d0;
+  display:inline-block;
   color:#474747;
-  display:block;
+  float:left;
   font-size:12px;
-  font-weight:500;
-  padding:5px 0 0;
+  font-weight:100;
+  line-height:19px;
+  height:19px;
   text-align:center;
-
+  vertical-align: top;
+  width:47px;
 }
-div#rack-list div.item span.price em,
-div#favorites-list div.item span.price em {color:#D32F2F; display:inline-block; text-decoration: line-through; margin-right:8px;}
+div#rack-list div.item a i,
+#fave-prods div.item a i {position:relative; top:-1px;}
+div#rack-list div.item a + a,
+#fave-prods div.item a + a {border-right:0;}
+div#rack-list div.item a:hover,
+#fave-prods div.item a:hover {background:#eee;}
+div#rack-list div.item a:active,
+#fave-prods div.item a:active {
+  background:#fff;
+  box-shadow:inset 0 0 3px rgba(0,0,0,0.2);
+}
+
+#rack-list div.item span.sold-out,
+#fave-prods div.item span.sold-out {
+  background: #C62828;
+  color: #fff;
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  left: -36px;
+  line-height: 20px;
+  padding:0;
+  position: absolute;
+  text-align: center;
+  text-transform: uppercase;
+  -webkit-transform-origin: center;
+  transform-origin: center;
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  top: 30px;
+  width: 155px;
+  z-index:3;
+}
+
+div#rack-list div.item div.image img {display:block;margin:0 auto; height:150px; max-width:100%;}
 div#rack-btns {
   border-top:1px solid #ddd;
   bottom:0;
@@ -738,13 +788,15 @@ div#rack-btns {
   width:525px;
 }
 
-div#favorites-list div.item span.favorited {
+div#favorites-list div.item span.favorited,
+#fave-prods span.badge {
   color:#EC407A;
   font-size:18px;
   position:absolute;
   right:5px;
   top:0;
 }
+#fave-prods span.badge {font-size:12px;}
 div#favorites-list div.item a {
   display:block;
   text-decoration:none;
@@ -887,7 +939,7 @@ a.add-to-rack.selected {
   color:#fff;
   text-shadow:0 1px #333;
 }
-a.remove-from-rack {
+/*a.remove-from-rack {
   color:#bbb;
   font-size:16px;
   padding:0 5px;
@@ -905,7 +957,7 @@ div.already-in-rack {
   position:absolute;
   width:100px;
   z-index:25;
-}
+}*/
 div.already-in-rack span.msg {
   background:rgba(0,0,0,0.75);
   border-radius:3px;
@@ -1596,9 +1648,9 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
 #new-look-error span i,
 #pub-section1-errors span i {margin-right:10px;}
 #look-drop,
-#rack-draggable,
+#rack-col,
 #compare-looks { position:absolute; top:80px; }
-#rack-draggable {
+#rack-col {
   background:#fafafa; 
   border-right:1px solid #ddd;
   height:calc(100% - 90px);
@@ -1616,10 +1668,29 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   overflow:auto;
   padding-top:5px;
 }
-#rack-draggable div.look-builder-rack { height:calc(100% - 50px); overflow:auto; }
-#rack-draggable div.look-builder-rack {padding:0 5px;}
+#rack-draggable,
+#fave-draggable {
+  background:#fafafa; 
+  height:calc(100% - 95px);
+  left:-350px;
+  padding:0;
+  position:absolute;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;   
+  top:95px;
+  width:325px;
+  z-index:1;
+}
+
+#fave-draggable {padding-top:10px; height:calc(100% - 105px);}
+#rack-draggable.show,
+#fave-draggable.show {left:0;z-index:2;}
+
+
+#rack-draggable div.look-builder-rack { height:100%; overflow:auto; padding:0 5px;}
 #look-drop{ height:calc(100% - 80px); left:325px; width:calc(100% - 645px); }
-#rack-draggable div.item {
+#rack-draggable div.item,
+#fave-draggable div.item {
   background:#fff;
   box-shadow: 0 0 2px rgba(34, 25, 25, 0.4);
   margin:5px;
@@ -1630,7 +1701,8 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   position:relative;
   width:95px;
 }
-#rack-draggable div.item img { 
+#rack-draggable div.item img,
+#fave-draggable div.item img { 
   display:block; 
   margin:auto; 
   height:95px;
@@ -1641,19 +1713,46 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   cursor: -moz-grab;
   cursor: -webkit-grab;  
 }
-#rack-draggable div.item img:active { 
+#rack-draggable div.item img:active,
+#fave-draggable div.item img:active { 
   cursor: grabbing;
   cursor: -moz-grabbing;
   cursor: -webkit-grabbing;
 }
-#rack-draggable span.fave {
+#rack-draggable span.fave,
+#fave-draggable div.item span.badge {
   color:#EC407A;
   font-size:12px;
   position:absolute;
   right:2px;
   top:0;
 }
-#rack-draggable div.item a {
+#rack-draggable div.item span.sold-out,
+#fave-draggable div.item span.sold-out {
+  background: #C62828;
+  color: #fff;
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  left: -36px;
+  line-height: 20px;
+  padding:0;
+  position: absolute;
+  text-align: center;
+  text-transform: uppercase;
+  -webkit-transform-origin: center;
+  transform-origin: center;
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  top: 30px;
+  width: 155px;
+  z-index:3;
+}
+
+
+
+#rack-draggable div.item a,
+#fave-draggable div.item a {
   border-top:1px solid #d0d0d0;
   border-right:1px solid #d0d0d0;
   display:inline-block;
@@ -1665,15 +1764,16 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   height:19px;
   text-align:center;
   vertical-align: top;
-  width:30.5px;
+  width:47px;
 }
-#rack-draggable div.item.fave a {width:46.5px;}
-#rack-draggable div.item.fave a.remove {display:none;}
-#rack-draggable div.item a:nth-of-type(3){border-right:0;width:32px;}
-#rack-draggable div.item.fave a:nth-of-type(2) {border-right:0;width:47.5px;}
-#rack-draggable div.item a i {position:relative; top:-1px;}
-#rack-draggable div.item a:hover {background:#eee;}
-#rack-draggable div.item a:active {
+#rack-draggable div.item a:nth-of-type(2),
+#fave-draggable div.item a:nth-of-type(2){border-right:0;}
+#rack-draggable div.item a i,
+#fave-draggable div.item a i {position:relative; top:-1px;}
+#rack-draggable div.item a:hover,
+#fave-draggable div.item a:hover {background:#eee;}
+#rack-draggable div.item a:active,
+#fave-draggable div.item a:active {
   background:#fff;
   box-shadow:inset 0 0 3px rgba(0,0,0,0.2);
 }
@@ -1766,7 +1866,11 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   text-shadow:0 1px #fff;
 }
 #rack-draggable div#rack-search-toggles a.sort-link  {float:left; padding:5px 15px 0 0;}
-#rack-draggable a.lb-search-link {float:right;}
+#rack-draggable a.lb-search-link {
+  display:block;
+  padding:5px 7px;
+  text-align:left;
+}
 #rack-list a.rack-section-toggle i,
 #rack-draggable a.rack-section-toggle i,
 #rack-list a.close-all-rack-sections i,
@@ -1783,11 +1887,14 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
 #rack-draggable div.block,
 #favorites-list div.block {overflow:hidden;}
 
-#rack-tabs {
+#rack-tabs,
+#drag-rack-tabs {
   border-bottom:1px solid #eee;
   padding:5px 15px 0;
 }
-#rack-tabs a.tab {
+#drag-rack-tabs {background:#fff;}
+#rack-tabs a.tab,
+#drag-rack-tabs a.tab {
   border-bottom:2px solid #fff;
   color:#000;
   display:inline-block;
@@ -1799,7 +1906,8 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   -webkit-transition: border 0.3s ease-in-out;
   transition: border 0.3s ease-in-out;   
 }
-#rack-tabs a.tab.on {border-color:#ed8365;}
+#rack-tabs a.tab.on,
+#drag-rack-tabs a.tab.on {border-color:#ed8365;}
 #add-look-btn,
 div.rack-look a.look-link,
 #collage-preview,
@@ -1913,7 +2021,7 @@ a.next-tab:active,
   margin:10px 0;
   width:100%;
 }
-#inspect-item div.stage table {width:calc(100% - 30px);margin:0 15px;}
+#inspect-item div.stage table {width:calc(100% - 170px);margin:0 155px 0 15px;}
 #look-indepth div.stage div.products table td,
 #inspect-item div.stage table td {border-bottom:1px solid #ddd; vertical-align: top}
 #look-indepth div.stage div.products table tr:last-child td,
@@ -2463,10 +2571,42 @@ div.publish-section label.toggle input:checked + span > small,
   text-decoration: none;
   text-transform:lowercase;
 }
+
 #inspect-item a.favorite.favorited,
 #look-indepth a.favorite.favorited { background:#EC407A; border-color:#EC407A; color:#fff;}
 #inspect-item a.favorite i,
 #look-indepth a.favorite i{font-size:13px; position:relative; top:1px;}
+#inspect-item a.favorite {
+  padding:3px 0 4px;
+  position:absolute;
+  top:55px;
+  right:0px;
+  width:140px;
+}
+#inspect-item a.favorite i {font-size:20px;}
+#inspect-item a.add-to-rack i {font-size:24px;}
+#inspect-item a.add-to-rack.selected i,
+#inspect-item a.link-to-store i.fa {font-size:16px;}
+#inspect-item a.link-to-store i.fa {top:0px;}
+#inspect-item a.add-to-rack {
+  font-size:18px;
+  padding:3px 0 4px;
+  position:absolute;
+  top:93px;
+  right:10px;
+  width:140px;  
+}
+
+#inspect-item a.link-to-store {
+  font-size:18px;
+  padding:3px 0 4px;
+  position:absolute;
+  top:133px;
+  right:10px;
+  width:140px;
+}
+
+
 #inspect-item a.favorite:hover,
 #look-indepth a.favorite:hover { background:#EC407A; border-color:#EC407A; color:#fff; }
 #inspect-item a.favorite.favorited:hover,
@@ -3526,7 +3666,7 @@ div.collage-controls a.send-back {
   border-top-left-radius:5px;
   border-bottom-left-radius:5px;
 }
-div.collage-controls a:nth-of-type(2),
+div.collage-controls a:nth-of-type(3),
 #cropper-btns a:nth-of-type(3),
 #pg-cropper-btns a:nth-of-type(3),
 div.collage-controls a.polygon-crop
@@ -3541,9 +3681,12 @@ div.collage-controls a.send-front {height:16px; width:16px;}
 div.collage-controls a.polygon-crop { height: 21px; padding: 3px 6px 3px; width: 21px;}
 
 #cropper-btns a:nth-of-type(3) {margin:0;}
-div.collage-controls a#finish-editing-look {float:right; border-radius:5px; border-right:1px solid #ccc; margin-left:35px;}
+div.collage-controls a#finish-editing-look,
+div.collage-controls a#delete-look-inprocess {float:right; border-radius:5px; border-right:1px solid #ccc; }
+div.collage-controls a#delete-look-inprocess{margin:0 10px 0 35px;}
 div.collage-controls a.trash-obj {border-radius:5px; border-right:1px solid #ccc;}
 div.collage-controls a#finish-editing-look i,
+div.collage-controls a#delete-look-inprocess i,
 #cropper-btns a i,
 #pg-cropper-btns a i {padding-right:5px;}
 #cropper-btns a i.fa-times,
@@ -3776,5 +3919,31 @@ a#close-user-clip {
 }
 #sort-dd + .selectize-control {float:right; margin-right:5px; width:150px;}
 #look-desc-count {color:#777; font-size:11px; padding:3px 0 0;}
+
+#clear-filters {
+  border:1px solid #ddd;
+  border-radius:3px;
+  color:#777;
+  display:block;
+  font-size:12px;
+  font-weight:500;
+  font-variant: small-caps;
+  margin:25px 0 0 15px;
+  padding:5px 0 7px;
+  text-align:center;
+  text-decoration: none;
+  width:100px;
+}
+#clear-filters:hover {
+  border-color:#ccc;
+  box-shadow:0 1px 1px rgba(0,0,0,0.1);
+}
+#clear-filters:active {
+  background:#fafafa;
+  border-color:#fff;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.3)
+}
+
 #client-picture img {display:block; max-width:480px; margin:5px auto 10px;}
+
 

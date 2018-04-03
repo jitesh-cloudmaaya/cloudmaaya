@@ -3,9 +3,9 @@
   <a href="#" id="close-rack"><i class="fa fa-times"></i></a>
   <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
   <div id="rack-tabs">
-    <a href="#rack-list" class="tab on">Products</a>
-    <a href="#favorites-list" class="tab">Favorites</a>
-    <a href="#looks-list" class="tab">Looks</a>
+    <a href="#rack-list" class="tab on rack-tab">{{ client.first_name }}</a>
+    <a href="#looks-list" class="tab look-tab">{{ client.first_name }}</a>
+    <a href="#favorites-list" class="tab fave-tab">{{ user.first_name }}</a>
   </div>
   <div id="rack-list" class="rack-section show">
     {% for item in rack_items %}

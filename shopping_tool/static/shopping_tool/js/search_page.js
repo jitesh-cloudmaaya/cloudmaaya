@@ -26,6 +26,12 @@ var search_page = {
     $('#sort-dd').val(' ').selectize({ create: false, sortField: 'text'}).change(function(e){
       search_page.performSearch(1, false, null);
     });
+
+    $('#client-defaults').html(
+      '<div class="client-settings"><h5>Client preferences:</h5>' +
+      '<span><em>colors:</em>' + client_360.colors + '</span>' +
+      '<span><em>styles to avoid:</em>' + client_360.avoid + '</span></div>'
+    );
     $('#search-categories').val('').selectize({ 
       create: false
     }).change(function(){
@@ -58,7 +64,11 @@ var search_page = {
           general + '</div>'
         );          
       }else{
-        def_div.html('');
+        def_div.html(
+          '<div class="client-settings"><h5>Client preferences:</h5>' +
+          '<span><em>colors:</em>' + client_360.colors + '</span>' +
+          '<span><em>styles to avoid:</em>' + client_360.avoid + '</span></div>'
+        );
       }
     });
     /* facets functionality */
@@ -128,7 +138,10 @@ var search_page = {
       var last_search = utils.parseQuery(search_cookie);
       var search_box = $('#search-field');
       var category = $('#search-categories');
-      category[0].selectize.setValue(last_search.primary_category, false);
+
+      var sanitized_primary = last_search.primary_category.replace('|Unsure','')
+
+      category[0].selectize.setValue(sanitized_primary, false);
       search_box.val(last_search.text);
       if(last_search.favs != undefined){
         $('#facet-show-faves').prop('checked', true);
@@ -172,6 +185,82 @@ var search_page = {
                 if(a.from < b.from){ return -1}
                 return 0;
               })
+            }else if(display_name == 'size'){
+              /* size type array holders */
+              var nums = [];
+              var letters = [];
+              var petites = [];
+              /* name size sorting weight */
+              var size_name_weight = {
+                "L":10,"LARGE":11,"M":8,"MEDIUM":9,
+                "NO SIZE":18,"S":6,"SMALL":7,"X LARGE":13,
+                "X SMALL":3,"X-LARGE":14,"X-SMALL":5,
+                "XL":12,"XS":4,"XX-SMALL":2,"XXS":1,
+                "XXL": 15,"XX LARGE": 16,"XX-LARGE": 17,
+                "XXS P":20,"P/XS":21,"XS P":22,"P/S":23,
+                "S P":24,"P/M":25,"P/L":26,"P/XL":27
+              }
+              /* push facets into correct subcategories */
+              for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
+                var facet = facet_list[display_name].buckets[j];
+                if(facet.key != ''){
+                  if(Number.isInteger(parseInt(facet.key.charAt(0)))){
+                    nums.push(facet)
+                  }else{
+                    if (facet.key.match(/[p]/i)){
+                      petites.push(facet)
+                    }else{
+                      letters.push(facet)
+                    }
+                  }
+                }
+              }
+              /* sort the numbered sizes */
+              nums.sort(function(a,b){
+                var num_a, num_b;
+                if(!Number.isInteger(parseInt(a.key.charAt(1)))){
+                  num_a = parseInt(a.key.slice(0,1));
+                }else{
+                  num_a = parseInt(a.key.slice(0,2));
+                }
+                if(!Number.isInteger(parseInt(b.key.charAt(1)))){
+                  num_b = parseInt(b.key.slice(0,1));
+                }else{
+                  num_b = parseInt(b.key.slice(0,2));
+                }
+                return num_a - num_b
+              });
+              /* sort name sizes by weight */
+              letters.sort(function(a,b){
+                var num_a = size_name_weight[a.key] == undefined ? 0 : size_name_weight[a.key];
+                var num_b = size_name_weight[b.key] == undefined ? 0 : size_name_weight[b.key];
+                return num_a - num_b
+              });
+              /* sort petite sizes by weight */
+              petites.sort(function(a,b){
+                var num_a = size_name_weight[a.key] == undefined ? 0 : size_name_weight[a.key];
+                var num_b = size_name_weight[b.key] == undefined ? 0 : size_name_weight[b.key];
+                return num_a - num_b
+              }); 
+              /* new facets array */
+              var new_facets = [];
+              if(nums.length > 0){ new_facets = new_facets.concat(nums) };
+              if(letters.length > 0){
+                if(new_facets.length > 0){
+                  new_facets = new_facets.concat([{key:'special-breaker'}],letters)
+                }else{
+                  new_facets = new_facets.concat(letters)
+                }
+              }
+              if(petites.length > 0){
+                if(new_facets.length > 0){
+                  new_facets = new_facets.concat([{key:'special-breaker'}],petites)
+                }else{
+                  new_facets = new_facets.concat(petites)
+                }                
+              }
+              facet_list[display_name].buckets = new_facets;
+              facet_list[display_name].buckets.push({key: 'facet-clear'})
             }else{
               facet_list[display_name].buckets.sort(function(a,b){
                 if(a.key.toLowerCase() > b.key.toLowerCase()){ return 1}
@@ -193,17 +282,24 @@ var search_page = {
                   checked = "checked";
                 }
               }
-              if((facet.key != '')&&(facet.key != 'sort')){
-                group_markup.markup[display_name].push(
-                  '<label class="facet">' +
-                  '<input class="facet-box" type="checkbox" value="' + 
-                  facet.key + '" ' + checked + ' data-facetgroup="' + 
-                  display_name + '"/><span>' + '<i class="fa fa-circle-thin"></i>' +
-                  '<i class="fa fa-check-circle"></i>' +
-                  '</span><em class="number">' + 
-                  numeral(facet.doc_count).format('0,0') +
-                  '</em><em class="key">' + facet.key + '</em></label>'
-                );
+              /* for facets with subcategories add breakers and clearers */
+              if(facet.key == 'special-breaker'){
+                group_markup.markup[display_name].push('<span class="facet-breaker"></span>')
+              }else if(facet.key == 'facet-clear'){
+                group_markup.markup[display_name].push('<span class="facet-clear"></span>')
+              }else{
+                if((facet.key != '')&&(facet.key != 'sort')){
+                  group_markup.markup[display_name].push(
+                    '<label class="facet">' +
+                    '<input class="facet-box" type="checkbox" value="' + 
+                    facet.key + '" ' + checked + ' data-facetgroup="' + 
+                    display_name + '"/><span>' + '<i class="fa fa-circle-thin"></i>' +
+                    '<i class="fa fa-check-circle"></i>' +
+                    '</span><em class="number">' + 
+                    numeral(facet.doc_count).format('0,0') +
+                    '</em><em class="key">' + facet.key + '</em></label>'
+                  );
+                }
               }
             }
             group_markup.markup[display_name].push('</div>');
@@ -370,7 +466,7 @@ var search_page = {
         search_box.data('clientsize', cleaned_sizes.join('|')).data('clientspend', cleaned_spend.join('|')).data('clientsettings', true);
       }
     }else{
-      facets.push('&primary_category=Unsure');
+      
     }
     if(new_search == false){
       $.each($('#facets div.facet-list'), function(idx){

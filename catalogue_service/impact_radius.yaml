@@ -6,6 +6,8 @@ ftp_config:
   host: products.impactradius.com
   user: ps-ftp_380198
   password: 4JC:)nto7P
+  host_key: N/A
+  algorithm: N/A
 file_ending: .txt
 clean_data_method: impact_radius.impact_radius(self._local_temp_dir, self._file_ending, self._fields)
 fields:
