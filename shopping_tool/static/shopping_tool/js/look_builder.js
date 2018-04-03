@@ -294,6 +294,7 @@ var look_builder = {
         rome(start_id, {
           initialValue:  moment().startOf('day').format('YYYY-MM-DD'),
           min: moment().startOf('day').format('YYYY-MM-DD'),
+          max: moment().add(2, 'day').endOf('day').format('YYYY-MM-DD'),
           time: true,
           timeFormat: 'h:mm a',
           timeInterval: 900
