@@ -91,7 +91,7 @@ class LookSerializerNoLookProducts(serializers.ModelSerializer):
 
     class Meta:
         model = Look
-        fields = ['token', 'allume_styling_session', 'wp_client_id', 'stylist', 'name', 'description', 'collage', 'status', 'created_at', 'updated_at', 'is_legacy', 'position', 'look_style_types', 'look_style_occasions', 'look_layout', 'look_metrics']
+        fields = ['id', 'token', 'allume_styling_session', 'wp_client_id', 'stylist', 'name', 'description', 'collage', 'status', 'created_at', 'updated_at', 'is_legacy', 'position', 'look_style_types', 'look_style_occasions', 'look_layout', 'look_metrics']
 
 class LookCreateSerializer(serializers.ModelSerializer):
 
