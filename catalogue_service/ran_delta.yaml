@@ -45,6 +45,8 @@ ftp_config:
   host: aftp.linksynergy.com
   password: yT%6-Pl@h
   user: allumestye
+  host_key: N/A
+  algorithm: N/A
 leave_temp_files: false
 local_temp_dir: pd_temp/ran
 remote_dir: /

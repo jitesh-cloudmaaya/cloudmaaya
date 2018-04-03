@@ -5,8 +5,7 @@ import csv
 import re
 from copy import copy
 from django.db import connection
-from . import mappings
-from tasks.product_feed_py.product_feed_helpers import *
+from tasks.product_feed_py import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR
 from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
 from datetime import datetime, timedelta
@@ -45,12 +44,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
         # different dialects for reading and writing
         csv.register_dialect('reading', delimiter='|', quoting=csv.QUOTE_NONE, quotechar='')
-        # second dialect
-        # set the delimiter as a pipe character
-        # quote all the fields when written to flat file
-        # use " as the quoting character
-        # use the escapecharacter and set it to \
-        # match line terminator with what is used in load data
         csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\', lineterminator='\n')
 
         cleaned_fieldnames = cleaned_fields.split(',')
@@ -69,7 +62,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                 merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
                 if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
                     # check config files
-                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/'
+                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config_ran/'
                     fd = os.listdir(config_path)
 
                     default = 'default'
@@ -113,9 +106,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         product_url = datum['product_url']
 
                         try:
-                            raw_product_url = parse_raw_product_url(product_url, 'murl')
+                            raw_product_url = product_feed_helpers.parse_raw_product_url(product_url, 'murl')
                             # raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
-                        except Exception as e:
+                        except KeyError as e:
                             print e
                             raw_product_url = u'' # there was an error of some kind
 
@@ -221,7 +214,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             record['size'] = attribute_3_size
 
 
-                            record['allume_size'] = determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+                            record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
 
                             record['material'] = attribute_4_material
 
@@ -270,14 +263,14 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
                             # check size here to see if we should write additional 'child' records?
                             parent_attributes = copy(record)
-                            sizes = seperate_sizes(parent_attributes['size'])
+                            sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['allume_size'] = determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
                                     parent_attributes['size'] = size
-                                    parent_attributes['product_id'] = assign_product_id_size(product_id, size)
+                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
                                     writer.writerow(parent_attributes)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
@@ -301,7 +294,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     # UPDATE: Csn't use on the Delta File as it will not include records that didn't change but are still live
     if not is_delta:
         print('Setting deleted for non-upserted products')
-        set_deleted_network_products('RAN')
+        product_feed_helpers.set_deleted_network_products('RAN')
 
 def _product_field_tiered_assignment(tiered_assignments, fieldname, datum):
     """

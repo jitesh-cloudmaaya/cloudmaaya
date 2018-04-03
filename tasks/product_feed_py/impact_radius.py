@@ -3,7 +3,7 @@ import yaml
 import urlparse
 import re
 import csv
-from . import mappings, product_feed_helpers
+from tasks.product_feed_py import mappings, product_feed_helpers
 from copy import copy
 from catalogue_service.settings import BASE_DIR
 from product_api.models import Merchant, CategoryMap, Network, Product
@@ -84,6 +84,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
         # this way we will run ir once for each found pair (altho currently only 1)
         for file_pair in merchant_file_pairs:
+            print file_pair
             merchant_name = file_pair[0]
             merchant_id = product_feed_helpers.generate_merchant_id(merchant_name)
             product_catalog_IR = file_pair[1]
@@ -187,14 +188,14 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             # derived
                             try:
                                 record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(record['product_url'], 'u')
-                            except Exception as e:
+                            except KeyError as e:
                                 print e
                                 record['raw_product_url'] = u''
                             record['allume_category'] = allume_category
 
                             # not from data
                             record['merchant_name'] = merchant_name
-                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
                             # defaults?
                             record['is_best_seller'] = u'0'
                             record['is_trending'] = u'0'
@@ -214,24 +215,30 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             record['keywords'] = u''
                             record['secondary_category'] = secondary_category
 
-                            # finish unicode sandwich
-                            for key, value in record.iteritems():
-                                record[key] = value.encode('UTF-8')
 
-                            # check size here to see if we should write additional 'child' records?
+                            # size splitting stuff
                             parent_attributes = copy(record)
                             sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    child_record = copy(parent_attributes)
+                                    child_record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
-                                    parent_attributes['size'] = size
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                                    writer.writerow(parent_attributes)
+
+                                    child_record['size'] = size
+                                    child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    for key, value in child_record.iteritems():
+                                        child_record[key] = value.encode('UTF-8')
+
+                                    writer.writerow(child_record)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
-                                record['is_deleted'] = 1
+                                record['is_deleted'] = u'1'
+
+                            # finish unicode sandwich
+                            for key, value in record.iteritems():
+                                record[key] = value.encode('UTF-8')
 
                             # write the record
                             writer.writerow(record)
