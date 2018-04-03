@@ -63,14 +63,17 @@ var rack_builder = {
           var obj = link.data('details')
           var fave_idx = rack_builder.favorites_product_ids.indexOf(obj.id);
           var favorite_object = rack_builder.favorites[fave_idx];
+          var sold_out = obj.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';  
           var fave_item = '<div class="item" data-productid="' + obj.id + 
             '" data-productname="' + obj.product_name + 
-            '" data-url="' + obj.product_image_url + '" data-fave="' + favorite_object.id + '">' +
+            '" data-url="' + obj.product_image_url + 
+            '" data-fave="' + favorite_object.id + 
+            '" data-availability="' + obj.availability + '">' +
             '<img src="' + obj.product_image_url + '" class="handle"/>' +
             '<span class="badge"><i class="fa fa-heart"></i></span>' +
             '<a href="#"  class="view" data-productid="' + obj.id + 
             '"><i class="fa fa-align-left"></i></a><a href="#" class="remove-fave" data-productid="' + 
-            obj.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-times"></i></a></div>'
+            obj.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
           $('#fave-prods').prepend(fave_item);
           var fd = $('#fave-draggable');
           if(fd.length > 0){
@@ -142,29 +145,36 @@ var rack_builder = {
             "product_image_url": details.product_image_url,
             "primary_category": details.primary_category,
             "allume_category": details.allume_category,
-            "current_price": details.current_price
+            "current_price": details.current_price,
+            "availability": details.availability
           }
           initial_rack.push(new_rack_obj);
           var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
+          var sold_out = details.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
           $('#rack-list').prepend(
             '<div class="item" data-productid="' + details.id + 
             '" data-url="' + details.product_image_url + 
             '" data-productname="' + details.product_name + 
-            '" data-sku="' + sku + '"><img class="handle" src="' + details.product_image_url + 
+            '" data-sku="' + sku + 
+            '" data-availability="' + details.availability + 
+            '"><img class="handle" src="' + details.product_image_url + 
             '"/><a href="#"  class="view" data-productid="' + details.id + 
             '"><i class="fa fa-align-left"></i></a>' +
             '<a href="#" class="remove-from-rack" data-sku="' + sku + 
-            '" data-rackid="' + response.id + '"><i class="fa fa-times"></i></a></div>'
+            '" data-rackid="' + response.id + '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
           );
           rack_builder.updateRackCount();
           if(from_compare == true){
             $('#rack-draggable div.look-builder-rack div.item:first').before(
               '<div class="item" data-productid="' + details.id + '" data-url="' + 
-              details.product_image_url + '"><img class="handle" src="' + details.product_image_url + 
+              details.product_image_url + '" data-sku="' + sku + '"' +
+              ' data-availability="' + details.availability + 
+              '"><img class="handle" src="' + details.product_image_url + 
               '"/><a href="#"  class="view" data-productid="' + details.id + 
               '"><i class="fa fa-align-left"></i></a><a href="#" class="remove" data-sku="' + 
               details.id + '_' + details.merchant_id + '_' + details.product_id + 
-              '_' + details.sku + '" data-rackid="' + response.id + '"><i class="fa fa-times"></i></a></div>'
+              '_' + details.sku + '" data-rackid="' + response.id + 
+              '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
             );
           }
         },
@@ -282,14 +292,17 @@ var rack_builder = {
       var data = initial_rack[i];
       var src = data.product_image_url;
       var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
+      var sold_out = data.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
       rack_items.push(
         '<div class="item" data-productid="' + data.id + 
         '" data-productname="' + data.product_name + '" data-url="' + 
-        src + '" data-sku="' + sku + '"><img class="handle" src="' + src + 
+        src + '" data-sku="' + sku + '" data-availability="' + 
+        data.availability + '"><img class="handle" src="' + src + 
         '"/><a href="#"  class="view" data-productid="' + data.id + 
         '"><i class="fa fa-align-left"></i></a>' +
         '<a href="#" class="remove-from-rack" data-sku="' + sku + 
-        '" data-rackid="' + data.rack_id + '"><i class="fa fa-times"></i></a></div>'
+        '" data-rackid="' + data.rack_id + 
+        '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
       ); 
            
     }
@@ -313,16 +326,19 @@ var rack_builder = {
         var obj = stylist_favorites[i];
         var fave_idx = rack_builder.favorites_product_ids.indexOf(obj.id);
         var favorite_object = rack_builder.favorites[fave_idx];
+        var sold_out = obj.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';        
         fave_items.push(
           '<div class="item" data-productid="' + obj.id + 
           '" data-productname="' + obj.product_name + 
           '" data-url="' + obj.product_image_url + 
-          '" data-fave="' + favorite_object.id + '">' +
+          '" data-fave="' + favorite_object.id + 
+          '" data-availability="' + obj.availability + '">' +
           '<img src="' + obj.product_image_url + '" class="handle"/>' +
           '<span class="badge"><i class="fa fa-heart"></i></span>' +
           '<a href="#"  class="view" data-productid="' + obj.id + 
           '"><i class="fa fa-align-left"></i></a><a href="#" class="remove-fave" data-productid="' + 
-          obj.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-times"></i></a></div>'
+          obj.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-times"></i></a>' +
+          sold_out + '</div>'
         ); 
              
       }
@@ -653,6 +669,7 @@ var rack_builder = {
             '<div>' + color_options.join('') + '</div></div>' +
             '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
             '<span class="general"><em>category:</em>' + product.allume_category  + 
+            '</span><span class="general"><em>availability:</em>' + product.availability  + 
             '</span></td></tr></table><span class="shopping-for">styling for:</span>' + 
             $('#client-details-template').html() + '</div></div>'
           );

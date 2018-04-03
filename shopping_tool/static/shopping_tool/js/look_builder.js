@@ -716,8 +716,9 @@ var look_builder = {
             prod.product.short_product_description + '</p>' + price_display +
             '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
             '<span class="general"><em>category:</em>' + prod.product.allume_category + 
+            '</span><span class="general"><em>availability:</em>' + prod.product.availability + 
             '</span>' + fave_link + '' + rack_link + '<a href="' + prod.product.product_url + 
-            '" target="_blank" class="link-to-store"><i class="fa fa-search"></i>' +
+            '" target="_blank" class="link-to-store"><i class="fa fa-tag"></i>' +
             'view at store</a></td>' + other_details.join('') + '</tr>'
           );
         }
@@ -1204,6 +1205,7 @@ var look_builder = {
       var data = initial_rack[i];
       var src = data.product_image_url;
       var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
+      var sold_out = data.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
       if(compare_array.indexOf(data.rack_id) > -1){
         rack_items.push(
           '<div class="item" data-productid="' + data.id + 
@@ -1211,7 +1213,7 @@ var look_builder = {
           '"/><a href="#"  class="view" data-productid="' + data.id + 
           '"><i class="fa fa-align-left"></i></a>' +
           '<a href="#" class="remove" data-sku="' + sku + 
-          '" data-rackid="' + data.rack_id + '"><i class="fa fa-times"></i></a></div>'
+          '" data-rackid="' + data.rack_id + '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
         ); 
       }     
     }
