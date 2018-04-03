@@ -81,6 +81,10 @@ class SynonymCategoryMapAdmin(admin.ModelAdmin):
     list_filter = ('category',)
     search_fields = ('id', 'synonym', 'category')
 
+class ExclusionTermAdmin(admin.ModelAdmin):
+    list_display = ('id', 'term')
+    search_fields = ('id', 'term')
+
 class MerchantInLine(admin.TabularInline):
 
     model = Merchant
@@ -94,6 +98,10 @@ class SynonymCategoryMapInLine(admin.TabularInline):
     model = SynonymCategoryMap
     extra = 0
 
+class ExclusionTermInLine(admin.TabularInline):
+    model = ExclusionTerm
+    extra = 0
+
 #class MerchantCategoryInLine(admin.TabularInline):
 #    model = MerchantCategory
 #    extra = 0 
@@ -105,3 +113,4 @@ admin.site.register(CategoryMap, CategoryMapAdmin)
 admin.site.register(AllumeCategory, AllumeCategoryAdmin)
 admin.site.register(ColorMap, ColorMapAdmin)
 admin.site.register(SynonymCategoryMap, SynonymCategoryMapAdmin)
+admin.site.register(ExclusionTerm, ExclusionTermAdmin)
