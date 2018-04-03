@@ -1,7 +1,8 @@
 import os
+import re
 import yaml
 from django.db import connection
-from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap
+from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, ExclusionTerm
 from catalogue_service.settings import BASE_DIR
 
 def create_merchant_mapping():
@@ -147,6 +148,41 @@ def add_category_map(external_cat1, external_cat2, merchant_name, allume_categor
                                allume_category = None, turned_on = active, pending_review=pending_review)
     return True
 
+
+def add_category_map_take2():
+    if check_exclusion_terms(external_cat1, external_cat2):
+        # allume_category = # look up allume category id for exclude
+        active = 0
+        pending_review = 0
+
+    # CategoryMap.objects.create()
+
+    return True
+
+def _check_exclusion_terms(primary_category, secondary_category):
+    """
+    Takes in both a primary and secondary category. Checks the list of exclusion terms as modeled by
+    ExclusionTerm for the presence of any exclusion terms on word boundaries. If one is found, returns
+    True; else, returns False.
+
+    Args:
+      primary_category: A string representing a product category.
+      secondary_category: A string representing a product category.
+
+    Returns:
+      bool: A boolean value representing whether or not any exclusion terms were found in either string
+      argument.
+    """
+    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+    primary_category = primary_category.lower()
+    secondary_category = secondary_category.lower()
+    for term in exclusion_terms:
+        pattern = re.compile(r'\b' + term.lower() + r'\b')
+        primary_match = re.search(pattern, primary_category)
+        secondary_match = re.search(pattern, secondary_category)
+        if primary_match or secondary_match:
+            return True
+    return False
 
 def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     """

@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from product_feed_py.pepperjam import generate_product_id_pepperjam
 from product_feed_py.mappings import *
+from product_feed_py.mappings import _check_exclusion_terms
 from product_feed_py.product_feed_helpers import *
 from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes
 from product_feed_py.ran import _product_field_tiered_assignment
@@ -35,7 +36,7 @@ class ProductFeedHelpersTestCase(TestCase):
     more requirements are illuminated.
     """
 
-    fixtures = ['SynonymCategoryMap']
+    fixtures = ['SynonymCategoryMap', 'ExclusionTerm']
 
     def test_parse_raw_product_url(self):
         """
@@ -79,6 +80,22 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('Jackets',  parse_category_from_product_name('Gown Down Overcoat Moat'))
         self.assertEqual('Tops',  parse_category_from_product_name('Button Up Mock Neck Empty'))
         self.assertEqual('Bottoms', parse_category_from_product_name('Dyed Boot Cut Jeans by Everlane'))
+
+    def test__check_exclusion_terms(self):
+        """
+        The list of ExclusionTerms is found in ExclusionTerm.yaml.
+        """
+        self.assertEqual(False, _check_exclusion_terms("", ""))
+        self.assertEqual(False, _check_exclusion_terms("neither", ""))
+        self.assertEqual(False, _check_exclusion_terms("", "either"))
+        self.assertEqual(False, _check_exclusion_terms("both", "some"))
+        self.assertEqual(True, _check_exclusion_terms("kid's", ""))
+        self.assertEqual(True, _check_exclusion_terms("", "kid's"))
+        self.assertEqual(True, _check_exclusion_terms("good", "food"))
+        self.assertEqual(True, _check_exclusion_terms("not an exclusion", "barbies"))
+        self.assertEqual(True, _check_exclusion_terms("home", "test"))
+        self.assertEqual(False, _check_exclusion_terms("toddlerstodo", ""))
+        self.assertEqual(True, _check_exclusion_terms("entertainment-now", ""))
 
 
 class SizeTestCase(TestCase):
