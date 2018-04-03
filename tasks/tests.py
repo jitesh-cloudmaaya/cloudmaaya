@@ -59,7 +59,7 @@ class ProductFeedHelpersTestCase(TestCase):
     def test_parse_category_from_product_name(self):
         # working for take 1
         self.assertEqual('', parse_category_from_product_name(''))
-        self.assertEqual('', parse_category_from_product_name('Soko Teardrop Choker'))
+        self.assertEqual('', parse_category_from_product_name('Hopefully Some terms that stay not synonyms'))
         self.assertEqual('Shoes', parse_category_from_product_name('Zerogrand Slip-On  Flat'))
         self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings'))
         self.assertEqual('', parse_category_from_product_name('Polosko Lace-Up Platform'))
