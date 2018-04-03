@@ -85,8 +85,11 @@ class ExclusionTermAdmin(admin.ModelAdmin):
     list_display = ('id', 'term')
     search_fields = ('id', 'term')
 
-class MerchantInLine(admin.TabularInline):
+class OtherTermMapAdmin(admin.ModelAdmin):
+    list_display = ('id', 'term')
+    search_fields = ('id', 'term')
 
+class MerchantInLine(admin.TabularInline):
     model = Merchant
     extra = 0
 
@@ -102,6 +105,10 @@ class ExclusionTermInLine(admin.TabularInline):
     model = ExclusionTerm
     extra = 0
 
+class OtherTermMapInLine(admin.TabularInline):
+    model = OtherTermMap
+    extra = 0
+
 #class MerchantCategoryInLine(admin.TabularInline):
 #    model = MerchantCategory
 #    extra = 0 
@@ -114,3 +121,4 @@ admin.site.register(AllumeCategory, AllumeCategoryAdmin)
 admin.site.register(ColorMap, ColorMapAdmin)
 admin.site.register(SynonymCategoryMap, SynonymCategoryMapAdmin)
 admin.site.register(ExclusionTerm, ExclusionTermAdmin)
+admin.site.register(OtherTermMap, OtherTermMapAdmin)
