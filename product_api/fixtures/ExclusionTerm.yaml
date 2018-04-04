@@ -42,7 +42,7 @@
     fields: {term: "food"}
 -   model: product_api.exclusionterm
     pk: 15
-    fields: {term: "good"}
+    fields: {term: "goods"}
 -   model: product_api.exclusionterm
     pk: 16
     fields: {term: "electronic"}
