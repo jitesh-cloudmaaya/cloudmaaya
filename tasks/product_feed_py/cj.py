@@ -66,7 +66,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                     merchant_name = merchant_name.lower() # make configuration file detection case agnostic
 
 
-                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config_cj/'
+                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/cj/'
                     fd = os.listdir(config_path)
 
                     default = 'default'
