@@ -101,8 +101,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         product_id = datum['product_id']
                         product_name = datum['product_name']
                         SKU = datum['SKU']
-                        primary_category = _product_field_tiered_assignment(tiered_assignments, 'primary_category', datum)
-                        secondary_category = _product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum)
+                        primary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'primary_category', datum)
+                        secondary_category = product_field_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum)
                         product_url = datum['product_url']
 
                         try:
@@ -295,35 +295,3 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     if not is_delta:
         print('Setting deleted for non-upserted products')
         product_feed_helpers.set_deleted_network_products('RAN')
-
-def _product_field_tiered_assignment(tiered_assignments, fieldname, datum):
-    """
-    Attempts a best effort assignment of fieldname using tiered_assigments and the information encoded in datum.
-    Uses the first field label from tiered_assignments that has a non-empty value. If a non-empty value cannot be
-    resolved, the function returns an empty value.
-    Example: _product_field_tiered_assignment({'primary_category': ['primary_category', 'attribute_2_product_type']},
-        'primary_category', {'primary_category': '', 'attribute_2_product_type': 'Beauty & Fragrance'}) -> 'Beauty & Fragrance'
-
-    Args:
-        tiered_assignments (dict): A dictionary representing categories with tiered assignment possibilities.
-        The dictionary has keys of strings that are fieldnames in the datum and the values are list of strings,
-        with each string representing code that is a strategy to generate an assignment. The list is sequential.
-        fieldname (str): A string denoting the fieldname label that is used as a key in datum.
-        datum (dict): A dictionary representing the raw data from a RAN file. Maps field attribute labels to
-        a string representing their value.
-
-    Returns:
-      str: The assignment that was found and used. Can be the empty string.
-    """
-    try:
-        strategy_list = tiered_assignments[fieldname]
-    except KeyError:
-        return datum[fieldname]
-
-    assignment = ''
-    for strategy in strategy_list:
-        assignment = eval(strategy)
-        if assignment:
-            break
-
-    return assignment

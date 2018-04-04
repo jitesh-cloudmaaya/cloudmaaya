@@ -1,1 +1,4 @@
 tiered_assignment_fields:
+    secondary_category:
+        - "datum['secondary_category']"
+        - "product_feed_helpers.parse_category_from_product_name(datum['product_name'])"

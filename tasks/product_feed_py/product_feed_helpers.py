@@ -449,3 +449,35 @@ def parse_category_from_product_name(product_name):
         except SynonymCategoryMap.MultipleObjectsReturned:
             print 'There should not be multiple entries for a synonym, this needs to be corrected.'
     return category
+
+def product_field_tiered_assignment(tiered_assignments, fieldname, datum):
+    """
+    Attempts a best effort assignment of fieldname using tiered_assigments and the information encoded in datum.
+    Uses the first field label from tiered_assignments that has a non-empty value. If a non-empty value cannot be
+    resolved, the function returns an empty value.
+    Example: _product_field_tiered_assignment({'primary_category': ['primary_category', 'attribute_2_product_type']},
+        'primary_category', {'primary_category': '', 'attribute_2_product_type': 'Beauty & Fragrance'}) -> 'Beauty & Fragrance'
+
+    Args:
+        tiered_assignments (dict): A dictionary representing categories with tiered assignment possibilities.
+        The dictionary has keys of strings that are fieldnames in the datum and the values are list of strings,
+        with each string representing code that is a strategy to generate an assignment. The list is sequential.
+        fieldname (str): A string denoting the fieldname label that is used as a key in datum.
+        datum (dict): A dictionary representing the raw data from a RAN file. Maps field attribute labels to
+        a string representing their value.
+
+    Returns:
+      str: The assignment that was found and used. Can be the empty string.
+    """
+    try:
+        strategy_list = tiered_assignments[fieldname]
+    except KeyError:
+        return datum[fieldname]
+
+    assignment = ''
+    for strategy in strategy_list:
+        assignment = eval(strategy)
+        if assignment:
+            break
+
+    return assignment
