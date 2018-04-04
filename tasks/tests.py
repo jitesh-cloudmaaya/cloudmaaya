@@ -7,7 +7,6 @@ from product_feed_py.mappings import *
 from product_feed_py.mappings import _check_exclusion_terms, _check_other_term_maps
 from product_feed_py.product_feed_helpers import *
 from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes
-from product_feed_py.ran import _product_field_tiered_assignment
 
 # Create your tests here.
 class GenerateProductIdTestCase(TestCase):
@@ -352,41 +351,41 @@ class RanHelpersTestCase(TestCase):
         tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
         fieldname = 'primary_category'
         datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
-        self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
         tiered_assignments = {'primary_category': ["datum['attribute_2_product_type']", "datum['primary_category']"]}
         fieldname = 'primary_category'
         datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
-        self.assertEqual('Beauty & Fragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        self.assertEqual('Beauty & Fragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
         # no tiered assignments case
         tiered_assignments = {}
         fieldname = 'primary_category'
         datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
-        self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
         # use one of the alternatives case
         tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
         fieldname = 'primary_category'
         datum = {'primary_category': '', 'attribute_2_product_type': 'Beauty & Fragrance'}
-        self.assertEqual('Beauty & Fragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        self.assertEqual('Beauty & Fragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
         # exhaust the alternatives case
         tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
         fieldname = 'primary_category'
         datum = {'primary_category': '', 'attribute_2_product_type': ''}
-        self.assertEqual('', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        self.assertEqual('', product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
         # test the method case
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "product_feed_helpers.parse_category_from_product_name(datum['product_name'])"]}
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': ''}
-        self.assertEqual('Tops', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        self.assertEqual('Tops', product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "product_feed_helpers.parse_category_from_product_name(datum['product_name'])"]}
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': 'groomingfragrance'}
-        self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum))
 
 # class MappingsTestCase(TestCase):
 #     """
