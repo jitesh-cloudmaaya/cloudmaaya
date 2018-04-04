@@ -158,13 +158,13 @@ def add_category_map(external_cat1, external_cat2, merchant_name, allume_categor
     Returns:
       tup: Returns a tuple of allume category id (int), active (bool), the new categorymap id (int), and merchant_name (str).
     """
-    if _check_other_term_maps(external_cat1, external_cat2):
-        allume_category = AllumeCategory.objects.get(name__iexact='other')
-        active = True
-        pending_review = False
-    elif _check_exclusion_terms(external_cat1, external_cat2):
+    if _check_exclusion_terms(external_cat1, external_cat2):
         allume_category = AllumeCategory.objects.get(name__iexact='exclude')
         active = False
+        pending_review = False
+    elif _check_other_term_maps(external_cat1, external_cat2):
+        allume_category = AllumeCategory.objects.get(name__iexact='other')
+        active = True
         pending_review = False
 
     cm = CategoryMap(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
