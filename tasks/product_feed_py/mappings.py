@@ -164,6 +164,8 @@ def add_category_map(external_cat1, external_cat2, merchant_name, allume_categor
         pending_review = False
     elif _check_other_term_maps(external_cat1, external_cat2):
         allume_category = AllumeCategory.objects.get(name__iexact='other')
+        active = True
+        pending_review = False
 
     cm = CategoryMap(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
                                allume_category = allume_category, turned_on = active, pending_review=pending_review)
