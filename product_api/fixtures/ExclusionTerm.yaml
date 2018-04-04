@@ -64,3 +64,9 @@
 -   model: product_api.exclusionterm
     pk: 22
     fields: {term: "barbies"}
+-   model: product_api.exclusionterm
+    pk: 23
+    fields: {term: "foods"}
+-   model: product_api.exclusionterm
+    pk: 24
+    fields: {term: "beverages"}
