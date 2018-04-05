@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from product_feed_py.pepperjam import generate_product_id_pepperjam
 from product_feed_py.mappings import *
+from product_feed_py.mappings import _check_exclusion_terms, _check_other_term_maps
 from product_feed_py.product_feed_helpers import *
 from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes
 from product_feed_py.ran import _product_field_tiered_assignment
@@ -35,7 +36,7 @@ class ProductFeedHelpersTestCase(TestCase):
     more requirements are illuminated.
     """
 
-    fixtures = ['SynonymCategoryMap']
+    fixtures = ['SynonymCategoryMap', 'ExclusionTerm', 'AllumeCategory', 'OtherTermMap']
 
     def test_parse_raw_product_url(self):
         """
@@ -59,7 +60,7 @@ class ProductFeedHelpersTestCase(TestCase):
     def test_parse_category_from_product_name(self):
         # working for take 1
         self.assertEqual('', parse_category_from_product_name(''))
-        self.assertEqual('', parse_category_from_product_name('Soko Teardrop Choker'))
+        self.assertEqual('', parse_category_from_product_name('Hopefully Some terms that stay not synonyms'))
         self.assertEqual('Shoes', parse_category_from_product_name('Zerogrand Slip-On  Flat'))
         self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings'))
         self.assertEqual('', parse_category_from_product_name('Polosko Lace-Up Platform'))
@@ -79,6 +80,48 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('Jackets',  parse_category_from_product_name('Gown Down Overcoat Moat'))
         self.assertEqual('Tops',  parse_category_from_product_name('Button Up Mock Neck Empty'))
         self.assertEqual('Bottoms', parse_category_from_product_name('Dyed Boot Cut Jeans by Everlane'))
+
+    def test__check_exclusion_terms(self):
+        """
+        The list of ExclusionTerms is found in ExclusionTerm.yaml.
+        """
+        self.assertEqual(False, _check_exclusion_terms("", ""))
+        self.assertEqual(False, _check_exclusion_terms("neither", ""))
+        self.assertEqual(False, _check_exclusion_terms("", "either"))
+        self.assertEqual(False, _check_exclusion_terms("both", "some"))
+        self.assertEqual(True, _check_exclusion_terms("kid's", ""))
+        self.assertEqual(True, _check_exclusion_terms("", "kid's"))
+        self.assertEqual(True, _check_exclusion_terms("good", "food"))
+        self.assertEqual(True, _check_exclusion_terms("not an exclusion", "barbies"))
+        self.assertEqual(True, _check_exclusion_terms("home", "test"))
+        self.assertEqual(False, _check_exclusion_terms("toddlerstodo", ""))
+        self.assertEqual(True, _check_exclusion_terms("entertainment-now", ""))
+
+    def test__check_other_term_maps(self):
+        """
+        The list of terms is found in OtherTermMap.yaml.
+        """
+        self.assertEqual(True, _check_other_term_maps('swimsuits2018', ''))
+        self.assertEqual(True, _check_other_term_maps('', 'swimsuits2018'))
+        self.assertEqual(True, _check_other_term_maps('maternity', ''))
+        self.assertEqual(True, _check_other_term_maps('lingerie-match', ''))
+        self.assertEqual(True, _check_other_term_maps('swimsuits', 'nothing'))
+        self.assertEqual(True, _check_other_term_maps('hmmm', 'swimsuits'))
+        self.assertEqual(True, _check_other_term_maps('maternityleave', 'swimsuits2018'))
+        self.assertEqual(False, _check_other_term_maps('', ''))
+        self.assertEqual(False, _check_other_term_maps('Apparel', ''))
+        self.assertEqual(False, _check_other_term_maps('Apparel', 'Accessories'))
+        self.assertEqual(False, _check_other_term_maps('', 'Accessories'))
+
+    def test_add_category_map_w_exclusion_term(self):
+        ac = AllumeCategory.objects.first()
+        add_category_map('Clothing', 'Food', 'Raybeam', ac)
+        cm = CategoryMap.objects.get(external_cat1 = 'Clothing', external_cat2 = 'Food', merchant_name = 'Raybeam')
+        exclude = AllumeCategory.objects.get(name__iexact='exclude')
+
+        self.assertEqual(exclude, cm.allume_category)
+        self.assertEqual(False, cm.turned_on)
+        self.assertEqual(False, cm.pending_review)
 
 
 class SizeTestCase(TestCase):
