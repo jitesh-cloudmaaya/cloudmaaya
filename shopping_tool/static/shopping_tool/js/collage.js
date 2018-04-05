@@ -129,13 +129,13 @@ var collage = {
                 };
                 img.addEventListener('error', function(){
                   console.log('image errored')
-                  alert('There was a problem adding that product. Please try another.');
+                  alert('There was a problem loading the product image. Product id: ' + product_id);
                   $('#adding-product').remove();
                 });
               }
             },
             error: function(response){
-              alert('There was a problem adding that product. Please try another.');
+              alert('There was a problem adding that product to the Allume API. Product id: ' + product_id);
               $('#adding-product').remove();
               $.ajax({
                 success:function(response){},
