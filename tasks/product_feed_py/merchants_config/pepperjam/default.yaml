@@ -1,0 +1,4 @@
+tiered_assignment_fields:
+    secondary_category:
+        - "datum['category_network']"
+        - "parse_category_from_product_name(datum['name'])"

@@ -326,9 +326,6 @@
     pk: 113
     fields: {synonym: 'boot leg', category: 'Bottoms'}
 -   model: product_api.synonymcategorymap
-    pk: 114
-    fields: {synonym: 'hoodie', category: 'Tops'}
--   model: product_api.synonymcategorymap
     pk: 115
     fields: {synonym: 'funnelneck', category: 'Tops'}
 -   model: product_api.synonymcategorymap

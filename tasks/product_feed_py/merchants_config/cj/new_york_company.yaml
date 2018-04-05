@@ -29,3 +29,7 @@ fields:
     material: N/A
     age: N/A
     brand: N/A
+tiered_assignment_fields:
+    secondary_category:
+        - "datum['N/A']"
+        - "parse_category_from_product_name(datum['NAME'])"

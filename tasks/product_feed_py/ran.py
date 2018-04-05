@@ -101,8 +101,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         product_id = datum['product_id']
                         product_name = datum['product_name']
                         SKU = datum['SKU']
-                        primary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'primary_category', datum)
-                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum)
+                        primary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'primary_category', datum, datum['primary_category'])
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum['secondary_category'])
                         product_url = datum['product_url']
 
                         try:
