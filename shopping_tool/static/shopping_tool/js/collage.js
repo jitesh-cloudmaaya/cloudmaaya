@@ -656,7 +656,7 @@ var collage = {
       $('#pg-crop-look-image').fadeIn();
       collage.setUpPolygonCropper(activeObject.orgSrc, activeObject.prod_id);
       $('#pg-cropper-btns').find('a.restart').data('path', activeObject.originalImgSrc).end()
-      .find('a.save').data('prodid', activeObject.prod_id).data('productid', activeObject.product_id);
+      .find('a.save').data('ok','false').data('prodid', activeObject.prod_id).data('productid', activeObject.product_id);
     }
   },
   /**
@@ -681,11 +681,14 @@ var collage = {
     var img = new Image();
     img.src = src;
     img.onload = function(){
+      console.log(this.naturalHeight)
+      console.log(img.naturalWidth)
       if(this.naturalHeight > 415){
         img_scale = 415 / this.naturalHeight 
       }else if(this.naturalWidth > 415){
         img_scale = 415 / this.naturalWidth 
       }
+      console.log(img_scale)
       /* draw the image to the canvas */
       drawImage();
       /* listen for mousedown */
@@ -698,6 +701,7 @@ var collage = {
       ctx.clearRect(0, 0, cw, ch);
       var img_width = img.naturalWidth * img_scale;
       var img_height = img.naturalHeight * img_scale;
+      console.log(img.naturalWidth + ' ' + img_width)
       var start_x = 0;
       var start_y = 0;
       if(img_width < 415){ start_x = (415 - img_width) / 2 }
@@ -739,6 +743,7 @@ var collage = {
         var dx = mx - points[0].x;
         var dy = my - points[0].y;
         if(dx * dx + dy * dy < 10*10){
+          $('#pg-cropper-btns a.save').data('ok','true')
           clipIt();
         }
       }
