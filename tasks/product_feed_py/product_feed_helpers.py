@@ -449,3 +449,19 @@ def parse_category_from_product_name(product_name):
         except SynonymCategoryMap.MultipleObjectsReturned:
             print 'There should not be multiple entries for a synonym, this needs to be corrected.'
     return category
+
+def potentially_parse_other_terms(product_name):
+    """
+    Using SynonymCategoryMap objects with a category of 'Other', checks a product_name for the presence of
+    any synonyms. If it finds one, it returns the word 'Other', intended to be used as the category for a
+    product. If it does not find any terms, it returns the empty string.
+
+    Args:
+      product_name (str): The name of a product, with elements separated by an arbitrary amount
+      of whitespace.
+
+    Returns:
+      str: Returns one of two strings; either the string 'Other' or the empty string ''.
+    """
+
+    return

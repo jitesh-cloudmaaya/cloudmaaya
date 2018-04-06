@@ -40,5 +40,6 @@ fields:
     - modification
 tiered_assignment_fields:
     secondary_category:
+        - "product_feed_helpers.potentially_parse_other_terms(datum['product_name']"
         - "datum['secondary_category']"
         - "product_feed_helpers.parse_category_from_product_name(datum['product_name'])"
