@@ -35,7 +35,7 @@ class ProductFeedHelpersTestCase(TestCase):
     more requirements are illuminated.
     """
 
-    fixtures = ['SynonymCategoryMap', 'ExclusionTerm', 'AllumeCategory', 'OtherTermMap']
+    fixtures = ['SynonymCategoryMap', 'ExclusionTerm', 'AllumeCategory']
 
     def test_parse_raw_product_url(self):
         """

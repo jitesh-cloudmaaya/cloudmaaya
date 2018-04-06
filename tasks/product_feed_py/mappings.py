@@ -2,7 +2,7 @@ import os
 import re
 import yaml
 from django.db import connection
-from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, ExclusionTerm, OtherTermMap
+from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, SynonymCategoryMap, ExclusionTerm
 from catalogue_service.settings import BASE_DIR
 
 def create_merchant_mapping():
@@ -206,8 +206,8 @@ def _check_exclusion_terms(primary_category, secondary_category):
 def _check_other_term_maps(primary_category, secondary_category):
     """
     Takes in both a primary and secondary category. Checks the list of terms that will
-    force a CategoryMap to Allume category as 'Other'. Uses terms modeled by OtherTermMap
-    and checks the strings for membership of any of the terms.
+    force a CategoryMap to Allume category as 'Other'. Uses terms modeled by SynonymCategoryMap
+    of the category 'Other' and checks the strings for membership of any of the terms.
 
     Args:
       primary_category (str): A string representing a product category.
@@ -217,10 +217,10 @@ def _check_other_term_maps(primary_category, secondary_category):
       bool: A boolean value representing whether or not any other term maps were found
       in either string argument.
     """
-    other_term_maps = OtherTermMap.objects.values_list('term', flat = True)
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
     primary_category = primary_category.lower()
     secondary_category = secondary_category.lower()
-    for term in other_term_maps:
+    for term in synonym_other_terms:
         term = term.lower()
         if term in primary_category or term in secondary_category:
             return True
