@@ -1,14 +1,13 @@
 # this is a temp file for writing the one time script to run to exclude/'flag as deleted' existing products
 # AND set their corresponding category_map allume_category_id = 10 (EXCLUDE), active = 0, and pending_review = 0
 
-from product_api.models import Product, CategoryMap, OtherTermMap, AllumeCategory
-# from product_api.models import SynonymCategoryMap
+from product_api.models import Product, CategoryMap, AllumeCategory, SynonymCategoryMap
 from django.db.models import Q
 
 # STEP 1: perform a search on product name in the products table and check if the product name contains any words
 # present under the 'Other' category on the shared spreadsheet of terms
 
-terms = OtherTermMap.objects.values_list('term', flat=True)
+terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
 queries = [Q(product_name__icontains=term) for term in terms]
 
 query = queries.pop()
@@ -32,7 +31,7 @@ for category_pair in category_pairs:
         categorymap.turned_on = True
         categorymap.pending_review = False
         
-        # handle in the event that this creates a duplicate...
+        # handle in the event that this creates a duplicate... We update one and delete the other
 
 
     else:
@@ -43,7 +42,7 @@ for category_pair in category_pairs:
         duplicated_categorymap.allume_category = ALLUME_CATEGORY_OTHER
         duplicated_categorymap.turned_on = True
         duplicated_categorymap.pending_review = False
-        # this might already exist...
+        # this might already exist... we should update one and delete the other
         # update product secondary_category to 'Other'
         pass
 
