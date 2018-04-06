@@ -681,14 +681,11 @@ var collage = {
     var img = new Image();
     img.src = src;
     img.onload = function(){
-      console.log(this.naturalHeight)
-      console.log(img.naturalWidth)
       if(this.naturalHeight > 415){
         img_scale = 415 / this.naturalHeight 
       }else if(this.naturalWidth > 415){
         img_scale = 415 / this.naturalWidth 
       }
-      console.log(img_scale)
       /* draw the image to the canvas */
       drawImage();
       /* listen for mousedown */
@@ -701,7 +698,6 @@ var collage = {
       ctx.clearRect(0, 0, cw, ch);
       var img_width = img.naturalWidth * img_scale;
       var img_height = img.naturalHeight * img_scale;
-      console.log(img.naturalWidth + ' ' + img_width)
       var start_x = 0;
       var start_y = 0;
       if(img_width < 415){ start_x = (415 - img_width) / 2 }
