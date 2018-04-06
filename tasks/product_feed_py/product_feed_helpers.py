@@ -486,7 +486,9 @@ def product_field_tiered_assignment(tiered_assignments, product_fieldname, datum
             break
     return assignment
 
-def potentially_parse_other_terms(product_name):
+
+# figure out what to do with _check_other_term_maps
+def parse_other_terms(product_name):
     """
     Using SynonymCategoryMap objects with a category of 'Other', checks a product_name for the presence of
     any synonyms. If it finds one, it returns the word 'Other', intended to be used as the category for a
@@ -499,5 +501,11 @@ def potentially_parse_other_terms(product_name):
     Returns:
       str: Returns one of two strings; either the string 'Other' or the empty string ''.
     """
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+    product_name = product_name.lower()
+    for term in synonym_other_terms:
+        term = term.lower()
+        if term in product_name:
+            return u'Other'
 
-    return
+    return u''
