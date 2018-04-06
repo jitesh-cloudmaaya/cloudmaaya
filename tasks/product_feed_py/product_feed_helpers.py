@@ -447,8 +447,44 @@ def parse_category_from_product_name(product_name):
         try:
             category = capwords(SynonymCategoryMap.objects.get(synonym = matched_synonym).category)
         except SynonymCategoryMap.MultipleObjectsReturned:
+            print matched_synonym
             print 'There should not be multiple entries for a synonym, this needs to be corrected.'
     return category
+
+def product_field_tiered_assignment(tiered_assignments, product_fieldname, datum, default):
+    """
+    Attempts a best effort assignment of fieldname using tiered_assigments and the information encoded in datum.
+    Uses the first field label from tiered_assignments that has a non-empty value. If a non-empty value cannot be
+    resolved, the function returns an empty value.
+    Example: _product_field_tiered_assignment({'primary_category': ['primary_category', 'attribute_2_product_type']},
+        'primary_category', {'primary_category': '', 'attribute_2_product_type': 'Beauty & Fragrance'}) -> 'Beauty & Fragrance'
+
+    Args:
+      tiered_assignments (dict): A dictionary representing categories with tiered assignment possibilities.
+      The dictionary has keys of strings that are fieldnames in the datum and the values are list of strings,
+      with each string representing code that is a strategy to generate an assignment. The list is sequential.
+      product_fieldname (str): A string denoting the fieldname label that is used as a key in datum.
+      datum (dict): A dictionary representing the raw data from a RAN file. Maps field attribute labels to
+      a string representing their value.
+      default (str): The default string value to use for assignment in the event that the product fieldname
+      has no tiered assignment defined in the network merchant's configuration file.
+
+    Returns:
+      str: The assignment that was found and used. Can be the empty string.
+    """
+    try:
+        # see if the tiered_assignments dictionary has a list of strategies to try for populating this particular fieldname?
+        strategy_list = tiered_assignments[product_fieldname]
+        # if it does not, it will be a keyerror
+    except KeyError:
+        return default
+
+    assignment = ''
+    for strategy in strategy_list:
+        assignment = eval(strategy)
+        if assignment:
+            break
+    return assignment
 
 def potentially_parse_other_terms(product_name):
     """

@@ -199,15 +199,6 @@ class ExclusionTerm(models.Model):
     def __str__(self):
         return self.term
 
-# used in parsing category strings for terms that should map to allume category, Other
-class OtherTermMap(models.Model):
-    term = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
-
-    def __str__(self):
-        return self.term
-
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product

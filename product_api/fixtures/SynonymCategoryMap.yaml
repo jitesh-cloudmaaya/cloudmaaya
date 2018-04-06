@@ -74,9 +74,6 @@
     pk: 25
     fields: {synonym: hoodie, category: Tops}
 -   model: product_api.synonymcategorymap
-    pk: 26
-    fields: {synonym: tunic, category: Tops}
--   model: product_api.synonymcategorymap
     pk: 27
     fields: {synonym: turtleneck, category: Tops}
 -   model: product_api.synonymcategorymap
@@ -325,9 +322,6 @@
 -   model: product_api.synonymcategorymap
     pk: 113
     fields: {synonym: 'boot leg', category: 'Bottoms'}
--   model: product_api.synonymcategorymap
-    pk: 114
-    fields: {synonym: 'hoodie', category: 'Tops'}
 -   model: product_api.synonymcategorymap
     pk: 115
     fields: {synonym: 'funnelneck', category: 'Tops'}

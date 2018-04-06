@@ -3,7 +3,7 @@ fields:
     - product_name
     - SKU
     - primary_category
-    - attribute_2_product_type
+    - secondary_category
     - product_url
     - product_image_url
     - buy_url
@@ -28,7 +28,7 @@ fields:
     - M1
     - pixel
     - attribute_1_misc
-    - secondary_category
+    - attribute_2_product_type
     - attribute_3_size
     - attribute_4_material
     - attribute_5_color
@@ -39,6 +39,9 @@ fields:
     - attribute_10
     - modification
 tiered_assignment_fields:
+    primary_category:
+        - "datum['attribute_2_product_type']"
+        - "datum['primary_category']"
     secondary_category:
         - "datum['secondary_category']"
-        - "product_feed_helpers.parse_category_from_product_name(datum['product_name'])"
+        - "parse_category_from_product_name(datum['product_name'])"

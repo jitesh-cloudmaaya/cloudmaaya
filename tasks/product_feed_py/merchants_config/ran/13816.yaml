@@ -28,18 +28,20 @@ fields:
     - M1
     - pixel
     - attribute_1_misc
-    - attribute_8_age
-    - attribute_5_color
-    - attribute_4_material
     - attribute_2_product_type
     - attribute_3_size
-    - attribute_7_style
+    - attribute_4_material
+    - attribute_5_color
     - attribute_6_gender
+    - attribute_7_style
+    - attribute_8_age
     - attribute_9
     - attribute_10
     - modification
 tiered_assignment_fields:
+    primary_category:
+        - "datum['attribute_2_product_type']"
+        - "datum['primary_category']"
     secondary_category:
-        - "product_feed_helpers.potentially_parse_other_terms(datum['product_name']"
         - "datum['secondary_category']"
-        - "product_feed_helpers.parse_category_from_product_name(datum['product_name'])"
+        - "parse_category_from_product_name(datum['product_name'])"
