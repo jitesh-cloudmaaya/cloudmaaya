@@ -1,0 +1,4 @@
+tiered_assignment_fields:
+    secondary_category:
+        - "parse_other_terms(datum['Product Name'])"
+        - "parse_category_from_product_name(datum['Product Name'])"

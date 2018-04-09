@@ -7,7 +7,6 @@ from product_feed_py.mappings import *
 from product_feed_py.mappings import _check_exclusion_terms, _check_other_term_maps
 from product_feed_py.product_feed_helpers import *
 from product_feed_py.product_feed_helpers import _hyphen_seperate_sizes, _comma_seperate_sizes
-from product_feed_py.ran import _product_field_tiered_assignment
 
 # Create your tests here.
 class GenerateProductIdTestCase(TestCase):
@@ -36,7 +35,7 @@ class ProductFeedHelpersTestCase(TestCase):
     more requirements are illuminated.
     """
 
-    fixtures = ['SynonymCategoryMap', 'ExclusionTerm', 'AllumeCategory', 'OtherTermMap']
+    fixtures = ['SynonymCategoryMap', 'ExclusionTerm', 'AllumeCategory']
 
     def test_parse_raw_product_url(self):
         """
@@ -80,6 +79,61 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('Jackets',  parse_category_from_product_name('Gown Down Overcoat Moat'))
         self.assertEqual('Tops',  parse_category_from_product_name('Button Up Mock Neck Empty'))
         self.assertEqual('Bottoms', parse_category_from_product_name('Dyed Boot Cut Jeans by Everlane'))
+
+    def test_tiered_assignment(self):
+        """
+        Tests the product_field_tiered_assignment function helper used in the RAN clean data method.
+        """
+        # datum is a dictionary of field type names to field values
+        # tiered assignments is a dictionary of fields with multiple assignment possibilities and a list of field type assignment possibilities
+        # fieldname is the initial fieldname
+        # 4th arg is a default string value to use in the event that there is no tiered assignment defined for that product fieldname
+
+        # typical case
+        tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
+        fieldname = 'primary_category'
+        datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
+        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['primary_category']))
+
+        tiered_assignments = {'primary_category': ["datum['attribute_2_product_type']", "datum['primary_category']"]}
+        fieldname = 'primary_category'
+        datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
+        self.assertEqual('Beauty & Fragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['primary_category']))
+
+        # no tiered assignments case
+        tiered_assignments = {}
+        fieldname = 'primary_category'
+        datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
+        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['primary_category']))
+
+        # use one of the alternatives case
+        tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
+        fieldname = 'primary_category'
+        datum = {'primary_category': '', 'attribute_2_product_type': 'Beauty & Fragrance'}
+        self.assertEqual('Beauty & Fragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['primary_category']))
+
+        # exhaust the alternatives case
+        tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
+        fieldname = 'primary_category'
+        datum = {'primary_category': '', 'attribute_2_product_type': ''}
+        self.assertEqual('', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['primary_category']))
+
+        # test the method case
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        fieldname = 'secondary_category'
+        datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': ''}
+        self.assertEqual('Tops', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category']))
+
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        fieldname = 'secondary_category'
+        datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': 'groomingfragrance'}
+        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category']))
+
+        # test the new default behavior
+        tiered_assignments = {}
+        fieldname = 'product_name'
+        datum = {'product_name': 'Lacoste Holiday Pique Polo'}
+        self.assertEqual('Lacoste Holiday Pique Polo', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['product_name']))
 
     def test__check_exclusion_terms(self):
         """
@@ -336,57 +390,48 @@ class ParserTestCase(TestCase):
         self.assertEqual(['LARGE/X-LARGE','MEDIUM','X-SMALL/SMALL'], seperate_sizes('LARGE/X-LARGE,MEDIUM,X-SMALL/SMALL'))
         self.assertEqual(['LARGE (10)','SMALL(2-4)','XSMALL(12-18 MONTHS)','XXSMALL(6-9 MONTHS)'], seperate_sizes('LARGE (10),SMALL(2-4),XSMALL(12-18 MONTHS),XXSMALL(6-9 MONTHS),'))
 
-class RanHelpersTestCase(TestCase):
 
-    fixtures = ['SynonymCategoryMap']
+class CategoryHandlingTestCase(TestCase):
+    """
+    Test that the hierarchy on products is what is expected for adding catmaps and setting things etc.
+    """
+    fixtures = ['SynonymCategoryMap', 'ExclusionTerm', 'AllumeCategory']
 
-    def test_tiered_assignment(self):
-        """
-        Tests the product_field_tiered_assignment function helper used in the RAN clean data method.
-        """
-        # datum is a dictionary of field type names to field values
-        # tiered assignments is a dictionary of fields with multiple assignment possibilities and a list of field type assignment possibilities
-        # fieldname is the initial fieldname
+    def test_add_category_map_set_allume_category(self):
+        merchant_name = "Test Merchant"
+        other_synonym = SynonymCategoryMap.objects.filter(category__iexact = 'Other').first().synonym
+        exclusion_term = ExclusionTerm.objects.first().term
+        OTHER = AllumeCategory.objects.get(name__iexact = 'Other')
+        EXCLUDE = AllumeCategory.objects.get(name__iexact = 'Exclude')
 
-        # typical case
-        tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
-        fieldname = 'primary_category'
-        datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
-        self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        self.assertEqual(0, CategoryMap.objects.count())
+        add_category_map(other_synonym, '', merchant_name)
+        cm  = CategoryMap.objects.last()
+        self.assertEqual(OTHER, cm.allume_category)
+        add_category_map('', exclusion_term, merchant_name)
+        cm2  = CategoryMap.objects.last()
+        self.assertEqual(EXCLUDE, cm2.allume_category)
+        add_category_map(other_synonym, exclusion_term, merchant_name)
+        cm3  = CategoryMap.objects.last()
+        self.assertEqual(EXCLUDE, cm3.allume_category)
 
-        tiered_assignments = {'primary_category': ["datum['attribute_2_product_type']", "datum['primary_category']"]}
-        fieldname = 'primary_category'
-        datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
-        self.assertEqual('Beauty & Fragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
-
-        # no tiered assignments case
-        tiered_assignments = {}
-        fieldname = 'primary_category'
-        datum = {'primary_category': 'groomingfragrance', 'attribute_2_product_type': 'Beauty & Fragrance'}
-        self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
-
-        # use one of the alternatives case
-        tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
-        fieldname = 'primary_category'
-        datum = {'primary_category': '', 'attribute_2_product_type': 'Beauty & Fragrance'}
-        self.assertEqual('Beauty & Fragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
-
-        # exhaust the alternatives case
-        tiered_assignments = {'primary_category': ["datum['primary_category']", "datum['attribute_2_product_type']"]}
-        fieldname = 'primary_category'
-        datum = {'primary_category': '', 'attribute_2_product_type': ''}
-        self.assertEqual('', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
-
-        # test the method case
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "product_feed_helpers.parse_category_from_product_name(datum['product_name'])"]}
+    def test_other_parsing(self):
+        merchant_name = "Test Merchant"
+        other_synonym = SynonymCategoryMap.objects.filter(category__iexact = 'Other').first().synonym
+        tiered_assignments = {'secondary_category': ["parse_other_terms(datum['product_name'])", "datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
         fieldname = 'secondary_category'
-        datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': ''}
-        self.assertEqual('Tops', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        datum = {'product_name': 'Product ' + other_synonym, 'primary_category': 'Apparel & Accessories', 'secondary_category': 'Should change?'}
+        OTHER = AllumeCategory.objects.get(name__iexact = 'Other')
 
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "product_feed_helpers.parse_category_from_product_name(datum['product_name'])"]}
-        fieldname = 'secondary_category'
-        datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': 'groomingfragrance'}
-        self.assertEqual('groomingfragrance', _product_field_tiered_assignment(tiered_assignments, fieldname, datum))
+        secondary_category = product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'])
+        self.assertEqual('Other', secondary_category)
+        self.assertEqual(0, CategoryMap.objects.count())
+        add_category_map('', secondary_category, merchant_name)
+        cm  = CategoryMap.objects.first()
+        self.assertEqual(OTHER, cm.allume_category)
+
+
+
 
 # class MappingsTestCase(TestCase):
 #     """

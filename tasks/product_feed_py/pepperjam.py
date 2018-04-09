@@ -143,19 +143,42 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                 merchant_id = product['program_id']
                 merchant_name = product['program_name']
 
+
                 # Test if Mechant Is Active
                 try:
                     # update if merchant is active, should always have entry
                     merchant_is_active = merchant_mapping[long(merchant_id)]
-                except:
-                    print 'somehow used a merchant_id now present in the mapping'
+                except KeyError:
+                    print 'somehow used a merchant_id not present in the mapping'
                     continue
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_is_active == False:
                     continue
 
+                # config files
+                config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/pepperjam/'
+                fd = os.listdir(config_path)
+                default = 'default'
+                extension = '.yaml'
+                default_filename = default + extension
+                merchant_id_filename = str(merchant_id) + extension
+
+                full_path = config_path + default_filename
+
+                if merchant_id_filename in fd:
+                    full_path = config_path + merchant_id_filename
+
+                with open(full_path, "r") as config:
+                    config_dict = yaml.load(config)
+                    try:
+                        tiered_assignments = config_dict['tiered_assignment_fields']
+                    except KeyError:
+                        tiered_assignments = {}
+
                 primary_category = product['category_program']
-                secondary_category = product['category_network']
+                # secondary_category = product['category_network']
+                secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', product, product['category_network'])
+
                 allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
                 # allume_category = 'allume_category' # include to overrule category activity checks
 

@@ -1,6 +1,6 @@
-fields: # default is currently a copy of TJ_Maxx.yaml
-    merchant_color: LABEL
-    size: TITLE
+fields:
+    merchant_color: FORMAT
+    size: LABEL
     merchant_name: PROGRAMNAME
     keywords: KEYWORDS
     currency: CURRENCY
@@ -8,10 +8,8 @@ fields: # default is currently a copy of TJ_Maxx.yaml
     product_name: NAME
     availability: INSTOCK
     product_image_url: IMAGEURL
-
-    product_url: BUYURL # maybe?/
-    buy_url: BUYURL # ??
-
+    product_url: BUYURL
+    buy_url: BUYURL
     retail_price: PRICE
     sale_price: SALEPRICE
     long_product_description: DESCRIPTION
@@ -31,3 +29,8 @@ fields: # default is currently a copy of TJ_Maxx.yaml
     material: N/A
     age: N/A
     brand: N/A
+tiered_assignment_fields:
+    secondary_category:
+        - "parse_other_terms(datum['NAME'])"
+        - "datum['N/A']"
+        - "parse_category_from_product_name(datum['NAME'])"

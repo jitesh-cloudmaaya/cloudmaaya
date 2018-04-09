@@ -1,9 +1,0 @@
--   model: product_api.othertermmap
-    pk: 1
-    fields: {term: 'maternity'}
--   model: product_api.othertermmap
-    pk: 2
-    fields: {term: 'swimsuit'}
--   model: product_api.othertermmap
-    pk: 3
-    fields: {term: 'lingerie'}
