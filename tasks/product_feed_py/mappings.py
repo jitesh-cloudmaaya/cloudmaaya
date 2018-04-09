@@ -237,7 +237,7 @@ def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
         # if not in the map
         if merchant_id not in merchant_mapping.keys():
             # create a new instance and save
-            add_new_merchant(merchant_id, merchant_name, network, False)
+            add_new_merchant(merchant_id, merchant_name, network, active=False, search_rank=10)
             # edit the passed-in dict
             merchant_mapping[merchant_id] = False
         if merchant_mapping[merchant_id]:
