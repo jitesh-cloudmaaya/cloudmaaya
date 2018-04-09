@@ -390,6 +390,49 @@ class ParserTestCase(TestCase):
         self.assertEqual(['LARGE/X-LARGE','MEDIUM','X-SMALL/SMALL'], seperate_sizes('LARGE/X-LARGE,MEDIUM,X-SMALL/SMALL'))
         self.assertEqual(['LARGE (10)','SMALL(2-4)','XSMALL(12-18 MONTHS)','XXSMALL(6-9 MONTHS)'], seperate_sizes('LARGE (10),SMALL(2-4),XSMALL(12-18 MONTHS),XXSMALL(6-9 MONTHS),'))
 
+
+class CategoryHandlingTestCase(TestCase):
+    """
+    Test that the hierarchy on products is what is expected for adding catmaps and setting things etc.
+    """
+    fixtures = ['SynonymCategoryMap', 'ExclusionTerm', 'AllumeCategory']
+
+    def test_add_category_map_set_allume_category(self):
+        merchant_name = "Test Merchant"
+        other_synonym = SynonymCategoryMap.objects.filter(category__iexact = 'Other').first().synonym
+        exclusion_term = ExclusionTerm.objects.first().term
+        OTHER = AllumeCategory.objects.get(name__iexact = 'Other')
+        EXCLUDE = AllumeCategory.objects.get(name__iexact = 'Exclude')
+
+        self.assertEqual(0, CategoryMap.objects.count())
+        add_category_map(other_synonym, '', merchant_name)
+        cm  = CategoryMap.objects.last()
+        self.assertEqual(OTHER, cm.allume_category)
+        add_category_map('', exclusion_term, merchant_name)
+        cm2  = CategoryMap.objects.last()
+        self.assertEqual(EXCLUDE, cm2.allume_category)
+        add_category_map(other_synonym, exclusion_term, merchant_name)
+        cm3  = CategoryMap.objects.last()
+        self.assertEqual(EXCLUDE, cm3.allume_category)
+
+    def test_other_parsing(self):
+        merchant_name = "Test Merchant"
+        other_synonym = SynonymCategoryMap.objects.filter(category__iexact = 'Other').first().synonym
+        tiered_assignments = {'secondary_category': ["parse_other_terms(datum['product_name'])", "datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        fieldname = 'secondary_category'
+        datum = {'product_name': 'Product ' + other_synonym, 'primary_category': 'Apparel & Accessories', 'secondary_category': 'Should change?'}
+        OTHER = AllumeCategory.objects.get(name__iexact = 'Other')
+
+        secondary_category = product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'])
+        self.assertEqual('Other', secondary_category)
+        self.assertEqual(0, CategoryMap.objects.count())
+        add_category_map('', secondary_category, merchant_name)
+        cm  = CategoryMap.objects.first()
+        self.assertEqual(OTHER, cm.allume_category)
+
+
+
+
 # class MappingsTestCase(TestCase):
 #     """
 #     Some simple tests to confirm that mappings return a structure like we expect.
