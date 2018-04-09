@@ -40,7 +40,7 @@ fields:
     - modification
 tiered_assignment_fields:
     primary_category:
-        - "datum['attribute_2_product_type']"
+        - "datum['attribute_2_product_type'])"
         - "datum['primary_category']"
     secondary_category:
         - "parse_other_terms(datum['product_name']"
