@@ -138,8 +138,10 @@ var search_page = {
       var last_search = utils.parseQuery(search_cookie);
       var search_box = $('#search-field');
       var category = $('#search-categories');
-
-      var sanitized_primary = last_search.primary_category.replace('|Unsure','')
+      var sanitized_primary ='';
+      if(last_search.primary_category != undefined){
+        sanitized_primary = last_search.primary_category.replace('|Unsure','')
+      }
 
       category[0].selectize.setValue(sanitized_primary, false);
       search_box.val(last_search.text);

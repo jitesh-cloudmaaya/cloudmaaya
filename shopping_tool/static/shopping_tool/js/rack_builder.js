@@ -586,7 +586,11 @@ var rack_builder = {
       error: function(){
         $('#inspect-item').html(
           '<div class="stage"><a href="#" class="close-inspect">' +
-          '<i class="fa fa-times"></i></a><h2>could not find product...</h2></div>'
+          '<i class="fa fa-times"></i></a><h2>could not find product...</h2>' +
+          '<div class="lookup-error-msg">Please copy and paste the information below and send to ' +
+          'Pamela Nguesseu <pamela@allume.co>:' +
+          '<span class="msg"><strong>/product_api/get_product/ Error</strong>Product ' + id + ' failed to load ' +
+          'at:<br/> ' +  moment().format('MM/DD/YYYY - HH:mm a') + '</span>Thank you.<br/>The Allume team</div></div>'
         );
       },
       success: function(results){
@@ -681,7 +685,11 @@ var rack_builder = {
         }else{
           inspect.html(
             '<div class="stage"><a href="#" class="close-inspect">' +
-            '<i class="fa fa-times"></i></a><h2>could not find product...</h2></div>'
+            '<i class="fa fa-times"></i></a><h2>could not find product...</h2>' +
+            '<div class="lookup-error-msg">Please copy and paste the information below and send to ' +
+            'Pamela Nguesseu &lt;pamela@allume.co&gt;:' +
+            '<span class="msg"><strong>/product_api/get_product/ Error</strong>Product ' + id + ' failed to return a viable product ' +
+            'at:<br/>' +  moment().format('MM/DD/YYYY - HH:mm a') + '</span>Thank you.<br/>The Allume team</div></div>'
           );
         }
       }

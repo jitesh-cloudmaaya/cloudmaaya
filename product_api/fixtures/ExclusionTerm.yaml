@@ -1,0 +1,66 @@
+-   model: product_api.exclusionterm
+    pk: 1
+    fields: {term: "kid's"}
+-   model: product_api.exclusionterm
+    pk: 2
+    fields: {term: "toddler's"}
+-   model: product_api.exclusionterm
+    pk: 3
+    fields: {term: "baby's"}
+-   model: product_api.exclusionterm
+    pk: 4
+    fields: {term: "boys"}
+-   model: product_api.exclusionterm
+    pk: 5
+    fields: {term: "girls"}
+-   model: product_api.exclusionterm
+    pk: 6
+    fields: {term: "toys"}
+-   model: product_api.exclusionterm
+    pk: 7
+    fields: {term: "kids"}
+-   model: product_api.exclusionterm
+    pk: 8
+    fields: {term: "boy's"}
+-   model: product_api.exclusionterm
+    pk: 9
+    fields: {term: "girl's"}
+-   model: product_api.exclusionterm
+    pk: 10
+    fields: {term: "babies"}
+-   model: product_api.exclusionterm
+    pk: 11
+    fields: {term: "toddlers"}
+-   model: product_api.exclusionterm
+    pk: 12
+    fields: {term: "bed/bath"}
+-   model: product_api.exclusionterm
+    pk: 13
+    fields: {term: "toys"}
+-   model: product_api.exclusionterm
+    pk: 14
+    fields: {term: "food"}
+-   model: product_api.exclusionterm
+    pk: 15
+    fields: {term: "good"}
+-   model: product_api.exclusionterm
+    pk: 16
+    fields: {term: "electronic"}
+-   model: product_api.exclusionterm
+    pk: 17
+    fields: {term: "beverage"}
+-   model: product_api.exclusionterm
+    pk: 18
+    fields: {term: "home"}
+-   model: product_api.exclusionterm
+    pk: 19
+    fields: {term: "kitchen"}
+-   model: product_api.exclusionterm
+    pk: 20
+    fields: {term: "entertainment"}
+-   model: product_api.exclusionterm
+    pk: 21
+    fields: {term: "electronics"}
+-   model: product_api.exclusionterm
+    pk: 22
+    fields: {term: "barbies"}

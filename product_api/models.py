@@ -180,6 +180,7 @@ class CategoryMap(models.Model):
             models.Index(fields=['external_cat2']),
         ]
 
+# used in parsing category strings for the presence of a SynonymCategoryMap.synonym
 class SynonymCategoryMap(models.Model):
     synonym = models.CharField(max_length=255, blank=True, null=True)
     category = models.CharField(max_length=255, blank=True, null=True)
@@ -189,19 +190,37 @@ class SynonymCategoryMap(models.Model):
     def __str__(self):
         return self.synonym
 
+# used in parsing category strings for exclusion terms
+class ExclusionTerm(models.Model):
+    term = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return self.term
+
+# used in parsing category strings for terms that should map to allume category, Other
+class OtherTermMap(models.Model):
+    term = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return self.term
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
 
+## 2018-04-09 - Removed for now per Pamela
+# @receiver(pre_save, sender=Merchant)
+# def update_allume_merchant_pre_save(sender, instance, *args, **kwargs):
 
-@receiver(pre_save, sender=Merchant)
-def update_allume_merchant_pre_save(sender, instance, *args, **kwargs):
-
-    #Skip if ENV <> Stage or Prod (So Circle Ci and Dev can function)
-    if (ENV_LOCAL == 'stage') or (ENV_LOCAL == 'prod'):
-        if not instance.update_allume_status() :
-            raise Exception('Allume API Update Failed')
+#     #Skip if ENV <> Stage or Prod (So Circle Ci and Dev can function)
+#     if (ENV_LOCAL == 'stage') or (ENV_LOCAL == 'prod'):
+#         if not instance.update_allume_status() :
+#             raise Exception('Allume API Update Failed')
 
 sizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/SizeMap.json')
 shoesizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/ShoeSizeMap.json')

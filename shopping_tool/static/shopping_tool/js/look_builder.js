@@ -535,7 +535,11 @@ var look_builder = {
     $('#pg-cropper-btns').find('a.save').click(function(e){
       e.preventDefault();
       var link = $(this);
-      collage.saveCrop(link, link.data('path'));
+      if(link.data('ok') == 'true'){
+        collage.saveCrop(link, link.data('path'));
+      }else{
+        alert('You must finish your polygon in order to crop and save the image.\nIf you have started a polygon, simply click the circle to close the shape.')
+      }
     }).end().find('a.cancel').click(function(e){
       e.preventDefault();
       $('#pg-crop-look-image').fadeOut();
@@ -543,7 +547,7 @@ var look_builder = {
       e.preventDefault();
       var link = $(this);
       if(link.data('path') !== undefined){
-        link.siblings('a.save').data('path', link.data('path'));
+        link.siblings('a.save').data('path', link.data('path')).data('ok','false');
         $('#pg-cropper-container').html('<canvas id="pg-cropper" width="415" height="415"></canvas>');
         collage.setUpPolygonCropper(link.data('path'));
       }
@@ -1241,7 +1245,7 @@ var look_builder = {
     var src = collage.canvas.toDataURL({
       format: 'jpeg',
       quality: 1,
-      multiplier: 4
+      multiplier: 2
     });
     /* the look object to save */
     var look_obj = {

@@ -36,7 +36,7 @@ class CategoryMap_MerchantFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(merchant_name=self.value())
+            return queryset.filter(merchant_name__icontains = self.value())
 
 
 class ColorMapAdmin(admin.ModelAdmin):
@@ -76,13 +76,37 @@ class AllumeCategoryAdmin(admin.ModelAdmin):
     readonly_fields = ['name']
     ordering = ['position']
 
-class MerchantInLine(admin.TabularInline):
+class SynonymCategoryMapAdmin(admin.ModelAdmin):
+    list_display = ('id', 'synonym', 'category')
+    list_filter = ('category',)
+    search_fields = ('id', 'synonym', 'category')
 
+class ExclusionTermAdmin(admin.ModelAdmin):
+    list_display = ('id', 'term')
+    search_fields = ('id', 'term')
+
+class OtherTermMapAdmin(admin.ModelAdmin):
+    list_display = ('id', 'term')
+    search_fields = ('id', 'term')
+
+class MerchantInLine(admin.TabularInline):
     model = Merchant
     extra = 0
 
 class NetworkInLine(admin.TabularInline):
     model = Network
+    extra = 0
+
+class SynonymCategoryMapInLine(admin.TabularInline):
+    model = SynonymCategoryMap
+    extra = 0
+
+class ExclusionTermInLine(admin.TabularInline):
+    model = ExclusionTerm
+    extra = 0
+
+class OtherTermMapInLine(admin.TabularInline):
+    model = OtherTermMap
     extra = 0
 
 #class MerchantCategoryInLine(admin.TabularInline):
@@ -95,4 +119,6 @@ admin.site.register(Network, NetworkAdmin)
 admin.site.register(CategoryMap, CategoryMapAdmin)
 admin.site.register(AllumeCategory, AllumeCategoryAdmin)
 admin.site.register(ColorMap, ColorMapAdmin)
-
+admin.site.register(SynonymCategoryMap, SynonymCategoryMapAdmin)
+admin.site.register(ExclusionTerm, ExclusionTermAdmin)
+admin.site.register(OtherTermMap, OtherTermMapAdmin)

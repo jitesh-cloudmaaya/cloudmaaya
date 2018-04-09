@@ -129,13 +129,13 @@ var collage = {
                 };
                 img.addEventListener('error', function(){
                   console.log('image errored')
-                  alert('There was a problem adding that product. Please try another.');
+                  alert('There was a problem loading the product image. Product id: ' + product_id);
                   $('#adding-product').remove();
                 });
               }
             },
             error: function(response){
-              alert('There was a problem adding that product. Please try another.');
+              alert('There was a problem adding that product to the Allume API. Product id: ' + product_id);
               $('#adding-product').remove();
               $.ajax({
                 success:function(response){},
@@ -656,7 +656,7 @@ var collage = {
       $('#pg-crop-look-image').fadeIn();
       collage.setUpPolygonCropper(activeObject.orgSrc, activeObject.prod_id);
       $('#pg-cropper-btns').find('a.restart').data('path', activeObject.originalImgSrc).end()
-      .find('a.save').data('prodid', activeObject.prod_id).data('productid', activeObject.product_id);
+      .find('a.save').data('ok','false').data('prodid', activeObject.prod_id).data('productid', activeObject.product_id);
     }
   },
   /**
@@ -739,6 +739,7 @@ var collage = {
         var dx = mx - points[0].x;
         var dy = my - points[0].y;
         if(dx * dx + dy * dy < 10*10){
+          $('#pg-cropper-btns a.save').data('ok','true')
           clipIt();
         }
       }
