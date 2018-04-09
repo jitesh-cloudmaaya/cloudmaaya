@@ -31,5 +31,6 @@ fields:
     brand: N/A
 tiered_assignment_fields:
     secondary_category:
+        - "parse_other_terms(datum['NAME']"
         - "datum['N/A']"
         - "parse_category_from_product_name(datum['NAME'])"
