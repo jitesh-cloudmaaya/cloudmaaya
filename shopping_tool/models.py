@@ -10,6 +10,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from product_api.models import Product
 import uuid
+from django.utils.html import escape
 
 from catalogue_service.settings_local import COLLAGE_IMAGE_ROOT
 
@@ -47,6 +48,15 @@ class WpUsers(models.Model):
         db_table = 'wp_users'
 
     objects = StylistManager()
+
+    def clean_client_360(self):
+        clean_client = self.client_360.__dict__
+
+        for k, v in clean_client.items():
+            clean_client[k] = escape(v).replace("\n", "").replace("\r", "")
+
+        return clean_client
+
 
 class AllumeClients(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -146,15 +156,15 @@ class AllumeClient360(models.Model):
     spending_dresses = models.TextField(blank=True, null=True)
     spending_jackets = models.TextField(blank=True, null=True)
     spending_shoes = models.TextField(blank=True, null=True)
-    style_celebs = models.TextField(blank=True, null=True)
-    style_looks = models.TextField(blank=True, null=True)
-    style_jeans = models.TextField(blank=True, null=True)
-    style_tops = models.TextField(blank=True, null=True)
-    style_dress = models.TextField(blank=True, null=True)
-    style_jacket = models.TextField(blank=True, null=True)
-    style_shoe = models.TextField(blank=True, null=True)
+    style_celebs = models.TextField(blank=True, null=True, db_column='style_celebs')
+    style_looks = models.TextField(blank=True, null=True, db_column='style_looks')
+    style_jeans = models.TextField(blank=True, null=True, db_column='style_jeans')
+    style_tops = models.TextField(blank=True, null=True, db_column='style_tops')
+    style_dress = models.TextField(blank=True, null=True, db_column='style_dress')
+    style_jacket = models.TextField(blank=True, null=True, db_column='style_jacket')
+    style_shoe = models.TextField(blank=True, null=True, db_column='style_shoe')
+    style_avoid = models.TextField(blank=True, null=True, db_column='style_avoid')
     colors_preference = models.TextField(blank=True, null=True)
-    style_avoid = models.TextField(blank=True, null=True)
     size_pants = models.TextField(blank=True, null=True)
     size_jeans = models.TextField(blank=True, null=True)
     size_tops = models.TextField(blank=True, null=True)
@@ -198,6 +208,8 @@ class AllumeClient360(models.Model):
             return obj['state']
         except:
             return ''
+
+
 
 
 class AllumeQuizAnswerItems(models.Model):

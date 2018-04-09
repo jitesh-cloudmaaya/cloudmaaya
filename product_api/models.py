@@ -213,14 +213,14 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
+## 2018-04-09 - Removed for now per Pamela
+# @receiver(pre_save, sender=Merchant)
+# def update_allume_merchant_pre_save(sender, instance, *args, **kwargs):
 
-@receiver(pre_save, sender=Merchant)
-def update_allume_merchant_pre_save(sender, instance, *args, **kwargs):
-
-    #Skip if ENV <> Stage or Prod (So Circle Ci and Dev can function)
-    if (ENV_LOCAL == 'stage') or (ENV_LOCAL == 'prod'):
-        if not instance.update_allume_status() :
-            raise Exception('Allume API Update Failed')
+#     #Skip if ENV <> Stage or Prod (So Circle Ci and Dev can function)
+#     if (ENV_LOCAL == 'stage') or (ENV_LOCAL == 'prod'):
+#         if not instance.update_allume_status() :
+#             raise Exception('Allume API Update Failed')
 
 sizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/SizeMap.json')
 shoesizemap_filepath = os.path.join(BASE_DIR, 'product_api/models_config/ShoeSizeMap.json')
