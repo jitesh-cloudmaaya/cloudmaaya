@@ -18,6 +18,19 @@ def create_merchant_mapping():
 
     return merchant_mapping
 
+def create_merchant_search_rank_mapping():
+    """
+    Returns a dict of merchant_ids as longs mapped to the merchant's
+    search_rank field value.
+    """
+    merchant_search_rank_mapping = {}
+
+    merchants = Merchant.objects.values_list('external_merchant_id', 'search_rank')
+    for merchant in merchants:
+        merchant_search_rank_mapping[merchant[0]] = merchant[1]
+
+    return merchant_search_rank_mapping
+
 def create_color_mapping():
     """
     Returns a dict of external_color mapped to the allume_color. Both values are strings.

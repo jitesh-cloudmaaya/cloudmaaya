@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     # instantiate relevant mappings
     merchant_mapping = mappings.create_merchant_mapping()
+    merchant_search_rank_mapping = mappings.create_merchant_search_rank_mapping()
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
@@ -240,7 +241,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             # set defaults
                             record['is_best_seller'] = u'0'
                             record['is_trending'] = u'0'
-                            record['allume_score'] = u'0'
+
+                            record['allume_score'] = unicode(merchant_search_rank_mapping[long(merchant_id)])
 
                             # if there is a sale
                             try:
