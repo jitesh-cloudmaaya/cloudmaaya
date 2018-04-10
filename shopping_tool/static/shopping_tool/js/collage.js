@@ -130,6 +130,11 @@ var collage = {
                 img.addEventListener('error', function(){
                   console.log('image errored')
                   alert('There was a problem loading the product image. Product id: ' + product_id);
+                  $.ajax({
+                    success:function(response){},
+                    type: 'DELETE',
+                    url: '/shopping_tool_api/look_item/' + product_obj.id + '/'
+                  });
                   $('#adding-product').remove();
                 });
               }
@@ -327,8 +332,12 @@ var collage = {
       };
       img.addEventListener('error', function(){
         console.log('image errored')
-
-        alert('There was a problem adding that product. Please try another.');
+        alert('There was a problem loading the product image. Product id: ' + product_id + '\nThis product will be removed from the look.');
+        $.ajax({
+          success:function(response){},
+          type: 'DELETE',
+          url: '/shopping_tool_api/look_item/' + prod_id + '/'
+        });
         // some sort of removal from the array should go here
         collage.initial_load--;
         if(collage.initial_load > -1){

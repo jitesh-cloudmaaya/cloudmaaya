@@ -959,14 +959,14 @@ var look_builder = {
       $('#creating-look').hide();
       if(result.allume_styling_session == look_builder.session_id){
         $('#look-drop').html(
-          '<div id="canvas-container">' +
+          '<div id="canvas-container" class="white">' +
           '<canvas id="c" width="760" height="415"></canvas>' +
           '</div><div class="collage-controls">'+
           '<a href="#" id="finish-editing-look" data-lookid="' + id + 
           '"><i class="fa fa-check"></i>finished editing look</a>' +
           '<a href="#" id="delete-look-inprocess" data-lookid="' + id + 
           '"><i class="fa fa-times"></i>delete look</a>' +
-          '<a class="bg-toggle checker-bg" data-balloon="toggle collage ' +
+          '<a class="bg-toggle checker-bg white" data-balloon="toggle collage ' +
           'background" data-balloon-pos="up" href="#"><em></em></a>' +
           '<a href="#" data-balloon="move to back" data-balloon-pos="up" class="send-back">' +
           '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" enable-background="new 0 0 512 512">' +
