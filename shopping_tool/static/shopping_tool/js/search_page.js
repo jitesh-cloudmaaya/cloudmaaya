@@ -278,13 +278,7 @@ var search_page = {
                 if(sizes.indexOf(facet.key) > -1){
                   checked = "checked";
                 }
-              }/* comment out the price prefilter
-              else if((pretty_name == 'price_range')&&(cs.clientsettings == true)){
-                var spend = cs.clientspend.split('|');
-                if(spend.indexOf(facet.key) > -1){
-                  checked = "checked";
-                }
-              }*/
+              }
               /* for facets with subcategories add breakers and clearers */
               if(facet.key == 'special-breaker'){
                 group_markup.markup[display_name].push('<span class="facet-breaker"></span>')
@@ -435,14 +429,9 @@ var search_page = {
       * data to prepopulate some of our facets with
       */
       if(new_search == true){
-        var spend = [];
         var sizes = [];
         var cleaned_sizes = [];
-        var cleaned_spend = [];
-        if(["Dresses", "Jackets"].indexOf(category) > -1){
-          spend = client_360.categories[category].spend.split(', ');       
-        }else if(["Jeans", "Shoes", "Tops", "Pants", "Bottoms"].indexOf(category) > -1){
-          spend = client_360.categories[category].spend.split(', ');
+        if(["Jeans", "Shoes", "Tops", "Pants", "Bottoms"].indexOf(category) > -1){
           sizes = client_360.categories[category].size.split(',');   
         }
         for(i = 0, l = sizes.length; i<l; i++){
@@ -454,19 +443,6 @@ var search_page = {
             size + '">' + size + '<i class="fa fa-times-circle"></i></a>'
           );
         }
-        /* no longer prefilter for price
-        for(i = 0, l = spend.length; i<l; i++){
-          var range = spend[i].replace(/\$/g, '').split(' - ');
-          var propper_range = '$' + range[0] + ' - $' + range[1];
-          if(range[0] == '200+'){
-            propper_range = '$200+';
-          }
-          cleaned_spend.push(propper_range);
-          selection_markup.push(
-            '<a href="#" class="remove-facet" data-qparam="price_range" data-facet="' + 
-            propper_range + '">' + propper_range + '<i class="fa fa-times-circle"></i></a>'
-          );
-        }*/
         search_box.data('clientsize', cleaned_sizes.join('|')).data('clientsettings', true);
       }
     }else{
