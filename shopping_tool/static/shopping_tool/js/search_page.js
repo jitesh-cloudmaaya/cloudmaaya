@@ -278,12 +278,13 @@ var search_page = {
                 if(sizes.indexOf(facet.key) > -1){
                   checked = "checked";
                 }
-              }else if((pretty_name == 'price_range')&&(cs.clientsettings == true)){
+              }/* comment out the price prefilter
+              else if((pretty_name == 'price_range')&&(cs.clientsettings == true)){
                 var spend = cs.clientspend.split('|');
                 if(spend.indexOf(facet.key) > -1){
                   checked = "checked";
                 }
-              }
+              }*/
               /* for facets with subcategories add breakers and clearers */
               if(facet.key == 'special-breaker'){
                 group_markup.markup[display_name].push('<span class="facet-breaker"></span>')
@@ -453,6 +454,7 @@ var search_page = {
             size + '">' + size + '<i class="fa fa-times-circle"></i></a>'
           );
         }
+        /* no longer prefilter for price
         for(i = 0, l = spend.length; i<l; i++){
           var range = spend[i].replace(/\$/g, '').split(' - ');
           var propper_range = '$' + range[0] + ' - $' + range[1];
@@ -464,8 +466,8 @@ var search_page = {
             '<a href="#" class="remove-facet" data-qparam="price_range" data-facet="' + 
             propper_range + '">' + propper_range + '<i class="fa fa-times-circle"></i></a>'
           );
-        }
-        search_box.data('clientsize', cleaned_sizes.join('|')).data('clientspend', cleaned_spend.join('|')).data('clientsettings', true);
+        }*/
+        search_box.data('clientsize', cleaned_sizes.join('|')).data('clientsettings', true);
       }
     }else{
       
