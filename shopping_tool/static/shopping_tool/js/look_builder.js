@@ -180,14 +180,11 @@ var look_builder = {
       $('#delete-look-overlay').fadeOut();
     });
     $('#preview-lookbook').click(function(e){
-      e.preventDefault();
       var edit_status = $('#look-drop').find('div.start').length;
       if(edit_status != 1){
+        e.preventDefault();
         alert('You must finish editing your selected look before you can preview the lookbook.')
       }else{
-        var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
-        $('#previewIframe').attr('src', 'https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
-        $('#preview-lookbook-overlay').fadeIn();
         $('#publish-lookbook').data('allowed', 'true');
       }
     });
@@ -291,14 +288,21 @@ var look_builder = {
         $('#pub-wizard-step1').addClass('on').siblings('a').removeClass('on');
         $('#send-now').prop('checked', true);
         $('#send-later-wrapper').hide();
-        var start_id = document.getElementById('send-later')
+        var start_id = document.getElementById('send-later');
+        var start_time = moment().hour(12).minute(0).format('YYYY-MM-DD HH:mm');
         rome(start_id, {
-          initialValue:  moment().startOf('day').format('YYYY-MM-DD'),
+          initialValue:  start_time,
           min: moment().startOf('day').format('YYYY-MM-DD'),
           max: moment().add(2, 'day').endOf('day').format('YYYY-MM-DD'),
           time: true,
           timeFormat: 'h:mm a',
-          timeInterval: 900
+          timeInterval: 900,
+          timeValidator: function (d) {
+            var m = moment(d);
+            var start = m.clone().hour(6).minute(59).second(59);
+            var end = m.clone().hour(23).minute(0).second(1);
+            return m.isAfter(start) && m.isBefore(end);
+          }
         });
         $('#publish-lookbook-overlay').fadeIn();
       }else{
@@ -618,6 +622,8 @@ var look_builder = {
     rack_builder.init();
     look_builder.session_id = $('body').data('stylesession');  
     look_builder.stylist_id = parseInt($('#stylist').data('stylistid'));
+    var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
+    $('#preview-lookbook').attr('href', 'https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
     /* attach the functionality */
     look_builder.functionality();
     /* set up the initial rack display */
@@ -1024,12 +1030,16 @@ var look_builder = {
             var el = evt.item;
             var adding = $('#adding-product').length;
             if(adding == 0){
-             $('#look-drop').append(
-                '<div id="adding-product"><div class="loading-prod">' +
-                '</div><span class="loading-prod-msg">adding product ' + 
-                'to look...</span></div>'
-              );            
-              collage.addCanvasImage(el.dataset.productid, el.dataset.url);
+              if(el.dataset.availability != 'in-stock'){
+                alert("you cannot add sold out items to a look.");
+              }else{
+                $('#look-drop').append(
+                  '<div id="adding-product"><div class="loading-prod">' +
+                  '</div><span class="loading-prod-msg">adding product ' + 
+                  'to look...</span></div>'
+                );            
+                collage.addCanvasImage(el.dataset.productid, el.dataset.url);
+              }
             }
             el.parentNode.removeChild(el);
           }
@@ -1040,28 +1050,33 @@ var look_builder = {
           onAdd: function (evt) {
             var item = $(evt.item)
             var data = evt.item.dataset;
-            var look_product_obj = {
-              layout_position: 100,
-              look: parseInt($('input#look-id').val()),
-              product: parseInt(data.productid),
-              cropped_dimensions: null,
-              in_collage: 'False',
-              cropped_image_code: null      
+            if(data.availability != 'in-stock'){
+              alert("you cannot add sold out items to a look.");
+              evt.item.parentNode.removeChild(evt.item);
+            }else{
+              var look_product_obj = {
+                layout_position: 100,
+                look: parseInt($('input#look-id').val()),
+                product: parseInt(data.productid),
+                cropped_dimensions: null,
+                in_collage: 'False',
+                cropped_image_code: null      
+              }
+              $.ajax({
+                contentType : 'application/json',
+                data: JSON.stringify(look_product_obj),
+                success:function(response){
+                  item.find('a.remove').data('lookitemid', response.id)
+                  collage.addAllumeProduct(response.product, response.id, response, null, null);
+                },
+                error: function(){
+                  alert('There was a problem adding that product. Please try another.');
+                  item.remove();
+                },
+                type: 'PUT',
+                url: '/shopping_tool_api/look_item/0/'
+              });
             }
-            $.ajax({
-              contentType : 'application/json',
-              data: JSON.stringify(look_product_obj),
-              success:function(response){
-                item.find('a.remove').data('lookitemid', response.id)
-                collage.addAllumeProduct(response.product, response.id, response, null, null);
-              },
-              error: function(){
-                alert('There was a problem adding that product. Please try another.');
-                item.remove();
-              },
-              type: 'PUT',
-              url: '/shopping_tool_api/look_item/0/'
-            });
           }
         });
         $('#non-collage-items').on('click', 'a.remove', function(e){
@@ -1213,7 +1228,8 @@ var look_builder = {
       if(compare_array.indexOf(data.rack_id) > -1){
         rack_items.push(
           '<div class="item" data-productid="' + data.id + 
-          '" data-url="' + src + '"><img class="handle" src="' + src + 
+          '" data-url="' + src + '" data-availability="' + 
+          data.availability + '"><img class="handle" src="' + src + 
           '"/><a href="#"  class="view" data-productid="' + data.id + 
           '"><i class="fa fa-align-left"></i></a>' +
           '<a href="#" class="remove" data-sku="' + sku + 
