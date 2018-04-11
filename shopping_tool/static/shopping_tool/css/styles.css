@@ -278,6 +278,17 @@ input.search {
 #results div.item span.manu,
 #results div.item span.price {text-align: center; font-size:14px; margin:0 0 8px; padding:0 15px;}
 #results div.item span.manu {font-weight:300; color:#474747;margin:0 0 5px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap;}
+#results div.item div.image span.sizing {
+  background:rgba(0,0,0,0.1);
+  border-radius:3px;
+  bottom:5px;
+  color:#000;
+  font-size:12px;
+  left:5px;
+  opacity:0.5;
+  padding:2px 5px 3px;
+  position:absolute;
+}
 #results div.item span.avail {float:right; font-weight:200;}
 #results div.item span.price em {color:#D32F2F; display:inline-block; padding-right: 8px; text-decoration: line-through;}
 #facets { border-bottom:1px solid #eee; margin-top:20px; }

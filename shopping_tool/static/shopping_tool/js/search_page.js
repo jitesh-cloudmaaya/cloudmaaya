@@ -355,7 +355,7 @@ var search_page = {
     var manu = details.manufacturer_name;    
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
-
+    var size_div = details.size == 'ONE' ? '' : '<span class="sizing" title="size">size: ' + details.size + '</span>' ;
     var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
       details.id + '"><i class="icon-hanger"></i>add to rack</a>';
     var rack_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
@@ -376,8 +376,8 @@ var search_page = {
       '<a href="#" class="item-detail" data-name="' + details.product_name + 
       '" data-brand="' + details.manufacturer_name + 
       '" data-productid="' + details.id + '" data-merchantid="' + details.merchant_id + 
-      '"><img src="' + details.product_image_url + '"><span>view details</span></a></div>' +
-      '<a href="' + details.product_url + '"  title="' + details.product_name + 
+      '"><img src="' + details.product_image_url + '"><span>view details</span></a>' +
+      size_div + '</div><a href="' + details.product_url + '"  title="' + details.product_name + 
       '" target="_blank" class="name">' + details.product_name + '</a><span class="manu"' + 
       ' title="' + manu + '' + merch + '">' + manu + '' + merch + 
       '</span>' + price_display + '' + rack_link + '</div>';
