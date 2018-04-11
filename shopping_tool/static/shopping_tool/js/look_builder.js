@@ -180,15 +180,10 @@ var look_builder = {
       $('#delete-look-overlay').fadeOut();
     });
     $('#preview-lookbook').click(function(e){
-      e.preventDefault();
       var edit_status = $('#look-drop').find('div.start').length;
       if(edit_status != 1){
+        e.preventDefault();
         alert('You must finish editing your selected look before you can preview the lookbook.')
-      }else{
-        var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
-        $('#previewIframe').attr('src', 'https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
-        $('#preview-lookbook-overlay').fadeIn();
-        $('#publish-lookbook').data('allowed', 'true');
       }
     });
     $('#publish-lookbook').click(function(e){
@@ -618,6 +613,8 @@ var look_builder = {
     rack_builder.init();
     look_builder.session_id = $('body').data('stylesession');  
     look_builder.stylist_id = parseInt($('#stylist').data('stylistid'));
+    var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
+    $('#preview-lookbook').attr('href', 'https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
     /* attach the functionality */
     look_builder.functionality();
     /* set up the initial rack display */
