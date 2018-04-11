@@ -46,7 +46,25 @@ var utils = {
     $('#design-look-user-toggle').click(function(e){
       e.preventDefault();
       $('#user-card').addClass('show').addClass('looker');
-    }).html('View ' + clip.data('username'))
+    }).html('View ' + clip.data('username'));
+    /* get next session info with subscription_id
+      $.ajax({
+        contentType: 'application/x-www-form-urlencoded',
+        crossDomain: true,
+        data: $.param({subscription_id: id here),
+        type: 'POST',
+        url: '$https://styling-service-' + local_environment + '.allume.co/repeat/get_next_styling_session_info',
+        xhrFields: {
+          withCredentials: true
+        },
+        success: function(response){
+          console.log(response)
+        },
+        error: function(response){
+          console.log(response)
+        }
+      });
+    */
     /* correctly display bra size */
     var bra = $('#bra-size');
     var bra_size = bra.data('sizes');
