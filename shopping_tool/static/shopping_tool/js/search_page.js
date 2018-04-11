@@ -355,7 +355,7 @@ var search_page = {
     var manu = details.manufacturer_name;    
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
-    var size_div = details.size == 'ONE' ? '' : '<span class="sizing" title="size">size: ' + details.size + '</span>' ;
+    var size_div = details.size == 'ONE' ? '' : '<span class="sizing">size: ' + details.size + '</span>' ;
     var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
       details.id + '"><i class="icon-hanger"></i>add to rack</a>';
     var rack_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
