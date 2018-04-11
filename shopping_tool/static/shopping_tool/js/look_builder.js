@@ -1028,14 +1028,19 @@ var look_builder = {
           sort: false,
           onAdd: function (evt) {
             var el = evt.item;
+            console.log(el.dataset)
             var adding = $('#adding-product').length;
             if(adding == 0){
-             $('#look-drop').append(
-                '<div id="adding-product"><div class="loading-prod">' +
-                '</div><span class="loading-prod-msg">adding product ' + 
-                'to look...</span></div>'
-              );            
-              collage.addCanvasImage(el.dataset.productid, el.dataset.url);
+              if(el.dataset.availability != 'in-stock'){
+                alert("you cannot add sold out items to a look.");
+              }else{
+                $('#look-drop').append(
+                  '<div id="adding-product"><div class="loading-prod">' +
+                  '</div><span class="loading-prod-msg">adding product ' + 
+                  'to look...</span></div>'
+                );            
+                collage.addCanvasImage(el.dataset.productid, el.dataset.url);
+              }
             }
             el.parentNode.removeChild(el);
           }
@@ -1046,28 +1051,33 @@ var look_builder = {
           onAdd: function (evt) {
             var item = $(evt.item)
             var data = evt.item.dataset;
-            var look_product_obj = {
-              layout_position: 100,
-              look: parseInt($('input#look-id').val()),
-              product: parseInt(data.productid),
-              cropped_dimensions: null,
-              in_collage: 'False',
-              cropped_image_code: null      
+            if(data.availability != 'in-stock'){
+              alert("you cannot add sold out items to a look.");
+              evt.item.parentNode.removeChild(evt.item);
+            }else{
+              var look_product_obj = {
+                layout_position: 100,
+                look: parseInt($('input#look-id').val()),
+                product: parseInt(data.productid),
+                cropped_dimensions: null,
+                in_collage: 'False',
+                cropped_image_code: null      
+              }
+              $.ajax({
+                contentType : 'application/json',
+                data: JSON.stringify(look_product_obj),
+                success:function(response){
+                  item.find('a.remove').data('lookitemid', response.id)
+                  collage.addAllumeProduct(response.product, response.id, response, null, null);
+                },
+                error: function(){
+                  alert('There was a problem adding that product. Please try another.');
+                  item.remove();
+                },
+                type: 'PUT',
+                url: '/shopping_tool_api/look_item/0/'
+              });
             }
-            $.ajax({
-              contentType : 'application/json',
-              data: JSON.stringify(look_product_obj),
-              success:function(response){
-                item.find('a.remove').data('lookitemid', response.id)
-                collage.addAllumeProduct(response.product, response.id, response, null, null);
-              },
-              error: function(){
-                alert('There was a problem adding that product. Please try another.');
-                item.remove();
-              },
-              type: 'PUT',
-              url: '/shopping_tool_api/look_item/0/'
-            });
           }
         });
         $('#non-collage-items').on('click', 'a.remove', function(e){
@@ -1219,7 +1229,8 @@ var look_builder = {
       if(compare_array.indexOf(data.rack_id) > -1){
         rack_items.push(
           '<div class="item" data-productid="' + data.id + 
-          '" data-url="' + src + '"><img class="handle" src="' + src + 
+          '" data-url="' + src + '" data-availability="' + 
+          data.availability + '"><img class="handle" src="' + src + 
           '"/><a href="#"  class="view" data-productid="' + data.id + 
           '"><i class="fa fa-align-left"></i></a>' +
           '<a href="#" class="remove" data-sku="' + sku + 
