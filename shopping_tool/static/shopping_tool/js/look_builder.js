@@ -1028,7 +1028,6 @@ var look_builder = {
           sort: false,
           onAdd: function (evt) {
             var el = evt.item;
-            console.log(el.dataset)
             var adding = $('#adding-product').length;
             if(adding == 0){
               if(el.dataset.availability != 'in-stock'){
