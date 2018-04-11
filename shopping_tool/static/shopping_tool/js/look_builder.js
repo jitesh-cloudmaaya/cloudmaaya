@@ -184,6 +184,8 @@ var look_builder = {
       if(edit_status != 1){
         e.preventDefault();
         alert('You must finish editing your selected look before you can preview the lookbook.')
+      }else{
+        $('#publish-lookbook').data('allowed', 'true');
       }
     });
     $('#publish-lookbook').click(function(e){
@@ -286,14 +288,21 @@ var look_builder = {
         $('#pub-wizard-step1').addClass('on').siblings('a').removeClass('on');
         $('#send-now').prop('checked', true);
         $('#send-later-wrapper').hide();
-        var start_id = document.getElementById('send-later')
+        var start_id = document.getElementById('send-later');
+        var start_time = moment().hour(12).minute(0).format('YYYY-MM-DD HH:mm');
         rome(start_id, {
-          initialValue:  moment().startOf('day').format('YYYY-MM-DD'),
+          initialValue:  start_time,
           min: moment().startOf('day').format('YYYY-MM-DD'),
           max: moment().add(2, 'day').endOf('day').format('YYYY-MM-DD'),
           time: true,
           timeFormat: 'h:mm a',
-          timeInterval: 900
+          timeInterval: 900,
+          timeValidator: function (d) {
+            var m = moment(d);
+            var start = m.clone().hour(6).minute(59).second(59);
+            var end = m.clone().hour(23).minute(0).second(1);
+            return m.isAfter(start) && m.isBefore(end);
+          }
         });
         $('#publish-lookbook-overlay').fadeIn();
       }else{
