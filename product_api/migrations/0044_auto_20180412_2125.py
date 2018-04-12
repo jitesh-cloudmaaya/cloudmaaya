@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -29,4 +28,5 @@ class Migration(migrations.Migration):
             model_name='product',
             index=models.Index(fields=['primary_category', 'secondary_category'], name='product_api_primary_26aa77_idx'),
         ),
+        migrations.RunSQL("ALTER TABLE product_api_product CONVERT TO CHARACTER SET latin1;"),
     ]
