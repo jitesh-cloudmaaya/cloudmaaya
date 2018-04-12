@@ -18,6 +18,19 @@ def create_merchant_mapping():
 
     return merchant_mapping
 
+def create_merchant_search_rank_mapping():
+    """
+    Returns a dict of merchant_ids as longs mapped to the merchant's
+    search_rank field value.
+    """
+    merchant_search_rank_mapping = {}
+
+    merchants = Merchant.objects.values_list('external_merchant_id', 'search_rank')
+    for merchant in merchants:
+        merchant_search_rank_mapping[merchant[0]] = merchant[1]
+
+    return merchant_search_rank_mapping
+
 def create_color_mapping():
     """
     Returns a dict of external_color mapped to the allume_color. Both values are strings.
@@ -112,8 +125,8 @@ def create_size_term_mapping():
 
     return size_term_mapping
 
-def add_new_merchant(external_merchant_id, name, network, active = False):
-    Merchant.objects.create(external_merchant_id = external_merchant_id, name = name, network = network, active = active)
+def add_new_merchant(external_merchant_id, name, network, active = False, search_rank = 10):
+    Merchant.objects.create(external_merchant_id = external_merchant_id, name = name, network = network, active = active, search_rank = search_rank)
 
 def get_network(network_name):
     try:
@@ -239,7 +252,7 @@ def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
         # if not in the map
         if merchant_id not in merchant_mapping.keys():
             # create a new instance and save
-            add_new_merchant(merchant_id, merchant_name, network, False)
+            add_new_merchant(merchant_id, merchant_name, network, active=False, search_rank=10)
             # edit the passed-in dict
             merchant_mapping[merchant_id] = False
         if merchant_mapping[merchant_id]:

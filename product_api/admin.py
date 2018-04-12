@@ -45,7 +45,7 @@ class ColorMapAdmin(admin.ModelAdmin):
 
 
 class MerchantAdmin(admin.ModelAdmin):
-    list_display = ('name', 'active', 'network')
+    list_display = ('name', 'active', 'network', 'search_rank')
     list_filter = ('network',)
 
 class NetworkAdmin(admin.ModelAdmin):
