@@ -155,7 +155,7 @@ var utils = {
         data: JSON.stringify(note_obj),        
         success: function(response){
           $('#notes-loader').remove();
-          nl.prepend(utils.noteTemplate(response, current_stylist));
+          nl.prepend(utils.noteTemplate(response, current_stylist, $('#header').data('stylistname')));
           $('#added-note').val('');
           var header = $('#client-notes h3');
           var count = parseInt(header.data('num')) + 1;
@@ -205,7 +205,7 @@ var utils = {
           var notes_markup = [];
           for(var i = 0; i<count; i++){
             var note = response[i];
-            notes_markup.push(utils.noteTemplate(note, current_stylist));
+            notes_markup.push(utils.noteTemplate(note, current_stylist, null));
           }
           ui_div.html(notes_markup.join(''));
         }else{
@@ -336,17 +336,25 @@ var utils = {
   * @description template for note display
   * @params {object} note - json for note object
   * @params {integer} stylist_id - id of the current stylist logged in
+  * @params {string|null} name - stylist name or null
   * @returns {string} HTML
   */
-  noteTemplate: function(note, stylist_id){
+  noteTemplate: function(note, stylist_id, name){
     var delete_link = '';
     if(note.stylist.id == stylist_id){
       delete_link = '<a href="#" data-noteid="' + note.id + '" class="delete-note"><i class="fa fa-times"></i></a>'
     }
+    var stylist_name = ''
+    if(name == null){
+      stylist_name = '<span class="name">' + note.stylist.first_name + 
+      ' ' + note.stylist.last_name + '</span>';
+    }else{
+      stylist_name = '<span class="name">' + name + '</span>';
+      delete_link = '<a href="#" data-noteid="' + note.id + '" class="delete-note"><i class="fa fa-times"></i></a>'
+    }
     return '<div class="client-note" id="client-note-id-' + note.id + '"><p>' + note.notes+ '</p>' +
       '<span class="date">' + moment(note.last_modified).format('MMMM Do, YYYY h:mm a') + 
-      '</span><span class="tail"></span><span class="name">' + note.stylist.first_name + 
-      ' ' + note.stylist.last_name + '</span>' + delete_link + '</div>';
+      '</span><span class="tail"></span>' + stylist_name + '' + delete_link + '</div>';
   },
   /**
   * @description processing and template for pagination of results
