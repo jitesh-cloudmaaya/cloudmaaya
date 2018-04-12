@@ -179,6 +179,17 @@ def add_category_map(external_cat1, external_cat2, merchant_name, allume_categor
         allume_category = AllumeCategory.objects.get(name__iexact='other')
         active = True
         pending_review = False
+    elif _check_synonym_term_maps(external_cat2):
+        try:
+            allume_category = AllumeCategory.objects.get(name__iexact=external_cat2)
+            active = True
+            pending_review = False
+        except AllumeCategory.DoesNotExist as e:
+            print 'The SynonymCategoryMap category must map to an existing AllumeCategory name.'
+            print e
+            allume_category = None
+            active = False
+            pending_review = True
 
     cm = CategoryMap(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
                                allume_category = allume_category, turned_on = active, pending_review=pending_review)
@@ -236,6 +247,28 @@ def _check_other_term_maps(primary_category, secondary_category):
     for term in synonym_other_terms:
         term = term.lower()
         if term in primary_category or term in secondary_category:
+            return True
+    return False
+
+def _check_synonym_term_maps(secondary_category):
+    """
+    Takes in a product secondary category. Checks secondary_category for a list of synonym categories,
+    governed by SynonymCategoryMap. If secondary_category is a SynonymCategoryMap category, determines
+    that the category was formulated using a SynonymCategoryMap and the resulting CategoryMap can be
+    shortcut mapped, thus returning True. Returns False otherwise.
+
+    Args:
+      secondary_category: A string representing a product category.
+
+    Returns:
+      bool: A boolean value representing whether or not any synonym term maps were found in either
+      string argument.
+    """
+    synonym_categories = SynonymCategoryMap.objects.values_list('category', flat=True)
+    secondary_category = secondary_category.lower()
+    for category in synoynm_categories:
+        category = category.lower()
+        if secondary_category == category:
             return True
     return False
 
