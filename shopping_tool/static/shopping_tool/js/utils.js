@@ -340,7 +340,7 @@ var utils = {
   */
   noteTemplate: function(note, stylist_id){
     var delete_link = '';
-    if(note.stylist == stylist_id){
+    if(note.stylist.id == stylist_id){
       delete_link = '<a href="#" data-noteid="' + note.id + '" class="delete-note"><i class="fa fa-times"></i></a>'
     }
     return '<div class="client-note" id="client-note-id-' + note.id + '"><p>' + note.notes+ '</p>' +
