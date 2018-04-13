@@ -1,0 +1,478 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>tasks.product_feed_py.product_feed_helpers &#8212; ANNA  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tasks.product_feed_py.product_feed_helpers</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">urlparse</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">product_api.models</span> <span class="k">import</span> <span class="n">Merchant</span><span class="p">,</span> <span class="n">CategoryMap</span><span class="p">,</span> <span class="n">Network</span><span class="p">,</span> <span class="n">Product</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<div class="viewcode-block" id="parse_raw_product_url"><a class="viewcode-back" href="../../../index.html#tasks.product_feed_py.product_feed_helpers.parse_raw_product_url">[docs]</a><span class="k">def</span> <span class="nf">parse_raw_product_url</span><span class="p">(</span><span class="n">product_url</span><span class="p">,</span> <span class="n">raw_product_attribute</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes in the product_url of a product record and parses the raw_product_url to use for the record.</span>
+<span class="sd">    Does an initial pass to access the query param corresponding to the raw_product_url. A second pass</span>
+<span class="sd">    is performed to drop certain parameters from the url before finalizing it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      product_url (str): A string denoting the full product_url of the record.</span>
+<span class="sd">      raw_product_attribute (str): A string denoting the dictionary field name to use in the first pass of the product_url.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      str: The raw_product_url to use for the record.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pass one</span>
+    <span class="n">raw_product_url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">parse_qs</span><span class="p">(</span><span class="n">urlparse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">product_url</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">)[</span><span class="n">raw_product_attribute</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># pass two</span>
+    <span class="c1"># split the url into parts</span>
+    <span class="n">split</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">raw_product_url</span><span class="p">)</span>
+    <span class="c1"># parse the query parameters</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">parse_qs</span><span class="p">(</span><span class="n">urlparse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">raw_product_url</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>  
+    <span class="c1"># drop the indicated query parameters (utm_medium, utm_source, utm_campaign, siteID)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;utm_medium&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;utm_source&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;utm_campaign&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;utm_content&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;siteID&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="c1"># reconstruct the params into useful query string</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">doseq</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># replace the initial query value</span>
+    <span class="n">split</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">_replace</span><span class="p">(</span><span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="p">)</span>
+    <span class="c1"># rejoin the split raw_product_url</span>
+    <span class="n">joined</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlunsplit</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">joined</span></div>
+
+<span class="k">def</span> <span class="nf">generate_product_id</span><span class="p">(</span><span class="n">product_name</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In the event that a product_id cannot be found, deterministically generate a product_id</span>
+<span class="sd">    using that product&#39;s product_name, size, and color.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      product_name (str): The product&#39;s name.</span>
+<span class="sd">      size (str): The merchant provided size field for the product.</span>
+<span class="sd">      color (str): The merchant provided color field for the product.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      str: A string to use as the product&#39;s product_id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">step1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">15</span><span class="p">)</span>
+    <span class="n">step2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">15</span><span class="p">)</span>
+    <span class="n">step3</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">15</span><span class="p">)</span>
+
+    <span class="n">product_id</span> <span class="o">=</span> <span class="n">step1</span> <span class="o">+</span> <span class="n">step2</span> <span class="o">+</span> <span class="n">step3</span>
+    <span class="n">product_id</span> <span class="o">=</span> <span class="n">product_id</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">60</span><span class="p">)</span> <span class="c1"># keep within mysql bigint</span>
+    <span class="n">product_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">product_id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">product_id</span>
+
+<span class="k">def</span> <span class="nf">assign_product_id_size</span><span class="p">(</span><span class="n">product_id</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This helper function is used for deaggregating product records based on size. It generates</span>
+<span class="sd">    a product_id to be used based on the size given and the product_id of the parent record.</span>
+<span class="sd">    Args:</span>
+<span class="sd">      product_id (str): The product_id of the parent record containing the list of sizes.</span>
+<span class="sd">      size (str): One size from a seperated list of the product&#39;s sizes.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      str: The product_id to use in the associated child record.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">converted</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">15</span><span class="p">)</span>
+    <span class="n">product_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">product_id</span><span class="p">)</span> <span class="o">+</span> <span class="n">converted</span>
+    <span class="n">product_id</span> <span class="o">=</span> <span class="n">product_id</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">60</span><span class="p">)</span> <span class="c1"># keep id under bigint max signed value</span>
+    <span class="n">product_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">product_id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">product_id</span>
+
+<span class="k">def</span> <span class="nf">seperate_sizes</span><span class="p">(</span><span class="n">sizes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes in sizes and determines if it can use any of the available parsing methods to seperate the </span>
+<span class="sd">    sizes into a distinct sizes array. Enforces a delimiter hierarchy of commas, hyphens. If the sizes</span>
+<span class="sd">    passed in do not contain any of the delimiters, it returns the sizes attribute unchanged.</span>
+<span class="sd">    Args:</span>
+<span class="sd">      sizes (str): A string representing the size attribute of a product record.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">      arr: An array of individual sizes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">:</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="n">_comma_seperate_sizes</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s1">&#39;/&#39;</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">:</span>
+        <span class="k">pass</span> <span class="c1"># no understanding yet of separation on slashes</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">sizes</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s1">&#39;-&#39;</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">:</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="n">_hyphen_seperate_sizes</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># or size contains no sought delmiters</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">sizes</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">sizes</span>
+
+<span class="k">def</span> <span class="nf">_comma_seperate_sizes</span><span class="p">(</span><span class="n">sizes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes in a size attribute, intended to be from a product which has a comma seperated list as a size,</span>
+<span class="sd">    and returns an array of individual size values to be used in creation of children records. If the sizes</span>
+<span class="sd">    passed in do not contain a comma delimiter or is an otherwise malformed input, returns sizes as the single</span>
+<span class="sd">    member of an array.</span>
+<span class="sd">    Args:</span>
+<span class="sd">      sizes (str): A string containing a comma seperated list of sizes of the product.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      arr: An array of the individual sizes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[,]+&#39;</span><span class="p">,</span> <span class="n">sizes</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)):</span>
+      <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">arr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">arr</span>
+  
+<span class="k">def</span> <span class="nf">_hyphen_seperate_sizes</span><span class="p">(</span><span class="n">sizes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes in a size attribute, intended t obe from a product which has a hyphen seperated list as a size,</span>
+<span class="sd">    and returns an array of individual size values to be used in the creation of children records. If the sizes</span>
+<span class="sd">    passed in do not contain a hyphen delimiter or is an otherwise malformed input, returns sizes as the single</span>
+<span class="sd">    member of an array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      sizes (str): A string representing the a character delimited list of sizes.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      arr: An array containing each distinct size from the input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">splitSizes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># initialize a pointer to start of sizes string</span>
+        <span class="n">pointer</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># start initialized to 0</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># end initialized to 0</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># iterate in this fashion until pointer &gt; len(string)</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">pointer</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">sizes</span><span class="p">)):</span>
+          <span class="c1"># increment pointer and read character by character until/if we encounter whitespace</span>
+            <span class="k">if</span> <span class="n">sizes</span><span class="p">[</span><span class="n">pointer</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;(&#39;</span><span class="p">:</span> <span class="c1"># search for a opening parentheses...</span>
+                <span class="c1"># proceed to iterate until or if we reach a closure</span>
+                <span class="k">while</span> <span class="n">sizes</span><span class="p">[</span><span class="n">pointer</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;)&#39;</span><span class="p">:</span>
+                    <span class="n">pointer</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">sizes</span><span class="p">[</span><span class="n">pointer</span><span class="p">]</span><span class="o">.</span><span class="n">isspace</span><span class="p">():</span> <span class="c1"># we have encountered whitespace</span>
+                <span class="c1"># if this happens, set end to pointer</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">pointer</span>
+                <span class="c1"># add the split size</span>
+                <span class="c1"># then, keep reading until character is neither whitespace or a dash (increment the pointer)</span>
+                <span class="c1"># while sizes[pointer].isspace() or sizes[pointer] == &#39;-&#39;:</span>
+                  <span class="c1"># pointer += 1</span>
+                <span class="k">while</span> <span class="n">sizes</span><span class="p">[</span><span class="n">pointer</span><span class="p">]</span><span class="o">.</span><span class="n">isspace</span><span class="p">():</span>
+                    <span class="n">pointer</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># we should have the non whitespace char at pointer</span>
+                <span class="k">if</span> <span class="n">sizes</span><span class="p">[</span><span class="n">pointer</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span> <span class="c1"># we found what we&#39;re looking for</span>
+                    <span class="k">while</span> <span class="n">sizes</span><span class="p">[</span><span class="n">pointer</span><span class="p">]</span><span class="o">.</span><span class="n">isspace</span><span class="p">()</span> <span class="ow">or</span> <span class="n">sizes</span><span class="p">[</span><span class="n">pointer</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+                        <span class="n">pointer</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">splitSizes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sizes</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">])</span> <span class="c1"># off by one?</span>
+                    <span class="c1"># the pointer value that occurs here is the new start</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">pointer</span>
+                <span class="k">elif</span> <span class="n">sizes</span><span class="p">[</span><span class="n">pointer</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;(&#39;</span><span class="p">:</span>
+                    <span class="c1"># proceed to iterate until or if we reach a closure</span>
+                    <span class="k">while</span> <span class="n">sizes</span><span class="p">[</span><span class="n">pointer</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;)&#39;</span><span class="p">:</span>
+                        <span class="n">pointer</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+              <span class="c1"># repeat this process until we break out of the looping condition</span>
+                <span class="n">pointer</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># then, append sizes[start:len(sizes)]</span>
+        <span class="n">splitSizes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sizes</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">sizes</span><span class="p">)])</span>
+
+        <span class="k">return</span> <span class="n">splitSizes</span>
+    <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">sizes</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">determine_allume_size</span><span class="p">(</span><span class="n">allume_category</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">size_mapping</span><span class="p">,</span> <span class="n">shoe_size_mapping</span><span class="p">,</span> <span class="n">size_term_mapping</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes in an allume_category and size and uses the relevant size mappings to determine an allume</span>
+<span class="sd">    size to use. Method calls one of two helper methods for the logic to determine allume size.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      allume_category (str): The allume_category from the product. Should contain a value in the</span>
+<span class="sd">      product_api_allumecategory table.</span>
+<span class="sd">      size (str): The size the merchant provided, unless delimited.</span>
+<span class="sd">      size_mapping (dict): A dictionary created by the helper function. Uses the sizemap model.</span>
+<span class="sd">      shoe_size_mapping (dict): A dictionary created by the helper function. Uses the shoesizemap model.</span>
+<span class="sd">      size_term_mapping (dict): A dictionary created by the helper function. Uses the sizetermmap model.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      str: The calculated allume_size to use.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">allume_category</span> <span class="o">==</span> <span class="s1">&#39;Shoes&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_determine_allume_size_shoe</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">shoe_size_mapping</span><span class="p">,</span> <span class="n">size_term_mapping</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_determine_allume_size</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size_mapping</span><span class="p">,</span> <span class="n">size_term_mapping</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_determine_allume_size</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size_mapping</span><span class="p">,</span> <span class="n">size_term_mapping</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes in a size and the relevant size mappings and determines the appropriate allume size using</span>
+<span class="sd">    translation models. Additionally, expands certain key phrases into attributes of interest such as</span>
+<span class="sd">    &#39;Plus&#39; or &#39;Petite&#39;.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      size (str): The string representing the distinct (not a list) size value of a product.</span>
+<span class="sd">      size_mapping (dict): A dictionary created by the helper function. Uses the sizemap model.</span>
+<span class="sd">      size_term_mapping (dict): A dictionary created by the helper function. Uses the sizetermmap model.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      str: The allume size to use. Can return the size that was passed in if there are no mapping hits.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># seperate the string from any part of the string that is contained in parentheses</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;^[^\(]+&#39;</span><span class="p">)</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parsed_size</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span> <span class="c1"># if match is None</span>
+        <span class="n">parsed_size</span> <span class="o">=</span> <span class="n">size</span>
+
+    <span class="c1"># if it startswith a number</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">starts_with_num</span> <span class="o">=</span> <span class="n">parsed_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">starts_with_num</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">starts_with_num</span><span class="p">:</span>
+        <span class="c1"># check for the special cases of 1X, 2X, 3X, 4X</span>
+        <span class="n">special_cases</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;0X&#39;</span><span class="p">,</span> <span class="s1">&#39;1X&#39;</span><span class="p">,</span> <span class="s1">&#39;2X&#39;</span><span class="p">,</span> <span class="s1">&#39;3X&#39;</span><span class="p">,</span> <span class="s1">&#39;4X&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">parsed_size</span> <span class="ow">in</span> <span class="n">special_cases</span><span class="p">:</span>
+            <span class="c1"># if size is 1X or above, it is plus</span>
+            <span class="n">special_cases</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;0X&#39;</span><span class="p">)</span>
+            <span class="n">size_term</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">if</span> <span class="n">parsed_size</span> <span class="ow">in</span> <span class="n">special_cases</span><span class="p">:</span>
+                <span class="n">size_term</span> <span class="o">=</span> <span class="s1">&#39;Plus&#39;</span>
+            <span class="n">allume_size</span> <span class="o">=</span> <span class="n">size_mapping</span><span class="p">[</span><span class="n">parsed_size</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">size_term</span><span class="p">:</span>
+                <span class="n">allume_size</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">size_term</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">join_val</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="c1"># check number split from characters?</span>
+            <span class="n">numeric</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">_split_size</span><span class="p">(</span><span class="n">parsed_size</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_lingerie_match</span><span class="p">(</span><span class="n">alpha</span><span class="p">):</span> <span class="c1"># we believe this to be lingerie</span>
+                <span class="n">allume_size</span> <span class="o">=</span> <span class="n">numeric</span> <span class="o">+</span> <span class="n">alpha</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">numeric</span> <span class="ow">in</span> <span class="n">size_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">numeric</span> <span class="o">=</span> <span class="n">size_mapping</span><span class="p">[</span><span class="n">numeric</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="n">size_term_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">alpha</span> <span class="o">=</span> <span class="n">size_term_mapping</span><span class="p">[</span><span class="n">alpha</span><span class="p">]</span>
+                    <span class="n">join_val</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+                <span class="n">allume_size</span> <span class="o">=</span> <span class="n">numeric</span> <span class="o">+</span> <span class="n">join_val</span> <span class="o">+</span> <span class="n">alpha</span>
+                <span class="n">allume_size</span> <span class="o">=</span> <span class="n">allume_size</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                <span class="c1"># plus work?</span>
+                <span class="n">plus_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;18&#39;</span><span class="p">,</span> <span class="s1">&#39;20&#39;</span><span class="p">,</span> <span class="s1">&#39;22&#39;</span><span class="p">,</span> <span class="s1">&#39;24&#39;</span><span class="p">,</span> <span class="s1">&#39;26&#39;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">plus_size</span> <span class="ow">in</span> <span class="n">plus_sizes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">plus_size</span> <span class="ow">in</span> <span class="n">allume_size</span><span class="p">:</span>
+                        <span class="n">allume_size</span> <span class="o">+=</span> <span class="s1">&#39; Plus&#39;</span>
+                        <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># DO MORE work here</span>
+        <span class="c1"># if it&#39;s a character size, and also xxl or xxxl, add plus?</span>
+        <span class="c1"># check if it is a character size?</span>
+        <span class="k">if</span> <span class="n">parsed_size</span> <span class="ow">in</span> <span class="n">size_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">allume_size</span> <span class="o">=</span> <span class="n">size_mapping</span><span class="p">[</span><span class="n">parsed_size</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s1">&#39;XXL&#39;</span> <span class="ow">in</span> <span class="n">allume_size</span> <span class="ow">or</span> <span class="s1">&#39;XXXL&#39;</span> <span class="ow">in</span> <span class="n">allume_size</span><span class="p">:</span>
+                <span class="n">allume_size</span> <span class="o">+=</span> <span class="s1">&#39; Plus&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">allume_size</span> <span class="o">=</span> <span class="n">parsed_size</span>
+
+
+    <span class="k">return</span> <span class="n">allume_size</span>
+
+<span class="k">def</span> <span class="nf">_determine_allume_size_shoe</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">shoe_size_mapping</span><span class="p">,</span> <span class="n">size_term_mapping</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes in a size and the relevant size mappings and determines the appropriate allume size using</span>
+<span class="sd">    translation models.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      size (str): The string representing the distinct (not a list) size value of a product.</span>
+<span class="sd">      size_mapping (dict): A dictionary created by the helper function. Uses the sizemap model.</span>
+<span class="sd">      size_term_mapping (dict): A dictionary created by the helper function. Uses the sizetermmap model.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      str: The allume size to use. Can return the size that was passed in if there are no mapping hits.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># seperate the string from any part of the string that is contained in parentheses: 70 WW (US) -&gt; 70 WW</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;^[^\(]+&#39;</span><span class="p">)</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parsed_size</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span> <span class="c1"># if match is None</span>
+        <span class="n">parsed_size</span> <span class="o">=</span> <span class="n">size</span>
+
+    <span class="c1"># seperate this value into a numeric component and a character component (assumption is that shoe sizes start with numbers)</span>
+    <span class="c1"># assuming that shoe sizes start with numbers, seperate the shoe size into a numeric and character component</span>
+    <span class="n">numeric</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">_split_size</span><span class="p">(</span><span class="n">parsed_size</span><span class="p">)</span>
+
+    <span class="n">join_val</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="c1"># check if the seperated numeric value exists in the shoe size mapping</span>
+    <span class="k">if</span> <span class="n">numeric</span> <span class="ow">in</span> <span class="n">shoe_size_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">numeric</span> <span class="o">=</span> <span class="n">shoe_size_mapping</span><span class="p">[</span><span class="n">numeric</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="n">size_term_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="c1"># then attempt to expand the character part of the parsed size (there is also additional logic surrounding plus to be implemented here)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">size_term_mapping</span><span class="p">[</span><span class="n">alpha</span><span class="p">]</span>
+        <span class="n">join_val</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+
+    <span class="c1"># then concatenate these values in some form or fashion (perhaps with only 1 space? or a space determined by whether or not there was a dict hit)</span>
+    <span class="n">allume_size</span> <span class="o">=</span> <span class="n">numeric</span> <span class="o">+</span> <span class="n">join_val</span> <span class="o">+</span> <span class="n">alpha</span>
+    <span class="n">allume_size</span> <span class="o">=</span> <span class="n">allume_size</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">allume_size</span>
+
+<span class="k">def</span> <span class="nf">_split_size</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attempts to parse size values by finding the divider of where the first non-numeric character occurs.</span>
+<span class="sd">    It splits the string at that point, determining everything before the partition to be a numeric component</span>
+<span class="sd">    of the size and everything occuring after the partition is determined to be the alphabetical component.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      size (str): The string representing the distinct (not a list) size value of a product.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      tup: Returns a two argument tuple where the first element is the numeric component of the</span>
+<span class="sd">      size and the second element is the alphabetic componenet of the size.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;[^\W\d]&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">numeric</span> <span class="o">=</span> <span class="n">size</span><span class="p">[:</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">size</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">():]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span> <span class="c1"># match is None</span>
+        <span class="n">numeric</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">numeric</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+
+<span class="c1"># mostly considered necessary because lingerie sizes occur when the allume_category is &#39;Other&#39;</span>
+<span class="k">def</span> <span class="nf">_lingerie_match</span><span class="p">(</span><span class="n">characters</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes in a string of characters and determines if the characters consist only of the set of</span>
+<span class="sd">    characters that are seen to compose bra sizes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      characters (str): A string of characters that compose the character component of a numeric</span>
+<span class="sd">      and character size value.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      bool: Returns whether or not the set of characters consists of only valid bra size letters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^abcedfghABCDEFGH]&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">characters</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">set_deleted_network_products</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">threshold</span> <span class="o">=</span> <span class="mi">12</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper method for use in the main data feed method. Collects a list data feed products</span>
+<span class="sd">    that should have been upserted in the current run. For those that were determined to not have</span>
+<span class="sd">    been upserted, set those products to a status of is_deleted = True.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      network (str): The network name. Should correspond to the network name used in the</span>
+<span class="sd">      product_api_network table.</span>
+<span class="sd">      threshold (int): The time threshold in hours. If the updated-at value of a record is threshold</span>
+<span class="sd">      or more hours old, conclude that it was not updated in the current upsert and set to deleted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">network_id</span> <span class="o">=</span> <span class="n">Network</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">network</span><span class="p">)</span>
+    <span class="n">merchants</span> <span class="o">=</span> <span class="n">Merchant</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">network_id</span><span class="o">=</span><span class="n">network_id</span><span class="p">)</span>
+    <span class="n">merchant_ids</span> <span class="o">=</span> <span class="n">merchants</span><span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="s1">&#39;external_merchant_id&#39;</span><span class="p">)</span>
+    <span class="n">products</span> <span class="o">=</span> <span class="n">Product</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">merchant_id__in</span> <span class="o">=</span> <span class="n">merchant_ids</span><span class="p">)</span>
+    <span class="n">datetime_threshold</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span> <span class="o">=</span> <span class="n">threshold</span><span class="p">)</span>
+    <span class="n">deleted_products</span> <span class="o">=</span> <span class="n">products</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">updated_at__lte</span> <span class="o">=</span> <span class="n">datetime_threshold</span><span class="p">)</span>
+    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+    <span class="n">deleted_products</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">is_deleted</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">updated_at</span> <span class="o">=</span> <span class="n">updated_at</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Set </span><span class="si">%s</span><span class="s1"> non-upserted products to deleted&#39;</span> <span class="o">%</span> <span class="n">deleted_products</span><span class="o">.</span><span class="n">count</span><span class="p">())</span>
+
+<span class="k">def</span> <span class="nf">generate_merchant_id</span><span class="p">(</span><span class="n">merchant_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In the event of an absent merchant id from data, generate it using the merchant name.</span>
+<span class="sd">    Necessary due to the need for a unique merchant id and product id pair as a unique index</span>
+<span class="sd">    on the products table for the upsert process.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      merchant_name (str):</span>
+<span class="sd">    Returns:</span>
+<span class="sd">      str: A string corresponding of purely numbers. Intended for use as a product&#39;s</span>
+<span class="sd">      merchant id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># value needs to fit in a mysql int because the values of merchant_id </span>
+    <span class="c1"># and external_merchant id do not match between the product_api_product</span>
+    <span class="c1"># and product_api_merchant tables...</span>
+    <span class="n">converted</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">merchant_name</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">7</span><span class="p">)</span> <span class="c1"># the power to raise to has wiggle room</span>
+    <span class="n">merchant_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">converted</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">merchant_id</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Placeholder.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

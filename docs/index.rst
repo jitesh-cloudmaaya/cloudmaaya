@@ -29,6 +29,30 @@ Welcome to ANNA's documentation!
    Does an initial pass to access the query param corresponding to the raw_product_url. A second pass
    is performed to drop certain parameters from the url before finalizing it.
 
+.. py:function:: generate_product_id(product_name, size, color)
+
+   TO-DO
+
+.. py:function:: assign_product_id_size(product_id, size)
+
+   TO-DO
+
+.. py:function:: separate_sizes(sizes)
+
+   TO-DO
+
+.. py:function:: determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+
+   TO-DO
+
+.. 'private' python functions
+.. py:function:: _comma_separate_sizes(sizes)
+
+   TO-DO
+
+.. py:function:: _hyphen_separate_sizes(sizes)
+
+
 
 .. def parse_raw_product_url(product_url, raw_product_attribute):
 ..     """
