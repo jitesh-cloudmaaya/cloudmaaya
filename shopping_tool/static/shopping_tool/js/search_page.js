@@ -130,7 +130,7 @@ var search_page = {
     }).on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
-      rack_builder.inspectItem(link, 'rack');
+      rack_builder.inspectItem(link, 'search');
     });       
     /* check last search cookie and load if exists */
     var search_cookie = utils.readCookie('lastShoppingToolSearch' + search_page.session_id);
@@ -345,17 +345,19 @@ var search_page = {
   * @description item template for results and rack
   * @param {object} details - item details JSON
   * @param {string} view - which display 
+  * @param {array} hits - other versions of the product 
   * @returns {string} HTML
   */   
-  itemTemplate: function(details, view){
-    var w = $('#results').width() / 3;   
+  itemTemplate: function(details, view, hits){
+    var products = hits.concat({_source: details});
+    var colors_hash = rack_builder.createColorHash(products);
     var desc = details.long_product_description == '' ? details.short_product_description : details.long_product_description ;
     var price_display = '<span class="price">' + numeral(details.current_price).format('$0,0.00') + '</span>';
     var merch = ' at ' + details.merchant_name;
     var manu = details.manufacturer_name;    
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
-    var size_div = details.size == 'ONE' ? '' : '<span class="sizing">size: ' + details.size + '</span>' ;
+    var size_div = colors_hash.color_names.length > 1 ? '<span class="sizing"><em></em> <strong>more colors available</strong></span>' : '' ;
     var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
       details.id + '"><i class="icon-hanger"></i>add to rack</a>';
     var rack_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
@@ -572,17 +574,26 @@ var search_page = {
     var markup = [];
     if(results != undefined && results.length > 0){
       for(var i = 0, l = results.length; i<l; i++){
-        markup.push(search_page.itemTemplate(results[i]._source, 'list'));
+        markup.push(
+          search_page.itemTemplate(
+            results[i]._source, 
+            'list', 
+            results[i].inner_hits.collapsed_by_product_name.hits.hits
+          )
+        );
       }
       $('#results').html(markup.join(''));
       if(markup.length > 0){
         var items = $('#results div.item');
         for(var i = 0, l = results.length; i<l; i++){
           var item = results[i];
-          var details = item._source;   
+          var details = item._source;  
+          var inner_hits = item.inner_hits.collapsed_by_product_name.hits.hits; 
           var dom = items.eq(i)
           dom.find('a.add-to-rack').data('details',details);
-          dom.find('a.favorite').data('details',details);     
+          dom.find('a.favorite').data('details',details); 
+          /* add the details and inner hits to the item-details dataset */
+          dom.find('a.item-detail').data('hits', inner_hits).data('details', details)
         }
       }
       utils.equalHeight($('#results div.item'));
