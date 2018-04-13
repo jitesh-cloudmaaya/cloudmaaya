@@ -171,3 +171,7 @@ todo_include_todos = True
 
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
+
+import django
+os.environ['DJANGO_SETTINGS_MODULE'] = 'catalogue_service.settings'
+django.setup()
