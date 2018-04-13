@@ -200,6 +200,25 @@ var rack_builder = {
     }
   },
   /**
+  * @description create a color hash from array of products
+  * @param {array} products - array of products objects
+  * @returns {object} - colors_hash object
+  */
+  createColorHash: function (products){
+    var colors_hash = {color_names: [], color_sizes: {}};
+    for(var i = 0, l = products.length; i<l; i++){
+      var product = products[i]._source;
+      var product_color = product.merchant_color.toLowerCase();
+      if(colors_hash.color_names.indexOf(product_color) == -1){
+        colors_hash.color_names.push(product_color)
+        colors_hash.color_sizes[product_color] = [];
+      }
+      colors_hash.color_sizes[product_color] = colors_hash.color_sizes[product_color].concat(product.size.split(','));
+    }
+    colors_hash.color_names.sort();
+    return colors_hash;
+  },
+  /**
   * @desscription favorite item template
   * @param {object} obj - item fields in json format
   * @returns {string} HTML of favorite item
@@ -578,26 +597,7 @@ var rack_builder = {
       '<span class="pulse_message">Finding your requested item...</span>' +
       '</div></div>'
     ).fadeIn();    
-    /**
-    * @description private function to create colors hash
-    * @param {array} products - array of products objects
-    * @returns {object} - colors_hash object
-    */
-    function createColorHash(products){
-      var colors_hash = {color_names: [], color_sizes: {}};
-      for(var i = 0, l = products.length; i<l; i++){
-        var product = products[i]._source;
-        var product_color = product.merchant_color.toLowerCase();
-        console.log(product_color)
-        if(colors_hash.color_names.indexOf(product_color) == -1){
-          colors_hash.color_names.push(product_color)
-          colors_hash.color_sizes[product_color] = [];
-        }
-        colors_hash.color_sizes[product_color] = colors_hash.color_sizes[product_color].concat(product.size.split(','));
-      }
-      colors_hash.color_names.sort();
-      return colors_hash;
-    }
+    
     /**
     * @description private function to create the inspect markup
     * @param {object} colors_hash - color hash used to allow product switcher
@@ -680,7 +680,7 @@ var rack_builder = {
       /* get inner hits and concat with transformed (into matching object structure) currect product details */
       var product = link.data('details');
       var products = link.data('hits').concat({_source: product});
-      var colors_hash = createColorHash(products);
+      var colors_hash = rack_builder.createColorHash(products);
       var markup = createInspectMarkup(colors_hash, product);
       inspect.html(markup.join(''));
       /* add info to each link */
@@ -708,7 +708,7 @@ var rack_builder = {
           console.log(results)
           var markup = [];
           var matching = '';
-          var colors_hash = createColorHash(results.data);
+          var colors_hash = rack_builder.createColorHash(results.data);
           for(var i = 0, l = results.data.length; i<l; i++){
             var product = results.data[i]._source;
             if(product.id == id){

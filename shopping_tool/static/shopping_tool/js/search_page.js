@@ -345,17 +345,19 @@ var search_page = {
   * @description item template for results and rack
   * @param {object} details - item details JSON
   * @param {string} view - which display 
+  * @param {array} hits - other versions of the product 
   * @returns {string} HTML
   */   
-  itemTemplate: function(details, view){
-    var w = $('#results').width() / 3;   
+  itemTemplate: function(details, view, hits){
+    var products = hits.concat({_source: details});
+    var colors_hash = rack_builder.createColorHash(products);
     var desc = details.long_product_description == '' ? details.short_product_description : details.long_product_description ;
     var price_display = '<span class="price">' + numeral(details.current_price).format('$0,0.00') + '</span>';
     var merch = ' at ' + details.merchant_name;
     var manu = details.manufacturer_name;    
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
-    var size_div = details.size == 'ONE' ? '' : '<span class="sizing">size: ' + details.size + '</span>' ;
+    var size_div = colors_hash.color_names.length > 1 ? '<span class="sizing"><em></em> <strong>more colors available</strong></span>' : '' ;
     var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
       details.id + '"><i class="icon-hanger"></i>add to rack</a>';
     var rack_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
@@ -572,7 +574,13 @@ var search_page = {
     var markup = [];
     if(results != undefined && results.length > 0){
       for(var i = 0, l = results.length; i<l; i++){
-        markup.push(search_page.itemTemplate(results[i]._source, 'list'));
+        markup.push(
+          search_page.itemTemplate(
+            results[i]._source, 
+            'list', 
+            results[i].inner_hits.collapsed_by_product_name.hits.hits
+          )
+        );
       }
       $('#results').html(markup.join(''));
       if(markup.length > 0){
