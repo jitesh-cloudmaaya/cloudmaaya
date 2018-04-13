@@ -569,131 +569,174 @@ var rack_builder = {
   * @param {string} view - option view flag to add additional processing if required
   */
   inspectItem: function(link, view){
-    var view_class = view == undefined ? '' : view;
     var id = parseInt(link.data('productid'));
-    $.ajax({
-      beforeSend: function(){
-        $('#inspect-item').html(
-          '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
-        '<div class="loader">' +
-        '<span class="pulse_loader"></span>' +
-        '<span class="pulse_message">Finding your requested item...</span>' +
-        '</div></div>'
-        ).fadeIn();
-      },
-      type: "GET",
-      url: '/product_api/get_product/' + id + '/',
-      error: function(){
-        $('#inspect-item').html(
-          '<div class="stage"><a href="#" class="close-inspect">' +
-          '<i class="fa fa-times"></i></a><h2>could not find product...</h2>' +
-          '<div class="lookup-error-msg">Please copy and paste the information below and send to ' +
-          'Pamela Nguesseu <pamela@allume.co>:' +
-          '<span class="msg"><strong>/product_api/get_product/ Error</strong>Product ' + id + ' failed to load ' +
-          'at:<br/> ' +  moment().format('MM/DD/YYYY - HH:mm a') + '</span>Thank you.<br/>The Allume team</div></div>'
-        );
-      },
-      success: function(results){
-        console.log(results)
-        var inspect = $('#inspect-item');
-        var markup = [];
-        var matching;
-        var colors_hash = {color_names: [], color_sizes: {}};
-        for(var i = 0, l = results.data.length; i<l; i++){
-          var product = results.data[i]._source;
-          var product_color = product.merchant_color.toLowerCase();
-          if(colors_hash.color_names.indexOf(product_color) == -1){
-            colors_hash.color_names.push(product_color)
-            colors_hash.color_sizes[product_color] = [];
-          }
-          colors_hash.color_sizes[product_color] = colors_hash.color_sizes[product_color].concat(product.size.split(','));
-          if(product.id == id){
-            matching = product;
-          }
+    var inspect = $('#inspect-item');
+    inspect.html(
+      '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
+      '<div class="loader">' +
+      '<span class="pulse_loader"></span>' +
+      '<span class="pulse_message">Finding your requested item...</span>' +
+      '</div></div>'
+    ).fadeIn();    
+    /**
+    * @description private function to create colors hash
+    * @param {array} products - array of products objects
+    * @returns {object} - colors_hash object
+    */
+    function createColorHash(products){
+      var colors_hash = {color_names: [], color_sizes: {}};
+      for(var i = 0, l = products.length; i<l; i++){
+        var product = products[i]._source;
+        var product_color = product.merchant_color.toLowerCase();
+        console.log(product_color)
+        if(colors_hash.color_names.indexOf(product_color) == -1){
+          colors_hash.color_names.push(product_color)
+          colors_hash.color_sizes[product_color] = [];
         }
-        colors_hash.color_names.sort();
-        var product = matching;
-        if(product != undefined){
-          var color_options = [];
-          var color_link = '';
-          var sizes = '';
-          for(var i = 0, l = colors_hash.color_names.length; i<l; i++){
-            var color = colors_hash.color_names[i];
-            if(color == product.merchant_color.toLowerCase()){
-              if(l > 1){
-                color_link = '<a href="#" id="color-toggle">' + color + '<i class="fa fa-caret-down"></i></a>'
-              }else{
-                color_link = color;
-              }
-              color_options.push('<a href="#" class="size-by-color selected" data-color="' + color + '">' + color + '</a>');
-              var sizes_list = [...new Set(colors_hash.color_sizes[color])].filter(String);
-              sizes = '<span id="sizes-list">' + sizes_list.join(', ') + '</span>';
-            }else{
-              color_options.push('<a href="#" class="size-by-color" data-color="' + color + '">' + color + '</a>');
-            }
+        colors_hash.color_sizes[product_color] = colors_hash.color_sizes[product_color].concat(product.size.split(','));
+      }
+      colors_hash.color_names.sort();
+      return colors_hash;
+    }
+    /**
+    * @description private function to create the inspect markup
+    * @param {object} colors_hash - color hash used to allow product switcher
+    * @param {object} product - the product details hash 
+    * @returns {array} - markup array
+    */
+    function createInspectMarkup(colors_hash, product){
+      var markup = []
+      var color_options = [];
+      var color_link = '';
+      var sizes = '';
+      for(var i = 0, l = colors_hash.color_names.length; i<l; i++){
+        var color = colors_hash.color_names[i];
+        if(color == product.merchant_color.toLowerCase()){
+          if(l > 1){
+            color_link = '<a href="#" id="color-toggle">' + color + '<i class="fa fa-caret-down"></i></a>'
+          }else{
+            color_link = color;
           }
-          var fave_link = '<a href="#" class="favorite" data-productid="' + 
-            product.id + '"><i class="fa fa-heart-o"></i></a>';
-          var fave_idx = rack_builder.favorites_product_ids.indexOf(product.id);
-          if(fave_idx > -1){
-            var favorite_object = rack_builder.favorites[fave_idx];
-            fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
-            product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
-          }
-          var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
-            product.id + '"><i class="icon-hanger"></i>add to rack</a>';
-          var rack_sku = product.id + '_' + product.merchant_id + '_' + product.product_id + '_' + product.sku;
-          var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
-          if(rack_idx > -1){
-            rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
-              product.id + '"><i class="fa fa-check"></i> racked</a>';
-          }
-          var price_display = '<span class="price" id="inspected-item-price"><em class="label">price:</em>' + numeral(product.current_price).format('$0,0.00') + '</span>';
-          var merch = '<span class="merch">' + product.merchant_name + '</span>';
-          var manu = '<span class="manu">by ' + product.manufacturer_name + '</span>';  
-          if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }
-          if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }  
-          var options_header = '';
-          var options_class = '';
-          if(color_options.length > 4){
-            options_class = 'with-header'
-            options_header = '<h6>' + (color_options.length - 1) + ' other color options</h6>';
-          }  
-          markup.push(
-            '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
-            '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
-            '<tr><td class="img" rowspan="2"><img id="inspected-item-img" src="' + product.product_image_url + '"/>' + 
-            fave_link + '' + rack_link + '<a href="' + product.product_url + '" target="_blank" class="link-to-store">' + 
-            '<i class="fa fa-tag"></i>view at store</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
-            merch + '' + manu + '<p class="item-desc"> '+ 
-            product.short_product_description + '</p>' + price_display +
-            '<span class="general" id="inspected-item-sku"><em>sku:</em>' + product.sku + '</span>' +
-            '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
-            '<div id="color-options" class="' + options_class + '">' + options_header + 
-            '<div>' + color_options.join('') + '</div></div>' +
-            '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
-            '<span class="general"><em>category:</em>' + product.allume_category  + 
-            '</span><span class="general"><em>availability:</em>' + product.availability  + 
-            '</span></td></tr></table><span class="shopping-for">styling for:</span>' + 
-            $('#client-details-template').html() + '</div></div>'
-          );
-          inspect.html(markup.join(''));
-          /* add info to each link */
-          inspect.find('a.add-to-rack').data('details', product);
-          inspect.find('a.favorite').data('details', product);
-          inspect.find('a#color-toggle').data('colormap', colors_hash.color_sizes).data('details', results.data);
+          color_options.push('<a href="#" class="size-by-color selected" data-color="' + color + '">' + color + '</a>');
+          var sizes_list = [...new Set(colors_hash.color_sizes[color])].filter(String);
+          sizes = '<span id="sizes-list">' + sizes_list.join(', ') + '</span>';
         }else{
+          color_options.push('<a href="#" class="size-by-color" data-color="' + color + '">' + color + '</a>');
+        }
+      }
+      var fave_link = '<a href="#" class="favorite" data-productid="' + 
+        product.id + '"><i class="fa fa-heart-o"></i></a>';
+      var fave_idx = rack_builder.favorites_product_ids.indexOf(product.id);
+      if(fave_idx > -1){
+        var favorite_object = rack_builder.favorites[fave_idx];
+        fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
+        product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
+      }
+      var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
+        product.id + '"><i class="icon-hanger"></i>add to rack</a>';
+      var rack_sku = product.id + '_' + product.merchant_id + '_' + product.product_id + '_' + product.sku;
+      var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
+      if(rack_idx > -1){
+        rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
+          product.id + '"><i class="fa fa-check"></i> racked</a>';
+      }
+      var price_display = '<span class="price" id="inspected-item-price"><em class="label">price:</em>' + numeral(product.current_price).format('$0,0.00') + '</span>';
+      var merch = '<span class="merch">' + product.merchant_name + '</span>';
+      var manu = '<span class="manu">by ' + product.manufacturer_name + '</span>';  
+      if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }
+      if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }  
+      var options_header = '';
+      var options_class = '';
+      if(color_options.length > 4){
+        options_class = 'with-header'
+        options_header = '<h6>' + (color_options.length - 1) + ' other color options</h6>';
+      } 
+      markup.push(
+        '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
+        '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
+        '<tr><td class="img" rowspan="2"><img id="inspected-item-img" src="' + product.product_image_url + '"/>' + 
+        fave_link + '' + rack_link + '<a href="' + product.product_url + '" target="_blank" class="link-to-store">' + 
+        '<i class="fa fa-tag"></i>view at store</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
+        merch + '' + manu + '<p class="item-desc"> '+ 
+        product.short_product_description + '</p>' + price_display +
+        '<span class="general" id="inspected-item-sku"><em>sku:</em>' + product.sku + '</span>' +
+        '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
+        '<div id="color-options" class="' + options_class + '">' + options_header + 
+        '<div>' + color_options.join('') + '</div></div>' +
+        '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
+        '<span class="general"><em>category:</em>' + product.allume_category  + 
+        '</span><span class="general"><em>availability:</em>' + product.availability  + 
+        '</span></td></tr></table><span class="shopping-for">styling for:</span>' + 
+        $('#client-details-template').html() + '</div></div>'
+      );
+      return markup;
+    }
+    /** 
+    * if inspect item click comes from search page, we have all items that match it as 
+    * data attribute on the link. We simply need to analyze the data and draw the 
+    * resultant html, no need to re-touch database
+    */
+    if(view == 'search'){
+      /* get inner hits and concat with transformed (into matching object structure) currect product details */
+      var product = link.data('details');
+      var products = link.data('hits').concat({_source: product});
+      var colors_hash = createColorHash(products);
+      var markup = createInspectMarkup(colors_hash, product);
+      inspect.html(markup.join(''));
+      /* add info to each link */
+      inspect.find('a.add-to-rack').data('details', product);
+      inspect.find('a.favorite').data('details', product);
+      inspect.find('a#color-toggle').data('colormap', colors_hash.color_sizes).data('details', products);
+    /**
+    * any other click to inspect an item (rack, look builder) need to get the info from the db
+    */
+    }else{
+      $.ajax({
+        type: "GET",
+        url: '/product_api/get_product/' + id + '/',
+        error: function(){
           inspect.html(
             '<div class="stage"><a href="#" class="close-inspect">' +
             '<i class="fa fa-times"></i></a><h2>could not find product...</h2>' +
             '<div class="lookup-error-msg">Please copy and paste the information below and send to ' +
-            'Pamela Nguesseu &lt;pamela@allume.co&gt;:' +
-            '<span class="msg"><strong>/product_api/get_product/ Error</strong>Product ' + id + ' failed to return a viable product ' +
-            'at:<br/>' +  moment().format('MM/DD/YYYY - HH:mm a') + '</span>Thank you.<br/>The Allume team</div></div>'
+            'Pamela Nguesseu <pamela@allume.co>:' +
+            '<span class="msg"><strong>/product_api/get_product/ Error</strong>Product ' + id + ' failed to load ' +
+            'at:<br/> ' +  moment().format('MM/DD/YYYY - HH:mm a') + '</span>Thank you.<br/>The Allume team</div></div>'
           );
+        },
+        success: function(results){
+          console.log(results)
+          var markup = [];
+          var matching = '';
+          var colors_hash = createColorHash(results.data);
+          for(var i = 0, l = results.data.length; i<l; i++){
+            var product = results.data[i]._source;
+            if(product.id == id){
+              matching = product;
+              break;
+            }
+          }
+          if(matching != ''){
+            var markup = createInspectMarkup(colors_hash, matching);
+            inspect.html(markup.join(''));
+            /* add info to each link */
+            inspect.find('a.add-to-rack').data('details', matching);
+            inspect.find('a.favorite').data('details', matching);
+            inspect.find('a#color-toggle').data('colormap', colors_hash.color_sizes).data('details', results.data);
+          }else{
+            inspect.html(
+              '<div class="stage"><a href="#" class="close-inspect">' +
+              '<i class="fa fa-times"></i></a><h2>could not find product...</h2>' +
+              '<div class="lookup-error-msg">There was an issue finding your product, please close this ' +
+              'window and try again. If the issue persists, please copy and paste the information below and send to ' +
+              'Pamela Nguesseu &lt;pamela@allume.co&gt;:' +
+              '<span class="msg"><strong>/product_api/get_product/ Error</strong>Product ' + id + ' did not retun in the lookup ' +
+              'at:<br/>' +  moment().format('MM/DD/YYYY - HH:mm a') + '</span>Thank you.<br/>The Allume team</div></div>'
+            );
+          }
         }
-      }
-    });
+      });
+    }
   },
   /**
   * @description item template for results and rack

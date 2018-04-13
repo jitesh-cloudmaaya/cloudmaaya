@@ -130,7 +130,7 @@ var search_page = {
     }).on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
-      rack_builder.inspectItem(link, 'rack');
+      rack_builder.inspectItem(link, 'search');
     });       
     /* check last search cookie and load if exists */
     var search_cookie = utils.readCookie('lastShoppingToolSearch' + search_page.session_id);
@@ -579,10 +579,13 @@ var search_page = {
         var items = $('#results div.item');
         for(var i = 0, l = results.length; i<l; i++){
           var item = results[i];
-          var details = item._source;   
+          var details = item._source;  
+          var inner_hits = item.inner_hits.collapsed_by_product_name.hits.hits; 
           var dom = items.eq(i)
           dom.find('a.add-to-rack').data('details',details);
-          dom.find('a.favorite').data('details',details);     
+          dom.find('a.favorite').data('details',details); 
+          /* add the details and inner hits to the item-details dataset */
+          dom.find('a.item-detail').data('hits', inner_hits).data('details', details)
         }
       }
       utils.equalHeight($('#results div.item'));
