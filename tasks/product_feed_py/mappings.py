@@ -266,7 +266,7 @@ def _check_synonym_term_maps(secondary_category):
     """
     synonym_categories = SynonymCategoryMap.objects.values_list('category', flat=True)
     secondary_category = secondary_category.lower()
-    for category in synoynm_categories:
+    for category in synonym_categories:
         category = category.lower()
         if secondary_category == category:
             return True
