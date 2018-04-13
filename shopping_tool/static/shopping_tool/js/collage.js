@@ -95,7 +95,7 @@ var collage = {
             success: function(response){
               if(image_url != null){
                 var img = new Image(); 
-                img.src = look_proxy + '' + image_url;
+                img.src = look_proxy + '' + encodeURIComponent(image_url);
                 console.log(img.src)
                 img.onload = function() {
                   console.log('loaded ' + img.src)
@@ -113,7 +113,7 @@ var collage = {
                     prod_id: product_obj.id,
                     product_id: link_product_id
                   });
-                  fImg.originalImgSrc = look_proxy + '' + image_url;
+                  fImg.originalImgSrc = look_proxy + '' + encodeURIComponent(image_url);
                   /* lancoz resampling filter for sharper images */
                   fImg.resizeFilter = new fabric.Image.filters.Resize({
                     scaleX: 1,
@@ -282,9 +282,8 @@ var collage = {
       if(prod.cropped_image_code != null){
         img.src = prod.cropped_image_code
       }else{
-        img.src = look_proxy + '' + prod.product.product_image_url;
+        img.src = look_proxy + '' + encodeURIComponent(prod.product.product_image_url);
       }
-      console.log(img.src)
       img.onload = function() {
         console.log('loaded ' + img.src)
         var scale = 1;
@@ -311,7 +310,7 @@ var collage = {
           dims.product_id = product_id;
         }
         var fImg = new fabric.Cropzoomimage(this, dims);
-        fImg.originalImgSrc = look_proxy + '' + prod.product.product_image_url;
+        fImg.originalImgSrc = look_proxy + '' + encodeURIComponent(prod.product.product_image_url);
         /* lancoz resampling filter for sharper images */
         fImg.resizeFilter = new fabric.Image.filters.Resize({
           scaleX: 1,
@@ -331,7 +330,9 @@ var collage = {
         }
       };
       img.addEventListener('error', function(){
-        console.log('image errored')
+        console.log('failed to load ' + img.src)
+        var prod_id = prod.id != undefined ? prod.id : '' ;
+        var product_id = prod.product != undefined ? prod.product.id : '' ;
         alert('There was a problem loading the product image. Product id: ' + product_id + '\nThis product will be removed from the look.');
         $.ajax({
           success:function(response){},
