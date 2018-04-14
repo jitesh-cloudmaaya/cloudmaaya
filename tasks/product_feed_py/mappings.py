@@ -125,7 +125,7 @@ def create_size_term_mapping():
 
     return size_term_mapping
 
-def add_new_merchant(external_merchant_id, name, network, active = False, search_rank = 10):
+def add_new_merchant(external_merchant_id, name, network, active = False, search_rank = 0):
     Merchant.objects.create(external_merchant_id = external_merchant_id, name = name, network = network, active = active, search_rank = search_rank)
 
 def get_network(network_name):
