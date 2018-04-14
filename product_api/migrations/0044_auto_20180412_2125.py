@@ -28,5 +28,5 @@ class Migration(migrations.Migration):
             model_name='product',
             index=models.Index(fields=['primary_category', 'secondary_category'], name='product_api_primary_26aa77_idx'),
         ),
-        migrations.RunSQL("ALTER TABLE product_api_product convert to CHARSET latin1;"),
+        #migrations.RunSQL("ALTER TABLE product_api_product convert to CHARSET latin1;"),
     ]
