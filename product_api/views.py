@@ -56,8 +56,8 @@ def facets(self):
 
     sort_order = self.query_params.get('sort')
     if not sort_order:
-        sort_order = "-allume_score"
-        #sort_order = "_score"
+        #sort_order = "-allume_score"
+        sort_order = "_score"
 
     filter_favs = self.query_params.get('favs')
     if filter_favs:
