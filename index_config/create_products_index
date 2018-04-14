@@ -352,6 +352,20 @@ POST _reindex
   }
 }
 
+DELETE /products
+
+POST _reindex
+{
+  "source": {
+    "index": "products2"
+  },
+  "dest": {
+    "index": "products"
+  }
+}
+
+DELETE /products2
+
 
 GET /products_synonyms_2/_analyze
 {
