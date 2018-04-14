@@ -1,7 +1,4 @@
-#DELETE /products_synonym
-
-
-PUT /products2
+curl -XPUT 'https://vpc-catalogue-prod-yoakwrlaxcpcowqwfbhe6nj5sm.us-west-1.es.amazonaws.com/products2?pretty' -H 'Content-Type: application/json' -d'
 {
   "settings": {
     "analysis": {
@@ -340,9 +337,13 @@ PUT /products2
       }
     }
   }
+}}
 }
+'
 
-POST _reindex
+
+
+curl -XPOST 'https://vpc-catalogue-prod-yoakwrlaxcpcowqwfbhe6nj5sm.us-west-1.es.amazonaws.com/_reindex' -H 'Content-Type: application/json' -d'
 {
   "source": {
     "index": "products"
@@ -350,11 +351,13 @@ POST _reindex
   "dest": {
     "index": "products2"
   }
-}
+};'
 
-DELETE /products
+curl 'https://vpc-catalogue-prod-yoakwrlaxcpcowqwfbhe6nj5sm.us-west-1.es.amazonaws.com/_cat/indices?v'
 
-POST _reindex
+curl -XDELETE 'https://vpc-catalogue-prod-yoakwrlaxcpcowqwfbhe6nj5sm.us-west-1.es.amazonaws.com/products'
+
+curl -XPOST 'https://vpc-catalogue-prod-yoakwrlaxcpcowqwfbhe6nj5sm.us-west-1.es.amazonaws.com/_reindex' -H 'Content-Type: application/json' -d'
 {
   "source": {
     "index": "products2"
@@ -362,13 +365,8 @@ POST _reindex
   "dest": {
     "index": "products"
   }
-}
+};'
 
-DELETE /products2
+curl 'https://vpc-catalogue-prod-yoakwrlaxcpcowqwfbhe6nj5sm.us-west-1.es.amazonaws.com/_cat/indices?v'
 
-
-GET /products_synonyms_2/_analyze
-{
-  "analyzer" : "my_synonyms",
-  "text" : "Elizabeth is the pants queen"
-}
+curl -XDELETE 'https://vpc-catalogue-prod-yoakwrlaxcpcowqwfbhe6nj5sm.us-west-1.es.amazonaws.com/products2'

@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     # instantiate relevant mappings
     merchant_mapping = mappings.create_merchant_mapping()
+    merchant_search_rank_mapping = mappings.create_merchant_search_rank_mapping()
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
@@ -62,7 +63,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                 merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
                 if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
                     # check config files
-                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config_ran/'
+                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/ran/'
                     fd = os.listdir(config_path)
 
                     default = 'default'
@@ -101,8 +102,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         product_id = datum['product_id']
                         product_name = datum['product_name']
                         SKU = datum['SKU']
-                        primary_category = _product_field_tiered_assignment(tiered_assignments, 'primary_category', datum)
-                        secondary_category = _product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum)
+                        primary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'primary_category', datum, datum['primary_category'])
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum['secondary_category'])
                         product_url = datum['product_url']
 
                         try:
@@ -240,7 +241,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             # set defaults
                             record['is_best_seller'] = u'0'
                             record['is_trending'] = u'0'
-                            record['allume_score'] = u'0'
+
+                            record['allume_score'] = unicode(merchant_search_rank_mapping[long(merchant_id)])
 
                             # if there is a sale
                             try:
@@ -295,35 +297,3 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     if not is_delta:
         print('Setting deleted for non-upserted products')
         product_feed_helpers.set_deleted_network_products('RAN')
-
-def _product_field_tiered_assignment(tiered_assignments, fieldname, datum):
-    """
-    Attempts a best effort assignment of fieldname using tiered_assigments and the information encoded in datum.
-    Uses the first field label from tiered_assignments that has a non-empty value. If a non-empty value cannot be
-    resolved, the function returns an empty value.
-    Example: _product_field_tiered_assignment({'primary_category': ['primary_category', 'attribute_2_product_type']},
-        'primary_category', {'primary_category': '', 'attribute_2_product_type': 'Beauty & Fragrance'}) -> 'Beauty & Fragrance'
-
-    Args:
-        tiered_assignments (dict): A dictionary representing categories with tiered assignment possibilities.
-        The dictionary has keys of strings that are fieldnames in the datum and the values are list of strings,
-        with each string representing code that is a strategy to generate an assignment. The list is sequential.
-        fieldname (str): A string denoting the fieldname label that is used as a key in datum.
-        datum (dict): A dictionary representing the raw data from a RAN file. Maps field attribute labels to
-        a string representing their value.
-
-    Returns:
-      str: The assignment that was found and used. Can be the empty string.
-    """
-    try:
-        strategy_list = tiered_assignments[fieldname]
-    except KeyError:
-        return datum[fieldname]
-
-    assignment = ''
-    for strategy in strategy_list:
-        assignment = eval(strategy)
-        if assignment:
-            break
-
-    return assignment

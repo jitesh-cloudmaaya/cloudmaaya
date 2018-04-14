@@ -37,7 +37,7 @@
   <div id="look-drop"><div class="start">Select or add a look to edit...</div></div>
   <div id="compare-looks">
     <div class="lookbook-btns">
-      <a href="#" id="preview-lookbook">preview lookbook</a>
+      <a href="#" id="preview-lookbook" target="_blank">preview lookbook</a>
       <a href="#" id="publish-lookbook">publish lookbook</a>
     </div>
     <div class="other-looks" id="look-builder-session-looks">
@@ -60,45 +60,6 @@
       <a href="#" class="yes">Yes</a>
       <a href="#" class="cancel">No</a>
     </div>
-  </div>
-</div>
-<!-- preview overlay -->
-<div id="preview-lookbook-overlay">
-  <div class="stage">
-    <a href="#" id="close-lb-pre"><i class="fa fa-times"></i></a>
-    <h2>Preview Lookbook</h2>
-      <div class="preview-container">
-        <div class="client-details">
-          <p>
-            <span><strong>spend:</strong></span>
-            <span><em>tops:</em>{{ client.client_360.spending_tops }}</span>
-            <span><em>bottoms:</em>{{ client.client_360.spending_bottoms }}</span>
-            <span><em>dresses:</em>{{ client.client_360.spending_dresses }}</span>
-            <span><em>jackets:</em>{{ client.client_360.spending_jackets }}</span>
-            <span><em>shoes:</em>{{ client.client_360.spending_shoes }}</span>
-          </p>
-          <p>
-            <span><strong>sizes:</strong></span>
-            <span id="prev-bra-size"></span>
-            <span><em>tops:</em>{{ client.client_360.size_tops }}</span>
-            <span><em>pants:</em>{{ client.client_360.size_pants }}</span>
-            <span><em>jeans:</em>{{ client.client_360.size_jeans }}</span>
-            <span><em>shoe:</em>{{ client.client_360.size_shoe }}</span>
-          </p>
-
-          <div class="bio">
-            <img class="client" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/>
-            <h3>{{ client.first_name }} {{ client.last_name }}</h3>
-            <span id="prev-client-locale"></span>
-            <span id="prev-client-birthday"></span>  
-            <span><em>occupation:</em>{{ client.client_360.occupation }}</span>
-            <span><em>look goals:</em>{{ client.client_360.looks_goal }}</span>
-            <span><em>other goals:</em>{{ client.client_360.other_goals }}</span>
-          </div>
-        </div>
-        <h4>Live Preview:</h4>
-        <iframe id="previewIframe" src=""></iframe>
-      </div>
   </div>
 </div>
 <div id="publish-lookbook-overlay" data-allowed="false">

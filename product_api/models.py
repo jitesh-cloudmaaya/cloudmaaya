@@ -58,16 +58,17 @@ class Product(models.Model):
     is_deleted = models.BooleanField(default=0)
     current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     allume_size = models.CharField(max_length=255, blank=True, null=True)
-    allume_category = models.CharField(max_length=255, blank=True, null=True)
+    allume_category = models.CharField(max_length=128, blank=True, null=True)
     merchant_color = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         unique_together = (('product_id', 'merchant_id'))
         indexes = [
-            models.Index(fields=['primary_category']),
-            models.Index(fields=['secondary_category']),
+            # models.Index(fields=['primary_category']),
+            # models.Index(fields=['secondary_category']),
             models.Index(fields=['allume_category']),
             models.Index(fields=['merchant_id']),
+            models.Index(fields=['primary_category', 'secondary_category'])
         ]
 
 class Network(models.Model):
@@ -86,6 +87,7 @@ class Merchant(models.Model):
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+    search_rank = models.IntegerField(default=10)
 
 
     def __str__(self):
@@ -192,15 +194,6 @@ class SynonymCategoryMap(models.Model):
 
 # used in parsing category strings for exclusion terms
 class ExclusionTerm(models.Model):
-    term = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
-
-    def __str__(self):
-        return self.term
-
-# used in parsing category strings for terms that should map to allume category, Other
-class OtherTermMap(models.Model):
     term = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)

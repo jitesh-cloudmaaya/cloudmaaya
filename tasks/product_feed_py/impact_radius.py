@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     # mappings
     merchant_mapping = mappings.create_merchant_mapping()
+    merchant_search_rank_mapping = mappings.create_merchant_search_rank_mapping()
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
@@ -99,6 +100,25 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                 merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
                 # merchant_is_active = 1
                 if merchant_is_active:
+                    # config file
+                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/impact_radius/'
+                    fd = os.listdir(config_path)
+
+                    default = 'default'
+                    extension = '.yaml'
+                    default_filename = default + extension
+                    merchant_id_filename = str(merchant_id) + extension
+                    full_path = config_path + default_filename
+                    if merchant_id_filename in fd:
+                        full_path = config_path + merchant_id_filename
+
+                    with open(full_path, "r") as config:
+                        config_dict = yaml.load(config)
+                        try:
+                            tiered_assignments = config_dict['tiered_assignment_fields']
+                        except KeyError:
+                            tiered_assignments = {}
+
                     # omit fieldnames to use header lines
                     reader1 = csv.DictReader(lines1, restval = '', dialect = 'reading')
                     reader2 = csv.DictReader(lines2, restval = '', dialect = 'reading')
@@ -126,7 +146,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             continue
 
                         primary_category = datum1['Category']
-                        secondary_category = u'' # ?
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum1, u'')
 
                         allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
                         # allume_category = 'allume_category'
@@ -199,7 +219,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             # defaults?
                             record['is_best_seller'] = u'0'
                             record['is_trending'] = u'0'
-                            record['allume_score'] = u'0'
+                            record['allume_score'] = unicode(merchant_search_rank_mapping[long(merchant_id)])
                             # need to infer deleted?
                             record['is_deleted'] = u'0'
 

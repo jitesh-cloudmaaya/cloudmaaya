@@ -67,5 +67,5 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(add_network),
-        migrations.RunPython(add_merchants)
+        # migrations.RunPython(add_merchants)
     ]

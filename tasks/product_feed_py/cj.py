@@ -11,6 +11,7 @@ from catalogue_service.settings import BASE_DIR
 def cj(local_temp_dir, file_ending, cleaned_fields):
     # mappings
     merchant_mapping = mappings.create_merchant_mapping()
+    merchant_search_rank_mapping = mappings.create_merchant_search_rank_mapping()
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
@@ -66,7 +67,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                     merchant_name = merchant_name.lower() # make configuration file detection case agnostic
 
 
-                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config_cj/'
+                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/cj/'
                     fd = os.listdir(config_path)
 
                     default = 'default'
@@ -83,12 +84,18 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                         config_dict = yaml.load(config)
                         mapping_dict = config_dict['fields']
 
+                        try:
+                            tiered_assignments = config_dict['tiered_assignment_fields']
+                        except KeyError:
+                            tiered_assignments = {}
+
                     merchant_name_key = mapping_dict['merchant_name']
                     merchant_name = datum[merchant_name_key]
                     merchant_id = product_feed_helpers.generate_merchant_id(merchant_name)
                     # move activity check here
                     merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
                     if merchant_is_active:
+
                         # increment totalCount here??
                         totalCount += 1
 
@@ -146,7 +153,8 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             continue
 
                         primary_category = datum[primary_category_key]
-                        secondary_category = datum[secondary_category_key]
+                        # secondary_category = datum[secondary_category_key]
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum[secondary_category_key])
 
                         allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
                         if allume_category:
@@ -239,7 +247,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             # defaults
                             record['is_best_seller'] = u'0'
                             record['is_trending'] = u'0'
-                            record['allume_score'] = u'0'
+                            record['allume_score'] = unicode(merchant_search_rank_mapping[long(merchant_id)])
                             record['is_deleted'] = u'0'
 
                             # size splitting stuff
@@ -279,6 +287,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
-    print('Updating non-upserted Impact Radius products')
+    print('Updating non-upserted CJ products')
     product_feed_helpers.set_deleted_network_products('CJ')
 
