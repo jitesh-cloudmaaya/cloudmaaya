@@ -58,16 +58,17 @@ class Product(models.Model):
     is_deleted = models.BooleanField(default=0)
     current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     allume_size = models.CharField(max_length=255, blank=True, null=True)
-    allume_category = models.CharField(max_length=255, blank=True, null=True)
+    allume_category = models.CharField(max_length=128, blank=True, null=True)
     merchant_color = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         unique_together = (('product_id', 'merchant_id'))
         indexes = [
-            models.Index(fields=['primary_category']),
-            models.Index(fields=['secondary_category']),
+            # models.Index(fields=['primary_category']),
+            # models.Index(fields=['secondary_category']),
             models.Index(fields=['allume_category']),
             models.Index(fields=['merchant_id']),
+            models.Index(fields=['primary_category', 'secondary_category'])
         ]
 
 class Network(models.Model):

@@ -167,15 +167,15 @@ def index_deleted_products_cleanup(days_threshold = 5):
     statement1 = 'UPDATE %s pap' % product_table
     statement1 += ' INNER JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
     statement1 += ' AND pap.secondary_category = pac.external_cat2'
-    statement1 += ' SET is_deleted = 1 WHERE pac.active = 0'
+    statement1 += ' SET is_deleted = 1 WHERE pac.active = 0 and pap.is_deleted != 1'
 
     statement2 = 'UPDATE %s pap' % product_table
     statement2 += ' INNER JOIN %s pam ON pap.merchant_id = pam.external_merchant_id' % merchant_table
-    statement2 += ' SET is_deleted = 1 WHERE pam.active = 0'
+    statement2 += ' SET is_deleted = 1 WHERE pam.active = 0 and pap.is_deleted != 1'
 
     statement3 = 'UPDATE %s pap' % product_table
     statement3 += ' INNER JOIN %s paa ON pap.allume_category = paa.name' % allumecategory_table
-    statement3 += ' SET is_deleted = 1 WHERE paa.active = 0'
+    statement3 += ' SET is_deleted = 1 WHERE paa.active = 0 and pap.is_deleted != 1'
 
     # statement = 'UPDATE %s pap' % product_table
     # statement += ' INNER JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
@@ -196,7 +196,6 @@ def index_deleted_products_cleanup(days_threshold = 5):
 
     print 'Setting the inactive products to deleted took %s seconds' % (time.time() - start)
 
-    return
     checkpoint = time.time()
 
     datetime_threshold = datetime.now() - timedelta(days = days_threshold) # query products as far back as days_threshold
