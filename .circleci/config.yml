@@ -47,7 +47,7 @@ jobs:
            command: |
               virtualenv venv
               . venv/bin/activate
-              pip install Fabrik
+              pip install Fabric
        - run:
            name: Deploy if tests pass and branch is Develop
            command: |
