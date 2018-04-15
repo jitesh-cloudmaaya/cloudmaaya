@@ -394,7 +394,7 @@ def set_deleted_network_products(network, threshold = 12):
     datetime_threshold = datetime.now() - timedelta(hours = threshold)
     deleted_products = products.filter(updated_at__lte = datetime_threshold)
     updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    deleted_products.update(is_deleted = True, updated_at = updated_at)
+    #deleted_products.update(is_deleted = True, updated_at = updated_at)
     print('Set %s non-upserted products to deleted' % deleted_products.count())
 
 def generate_merchant_id(merchant_name):
