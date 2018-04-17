@@ -155,7 +155,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                         primary_category = datum1['Category']
                         secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum1, u'', synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping)
 
-                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
+                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
                         # allume_category = 'allume_category'
                         if allume_category:
                             record = {}

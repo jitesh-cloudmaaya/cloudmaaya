@@ -180,7 +180,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             genderSkipped += 1
                             continue
 
-                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
+                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
                         if allume_category:
                             # new logic for writing record
                             record = {}
