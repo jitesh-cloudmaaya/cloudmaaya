@@ -22,10 +22,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     shoe_size_mapping = mappings.create_shoe_size_mapping()
     size_term_mapping = mappings.create_size_term_mapping()
 
-
-    # space for new mappings related to synonyms
+    # additional mappings
     synonym_category_mapping = mappings.create_synonym_category_mapping()
-
+    synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('RAN')
@@ -108,8 +107,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         product_id = datum['product_id']
                         product_name = datum['product_name']
                         SKU = datum['SKU']
-                        primary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'primary_category', datum, datum['primary_category'], synonym_category_mapping = synonym_category_mapping)
-                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum['secondary_category'])
+                        primary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'primary_category', datum, datum['primary_category'])
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping)
                         product_url = datum['product_url']
 
                         try:

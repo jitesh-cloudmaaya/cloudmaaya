@@ -423,12 +423,13 @@ class CategoryHandlingTestCase(TestCase):
     def test_other_parsing(self):
         merchant_name = "Test Merchant"
         other_synonym = SynonymCategoryMap.objects.filter(category__iexact = 'Other').first().synonym
-        tiered_assignments = {'secondary_category': ["parse_other_terms(datum['product_name'])", "datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        synonym_other_category_mapping = create_synonym_other_category_mapping()
+        tiered_assignments = {'secondary_category': ["parse_other_terms(datum['product_name'], kwargs['synonym_other_category_mapping'])", "datum['secondary_category']", "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Product ' + other_synonym, 'primary_category': 'Apparel & Accessories', 'secondary_category': 'Should change?'}
         OTHER = AllumeCategory.objects.get(name__iexact = 'Other')
 
-        secondary_category = product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'])
+        secondary_category = product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_other_category_mapping = synonym_other_category_mapping)
         self.assertEqual('Other', secondary_category)
         self.assertEqual(0, CategoryMap.objects.count())
         add_category_map('', secondary_category, merchant_name)

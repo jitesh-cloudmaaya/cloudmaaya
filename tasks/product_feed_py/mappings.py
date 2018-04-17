@@ -20,6 +20,13 @@ def create_synonym_category_mapping():
         synonym_category_mapping[synonym_category_map[0]] = synonym_category_map[1]
 
     return synonym_category_mapping
+
+def create_synonym_other_category_mapping():
+    """
+    Returns a list of synonym terms that map to the category 'Other'.
+    """
+    return SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+
 ### end added mappings
 
 
