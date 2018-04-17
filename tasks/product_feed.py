@@ -60,6 +60,7 @@ class ProductFeed(object):
 
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
         statement = sql_script.read()
+        statement = statement.replace('[STAGING_TABLE]', table)
         statements = statement.split(';')
         for i in range(0, len(statements)):
             full_script.append(statements[i])
@@ -70,6 +71,7 @@ class ProductFeed(object):
 
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
         statement = sql_script.read()
+        statement = statement.replace('[STAGING_TABLE]', table)
         statements = statement.split(';')
         for i in range(0, len(statements)):
             full_script.append(statements[i])

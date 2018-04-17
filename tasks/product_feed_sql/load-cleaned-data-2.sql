@@ -88,7 +88,7 @@ SELECT
     papt.merchant_color,
     papt.allume_size,
     papt.allume_category
-FROM product_api_product_temp papt
+FROM [STAGING_TABLE] papt
 ON DUPLICATE KEY UPDATE
     product_id = VALUES(product_id),
     merchant_id = VALUES(merchant_id),
@@ -135,4 +135,4 @@ ON DUPLICATE KEY UPDATE
     allume_category = VALUES(allume_category);
 
 
-DROP TABLE product_api_product_temp;
+-- DROP TABLE [STAGING_TABLE];

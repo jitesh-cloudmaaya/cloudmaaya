@@ -40,7 +40,7 @@ fields:
 - current_price
 - is_deleted
 local_temp_dir: pd_temp/pepperjam
-table: product_api_product_temp
+table: product_api_product_temp_pj
 clean_data_method: pepperjam.get_data(self._local_temp_dir_cleaned, self._fields, dev=False)
 # not used
 leave_temp_files: false
