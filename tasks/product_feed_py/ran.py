@@ -96,7 +96,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
                         # do unicode sandwich stuff
                         for key, value in datum.iteritems():
-                            datum[key] = value.decode('UTF-8')
+                            # datum[key] = value.decode('UTF-8')
+                            datum[key] = product_feed_helpers.normalize_data(value)
 
                         # breaking down the data from the merchant files
                         product_id = datum['product_id']
@@ -117,6 +118,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         buy_url = datum['buy_url']
                         short_product_description = datum['short_product_description']
                         long_product_description = datum['long_product_description']
+
+
                         discount = datum['discount']
                         if not discount:
                             discount = u'0.00' # unicode necessary or not

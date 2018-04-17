@@ -128,9 +128,9 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
                         # unicode sandwich stuff
                         for key, value in datum1.iteritems():
-                            datum1[key] = value.decode('UTF-8')
+                            datum1[key] = product_feed_helpers.normalize_data(value)
                         for key, value in datum2.iteritems():
-                            datum2[key] = value.decode('UTF-8')
+                            datum2[key] = product_feed_helpers.normalize_data(value)
 
                         # gender pigeonholing
                         gender = datum1['Gender']

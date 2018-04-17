@@ -58,7 +58,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                 for datum in reader:
                     for key, value in datum.iteritems():
                         value = str(value)
-                        datum[key] = value.decode('UTF-8')
+                        datum[key] = product_feed_helpers.normalize_data(value)
 
                     # merchant name is the filename until the first dash (at least for all present examples)
                     pattern = re.compile('^[^-]*') # pattern matches until the first hyphen

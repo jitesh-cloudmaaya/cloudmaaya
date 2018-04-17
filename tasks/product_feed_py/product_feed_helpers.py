@@ -2,6 +2,7 @@ import urlparse
 import urllib
 import hashlib
 import re
+import unicodedata
 from datetime import datetime, timedelta
 from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
 from string import capwords
@@ -509,3 +510,16 @@ def parse_other_terms(product_name):
             return u'Other'
 
     return u''
+
+def normalize_data(text, form='NFD'):
+    """
+    Necessary to fit potential unicode data to MySQL tables with latin1 charsets.
+    """
+    try:
+        text = unicode(text, 'utf-8')
+    except (TypeError, NameError):
+        pass
+    text = unicodedata.normalize(form, text)
+    text = text.encode('ascii', 'ignore')
+    text = text.decode('utf-8')
+    return text
