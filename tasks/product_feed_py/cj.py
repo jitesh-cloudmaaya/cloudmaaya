@@ -4,7 +4,7 @@ import csv
 import yaml
 from copy import copy
 from tasks.product_feed_py import mappings, product_feed_helpers
-from product_api.models import Merchant, CategoryMap
+from product_api.models import Merchant, CategoryMap, SynonymCategoryMap, ExclusionTerm
 from datetime import datetime, timedelta
 from catalogue_service.settings import BASE_DIR
 
@@ -20,6 +20,11 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
     size_term_mapping = mappings.create_size_term_mapping()
     synonym_category_mapping = mappings.create_synonym_category_mapping()
     synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+
+    # for use when adding a mapping
+    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
     network = mappings.get_network('CJ') # update this function to add the network
 

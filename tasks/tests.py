@@ -144,37 +144,44 @@ class ProductFeedHelpersTestCase(TestCase):
         """
         The list of ExclusionTerms is found in ExclusionTerm.yaml.
         """
-        self.assertEqual(False, _check_exclusion_terms("", ""))
-        self.assertEqual(False, _check_exclusion_terms("neither", ""))
-        self.assertEqual(False, _check_exclusion_terms("", "either"))
-        self.assertEqual(False, _check_exclusion_terms("both", "some"))
-        self.assertEqual(True, _check_exclusion_terms("kid's", ""))
-        self.assertEqual(True, _check_exclusion_terms("", "kid's"))
-        self.assertEqual(True, _check_exclusion_terms("good", "food"))
-        self.assertEqual(True, _check_exclusion_terms("not an exclusion", "barbies"))
-        self.assertEqual(True, _check_exclusion_terms("home", "test"))
-        self.assertEqual(False, _check_exclusion_terms("toddlerstodo", ""))
-        self.assertEqual(True, _check_exclusion_terms("entertainment-now", ""))
+        exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+
+        self.assertEqual(False, _check_exclusion_terms("", "", exclusion_terms))
+        self.assertEqual(False, _check_exclusion_terms("neither", "", exclusion_terms))
+        self.assertEqual(False, _check_exclusion_terms("", "either", exclusion_terms))
+        self.assertEqual(False, _check_exclusion_terms("both", "some", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("kid's", "", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("", "kid's", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("good", "food", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("not an exclusion", "barbies", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("home", "test", exclusion_terms))
+        self.assertEqual(False, _check_exclusion_terms("toddlerstodo", "", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("entertainment-now", "", exclusion_terms))
 
     def test__check_other_term_maps(self):
         """
         The list of terms is found in OtherTermMap.yaml.
         """
-        self.assertEqual(True, _check_other_term_maps('swimsuits2018', ''))
-        self.assertEqual(True, _check_other_term_maps('', 'swimsuits2018'))
-        self.assertEqual(True, _check_other_term_maps('maternity', ''))
-        self.assertEqual(True, _check_other_term_maps('lingerie-match', ''))
-        self.assertEqual(True, _check_other_term_maps('swimsuits', 'nothing'))
-        self.assertEqual(True, _check_other_term_maps('hmmm', 'swimsuits'))
-        self.assertEqual(True, _check_other_term_maps('maternityleave', 'swimsuits2018'))
-        self.assertEqual(False, _check_other_term_maps('', ''))
-        self.assertEqual(False, _check_other_term_maps('Apparel', ''))
-        self.assertEqual(False, _check_other_term_maps('Apparel', 'Accessories'))
-        self.assertEqual(False, _check_other_term_maps('', 'Accessories'))
+        synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+
+        self.assertEqual(True, _check_other_term_maps('swimsuits2018', '', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('', 'swimsuits2018', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('maternity', '', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('lingerie-match', '', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('swimsuits', 'nothing', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('hmmm', 'swimsuits', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('maternityleave', 'swimsuits2018', synonym_other_terms))
+        self.assertEqual(False, _check_other_term_maps('', '', synonym_other_terms))
+        self.assertEqual(False, _check_other_term_maps('Apparel', '', synonym_other_terms))
+        self.assertEqual(False, _check_other_term_maps('Apparel', 'Accessories', synonym_other_terms))
+        self.assertEqual(False, _check_other_term_maps('', 'Accessories', synonym_other_terms))
 
     def test_add_category_map_w_exclusion_term(self):
+        exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+        synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+        synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
         ac = AllumeCategory.objects.first()
-        add_category_map('Clothing', 'Food', 'Raybeam', ac)
+        add_category_map('Clothing', 'Food', 'Raybeam', exclusion_terms, synonym_other_terms, synonym_terms, allume_category = ac)
         cm = CategoryMap.objects.get(external_cat1 = 'Clothing', external_cat2 = 'Food', merchant_name = 'Raybeam')
         exclude = AllumeCategory.objects.get(name__iexact='exclude')
 
@@ -408,15 +415,18 @@ class CategoryHandlingTestCase(TestCase):
         exclusion_term = ExclusionTerm.objects.first().term
         OTHER = AllumeCategory.objects.get(name__iexact = 'Other')
         EXCLUDE = AllumeCategory.objects.get(name__iexact = 'Exclude')
+        exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+        synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+        synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
         self.assertEqual(0, CategoryMap.objects.count())
-        add_category_map(other_synonym, '', merchant_name)
+        add_category_map(other_synonym, '', merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
         cm  = CategoryMap.objects.last()
         self.assertEqual(OTHER, cm.allume_category)
-        add_category_map('', exclusion_term, merchant_name)
+        add_category_map('', exclusion_term, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
         cm2  = CategoryMap.objects.last()
         self.assertEqual(EXCLUDE, cm2.allume_category)
-        add_category_map(other_synonym, exclusion_term, merchant_name)
+        add_category_map(other_synonym, exclusion_term, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
         cm3  = CategoryMap.objects.last()
         self.assertEqual(EXCLUDE, cm3.allume_category)
 
@@ -428,11 +438,14 @@ class CategoryHandlingTestCase(TestCase):
         fieldname = 'secondary_category'
         datum = {'product_name': 'Product ' + other_synonym, 'primary_category': 'Apparel & Accessories', 'secondary_category': 'Should change?'}
         OTHER = AllumeCategory.objects.get(name__iexact = 'Other')
+        exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+        synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+        synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
         secondary_category = product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_other_category_mapping = synonym_other_category_mapping)
         self.assertEqual('Other', secondary_category)
         self.assertEqual(0, CategoryMap.objects.count())
-        add_category_map('', secondary_category, merchant_name)
+        add_category_map('', secondary_category, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
         cm  = CategoryMap.objects.first()
         self.assertEqual(OTHER, cm.allume_category)
 

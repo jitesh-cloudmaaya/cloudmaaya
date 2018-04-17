@@ -6,7 +6,7 @@ import csv
 from tasks.product_feed_py import mappings, product_feed_helpers
 from copy import copy
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap, Network, Product
+from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap, ExclusionTerm
 from itertools import izip
 from datetime import datetime, timedelta
 
@@ -22,6 +22,11 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     size_term_mapping = mappings.create_size_term_mapping()
     synonym_category_mapping = mappings.create_synonym_category_mapping()
     synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+
+    # for use when adding a mapping
+    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('Impact Radius') # name subject to change?

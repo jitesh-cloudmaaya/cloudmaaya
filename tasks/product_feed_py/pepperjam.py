@@ -11,7 +11,7 @@ from copy import copy
 from django.db import connection
 from tasks.product_feed_py import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
-from product_api.models import CategoryMap, Network, Merchant, Product
+from product_api.models import CategoryMap, Network, Merchant, Product, SynonymCategoryMap, ExclusionTerm
 from datetime import datetime, timedelta
 
 # Set Up PepeprJam URL
@@ -82,6 +82,12 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
     size_term_mapping = mappings.create_size_term_mapping()
     synonym_category_mapping = mappings.create_synonym_category_mapping()
     synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+
+    # for use when adding a mapping
+    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
+
 
     network = mappings.get_network('PepperJam')
 
