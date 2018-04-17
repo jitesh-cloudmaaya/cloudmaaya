@@ -4,7 +4,7 @@ import csv
 import yaml
 from copy import copy
 from tasks.product_feed_py import mappings, product_feed_helpers
-from product_api.models import Merchant, CategoryMap
+from product_api.models import Merchant, CategoryMap, SynonymCategoryMap, ExclusionTerm
 from datetime import datetime, timedelta
 from catalogue_service.settings import BASE_DIR
 
@@ -18,6 +18,13 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
     size_mapping = mappings.create_size_mapping()
     shoe_size_mapping = mappings.create_shoe_size_mapping()
     size_term_mapping = mappings.create_size_term_mapping()
+    synonym_category_mapping = mappings.create_synonym_category_mapping()
+    synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+
+    # for use when adding a mapping
+    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
     network = mappings.get_network('CJ') # update this function to add the network
 
@@ -58,7 +65,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                 for datum in reader:
                     for key, value in datum.iteritems():
                         value = str(value)
-                        datum[key] = value.decode('UTF-8')
+                        datum[key] = product_feed_helpers.normalize_data(value)
 
                     # merchant name is the filename until the first dash (at least for all present examples)
                     pattern = re.compile('^[^-]*') # pattern matches until the first hyphen
@@ -154,9 +161,9 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
                         primary_category = datum[primary_category_key]
                         # secondary_category = datum[secondary_category_key]
-                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum[secondary_category_key])
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum[secondary_category_key], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping)
 
-                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
+                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
                         if allume_category:
                             record = {}
 

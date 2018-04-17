@@ -40,6 +40,6 @@ fields:
     - modification
 tiered_assignment_fields:
     secondary_category:
-        - "parse_other_terms(datum['product_name'])"
+        - "parse_other_terms(datum['product_name'], kwargs['synonym_other_category_mapping'])"
         - "datum['secondary_category']"
-        - "parse_category_from_product_name(datum['product_name'])"
+        - "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'])"

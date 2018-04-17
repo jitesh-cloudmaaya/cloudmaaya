@@ -57,28 +57,31 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('https://www.dsw.com/en/us/product/hue-hosiery-opaque-tights/211920', parse_raw_product_url(impact_radius_product_url0, 'u'))
 
     def test_parse_category_from_product_name(self):
+        # now need to initialize the synonym category mapping
+        synonym_category_mapping = create_synonym_category_mapping()
+
         # working for take 1
-        self.assertEqual('', parse_category_from_product_name(''))
-        self.assertEqual('', parse_category_from_product_name('Hopefully Some terms that stay not synonyms'))
-        self.assertEqual('Shoes', parse_category_from_product_name('Zerogrand Slip-On  Flat'))
-        self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings'))
-        self.assertEqual('', parse_category_from_product_name('Polosko Lace-Up Platform'))
-        self.assertEqual('Tops', parse_category_from_product_name('Pratt Denim Button Up'))
-        self.assertEqual('Other', parse_category_from_product_name('Loungewear Lingerie'))
-        self.assertEqual('Accessories', parse_category_from_product_name('Winter Hat'))
-        self.assertEqual('Tops', parse_category_from_product_name('Low-Top'))
+        self.assertEqual('', parse_category_from_product_name('', synonym_category_mapping))
+        self.assertEqual('', parse_category_from_product_name('Hopefully Some terms that stay not synonyms', synonym_category_mapping))
+        self.assertEqual('Shoes', parse_category_from_product_name('Zerogrand Slip-On  Flat', synonym_category_mapping))
+        self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings', synonym_category_mapping))
+        self.assertEqual('', parse_category_from_product_name('Polosko Lace-Up Platform', synonym_category_mapping))
+        self.assertEqual('Tops', parse_category_from_product_name('Pratt Denim Button Up', synonym_category_mapping))
+        self.assertEqual('Other', parse_category_from_product_name('Loungewear Lingerie', synonym_category_mapping))
+        self.assertEqual('Accessories', parse_category_from_product_name('Winter Hat', synonym_category_mapping))
+        self.assertEqual('Tops', parse_category_from_product_name('Low-Top', synonym_category_mapping))
 
         # assertions for take 2
-        self.assertEqual('Shoes',  parse_category_from_product_name('Dress Shoes'))
-        self.assertEqual('Shoes',  parse_category_from_product_name('Low Top Shoes'))
-        self.assertEqual('Dresses',  parse_category_from_product_name('Knit Dress'))
-        self.assertEqual('Jackets',  parse_category_from_product_name('Shorts Collared Jackets'))
-        self.assertEqual('Shoes',  parse_category_from_product_name('Top Bottom Heels Nothing'))
-        self.assertEqual('Bottoms',  parse_category_from_product_name('Button Up Britches'))
-        self.assertEqual('Jackets',  parse_category_from_product_name('Flat Facing Jacket'))
-        self.assertEqual('Jackets',  parse_category_from_product_name('Gown Down Overcoat Moat'))
-        self.assertEqual('Tops',  parse_category_from_product_name('Button Up Mock Neck Empty'))
-        self.assertEqual('Bottoms', parse_category_from_product_name('Dyed Boot Cut Jeans by Everlane'))
+        self.assertEqual('Shoes',  parse_category_from_product_name('Dress Shoes', synonym_category_mapping))
+        self.assertEqual('Shoes',  parse_category_from_product_name('Low Top Shoes', synonym_category_mapping))
+        self.assertEqual('Dresses',  parse_category_from_product_name('Knit Dress', synonym_category_mapping))
+        self.assertEqual('Jackets',  parse_category_from_product_name('Shorts Collared Jackets', synonym_category_mapping))
+        self.assertEqual('Shoes',  parse_category_from_product_name('Top Bottom Heels Nothing', synonym_category_mapping))
+        self.assertEqual('Bottoms',  parse_category_from_product_name('Button Up Britches', synonym_category_mapping))
+        self.assertEqual('Jackets',  parse_category_from_product_name('Flat Facing Jacket', synonym_category_mapping))
+        self.assertEqual('Jackets',  parse_category_from_product_name('Gown Down Overcoat Moat', synonym_category_mapping))
+        self.assertEqual('Tops',  parse_category_from_product_name('Button Up Mock Neck Empty', synonym_category_mapping))
+        self.assertEqual('Bottoms', parse_category_from_product_name('Dyed Boot Cut Jeans by Everlane', synonym_category_mapping))
 
     def test_tiered_assignment(self):
         """
@@ -119,15 +122,17 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['primary_category']))
 
         # test the method case
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        synonym_category_mapping = create_synonym_category_mapping()
+
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': ''}
-        self.assertEqual('Tops', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category']))
+        self.assertEqual('Tops', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping))
 
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': 'groomingfragrance'}
-        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category']))
+        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping))
 
         # test the new default behavior
         tiered_assignments = {}
@@ -139,37 +144,44 @@ class ProductFeedHelpersTestCase(TestCase):
         """
         The list of ExclusionTerms is found in ExclusionTerm.yaml.
         """
-        self.assertEqual(False, _check_exclusion_terms("", ""))
-        self.assertEqual(False, _check_exclusion_terms("neither", ""))
-        self.assertEqual(False, _check_exclusion_terms("", "either"))
-        self.assertEqual(False, _check_exclusion_terms("both", "some"))
-        self.assertEqual(True, _check_exclusion_terms("kid's", ""))
-        self.assertEqual(True, _check_exclusion_terms("", "kid's"))
-        self.assertEqual(True, _check_exclusion_terms("good", "food"))
-        self.assertEqual(True, _check_exclusion_terms("not an exclusion", "barbies"))
-        self.assertEqual(True, _check_exclusion_terms("home", "test"))
-        self.assertEqual(False, _check_exclusion_terms("toddlerstodo", ""))
-        self.assertEqual(True, _check_exclusion_terms("entertainment-now", ""))
+        exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+
+        self.assertEqual(False, _check_exclusion_terms("", "", exclusion_terms))
+        self.assertEqual(False, _check_exclusion_terms("neither", "", exclusion_terms))
+        self.assertEqual(False, _check_exclusion_terms("", "either", exclusion_terms))
+        self.assertEqual(False, _check_exclusion_terms("both", "some", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("kid's", "", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("", "kid's", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("good", "food", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("not an exclusion", "barbies", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("home", "test", exclusion_terms))
+        self.assertEqual(False, _check_exclusion_terms("toddlerstodo", "", exclusion_terms))
+        self.assertEqual(True, _check_exclusion_terms("entertainment-now", "", exclusion_terms))
 
     def test__check_other_term_maps(self):
         """
         The list of terms is found in OtherTermMap.yaml.
         """
-        self.assertEqual(True, _check_other_term_maps('swimsuits2018', ''))
-        self.assertEqual(True, _check_other_term_maps('', 'swimsuits2018'))
-        self.assertEqual(True, _check_other_term_maps('maternity', ''))
-        self.assertEqual(True, _check_other_term_maps('lingerie-match', ''))
-        self.assertEqual(True, _check_other_term_maps('swimsuits', 'nothing'))
-        self.assertEqual(True, _check_other_term_maps('hmmm', 'swimsuits'))
-        self.assertEqual(True, _check_other_term_maps('maternityleave', 'swimsuits2018'))
-        self.assertEqual(False, _check_other_term_maps('', ''))
-        self.assertEqual(False, _check_other_term_maps('Apparel', ''))
-        self.assertEqual(False, _check_other_term_maps('Apparel', 'Accessories'))
-        self.assertEqual(False, _check_other_term_maps('', 'Accessories'))
+        synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+
+        self.assertEqual(True, _check_other_term_maps('swimsuits2018', '', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('', 'swimsuits2018', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('maternity', '', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('lingerie-match', '', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('swimsuits', 'nothing', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('hmmm', 'swimsuits', synonym_other_terms))
+        self.assertEqual(True, _check_other_term_maps('maternityleave', 'swimsuits2018', synonym_other_terms))
+        self.assertEqual(False, _check_other_term_maps('', '', synonym_other_terms))
+        self.assertEqual(False, _check_other_term_maps('Apparel', '', synonym_other_terms))
+        self.assertEqual(False, _check_other_term_maps('Apparel', 'Accessories', synonym_other_terms))
+        self.assertEqual(False, _check_other_term_maps('', 'Accessories', synonym_other_terms))
 
     def test_add_category_map_w_exclusion_term(self):
+        exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+        synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+        synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
         ac = AllumeCategory.objects.first()
-        add_category_map('Clothing', 'Food', 'Raybeam', ac)
+        add_category_map('Clothing', 'Food', 'Raybeam', exclusion_terms, synonym_other_terms, synonym_terms, allume_category = ac)
         cm = CategoryMap.objects.get(external_cat1 = 'Clothing', external_cat2 = 'Food', merchant_name = 'Raybeam')
         exclude = AllumeCategory.objects.get(name__iexact='exclude')
 
@@ -403,30 +415,37 @@ class CategoryHandlingTestCase(TestCase):
         exclusion_term = ExclusionTerm.objects.first().term
         OTHER = AllumeCategory.objects.get(name__iexact = 'Other')
         EXCLUDE = AllumeCategory.objects.get(name__iexact = 'Exclude')
+        exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+        synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+        synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
         self.assertEqual(0, CategoryMap.objects.count())
-        add_category_map(other_synonym, '', merchant_name)
+        add_category_map(other_synonym, '', merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
         cm  = CategoryMap.objects.last()
         self.assertEqual(OTHER, cm.allume_category)
-        add_category_map('', exclusion_term, merchant_name)
+        add_category_map('', exclusion_term, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
         cm2  = CategoryMap.objects.last()
         self.assertEqual(EXCLUDE, cm2.allume_category)
-        add_category_map(other_synonym, exclusion_term, merchant_name)
+        add_category_map(other_synonym, exclusion_term, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
         cm3  = CategoryMap.objects.last()
         self.assertEqual(EXCLUDE, cm3.allume_category)
 
     def test_other_parsing(self):
         merchant_name = "Test Merchant"
         other_synonym = SynonymCategoryMap.objects.filter(category__iexact = 'Other').first().synonym
-        tiered_assignments = {'secondary_category': ["parse_other_terms(datum['product_name'])", "datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        synonym_other_category_mapping = create_synonym_other_category_mapping()
+        tiered_assignments = {'secondary_category': ["parse_other_terms(datum['product_name'], kwargs['synonym_other_category_mapping'])", "datum['secondary_category']", "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Product ' + other_synonym, 'primary_category': 'Apparel & Accessories', 'secondary_category': 'Should change?'}
         OTHER = AllumeCategory.objects.get(name__iexact = 'Other')
+        exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+        synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+        synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
-        secondary_category = product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'])
+        secondary_category = product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_other_category_mapping = synonym_other_category_mapping)
         self.assertEqual('Other', secondary_category)
         self.assertEqual(0, CategoryMap.objects.count())
-        add_category_map('', secondary_category, merchant_name)
+        add_category_map('', secondary_category, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
         cm  = CategoryMap.objects.first()
         self.assertEqual(OTHER, cm.allume_category)
 

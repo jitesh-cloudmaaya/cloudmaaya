@@ -7,7 +7,7 @@ from copy import copy
 from django.db import connection
 from tasks.product_feed_py import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
+from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap, ExclusionTerm
 from datetime import datetime, timedelta
 
 ### attempt at writing record with logic
@@ -21,6 +21,13 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     size_mapping = mappings.create_size_mapping()
     shoe_size_mapping = mappings.create_shoe_size_mapping()
     size_term_mapping = mappings.create_size_term_mapping()
+    synonym_category_mapping = mappings.create_synonym_category_mapping()
+    synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+
+    # for use when adding a mapping
+    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('RAN')
@@ -96,14 +103,15 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
                         # do unicode sandwich stuff
                         for key, value in datum.iteritems():
-                            datum[key] = value.decode('UTF-8')
+                            # datum[key] = value.decode('UTF-8')
+                            datum[key] = product_feed_helpers.normalize_data(value)
 
                         # breaking down the data from the merchant files
                         product_id = datum['product_id']
                         product_name = datum['product_name']
                         SKU = datum['SKU']
                         primary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'primary_category', datum, datum['primary_category'])
-                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum['secondary_category'])
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping)
                         product_url = datum['product_url']
 
                         try:
@@ -117,6 +125,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         buy_url = datum['buy_url']
                         short_product_description = datum['short_product_description']
                         long_product_description = datum['long_product_description']
+
                         discount = datum['discount']
                         if not discount:
                             discount = u'0.00' # unicode necessary or not
@@ -171,7 +180,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             genderSkipped += 1
                             continue
 
-                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
+                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
                         if allume_category:
                             # new logic for writing record
                             record = {}
