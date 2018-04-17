@@ -80,6 +80,8 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
     size_mapping = mappings.create_size_mapping()
     shoe_size_mapping = mappings.create_shoe_size_mapping()
     size_term_mapping = mappings.create_size_term_mapping()
+    synonym_category_mapping = mappings.create_synonym_category_mapping()
+    synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
 
     network = mappings.get_network('PepperJam')
 
@@ -178,7 +180,7 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
 
                 primary_category = product['category_program']
                 # secondary_category = product['category_network']
-                secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', product, product['category_network'])
+                secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', product, product['category_network'], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping)
 
                 allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
                 # allume_category = 'allume_category' # include to overrule category activity checks

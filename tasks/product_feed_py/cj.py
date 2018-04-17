@@ -18,6 +18,8 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
     size_mapping = mappings.create_size_mapping()
     shoe_size_mapping = mappings.create_shoe_size_mapping()
     size_term_mapping = mappings.create_size_term_mapping()
+    synonym_category_mapping = mappings.create_synonym_category_mapping()
+    synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
 
     network = mappings.get_network('CJ') # update this function to add the network
 
@@ -154,7 +156,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
                         primary_category = datum[primary_category_key]
                         # secondary_category = datum[secondary_category_key]
-                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum[secondary_category_key])
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum[secondary_category_key], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping)
 
                         allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
                         if allume_category:

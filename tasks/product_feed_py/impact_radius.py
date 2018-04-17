@@ -20,6 +20,8 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     size_mapping = mappings.create_size_mapping()
     shoe_size_mapping = mappings.create_shoe_size_mapping()
     size_term_mapping = mappings.create_size_term_mapping()
+    synonym_category_mapping = mappings.create_synonym_category_mapping()
+    synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('Impact Radius') # name subject to change?
@@ -146,7 +148,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             continue
 
                         primary_category = datum1['Category']
-                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum1, u'')
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum1, u'', synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping)
 
                         allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
                         # allume_category = 'allume_category'

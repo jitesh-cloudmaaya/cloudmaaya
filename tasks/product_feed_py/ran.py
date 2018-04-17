@@ -21,8 +21,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     size_mapping = mappings.create_size_mapping()
     shoe_size_mapping = mappings.create_shoe_size_mapping()
     size_term_mapping = mappings.create_size_term_mapping()
-
-    # additional mappings
     synonym_category_mapping = mappings.create_synonym_category_mapping()
     synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
 
