@@ -417,7 +417,7 @@ def generate_merchant_id(merchant_name):
     merchant_id = str(converted).decode('UTF-8')
     return merchant_id
 
-def parse_category_from_product_name(product_name):
+def parse_category_from_product_name(product_name, synonym_category_mapping):
     """
     Using SynonymCategoryMap, checks a product_name for presence of any synonyms. If one is found,
     leverages the SynonymCategoryMap objects to find the category that synonym should map to. This
@@ -432,7 +432,7 @@ def parse_category_from_product_name(product_name):
     """
     matched_synonym = None
     currIndex = -1
-    synonyms_list = SynonymCategoryMap.objects.values_list('synonym', flat = True)
+    synonyms_list = synonym_category_mapping.keys()
     product_name = product_name.lower()
     for synonym in synonyms_list:
         pattern = re.compile(r'\b' + synonym.lower() + r'\b')
@@ -445,14 +445,10 @@ def parse_category_from_product_name(product_name):
 
     category = u''
     if matched_synonym:
-        try:
-            category = capwords(SynonymCategoryMap.objects.get(synonym = matched_synonym).category)
-        except SynonymCategoryMap.MultipleObjectsReturned:
-            print matched_synonym
-            print 'There should not be multiple entries for a synonym, this needs to be corrected.'
+        category = synonym_category_mapping[matched_synonym]
     return category
 
-def product_field_tiered_assignment(tiered_assignments, product_fieldname, datum, default):
+def product_field_tiered_assignment(tiered_assignments, product_fieldname, datum, default, **kwargs):
     """
     Attempts a best effort assignment of fieldname using tiered_assigments and the information encoded in datum.
     Uses the first field label from tiered_assignments that has a non-empty value. If a non-empty value cannot be

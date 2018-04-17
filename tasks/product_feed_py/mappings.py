@@ -5,6 +5,24 @@ from django.db import connection
 from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, SynonymCategoryMap, ExclusionTerm
 from catalogue_service.settings import BASE_DIR
 
+
+### Added mappings... move to bottom
+
+def create_synonym_category_mapping():
+    """
+    Returns a dict of synonym terms as strings mapped to the synonym's
+    category.
+    """
+    synonym_category_mapping = {}
+
+    synonym_category_maps = SynonymCategoryMap.objects.values_list('synonym', 'category')
+    for synonym_category_map in synonym_category_maps:
+        synonym_category_mapping[synonym_category_map[0]] = synonym_category_map[1]
+
+    return synonym_category_mapping
+### end added mappings
+
+
 def create_merchant_mapping():
     """
     Returns a dict of merchant_ids as longs mapped to whether or not that
@@ -44,7 +62,6 @@ def create_color_mapping():
         color_mapping[color_map[0]] = color_map[1]
 
     return color_mapping
-
 
 def create_category_mapping():
     """

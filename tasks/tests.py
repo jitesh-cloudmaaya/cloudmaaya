@@ -57,28 +57,31 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('https://www.dsw.com/en/us/product/hue-hosiery-opaque-tights/211920', parse_raw_product_url(impact_radius_product_url0, 'u'))
 
     def test_parse_category_from_product_name(self):
+        # now need to initialize the synonym category mapping
+        synonym_category_mapping = create_synonym_category_mapping()
+
         # working for take 1
-        self.assertEqual('', parse_category_from_product_name(''))
-        self.assertEqual('', parse_category_from_product_name('Hopefully Some terms that stay not synonyms'))
-        self.assertEqual('Shoes', parse_category_from_product_name('Zerogrand Slip-On  Flat'))
-        self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings'))
-        self.assertEqual('', parse_category_from_product_name('Polosko Lace-Up Platform'))
-        self.assertEqual('Tops', parse_category_from_product_name('Pratt Denim Button Up'))
-        self.assertEqual('Other', parse_category_from_product_name('Loungewear Lingerie'))
-        self.assertEqual('Accessories', parse_category_from_product_name('Winter Hat'))
-        self.assertEqual('Tops', parse_category_from_product_name('Low-Top'))
+        self.assertEqual('', parse_category_from_product_name('', synonym_category_mapping))
+        self.assertEqual('', parse_category_from_product_name('Hopefully Some terms that stay not synonyms', synonym_category_mapping))
+        self.assertEqual('Shoes', parse_category_from_product_name('Zerogrand Slip-On  Flat', synonym_category_mapping))
+        self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings', synonym_category_mapping))
+        self.assertEqual('', parse_category_from_product_name('Polosko Lace-Up Platform', synonym_category_mapping))
+        self.assertEqual('Tops', parse_category_from_product_name('Pratt Denim Button Up', synonym_category_mapping))
+        self.assertEqual('Other', parse_category_from_product_name('Loungewear Lingerie', synonym_category_mapping))
+        self.assertEqual('Accessories', parse_category_from_product_name('Winter Hat', synonym_category_mapping))
+        self.assertEqual('Tops', parse_category_from_product_name('Low-Top', synonym_category_mapping))
 
         # assertions for take 2
-        self.assertEqual('Shoes',  parse_category_from_product_name('Dress Shoes'))
-        self.assertEqual('Shoes',  parse_category_from_product_name('Low Top Shoes'))
-        self.assertEqual('Dresses',  parse_category_from_product_name('Knit Dress'))
-        self.assertEqual('Jackets',  parse_category_from_product_name('Shorts Collared Jackets'))
-        self.assertEqual('Shoes',  parse_category_from_product_name('Top Bottom Heels Nothing'))
-        self.assertEqual('Bottoms',  parse_category_from_product_name('Button Up Britches'))
-        self.assertEqual('Jackets',  parse_category_from_product_name('Flat Facing Jacket'))
-        self.assertEqual('Jackets',  parse_category_from_product_name('Gown Down Overcoat Moat'))
-        self.assertEqual('Tops',  parse_category_from_product_name('Button Up Mock Neck Empty'))
-        self.assertEqual('Bottoms', parse_category_from_product_name('Dyed Boot Cut Jeans by Everlane'))
+        self.assertEqual('Shoes',  parse_category_from_product_name('Dress Shoes', synonym_category_mapping))
+        self.assertEqual('Shoes',  parse_category_from_product_name('Low Top Shoes', synonym_category_mapping))
+        self.assertEqual('Dresses',  parse_category_from_product_name('Knit Dress', synonym_category_mapping))
+        self.assertEqual('Jackets',  parse_category_from_product_name('Shorts Collared Jackets', synonym_category_mapping))
+        self.assertEqual('Shoes',  parse_category_from_product_name('Top Bottom Heels Nothing', synonym_category_mapping))
+        self.assertEqual('Bottoms',  parse_category_from_product_name('Button Up Britches', synonym_category_mapping))
+        self.assertEqual('Jackets',  parse_category_from_product_name('Flat Facing Jacket', synonym_category_mapping))
+        self.assertEqual('Jackets',  parse_category_from_product_name('Gown Down Overcoat Moat', synonym_category_mapping))
+        self.assertEqual('Tops',  parse_category_from_product_name('Button Up Mock Neck Empty', synonym_category_mapping))
+        self.assertEqual('Bottoms', parse_category_from_product_name('Dyed Boot Cut Jeans by Everlane', synonym_category_mapping))
 
     def test_tiered_assignment(self):
         """
@@ -119,15 +122,17 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual('', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['primary_category']))
 
         # test the method case
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        synonym_category_mapping = create_synonym_category_mapping()
+
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': ''}
-        self.assertEqual('Tops', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category']))
+        self.assertEqual('Tops', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping))
 
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'])"]}
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': 'groomingfragrance'}
-        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category']))
+        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping))
 
         # test the new default behavior
         tiered_assignments = {}
