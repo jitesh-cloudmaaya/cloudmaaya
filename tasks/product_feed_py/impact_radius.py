@@ -281,7 +281,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
     # infer deleted products
-    print('Updating non-upserted Impact Radius products')
-    product_feed_helpers.set_deleted_network_products('Impact Radius')
+    # print('Updating non-upserted Impact Radius products')
+    # product_feed_helpers.set_deleted_network_products('Impact Radius')
 
 

@@ -303,6 +303,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
     # test the theory
     # UPDATE: Csn't use on the Delta File as it will not include records that didn't change but are still live
-    if not is_delta:
-        print('Setting deleted for non-upserted products')
-        product_feed_helpers.set_deleted_network_products('RAN')
+    # if not is_delta:
+    #     print('Setting deleted for non-upserted products')
+    #     product_feed_helpers.set_deleted_network_products('RAN')

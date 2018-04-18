@@ -22,6 +22,9 @@ class Command(BaseCommand):
             pf.load_cleaned_data()
 
             self.stdout.write(self.style.SUCCESS("Successfully updated API products table"))
+            self.stdout.write(self.style.SUCCESS("Now setting deleted for non-upserted products"))
+            pf.set_deleted_network_products()
+            self.stdout.write(self.style.SUCCESS("Successfully set non-upserted products to deleted"))
         except Exception as e:
             self.stdout.write(self.style.ERROR("Failed"))
             self.stdout.write(self.style.ERROR(e))

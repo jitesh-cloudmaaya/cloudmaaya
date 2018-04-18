@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from tasks.product_feed import ProductFeed
 
-
 class Command(BaseCommand):
     help = 'Used to pull Impact Radius data feeds'
 
@@ -22,8 +21,9 @@ class Command(BaseCommand):
             pf.load_cleaned_data()
 
             self.stdout.write(self.style.SUCCESS("Sucessfully updated API products table"))
-
-            # rest of task is todo
+            self.stdout.write(self.style.SUCCESS("Now setting deleted for non-upserted products"))
+            pf.set_deleted_network_products()
+            self.stdout.write(self.style.SUCCESS("Successfully set non-upserted products to deleted"))
         except Exception as e:
             self.stdout.write(self.style.ERROR("Failed"))
             self.stdout.write(self.style.ERROR(e))
