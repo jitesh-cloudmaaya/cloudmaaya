@@ -27,6 +27,9 @@ def pepperjam_pull():
     print("Update API products table")
     pf.load_cleaned_data()
     print("Successfully updated API products table")
+    print("Now setting deleted for non-upserted products")
+    pf.set_deleted_network_products()
+    print("Successfully set non-upserted products to deleted")
 
 @task(base=QueueOnce)
 def ran_delta_pull():
@@ -40,6 +43,7 @@ def ran_delta_pull():
     print("Update API products table")
     pf.load_cleaned_data()
     print("Successfully updated API products table")
+    # TO-DO: handling the deleted call for delta files
 
 @task(base=QueueOnce)
 def ran_full_pull():
@@ -53,6 +57,9 @@ def ran_full_pull():
     print("Update API products table")
     pf.load_cleaned_data()
     print("Successfully updated API products table")
+    print("Now setting deleted for non-upserted products")
+    pf.set_deleted_network_products()
+    print("Successfully set non-upserted products to deleted")
 
 @task(base=QueueOnce)
 def impact_radius_pull():
@@ -66,6 +73,9 @@ def impact_radius_pull():
     print("Update API products table")
     pf.load_cleaned_data()
     print("Sucessfully updated API products table")
+    print("Now setting deleted for non-upserted products")
+    pf.set_deleted_network_products()
+    print("Successfully set non-upserted products to deleted")
 
 @task(base=QueueOnce)
 def cj_pull():
@@ -79,6 +89,9 @@ def cj_pull():
     print("Update API products table")
     pf.load_cleaned_data()
     print("Successfully updated API products table")
+    print("Now setting deleted for non-upserted products")
+    pf.set_deleted_network_products()
+    print("Successfully set non-upserted products to deleted")
 
 @task(base=QueueOnce)
 def build_client_360():

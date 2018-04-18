@@ -54,3 +54,4 @@ ftp_config:
   algorithm: N/A
 file_ending: mp.txt
 remote_dir: /
+network: PepperJam

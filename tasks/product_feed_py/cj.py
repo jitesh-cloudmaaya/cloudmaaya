@@ -294,6 +294,6 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
-    print('Updating non-upserted CJ products')
-    product_feed_helpers.set_deleted_network_products('CJ')
+    # print('Updating non-upserted CJ products')
+    # product_feed_helpers.set_deleted_network_products('CJ')
 

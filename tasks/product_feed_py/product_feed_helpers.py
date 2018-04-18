@@ -376,28 +376,6 @@ def _lingerie_match(characters):
         return False
     return not bool(re.compile(r'[^abcedfghABCDEFGH]').search(characters))
 
-def set_deleted_network_products(network, threshold = 12):
-    """
-    Helper method for use in the main data feed method. Collects a list data feed products
-    that should have been upserted in the current run. For those that were determined to not have
-    been upserted, set those products to a status of is_deleted = True.
-
-    Args:
-      network (str): The network name. Should correspond to the network name used in the
-      product_api_network table.
-      threshold (int): The time threshold in hours. If the updated-at value of a record is threshold
-      or more hours old, conclude that it was not updated in the current upsert and set to deleted.
-    """
-    network_id = Network.objects.get(name=network)
-    merchants = Merchant.objects.filter(active=True, network_id=network_id)
-    merchant_ids = merchants.values_list('external_merchant_id')
-    products = Product.objects.filter(merchant_id__in = merchant_ids)
-    datetime_threshold = datetime.now() - timedelta(hours = threshold)
-    deleted_products = products.filter(updated_at__lte = datetime_threshold)
-    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    #deleted_products.update(is_deleted = True, updated_at = updated_at)
-    print('Set %s non-upserted products to deleted' % deleted_products.count())
-
 def generate_merchant_id(merchant_name):
     """
     In the event of an absent merchant id from data, generate it using the merchant name.

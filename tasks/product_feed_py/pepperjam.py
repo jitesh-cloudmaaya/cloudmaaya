@@ -342,8 +342,8 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
     # new_merchants ?
 
     # call update_pepperjam here?
-    print('Updating non-upserted records')
-    product_feed_helpers.set_deleted_network_products('PepperJam')
+    # print('Updating non-upserted records')
+    # product_feed_helpers.set_deleted_network_products('PepperJam')
 
 def generate_product_id_pepperjam(SKU, merchant_id):
     """

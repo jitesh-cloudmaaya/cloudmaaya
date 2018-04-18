@@ -8,10 +8,11 @@ import zipfile
 import subprocess
 from django.db import connection, transaction
 import yaml
-import datetime
+from datetime import datetime, timedelta
 import time
 from product_feed_py import *
 from catalogue_service.settings import BASE_DIR, CJ_HOST_KEY
+from product_api.models import Product, Merchant, Network
 
 class ProductFeed(object):
 
@@ -37,7 +38,28 @@ class ProductFeed(object):
         self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
         self._clean_data_method = config_dict['clean_data_method']
         self._file_ending = config_dict['file_ending']
+        self._network = config_dict['network']
 
+    def set_deleted_network_products(self, threshold = 12):
+        """
+        Helper method for use in the main data feed method. Collects a list data feed products
+        that should have been upserted in the current run. For those that were determined to not have
+        been upserted, set those products to a status of is_deleted = True.
+
+        Args:
+          threshold (int): The time threshold in hours. If the updated-at value of a record is threshold
+          or more hours old, conclude that it was not updated in the current upsert and set to deleted.
+        """
+        print self._network
+        network_id = Network.objects.get(name=self._network)
+        merchants = Merchant.objects.filter(active=True, network_id=network_id)
+        merchant_ids = merchants.values_list('external_merchant_id')
+        products = Product.objects.filter(merchant_id__in = merchant_ids)
+        datetime_threshold = datetime.now() - timedelta(hours = threshold)
+        deleted_products = products.filter(updated_at__lte = datetime_threshold)
+        updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        deleted_products.update(is_deleted = True, updated_at = updated_at)
+        print('Set %s non-upserted products to deleted' % deleted_products.count())
 
     def clean_data(self):
         start = time.time()
