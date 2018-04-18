@@ -25,7 +25,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
 
     # for use when adding a mapping
-    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+    exclusion_terms = mappings.create_exclusion_term_mapping()
     synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
     synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
@@ -111,7 +111,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                         product_name = datum['product_name']
                         SKU = datum['SKU']
                         primary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'primary_category', datum, datum['primary_category'])
-                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping)
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping, exclusion_terms = exclusion_terms)
                         product_url = datum['product_url']
 
                         try:

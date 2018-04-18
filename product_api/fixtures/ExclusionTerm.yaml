@@ -70,3 +70,6 @@
 -   model: product_api.exclusionterm
     pk: 24
     fields: {term: "beverages"}
+-   model: product_api.exclusionterm
+    pk: 25
+    fields: {term: "exclude"}

@@ -27,6 +27,12 @@ def create_synonym_other_category_mapping():
     """
     return SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
 
+def create_exclusion_term_mapping():
+    """
+    Returns a list of exclusion terms.
+    """
+    return ExclusionTerm.objects.values_list('term', flat=True)
+
 ### end added mappings
 
 
@@ -210,6 +216,7 @@ def add_category_map(external_cat1, external_cat2, merchant_name, exclusion_term
             pending_review = False
         except AllumeCategory.DoesNotExist as e:
             print 'The SynonymCategoryMap category must map to an existing AllumeCategory name.'
+            print external_cat2
             print e
             allume_category = None
             active = False

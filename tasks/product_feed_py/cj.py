@@ -22,7 +22,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
     synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
 
     # for use when adding a mapping
-    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+    exclusion_terms = mappings.create_exclusion_term_mapping()
     synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
     synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
@@ -161,7 +161,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
                         primary_category = datum[primary_category_key]
                         # secondary_category = datum[secondary_category_key]
-                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum[secondary_category_key], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping)
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum[secondary_category_key], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping, exclusion_terms = exclusion_terms)
 
                         allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
                         if allume_category:

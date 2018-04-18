@@ -395,7 +395,7 @@ def generate_merchant_id(merchant_name):
     merchant_id = str(converted).decode('UTF-8')
     return merchant_id
 
-def parse_category_from_product_name(product_name, synonym_category_mapping):
+def parse_category_from_product_name(product_name, synonym_category_mapping, exclusion_terms):
     """
     Using SynonymCategoryMap, checks a product_name for presence of any synonyms. If one is found,
     leverages the SynonymCategoryMap objects to find the category that synonym should map to. This
@@ -408,15 +408,29 @@ def parse_category_from_product_name(product_name, synonym_category_mapping):
     Returns:
       str: The category that was parsed from a synonym appearing in the product name.
     """
+
     matched_synonym = None
     currIndex = -1
     synonyms_list = synonym_category_mapping.keys()
     product_name = product_name.lower()
+    # first check for any exclusion terms
+    for term in exclusion_terms:
+        pattern = re.compile(r'\b' + term.lower() + r'\b')
+        match = re.search(pattern, product_name)
+        if match:
+            return 'Exclude'
+    # then check for any synoynm terms, while prioritizing 'other'
     for synonym in synonyms_list:
         pattern = re.compile(r'\b' + synonym.lower() + r'\b')
         match = re.search(pattern, product_name)
         if match:
             index = match.end()
+
+            # presence of 'Other' term overrides all alternative category choices
+            category = synonym_category_mapping[synonym]
+            if category == u'Other':
+                return category
+
             if index > currIndex:
                 currIndex = index
                 matched_synonym = synonym

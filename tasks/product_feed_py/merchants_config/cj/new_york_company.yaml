@@ -33,4 +33,4 @@ tiered_assignment_fields:
     secondary_category:
         - "parse_other_terms(datum['NAME'], kwargs['synonym_other_category_mapping'])"
         - "datum['N/A']"
-        - "parse_category_from_product_name(datum['NAME'], kwargs['synonym_category_mapping'])"
+        - "parse_category_from_product_name(datum['NAME'], kwargs['synonym_category_mapping'], kwargs['exclusion_terms'])"

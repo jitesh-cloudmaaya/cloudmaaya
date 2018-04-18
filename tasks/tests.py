@@ -59,29 +59,43 @@ class ProductFeedHelpersTestCase(TestCase):
     def test_parse_category_from_product_name(self):
         # now need to initialize the synonym category mapping
         synonym_category_mapping = create_synonym_category_mapping()
+        exclusion_terms = create_exclusion_term_mapping()
 
         # working for take 1
-        self.assertEqual('', parse_category_from_product_name('', synonym_category_mapping))
-        self.assertEqual('', parse_category_from_product_name('Hopefully Some terms that stay not synonyms', synonym_category_mapping))
-        self.assertEqual('Shoes', parse_category_from_product_name('Zerogrand Slip-On  Flat', synonym_category_mapping))
-        self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings', synonym_category_mapping))
-        self.assertEqual('', parse_category_from_product_name('Polosko Lace-Up Platform', synonym_category_mapping))
-        self.assertEqual('Tops', parse_category_from_product_name('Pratt Denim Button Up', synonym_category_mapping))
-        self.assertEqual('Other', parse_category_from_product_name('Loungewear Lingerie', synonym_category_mapping))
-        self.assertEqual('Accessories', parse_category_from_product_name('Winter Hat', synonym_category_mapping))
-        self.assertEqual('Tops', parse_category_from_product_name('Low-Top', synonym_category_mapping))
+        self.assertEqual('', parse_category_from_product_name('', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('', parse_category_from_product_name('Hopefully Some terms that stay not synonyms', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Shoes', parse_category_from_product_name('Zerogrand Slip-On  Flat', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Bottoms', parse_category_from_product_name('Under Armour Fly Fast HeatGear Capri Leggings', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('', parse_category_from_product_name('Polosko Lace-Up Platform', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Tops', parse_category_from_product_name('Pratt Denim Button Up', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Other', parse_category_from_product_name('Loungewear Lingerie', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Accessories', parse_category_from_product_name('Winter Hat', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Tops', parse_category_from_product_name('Low-Top', synonym_category_mapping, exclusion_terms))
 
         # assertions for take 2
-        self.assertEqual('Shoes',  parse_category_from_product_name('Dress Shoes', synonym_category_mapping))
-        self.assertEqual('Shoes',  parse_category_from_product_name('Low Top Shoes', synonym_category_mapping))
-        self.assertEqual('Dresses',  parse_category_from_product_name('Knit Dress', synonym_category_mapping))
-        self.assertEqual('Jackets',  parse_category_from_product_name('Shorts Collared Jackets', synonym_category_mapping))
-        self.assertEqual('Shoes',  parse_category_from_product_name('Top Bottom Heels Nothing', synonym_category_mapping))
-        self.assertEqual('Bottoms',  parse_category_from_product_name('Button Up Britches', synonym_category_mapping))
-        self.assertEqual('Jackets',  parse_category_from_product_name('Flat Facing Jacket', synonym_category_mapping))
-        self.assertEqual('Jackets',  parse_category_from_product_name('Gown Down Overcoat Moat', synonym_category_mapping))
-        self.assertEqual('Tops',  parse_category_from_product_name('Button Up Mock Neck Empty', synonym_category_mapping))
-        self.assertEqual('Bottoms', parse_category_from_product_name('Dyed Boot Cut Jeans by Everlane', synonym_category_mapping))
+        self.assertEqual('Shoes',  parse_category_from_product_name('Dress Shoes', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Shoes',  parse_category_from_product_name('Low Top Shoes', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Dresses',  parse_category_from_product_name('Knit Dress', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Jackets',  parse_category_from_product_name('Shorts Collared Jackets', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Shoes',  parse_category_from_product_name('Top Bottom Heels Nothing', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Bottoms',  parse_category_from_product_name('Button Up Britches', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Jackets',  parse_category_from_product_name('Flat Facing Jacket', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Jackets',  parse_category_from_product_name('Gown Down Overcoat Moat', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Tops',  parse_category_from_product_name('Button Up Mock Neck Empty', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Bottoms', parse_category_from_product_name('Dyed Boot Cut Jeans by Everlane', synonym_category_mapping, exclusion_terms))
+
+        # assertions for take 3
+        # 1) exclude overrides all
+        self.assertEqual('Exclude', parse_category_from_product_name("Kid's Shoes", synonym_category_mapping, exclusion_terms)) # would formerly map to shoes, should now map to exclude
+        self.assertEqual('Exclude', parse_category_from_product_name("trimmed jeans beverages tunic slippers purse bracelet cap", synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Exclude', parse_category_from_product_name("fragrance boys", synonym_category_mapping, exclusion_terms))
+        # other should lose to exclude
+        self.assertEqual('Exclude', parse_category_from_product_name('Beverages maternity watch', synonym_category_mapping, exclusion_terms))# should map to exclude instaad of other
+
+        # 2) if an other term is in the product name, it will overrule alternative synonym categories that are also present
+        self.assertEqual('Other', parse_category_from_product_name('Purse bra hoodie', synonym_category_mapping, exclusion_terms)) # since contains hte exclusion term, bra, should map to Other instead of Tops from 'hoodie'
+        self.assertEqual('Other', parse_category_from_product_name('phone tunic slippers purse backpack', synonym_category_mapping, exclusion_terms))
+        self.assertEqual('Other', parse_category_from_product_name('ankle jeans slippers choker swimsuit', synonym_category_mapping, exclusion_terms))
 
     def test_tiered_assignment(self):
         """
@@ -123,16 +137,17 @@ class ProductFeedHelpersTestCase(TestCase):
 
         # test the method case
         synonym_category_mapping = create_synonym_category_mapping()
+        exclusion_terms = create_exclusion_term_mapping()
 
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'])"]}
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'], kwargs['exclusion_terms'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': ''}
-        self.assertEqual('Tops', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping))
+        self.assertEqual('Tops', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping, exclusion_terms = exclusion_terms))
 
-        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'])"]}
+        tiered_assignments = {'secondary_category': ["datum['secondary_category']", "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'], kwargs['exclusion_terms'])"]}
         fieldname = 'secondary_category'
         datum = {'product_name': 'Lacoste Holiday Pique Polo', 'secondary_category': 'groomingfragrance'}
-        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping))
+        self.assertEqual('groomingfragrance', product_field_tiered_assignment(tiered_assignments, fieldname, datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping, exclusion_terms = exclusion_terms))
 
         # test the new default behavior
         tiered_assignments = {}
