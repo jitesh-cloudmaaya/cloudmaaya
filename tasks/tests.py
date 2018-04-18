@@ -173,6 +173,45 @@ class ProductFeedHelpersTestCase(TestCase):
         self.assertEqual(False, _check_exclusion_terms("toddlerstodo", "", exclusion_terms))
         self.assertEqual(True, _check_exclusion_terms("entertainment-now", "", exclusion_terms))
 
+    def test_add_category_map(self):
+        exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+        synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+        synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
+
+        ac_JACKETS = AllumeCategory.objects.get(name__iexact='Jackets')
+        ac_TOPS = AllumeCategory.objects.get(name__iexact='Tops')
+        ac_DRESSES = AllumeCategory.objects.get(name__iexact='Dresses')
+
+        add_category_map('Tops > Shirts-Blouses,Clearance > Redlines-Clearance,Apparel > Tops > All-Tops,Clearance > Redlines-Tops', 'Jackets', 'test merchant', exclusion_terms, synonym_other_terms, synonym_terms)
+        cm = CategoryMap.objects.last()
+        self.assertEqual(ac_JACKETS, cm.allume_category)
+        self.assertEqual(True, cm.turned_on)
+        self.assertEqual(False, cm.pending_review)
+
+        add_category_map('Apparel > Jackets > All-Jackets,Clearance > Redlines-Tops,Accessories > Wraps-Cover-Ups-Ponchos', 'Tops', 'test merchant', exclusion_terms, synonym_other_terms, synonym_terms)
+        cm = CategoryMap.objects.last()
+        self.assertEqual(ac_TOPS, cm.allume_category)
+        self.assertEqual(True, cm.turned_on)
+        self.assertEqual(False, cm.pending_review)
+
+        add_category_map('Clearance > Redlines-Accessories,Apparel > Sweaters > All-Sweaters,Clearance > Redlines-Sweaters,Accessories > Wraps-Cover-Ups-Ponchos', 'Tops', 'test merchant', exclusion_terms, synonym_other_terms, synonym_terms)
+        cm = CategoryMap.objects.last()
+        self.assertEqual(ac_TOPS, cm.allume_category)
+        self.assertEqual(True, cm.turned_on)
+        self.assertEqual(False, cm.pending_review)
+
+        add_category_map('New-Arrivals > Online-Exclusives,Petite-Tall-Plus > Petites > Tops-Sweaters,Petite-Tall-Plus > Petites > All-Petites,Apparel > Online-Exclusives > Petite,Clearance > Redlines-Online-Exclusives,Apparel > Online-Exclusives > All-Exclusives,Clearance > Redlines-Sweaters,Clearance > Redlines-Tops,Appare', 'Tops', 'test merchant', exclusion_terms, synonym_other_terms, synonym_terms)
+        cm = CategoryMap.objects.last()
+        self.assertEqual(ac_TOPS, cm.allume_category)
+        self.assertEqual(True, cm.turned_on)
+        self.assertEqual(False, cm.pending_review)
+
+        add_category_map('Clearance > Redlines-Dresses,Apparel > Dresses > All-Dresses,Clearance > Redlines-Online-Exclusives,Apparel > Online-Exclusives > All-Exclusives,Apparel > Online-Exclusives > Dresses-Skirts,Apparel > Dresses > Sweater,Apparel > Dresses > Midi-Sheaths', 'Dresses', 'test merchant', exclusion_terms, synonym_other_terms, synonym_terms)
+        cm = CategoryMap.objects.last()
+        self.assertEqual(ac_DRESSES, cm.allume_category)
+        self.assertEqual(True, cm.turned_on)
+        self.assertEqual(False, cm.pending_review)
+
     def test__check_other_term_maps(self):
         """
         The list of terms is found in OtherTermMap.yaml.
