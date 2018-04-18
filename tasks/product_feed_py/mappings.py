@@ -5,6 +5,31 @@ from django.db import connection
 from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, SynonymCategoryMap, ExclusionTerm
 from catalogue_service.settings import BASE_DIR
 
+
+### Added mappings... move to bottom
+
+def create_synonym_category_mapping():
+    """
+    Returns a dict of synonym terms as strings mapped to the synonym's
+    category.
+    """
+    synonym_category_mapping = {}
+
+    synonym_category_maps = SynonymCategoryMap.objects.values_list('synonym', 'category')
+    for synonym_category_map in synonym_category_maps:
+        synonym_category_mapping[synonym_category_map[0]] = synonym_category_map[1]
+
+    return synonym_category_mapping
+
+def create_synonym_other_category_mapping():
+    """
+    Returns a list of synonym terms that map to the category 'Other'.
+    """
+    return SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+
+### end added mappings
+
+
 def create_merchant_mapping():
     """
     Returns a dict of merchant_ids as longs mapped to whether or not that
@@ -44,7 +69,6 @@ def create_color_mapping():
         color_mapping[color_map[0]] = color_map[1]
 
     return color_mapping
-
 
 def create_category_mapping():
     """
@@ -155,7 +179,7 @@ def is_merchant_in_category(category_mapping, identifier, merchant_name):
 
     return True
 
-def add_category_map(external_cat1, external_cat2, merchant_name, allume_category=None, active=False, pending_review=True):
+def add_category_map(external_cat1, external_cat2, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms, allume_category=None, active=False, pending_review=True):
     """
     Takes in arguments to create a new CategoryMap object. Checks for the presence of an ExclusionTerm in external_cat1
     and external_cat2 to get additional information on how to formulate the CategoryMap.
@@ -171,15 +195,15 @@ def add_category_map(external_cat1, external_cat2, merchant_name, allume_categor
     Returns:
       tup: Returns a tuple of allume category id (int), active (bool), the new categorymap id (int), and merchant_name (str).
     """
-    if _check_exclusion_terms(external_cat1, external_cat2):
+    if _check_exclusion_terms(external_cat1, external_cat2, exclusion_terms):
         allume_category = AllumeCategory.objects.get(name__iexact='exclude')
         active = False
         pending_review = False
-    elif _check_other_term_maps(external_cat1, external_cat2):
+    elif _check_other_term_maps(external_cat1, external_cat2, synonym_other_terms):
         allume_category = AllumeCategory.objects.get(name__iexact='other')
         active = True
         pending_review = False
-    elif _check_synonym_term_maps(external_cat2):
+    elif _check_synonym_term_maps(external_cat2, synonym_terms):
         try:
             allume_category = AllumeCategory.objects.get(name__iexact=external_cat2)
             active = True
@@ -202,7 +226,7 @@ def add_category_map(external_cat1, external_cat2, merchant_name, allume_categor
 
     return (allume_category_id, active, new_categorymap_id, merchant_name)
 
-def _check_exclusion_terms(primary_category, secondary_category):
+def _check_exclusion_terms(primary_category, secondary_category, exclusion_terms):
     """
     Takes in both a primary and secondary category. Checks the list of exclusion terms as modeled by
     ExclusionTerm for the presence of any exclusion terms on word boundaries. If one is found, returns
@@ -216,7 +240,6 @@ def _check_exclusion_terms(primary_category, secondary_category):
       bool: A boolean value representing whether or not any exclusion terms were found in either string
       argument, respecting word boundaries.
     """
-    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
     primary_category = primary_category.lower()
     secondary_category = secondary_category.lower()
     for term in exclusion_terms:
@@ -227,7 +250,7 @@ def _check_exclusion_terms(primary_category, secondary_category):
             return True
     return False
 
-def _check_other_term_maps(primary_category, secondary_category):
+def _check_other_term_maps(primary_category, secondary_category, synonym_other_terms):
     """
     Takes in both a primary and secondary category. Checks the list of terms that will
     force a CategoryMap to Allume category as 'Other'. Uses terms modeled by SynonymCategoryMap
@@ -241,7 +264,6 @@ def _check_other_term_maps(primary_category, secondary_category):
       bool: A boolean value representing whether or not any other term maps were found
       in either string argument.
     """
-    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
     primary_category = primary_category.lower()
     secondary_category = secondary_category.lower()
     for term in synonym_other_terms:
@@ -250,7 +272,7 @@ def _check_other_term_maps(primary_category, secondary_category):
             return True
     return False
 
-def _check_synonym_term_maps(secondary_category):
+def _check_synonym_term_maps(secondary_category, synonym_terms):
     """
     Takes in a product secondary category. Checks secondary_category for a list of synonym categories,
     governed by SynonymCategoryMap. If secondary_category is a SynonymCategoryMap category, determines
@@ -264,9 +286,9 @@ def _check_synonym_term_maps(secondary_category):
       bool: A boolean value representing whether or not any synonym term maps were found in either
       string argument.
     """
-    synonym_categories = SynonymCategoryMap.objects.values_list('category', flat=True)
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
     secondary_category = secondary_category.lower()
-    for category in synonym_categories:
+    for category in synonym_terms:
         category = category.lower()
         if secondary_category == category:
             return True
@@ -294,7 +316,7 @@ def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     except KeyError:
         return False
 
-def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, input_merchant_name):
+def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, input_merchant_name, exclusion_terms, synonym_other_terms, synonym_terms):
     """
     Takes in a primary category and a secondary category as strings and a
     category_mapping dictionary and checks to see if they constitute an
@@ -308,7 +330,7 @@ def are_categories_active(primary_category, secondary_category, category_mapping
         identifier = (primary_category, secondary_category)
         if identifier not in category_mapping.keys():
             # edit the mapping instance
-            category_mapping[identifier] = add_category_map(primary_category, secondary_category, input_merchant_name, None, False, True)
+            category_mapping[identifier] = add_category_map(primary_category, secondary_category, input_merchant_name, exclusion_terms, synonym_other_terms, synonym_terms, None, False, True)
             # add_category_map returns a tuple of (allume_category_id, new_categorymap_id, active, merchant_name)
 
         allume_category_id, categories_are_active, category_map_id, merchant_name = category_mapping[identifier]

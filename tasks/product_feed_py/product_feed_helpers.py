@@ -2,6 +2,7 @@ import urlparse
 import urllib
 import hashlib
 import re
+import unicodedata
 from datetime import datetime, timedelta
 from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
 from string import capwords
@@ -416,7 +417,7 @@ def generate_merchant_id(merchant_name):
     merchant_id = str(converted).decode('UTF-8')
     return merchant_id
 
-def parse_category_from_product_name(product_name):
+def parse_category_from_product_name(product_name, synonym_category_mapping):
     """
     Using SynonymCategoryMap, checks a product_name for presence of any synonyms. If one is found,
     leverages the SynonymCategoryMap objects to find the category that synonym should map to. This
@@ -431,7 +432,7 @@ def parse_category_from_product_name(product_name):
     """
     matched_synonym = None
     currIndex = -1
-    synonyms_list = SynonymCategoryMap.objects.values_list('synonym', flat = True)
+    synonyms_list = synonym_category_mapping.keys()
     product_name = product_name.lower()
     for synonym in synonyms_list:
         pattern = re.compile(r'\b' + synonym.lower() + r'\b')
@@ -444,14 +445,10 @@ def parse_category_from_product_name(product_name):
 
     category = u''
     if matched_synonym:
-        try:
-            category = capwords(SynonymCategoryMap.objects.get(synonym = matched_synonym).category)
-        except SynonymCategoryMap.MultipleObjectsReturned:
-            print matched_synonym
-            print 'There should not be multiple entries for a synonym, this needs to be corrected.'
+        category = synonym_category_mapping[matched_synonym]
     return category
 
-def product_field_tiered_assignment(tiered_assignments, product_fieldname, datum, default):
+def product_field_tiered_assignment(tiered_assignments, product_fieldname, datum, default, **kwargs):
     """
     Attempts a best effort assignment of fieldname using tiered_assigments and the information encoded in datum.
     Uses the first field label from tiered_assignments that has a non-empty value. If a non-empty value cannot be
@@ -488,7 +485,7 @@ def product_field_tiered_assignment(tiered_assignments, product_fieldname, datum
 
 
 # figure out what to do with _check_other_term_maps
-def parse_other_terms(product_name):
+def parse_other_terms(product_name, synonym_other_category_mapping):
     """
     Using SynonymCategoryMap objects with a category of 'Other', checks a product_name for the presence of
     any synonyms. If it finds one, it returns the word 'Other', intended to be used as the category for a
@@ -501,11 +498,23 @@ def parse_other_terms(product_name):
     Returns:
       str: Returns one of two strings; either the string 'Other' or the empty string ''.
     """
-    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
     product_name = product_name.lower()
-    for term in synonym_other_terms:
+    for term in synonym_other_category_mapping:
         term = term.lower()
         if term in product_name:
             return u'Other'
 
     return u''
+
+def normalize_data(text, form='NFD'):
+    """
+    Necessary to fit potential unicode data to MySQL tables with latin1 charsets.
+    """
+    try:
+        text = unicode(text, 'utf-8')
+    except (TypeError, NameError):
+        pass
+    text = unicodedata.normalize(form, text)
+    text = text.encode('ascii', 'ignore')
+    text = text.decode('utf-8')
+    return text

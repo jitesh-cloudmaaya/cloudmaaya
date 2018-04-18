@@ -6,7 +6,7 @@ import csv
 from tasks.product_feed_py import mappings, product_feed_helpers
 from copy import copy
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap, Network, Product
+from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap, ExclusionTerm
 from itertools import izip
 from datetime import datetime, timedelta
 
@@ -20,6 +20,13 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     size_mapping = mappings.create_size_mapping()
     shoe_size_mapping = mappings.create_shoe_size_mapping()
     size_term_mapping = mappings.create_size_term_mapping()
+    synonym_category_mapping = mappings.create_synonym_category_mapping()
+    synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+
+    # for use when adding a mapping
+    exclusion_terms = ExclusionTerm.objects.values_list('term', flat = True)
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('Impact Radius') # name subject to change?
@@ -128,9 +135,9 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
                         # unicode sandwich stuff
                         for key, value in datum1.iteritems():
-                            datum1[key] = value.decode('UTF-8')
+                            datum1[key] = product_feed_helpers.normalize_data(value)
                         for key, value in datum2.iteritems():
-                            datum2[key] = value.decode('UTF-8')
+                            datum2[key] = product_feed_helpers.normalize_data(value)
 
                         # gender pigeonholing
                         gender = datum1['Gender']
@@ -146,9 +153,9 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             continue
 
                         primary_category = datum1['Category']
-                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum1, u'')
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum1, u'', synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping)
 
-                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
+                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
                         # allume_category = 'allume_category'
                         if allume_category:
                             record = {}
