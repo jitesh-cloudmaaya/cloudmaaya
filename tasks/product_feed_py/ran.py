@@ -233,8 +233,10 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
                             record['currency'] = currency
 
-                            if availability == '':
+                            if availability == '' or availability == 'no':
                                 availability = 'out-of-stock'
+                            elif availability == 'yes':
+                                availability = 'in-stock'
                             record['availability'] = availability
 
                             record['keywords'] = keywords
