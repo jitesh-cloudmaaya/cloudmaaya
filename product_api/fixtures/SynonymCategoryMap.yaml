@@ -1,0 +1,501 @@
+-   model: product_api.synonymcategorymap
+    pk: 1
+    fields: {synonym: 'trouser', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 2
+    fields: {synonym: 'trousers', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 3
+    fields: {synonym: 'slacks', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 4
+    fields: {synonym: 'pant', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 5
+    fields: {synonym: 'britches', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 6
+    fields: {synonym: 'shorts', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 7
+    fields: {synonym: 'pants', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 8
+    fields: {synonym: 'skirts', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 9
+    fields: {synonym: 'skirt', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 10
+    fields: {synonym: 'legging', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 11
+    fields: {synonym: 'leggings', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 12
+    fields: {synonym: 'culotte', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 13
+    fields: {synonym: 'culottes', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 14
+    fields: {synonym: 'shirt', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 15
+    fields: {synonym: 'blouse', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 16
+    fields: {synonym: 'camisole', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 17
+    fields: {synonym: 'tee', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 18
+    fields: {synonym: 'button up', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 19
+    fields: {synonym: 'collared', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 20
+    fields: {synonym: 'top', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 21
+    fields: {synonym: 'tank', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 22
+    fields: {synonym: 'sweatshirt', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 23
+    fields: {synonym: 'sweater', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 24
+    fields: {synonym: 'knitwear', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 25
+    fields: {synonym: 'hoodie', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 27
+    fields: {synonym: 'turtleneck', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 28
+    fields: {synonym: 'polo', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 29
+    fields: {synonym: 'mock neck', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 30
+    fields: {synonym: 'cardigan', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 31
+    fields: {synonym: 'knit', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 32
+    fields: {synonym: 'shirts', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 33
+    fields: {synonym: 'hoodies', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 34
+    fields: {synonym: 'sweaters', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 35
+    fields: {synonym: 'raincoat', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 36
+    fields: {synonym: 'overcoat', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 37
+    fields: {synonym: 'jacket', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 38
+    fields: {synonym: 'jackets', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 39
+    fields: {synonym: 'coats', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 40
+    fields: {synonym: 'heels', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 41
+    fields: {synonym: 'flat', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 42
+    fields: {synonym: 'flats', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 43
+    fields: {synonym: 'sandals', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 44
+    fields: {synonym: 'shoes', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 45
+    fields: {synonym: 'sneaker', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 46
+    fields: {synonym: 'sneakers', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 47
+    fields: {synonym: 'sandal', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 48
+    fields: {synonym: 'outerwear', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 49
+    fields: {synonym: 'blazer', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 50
+    fields: {synonym: 'blazers', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 51
+    fields: {synonym: 'coat', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 52
+    fields: {synonym: 'vest', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 53
+    fields: {synonym: 'trenchcoat', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 54
+    fields: {synonym: 'dress', category: 'Dresses'}
+-   model: product_api.synonymcategorymap
+    pk: 55
+    fields: {synonym: 'frock', category: 'Dresses'}
+-   model: product_api.synonymcategorymap
+    pk: 56
+    fields: {synonym: 'gown', category: 'Dresses'}
+-   model: product_api.synonymcategorymap
+    pk: 57
+    fields: {synonym: 'footwear', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 58
+    fields: {synonym: 'boot', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 59
+    fields: {synonym: 'boots', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 60
+    fields: {synonym: 'bootie', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 61
+    fields: {synonym: 'booties', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 62
+    fields: {synonym: 'heel', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 63
+    fields: {synonym: 'pumps', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 68
+    fields: {synonym: 'boot jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 69
+    fields: {synonym: 'pullover', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 70
+    fields: {synonym: 'jumpsuit', category: 'Dresses'}
+-   model: product_api.synonymcategorymap
+    pk: 71
+    fields: {synonym: 'jumpsuits', category: 'Dresses'}
+-   model: product_api.synonymcategorymap
+    pk: 72
+    fields: {synonym: 'romper', category: 'Dresses'}
+-   model: product_api.synonymcategorymap
+    pk: 73
+    fields: {synonym: 'rompers', category: 'Dresses'}
+-   model: product_api.synonymcategorymap
+    pk: 74
+    fields: {synonym: 'pouch', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 75
+    fields: {synonym: 'wallet', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 76
+    fields: {synonym: 'wristlet', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 77
+    fields: {synonym: 'bag', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 78
+    fields: {synonym: 'satchel', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 79
+    fields: {synonym: 'tote', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 80
+    fields: {synonym: 'scarf', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 81
+    fields: {synonym: 'hat', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 82
+    fields: {synonym: 'charm', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 83
+    fields: {synonym: 'sunglasses', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 84
+    fields: {synonym: 'earrings', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 85
+    fields: {synonym: 'necklace', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 86
+    fields: {synonym: 'maternity', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 87
+    fields: {synonym: 'swimsuit', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 88
+    fields: {synonym: 'lingerie', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 89
+    fields: {synonym: 'double-knit jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 90
+    fields: {synonym: 'joggers', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 91
+    fields: {synonym: 'sweatpant', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 92
+    fields: {synonym: 'sweatpants', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 93
+    fields: {synonym: 'crop jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 94
+    fields: {synonym: 'pocket jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 95
+    fields: {synonym: 'cropped jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 96
+    fields: {synonym: 'distressed jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 97
+    fields: {synonym: 'washed jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 98
+    fields: {synonym: 'dyed jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 99
+    fields: {synonym: 'trimmed jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 100
+    fields: {synonym: 'ankle jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 101
+    fields: {synonym: 'hem jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 102
+    fields: {synonym: 'skinny jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 103
+    fields: {synonym: 'embroidered jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 104
+    fields: {synonym: 'slim jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 105
+    fields: {synonym: 'ripped jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 106
+    fields: {synonym: 'flared jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 107
+    fields: {synonym: 'leg jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 108
+    fields: {synonym: 'stretch jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 109
+    fields: {synonym: 'boyfriend jeans', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 110
+    fields: {synonym: 'boot cut', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 111
+    fields: {synonym: 'boot-cut', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 112
+    fields: {synonym: 'boot-leg', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 113
+    fields: {synonym: 'boot leg', category: 'Bottoms'}
+-   model: product_api.synonymcategorymap
+    pk: 115
+    fields: {synonym: 'funnelneck', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 116
+    fields: {synonym: 'bodysuit', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 117
+    fields: {synonym: 'kimono', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 118
+    fields: {synonym: 'poncho', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 119
+    fields: {synonym: 'pullovers', category: 'Tops'}
+-   model: product_api.synonymcategorymap
+    pk: 120
+    fields: {synonym: 'parka', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 121
+    fields: {synonym: 'fleece', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 122
+    fields: {synonym: 'fleeces', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 123
+    fields: {synonym: 'cape', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 124
+    fields: {synonym: 'tunic', category: 'Dresses'}
+-   model: product_api.synonymcategorymap
+    pk: 125
+    fields: {synonym: 'sheath', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 126
+    fields: {synonym: 'shirtdress', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 127
+    fields: {synonym: 'shiftdress', category: 'Jackets'}
+-   model: product_api.synonymcategorymap
+    pk: 128
+    fields: {synonym: 'slippers', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 129
+    fields: {synonym: 'loafer', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 130
+    fields: {synonym: 'loafers', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 131
+    fields: {synonym: 'slipper', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 132
+    fields: {synonym: 'espadrille', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 133
+    fields: {synonym: 'mule', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 134
+    fields: {synonym: 'mules', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 135
+    fields: {synonym: 'espadrilles', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 136
+    fields: {synonym: 'wedge', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 137
+    fields: {synonym: 'wedges', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 138
+    fields: {synonym: 'shootie', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 139
+    fields: {synonym: 'shooties', category: 'Shoes'}
+-   model: product_api.synonymcategorymap
+    pk: 140
+    fields: {synonym: 'purse', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 141
+    fields: {synonym: 'backpack', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 142
+    fields: {synonym: 'handbag', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 143
+    fields: {synonym: 'crossbody', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 144
+    fields: {synonym: 'clutch', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 145
+    fields: {synonym: 'bracelet', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 146
+    fields: {synonym: 'shawl', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 147
+    fields: {synonym: 'beanie', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 148
+    fields: {synonym: 'cap', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 149
+    fields: {synonym: 'portfolio', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 150
+    fields: {synonym: 'watches', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 151
+    fields: {synonym: 'watch', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 152
+    fields: {synonym: 'earring', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 153
+    fields: {synonym: 'gloves', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 154
+    fields: {synonym: 'shrug', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 155
+    fields: {synonym: 'jewelry', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 156
+    fields: {synonym: 'cover-up', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 157
+    fields: {synonym: 'choker', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 158
+    fields: {synonym: 'ring', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 159
+    fields: {synonym: 'briefcase', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 160
+    fields: {synonym: 'card case', category: 'Accessories'}
+-   model: product_api.synonymcategorymap
+    pk: 161
+    fields: {synonym: 'phone', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 162
+    fields: {synonym: 'bra', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 163
+    fields: {synonym: 'chemise', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 164
+    fields: {synonym: 'bikini', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 165
+    fields: {synonym: 'pajamas', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 166
+    fields: {synonym: 'nightgown', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 167
+    fields: {synonym: 'thong', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 168
+    fields: {synonym: 'sleepshirt', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 169
+    fields: {synonym: 'robe', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 170
+    fields: {synonym: 'hosiery', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 171
+    fields: {synonym: 'socks', category: 'Other'}
+-   model: product_api.synonymcategorymap
+    pk: 172
+    fields: {synonym: 'fragrance', category: 'Beauty'}
+-   model: product_api.synonymcategorymap
+    pk: 173
+    fields: {synonym: 'other', category: 'Other'}

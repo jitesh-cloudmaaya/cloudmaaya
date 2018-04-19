@@ -73,7 +73,7 @@ class EProductSearch(FacetedSearch):
     # fields that should be searched
     index = PRODUCT_INDEX
 
-    fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category^2', 'secondary_category^2', 'color^2', 'allume_category^2', 'merchant_color']
+    fields = ['product_name', 'long_product_description', 'short_product_description', 'keywords', 'primary_category^2', 'secondary_category^2', 'color^2', 'allume_category^10', 'merchant_color']
     price_ranges=[("$0 - $50", (0, 50)), ("$50 - $100", (50, 100)), ("$100 - $150", (100, 150)), ("$150 - $200", (150, 200)), ("$200+", (200, None))]
     
     facets = collections.OrderedDict((
@@ -91,10 +91,10 @@ class EProductSearch(FacetedSearch):
         ('allume_score', TermsFacet(field='allume_score')), #HistogramFacet
         ('is_trending', TermsFacet(field='is_trending')),
         ('is_best_seller', TermsFacet(field='is_best_seller')),
-        ('price_range', RangeFacet(field='sale_price', ranges=price_ranges)), #current_price
+        ('price_range', RangeFacet(field='current_price', ranges=price_ranges)), #current_price
     )) 
 
-    def __init__(self, query=None, filters={}, sort=(), favs=[], card_count = False):
+    def __init__(self, query=None, filters={}, sort="_score", favs=[], card_count = False):
         """
         :arg query: the text to search for
         :arg filters: facet values to filter
@@ -105,16 +105,19 @@ class EProductSearch(FacetedSearch):
         self._filters = {}
         self._card_count = card_count
         # TODO: remove in 6.0
-        if isinstance(sort, string_types):
-            self._sort = (sort,)
-        else:
-            self._sort = sort
+        #if isinstance(sort, string_types):
+        #    self._sort = (sort,)
+        #else:
+        self._sort = sort
         self.filter_values = {}
         for name, value in iteritems(filters):
             self.add_filter(name, value)
 
         self._s = self.build_search()
 
+    @classmethod
+    def sort_options(cls):
+        return ['current_price', 'size.keyword', 'brand.keyword', 'merchant_name.keyword', 'allume_score']
 
     def filter(self, search):
         """
@@ -160,6 +163,7 @@ class EProductSearch(FacetedSearch):
                     type='cross_fields',
                     #type='cross_fields',
                     operator='and',
+                    #custom_score={"query" : {"match_all" : {}},"script" : "_score * (10 - doc.allume_score.doubleValue)"},
                    # fuzziness="Auto",
                    # prefix_length=2,
                     #analyzer="my_synonyms"
@@ -179,11 +183,33 @@ class EProductSearch(FacetedSearch):
         collapse_dict = {"field": "raw_product_url.keyword","inner_hits": {"name": "collapsed_by_product_name","from": 1}}
         cardinality_dict = {"unique_count" : {"cardinality" : {"field" : "raw_product_url.keyword"}}}
 
+        #################
+        ### #Score Boosting
+        ### https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
+        # GET /_search
+        # {
+        #     "query": {
+        #         "function_score": {
+        #             "field_value_factor": {
+        #                 "field": "allume_score",
+        #                 "factor": 0.2,
+        #                 "missing": 1
+        #             }
+        #         }
+        #     }
+        # }
+        custom_score_dict = Q({'function_score': {"field_value_factor" : {"field": "allume_score", "factor": 1.5, "missing": 0}}})
+        #custom_score_dict = Q('function_score', {"query" : {"match_all" : {}},"script" : "_score * (10 - doc.allume_score.doubleValue)"})
+        #custom_score_dict = Q('function_score', script =  "_score * (10 - doc.allume_score.doubleValue)")
+
+        #################
+        
+
         if self._card_count:
             return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
         else:
             #search.aggs.bucket("unique_product_name_count", {"cardinality" : {"field" : "product_name.keyword"}})
-            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict)
+            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
         #.sort('-p')
 
 def remove_deleted_items(self, days_back = 14):

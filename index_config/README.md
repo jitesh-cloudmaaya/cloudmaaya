@@ -1,0 +1,1 @@
+Currently the creation of the product index on elastic search is not automation.  Intitally is was automatically created by logstash however the synonyms in the index require the creation with specific settings.  The two files in this directory can be used to either execute the creation of the index via Kibana or through curl.

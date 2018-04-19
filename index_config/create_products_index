@@ -1,7 +1,7 @@
 #DELETE /products_synonym
 
 
-PUT /products
+PUT /products2
 {
   "settings": {
     "analysis": {
@@ -9,10 +9,9 @@ PUT /products
         "my_synonym_filter": {
           "type": "synonym",
           "synonyms": [
-            "pants, trousers, slacks, pant, bottom, britches, bottoms",
+            "pants, trousers, slacks, pant, bottom, britches, bottoms, jeans, denim",
             "sheeth, sheath",
             "pump, pumps",
-            "jeans, denim",
             "tops, top, shirt, blouse",
             "jackets, outerwear, blazers, coats, blazers",
             "skirts, skirt",
@@ -61,7 +60,6 @@ PUT /products
         },
         "allume_category": {
           "type": "text",
-          "analyzer":  "my_synonyms",
           "fields": {
             "keyword": {
               "type": "keyword",
@@ -347,12 +345,26 @@ PUT /products
 POST _reindex
 {
   "source": {
-    "index": "products_synonym"
+    "index": "products"
   },
   "dest": {
-    "index": "products_synonyms_2"
+    "index": "products2"
   }
 }
+
+DELETE /products
+
+POST _reindex
+{
+  "source": {
+    "index": "products2"
+  },
+  "dest": {
+    "index": "products"
+  }
+}
+
+DELETE /products2
 
 
 GET /products_synonyms_2/_analyze

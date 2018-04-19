@@ -1,14 +1,18 @@
 import os
 import ftplib
+import pysftp
+import paramiko
+from paramiko.py3compat import decodebytes
 import re
 import zipfile
 import subprocess
 from django.db import connection, transaction
 import yaml
-import datetime
+from datetime import datetime, timedelta
 import time
 from product_feed_py import *
-from catalogue_service.settings import BASE_DIR
+from catalogue_service.settings import BASE_DIR, CJ_HOST_KEY
+from product_api.models import Product, Merchant, Network
 
 class ProductFeed(object):
 
@@ -24,6 +28,8 @@ class ProductFeed(object):
         self._ftp_host = config_dict['ftp_config']['host']
         self._ftp_user = config_dict['ftp_config']['user']
         self._ftp_password = config_dict['ftp_config']['password'] 
+        self._sftp_host_key = config_dict['ftp_config']['host_key']
+        self._sftp_algorithm = config_dict['ftp_config']['algorithm']
         self._local_temp_dir = config_dict['local_temp_dir'] if config_dict['local_temp_dir'] else settings_local.PRODUCT_FEED_TEMP
         self._remote_dir = config_dict['remote_dir']
         self._remote_files = []
@@ -32,7 +38,28 @@ class ProductFeed(object):
         self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
         self._clean_data_method = config_dict['clean_data_method']
         self._file_ending = config_dict['file_ending']
+        self._network = config_dict['network']
 
+    def set_deleted_network_products(self, threshold = 12):
+        """
+        Helper method for use in the main data feed method. Collects a list data feed products
+        that should have been upserted in the current run. For those that were determined to not have
+        been upserted, set those products to a status of is_deleted = True.
+
+        Args:
+          threshold (int): The time threshold in hours. If the updated-at value of a record is threshold
+          or more hours old, conclude that it was not updated in the current upsert and set to deleted.
+        """
+        print self._network
+        network_id = Network.objects.get(name=self._network)
+        merchants = Merchant.objects.filter(active=True, network_id=network_id)
+        merchant_ids = merchants.values_list('external_merchant_id')
+        products = Product.objects.filter(merchant_id__in = merchant_ids)
+        datetime_threshold = datetime.now() - timedelta(hours = threshold)
+        deleted_products = products.filter(updated_at__lte = datetime_threshold)
+        updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        deleted_products.update(is_deleted = True, updated_at = updated_at)
+        print('Set %s non-upserted products to deleted' % deleted_products.count())
 
     def clean_data(self):
         start = time.time()
@@ -55,17 +82,18 @@ class ProductFeed(object):
 
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-1.sql'))
         statement = sql_script.read()
+        statement = statement.replace('[STAGING_TABLE]', table)
         statements = statement.split(';')
         for i in range(0, len(statements)):
             full_script.append(statements[i])
 
         # need to escape the backslash for python and then also for mySQL
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\n' %s" % (f, table, fields)
-        print statement
         full_script.append(statement)
 
         sql_script = open(os.path.join(BASE_DIR, 'tasks/product_feed_sql/load-cleaned-data-2.sql'))
         statement = sql_script.read()
+        statement = statement.replace('[STAGING_TABLE]', table)
         statements = statement.split(';')
         for i in range(0, len(statements)):
             full_script.append(statements[i])
@@ -112,8 +140,24 @@ class ProductFeed(object):
         for remote_file in self._remote_files:
             local_file = os.path.join(self._local_temp_dir, remote_file)
             ftp.retrbinary("RETR " + remote_file ,open(local_file, 'wb').write)
- 
+
         ftp.quit()
+
+    def get_files_sftp(self):
+        self.make_temp_dir()
+        key = paramiko.DSSKey(data=decodebytes(self._sftp_host_key))
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys.add(self._ftp_host, self._sftp_algorithm, key)
+
+        with pysftp.Connection(self._ftp_host, username=self._ftp_user, password=self._ftp_password, cnopts=cnopts) as sftp:
+            remote_directory = sftp.listdir(remotepath=self._remote_dir)
+            # TO-DO (maybe): walktree (recursive) may be useful in the future, but it is involved to implement
+            pattern = re.compile(self._file_pattern)
+            file_list = [f for f in remote_directory for m in [re.search(pattern, f)] if m]
+            for f in file_list:
+                sftp.get(self._remote_dir + f, localpath=self._local_temp_dir + f, preserve_mtime=True)
+
+        return
 
     def remove_temp_file(self, filename):
         try:

@@ -9,13 +9,13 @@ class Command(BaseCommand):
             pf = ProductFeed('catalogue_service/ran_delta.yaml')
 
             self.stdout.write(self.style.WARNING("Pulling delta files from FTP"))
-            #pf.get_files_ftp()
+            pf.get_files_ftp()
 
             self.stdout.write(self.style.WARNING("Decompressing files"))
-            #pf.decompress_data()
+            pf.decompress_data()
 
             self.stdout.write(self.style.WARNING("Cleaning files"))
-            #pf.clean_data()
+            pf.clean_data()
 
             self.stdout.write(self.style.WARNING("Update API products table"))
             pf.load_cleaned_data()

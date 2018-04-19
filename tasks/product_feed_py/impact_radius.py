@@ -3,22 +3,30 @@ import yaml
 import urlparse
 import re
 import csv
-from . import mappings, product_feed_helpers
+from tasks.product_feed_py import mappings, product_feed_helpers
 from copy import copy
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap, Network, Product
+from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap, ExclusionTerm
 from itertools import izip
 from datetime import datetime, timedelta
 
 def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     # mappings
     merchant_mapping = mappings.create_merchant_mapping()
+    merchant_search_rank_mapping = mappings.create_merchant_search_rank_mapping()
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
     size_mapping = mappings.create_size_mapping()
     shoe_size_mapping = mappings.create_shoe_size_mapping()
     size_term_mapping = mappings.create_size_term_mapping()
+    synonym_category_mapping = mappings.create_synonym_category_mapping()
+    synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+
+    # for use when adding a mapping
+    exclusion_terms = mappings.create_exclusion_term_mapping()
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('Impact Radius') # name subject to change?
@@ -84,6 +92,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
         # this way we will run ir once for each found pair (altho currently only 1)
         for file_pair in merchant_file_pairs:
+            print file_pair
             merchant_name = file_pair[0]
             merchant_id = product_feed_helpers.generate_merchant_id(merchant_name)
             product_catalog_IR = file_pair[1]
@@ -98,6 +107,25 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                 merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
                 # merchant_is_active = 1
                 if merchant_is_active:
+                    # config file
+                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/impact_radius/'
+                    fd = os.listdir(config_path)
+
+                    default = 'default'
+                    extension = '.yaml'
+                    default_filename = default + extension
+                    merchant_id_filename = str(merchant_id) + extension
+                    full_path = config_path + default_filename
+                    if merchant_id_filename in fd:
+                        full_path = config_path + merchant_id_filename
+
+                    with open(full_path, "r") as config:
+                        config_dict = yaml.load(config)
+                        try:
+                            tiered_assignments = config_dict['tiered_assignment_fields']
+                        except KeyError:
+                            tiered_assignments = {}
+
                     # omit fieldnames to use header lines
                     reader1 = csv.DictReader(lines1, restval = '', dialect = 'reading')
                     reader2 = csv.DictReader(lines2, restval = '', dialect = 'reading')
@@ -107,9 +135,9 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
                         # unicode sandwich stuff
                         for key, value in datum1.iteritems():
-                            datum1[key] = value.decode('UTF-8')
+                            datum1[key] = product_feed_helpers.normalize_data(value)
                         for key, value in datum2.iteritems():
-                            datum2[key] = value.decode('UTF-8')
+                            datum2[key] = product_feed_helpers.normalize_data(value)
 
                         # gender pigeonholing
                         gender = datum1['Gender']
@@ -125,9 +153,9 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             continue
 
                         primary_category = datum1['Category']
-                        secondary_category = u'' # ?
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum1, u'', synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping, exclusion_terms = exclusion_terms)
 
-                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
+                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
                         # allume_category = 'allume_category'
                         if allume_category:
                             record = {}
@@ -177,7 +205,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                                     record['product_id'] = datum2[key]
                                     break
                             if not record['product_id']: # it did not get set in above
-                                record['product_id'] = product_feed_helpers.generate_product_id(record['product_name'], size, merchant_color)
+                                record['product_id'] = product_feed_helpers.generate_product_id(record['product_name'], size, merchant_color, record['SKU'])
 
                             availability = datum2['availability']
                             availability = availability.replace(' ', '-')
@@ -187,18 +215,18 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             # derived
                             try:
                                 record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(record['product_url'], 'u')
-                            except Exception as e:
+                            except KeyError as e:
                                 print e
                                 record['raw_product_url'] = u''
                             record['allume_category'] = allume_category
 
                             # not from data
                             record['merchant_name'] = merchant_name
-                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
                             # defaults?
                             record['is_best_seller'] = u'0'
                             record['is_trending'] = u'0'
-                            record['allume_score'] = u'0'
+                            record['allume_score'] = unicode(merchant_search_rank_mapping[long(merchant_id)])
                             # need to infer deleted?
                             record['is_deleted'] = u'0'
 
@@ -214,24 +242,30 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             record['keywords'] = u''
                             record['secondary_category'] = secondary_category
 
-                            # finish unicode sandwich
-                            for key, value in record.iteritems():
-                                record[key] = value.encode('UTF-8')
 
-                            # check size here to see if we should write additional 'child' records?
+                            # size splitting stuff
                             parent_attributes = copy(record)
                             sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    child_record = copy(parent_attributes)
+                                    child_record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
-                                    parent_attributes['size'] = size
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                                    writer.writerow(parent_attributes)
+
+                                    child_record['size'] = size
+                                    child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    for key, value in child_record.iteritems():
+                                        child_record[key] = value.encode('UTF-8')
+
+                                    writer.writerow(child_record)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
-                                record['is_deleted'] = 1
+                                record['is_deleted'] = u'1'
+
+                            # finish unicode sandwich
+                            for key, value in record.iteritems():
+                                record[key] = value.encode('UTF-8')
 
                             # write the record
                             writer.writerow(record)
@@ -247,7 +281,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
     # infer deleted products
-    print('Updating non-upserted Impact Radius products')
-    product_feed_helpers.set_deleted_network_products('Impact Radius')
+    # print('Updating non-upserted Impact Radius products')
+    # product_feed_helpers.set_deleted_network_products('Impact Radius')
 
 

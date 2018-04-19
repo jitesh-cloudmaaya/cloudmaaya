@@ -29,23 +29,27 @@ var rack_builder = {
       var index = rack_builder.favorites_product_ids.indexOf(product_id);
       rack_builder.favorites_product_ids.splice(index, 1);
       rack_builder.favorites.splice(index, 1);
-      $.ajax({
-        contentType : 'application/json',
-        error: function(response){
-          console.log(response);
-        },
-        success:function(response){
-          $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
-          link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
-        },
-        type: 'DELETE',
-        url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
-      }); 
+      if(fave != ''){
+        link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+        $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
+        $.ajax({
+          contentType : 'application/json',
+          error: function(response){
+            console.log(response);
+          },
+          success:function(response){
+            console.log('removed favorite')
+          },
+          type: 'DELETE',
+          url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
+        }); 
+      }
     }else{
       var fave = {
         "stylist": parseInt($('#stylist').data('stylistid')) ,
         "product": parseInt(link.data('productid'))     
       }
+      link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(fave),
@@ -55,8 +59,26 @@ var rack_builder = {
         success:function(response){
           rack_builder.favorites.push(response);
           rack_builder.favorites_product_ids.push(response.product);
-          link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
-          $('#fave-prods').append(rack_builder.favoriteTemplate(link.data('details')))
+          link.data('faveid', response.id);
+          var obj = link.data('details')
+          var fave_idx = rack_builder.favorites_product_ids.indexOf(obj.id);
+          var favorite_object = rack_builder.favorites[fave_idx];
+          var sold_out = obj.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';  
+          var fave_item = '<div class="item" data-productid="' + obj.id + 
+            '" data-productname="' + obj.product_name + 
+            '" data-url="' + obj.product_image_url + 
+            '" data-fave="' + favorite_object.id + 
+            '" data-availability="' + obj.availability + '">' +
+            '<img src="' + obj.product_image_url + '" class="handle"/>' +
+            '<span class="badge"><i class="fa fa-heart"></i></span>' +
+            '<a href="#"  class="view" data-productid="' + obj.id + 
+            '"><i class="fa fa-align-left"></i></a><a href="#" class="remove-fave" data-productid="' + 
+            obj.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
+          $('#fave-prods').prepend(fave_item);
+          var fd = $('#fave-draggable');
+          if(fd.length > 0){
+            fd.prepend(fave_item);
+          }
         },
         type: 'PUT',
         url: '/shopping_tool_api/user_product_favorite/0/'
@@ -93,7 +115,10 @@ var rack_builder = {
       }
     }
     if(add_to_list == true){
-      if(items == 0){rack.html('<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>')}
+      var list_atr = $('#results').find('a.add-to-rack[data-productid="' + details.id + '"]')
+      if((list_atr.length > 0)&&(list_atr.hasClass('selected') == false)){
+        list_atr.addClass('selected').html('<i class="fa fa-check"></i> racked');
+      }
       var obj = {
         product: parseInt(details.id),
         allume_styling_session: parseInt(rack_builder.session_id)
@@ -101,46 +126,56 @@ var rack_builder = {
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(obj),
+        error:function(response){
+          console.log(response);
+          alert("Sorry, we could not add this product to your rack at this time.")
+          item.removeClass('selected').html('<i class="icon-hanger"></i> add to rack');
+        },
         success:function(response){
-          var itm = rack_builder.itemTemplate(details, 'rack', idx, response.id);
-          var categories = [];
-          var sanitized_cat = details.allume_category .replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
-          $.each(rack.find('div.block'), function(idx){
-            categories.push($(this).data('category'));
-          });
-          if(categories.indexOf(sanitized_cat) == -1){
-            categories.push(sanitized_cat);
-            categories.sort();
-            var rackidx = categories.indexOf(sanitized_cat);
-            var new_category = '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
-              details.allume_category + '</a><div class="block" data-category="' + sanitized_cat + 
-              '"></div>';
-            if(rackidx == 0){
-              rack.find('.close-all-rack-sections').after(new_category);
-            }else if(rackidx == (categories.length -1)){
-              rack.append(new_category);
-            }else{
-              rack.find('div.block').eq((rackidx -1)).after(new_category);
-            }
+          var new_rack_obj = { 
+            "rack_id": response.id,
+            "id": details.id,
+            "added": moment().format("MM/DD/YYYY HH:mm"),
+            "product_id": details.product_id,
+            "sku": details.sku,
+            "merchant_id": details.merchant_id,
+            "merchant_name": details.merchant_name,
+            "manufacturer_name": details.manufacturer_name,
+            "product_name": details.product_name,
+            "product_image_url": details.product_image_url,
+            "primary_category": details.primary_category,
+            "allume_category": details.allume_category,
+            "current_price": details.current_price,
+            "availability": details.availability
           }
-          rack.find('div.block[data-category="' + sanitized_cat + '"]').append(itm)
+          initial_rack.push(new_rack_obj);
+          var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
+          var sold_out = details.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
+          $('#rack-list').prepend(
+            '<div class="item" data-productid="' + details.id + 
+            '" data-url="' + details.product_image_url + 
+            '" data-productname="' + details.product_name + 
+            '" data-sku="' + sku + 
+            '" data-availability="' + details.availability + 
+            '"><img class="handle" src="' + details.product_image_url + 
+            '"/><a href="#"  class="view" data-productid="' + details.id + 
+            '"><i class="fa fa-align-left"></i></a>' +
+            '<a href="#" class="remove-from-rack" data-sku="' + sku + 
+            '" data-rackid="' + response.id + '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
+          );
           rack_builder.updateRackCount();
           if(from_compare == true){
-            var sorted_racks = $('#rack-draggable').find('a.sort-items').length
-            if(sorted_racks == 0){
-              look_builder.orderedRack();
-            }else{
-              $('#rack-draggable div.look-builder-rack div.item:first').before(
-                '<div class="item" data-productid="' + details.id + '" data-url="' + 
-                details.product_image_url + '"><img class="handle" src="' + details.product_image_url + 
-                '"/><a href="#" class="add" data-productid="' + details.id + '" data-imgsrc="' + 
-                details.product_image_url + '"><i class="fa fa-plus-circle"></i></a>' +
-                '<a href="#"  class="view" data-productid="' + details.id + 
-                '"><i class="fa fa-search"></i></a><a href="#" class="remove" data-sku="' + 
-                details.id + '_' + details.merchant_id + '_' + details.product_id + 
-                '_' + details.sku + '" data-rackid="' + response.id + '"><i class="fa fa-times"></i></a></div>'
-              );
-            }
+            $('#rack-draggable div.look-builder-rack div.item:first').before(
+              '<div class="item" data-productid="' + details.id + '" data-url="' + 
+              details.product_image_url + '" data-sku="' + sku + '"' +
+              ' data-availability="' + details.availability + 
+              '"><img class="handle" src="' + details.product_image_url + 
+              '"/><a href="#"  class="view" data-productid="' + details.id + 
+              '"><i class="fa fa-align-left"></i></a><a href="#" class="remove" data-sku="' + 
+              details.id + '_' + details.merchant_id + '_' + details.product_id + 
+              '_' + details.sku + '" data-rackid="' + response.id + 
+              '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
+            );
           }
         },
         type: 'PUT',
@@ -165,6 +200,25 @@ var rack_builder = {
     }
   },
   /**
+  * @description create a color hash from array of products
+  * @param {array} products - array of products objects
+  * @returns {object} - colors_hash object
+  */
+  createColorHash: function (products){
+    var colors_hash = {color_names: [], color_sizes: {}};
+    for(var i = 0, l = products.length; i<l; i++){
+      var product = products[i]._source;
+      var product_color = product.merchant_color.toLowerCase();
+      if(colors_hash.color_names.indexOf(product_color) == -1){
+        colors_hash.color_names.push(product_color)
+        colors_hash.color_sizes[product_color] = [];
+      }
+      colors_hash.color_sizes[product_color] = colors_hash.color_sizes[product_color].concat(product.size.split(','));
+    }
+    colors_hash.color_names.sort();
+    return colors_hash;
+  },
+  /**
   * @desscription favorite item template
   * @param {object} obj - item fields in json format
   * @returns {string} HTML of favorite item
@@ -174,16 +228,7 @@ var rack_builder = {
     var favorite_object = rack_builder.favorites[fave_idx];
     var fave_link = '<span class="favorited" data-productid="' + 
       obj.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></span>';
-         
-    var retail = obj.retail_price;
-    var sale = obj.sale_price;
-    var price_display = '';   
-    if((sale >= retail)||(sale == 0)){
-      price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-    }else{
-      price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-        ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-    }      
+    var price_display = '<span class="price">' + numeral(obj.current_price).format('$0,0.00') + '</span>';     
     var itm = '<div class="item" data-productid="' + obj.id + '" title="' + obj.merchant_name + ' by ' + 
     obj.manufacturer_name + '" data-productname="' + obj.product_name + 
     '" data-src="' + obj.product_image_url + '" data-fave="' + favorite_object.id  + '"><a href="#" ' +
@@ -203,7 +248,8 @@ var rack_builder = {
         "client": parseInt($('#user-clip').data('userid')),
         "allume_styling_session": rack_builder.session_id,
         "stylist": parseInt($('#stylist').data('stylistid')),
-        "page": 1
+        "page": 1,
+        "with_products": "False"
       }
     if(type == 'favorites'){
       lookup.favorites_only = "True";
@@ -255,32 +301,31 @@ var rack_builder = {
     rack_builder.session_id = $('body').data('stylesession');
     /* set initital rack products */
     var rack_list = $('#rack-list');
+    var rack_items = [];
     initial_rack.sort(function(a,b){
-      if(a.allume_category.toLowerCase() > b.allume_category.toLowerCase()){ return 1}
-      if(a.allume_category.toLowerCase() < b.allume_category.toLowerCase()){ return -1}
-      return 0;
+      if(a.added > b.added){ return -1}
+      if(a.added < b.added){ return 1}
+      return 0;      
     });
-    if(initial_rack.length > 0){
-      var plural = initial_rack.length == 1 ? 'item' : 'items' ;
-      rack_list.append(
-        '<span id="rack-number">' + initial_rack.length + ' ' + plural + '</span>' +
-        '<a class="close-all-rack-sections" href="#"><i class="fa fa-caret-square-o-up"></i>collapse all sections</a>'
-      )
-    }
     for(var i = 0, l = initial_rack.length; i<l; i++){
-      var obj = initial_rack[i];
-      var itm = rack_builder.itemTemplate(obj, 'rack', '', obj.rack_id);
-      var sanitized_cat = obj.allume_category.replace('&amp;', 'and').replace(/&#(\d+);/g, function(match, match2) {return String.fromCharCode(+match2);});
-      var category_exists = rack_list.find('div.block[data-category="' + sanitized_cat + '"]').length;
-      if(category_exists == 0){
-        rack_list.append(
-          '<a href="#" class="rack-section-toggle"><i class="fa fa-angle-down"></i>' + 
-          obj.allume_category + '</a><div class="block" data-category="' + sanitized_cat + 
-          '"></div>'
-        );
-      }
-      rack_list.find('div.block[data-category="' + sanitized_cat + '"]').append(itm);
+      var data = initial_rack[i];
+      var src = data.product_image_url;
+      var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
+      var sold_out = data.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
+      rack_items.push(
+        '<div class="item" data-productid="' + data.id + 
+        '" data-productname="' + data.product_name + '" data-url="' + 
+        src + '" data-sku="' + sku + '" data-availability="' + 
+        data.availability + '"><img class="handle" src="' + src + 
+        '"/><a href="#"  class="view" data-productid="' + data.id + 
+        '"><i class="fa fa-align-left"></i></a>' +
+        '<a href="#" class="remove-from-rack" data-sku="' + sku + 
+        '" data-rackid="' + data.rack_id + 
+        '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
+      ); 
+           
     }
+    rack_list.html(rack_items.join(''))
     var existing_items = []
     $.each(rack_list.find('a.remove-from-rack'), function(idx){
       var sku = $(this).data('sku')
@@ -289,11 +334,37 @@ var rack_builder = {
     rack_list.data('skus', existing_items.join(','));
     /* create favorites section and add functionality */
     if(stylist_favorites.length > 0){
-      var fave_prods = $('#fave-prods');
+
+      stylist_favorites.sort(function(a,b){
+        if(a.added > b.added){ return -1}
+        if(a.added < b.added){ return 1}
+        return 0;      
+      });
+      var fave_items = [];
       for(var i = 0, l = stylist_favorites.length; i<l; i++){
         var obj = stylist_favorites[i];
-        var itm = rack_builder.favoriteTemplate(obj);
-        fave_prods.append(itm);
+        var fave_idx = rack_builder.favorites_product_ids.indexOf(obj.id);
+        var favorite_object = rack_builder.favorites[fave_idx];
+        var sold_out = obj.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';        
+        fave_items.push(
+          '<div class="item" data-productid="' + obj.id + 
+          '" data-productname="' + obj.product_name + 
+          '" data-url="' + obj.product_image_url + 
+          '" data-fave="' + favorite_object.id + 
+          '" data-availability="' + obj.availability + '">' +
+          '<img src="' + obj.product_image_url + '" class="handle"/>' +
+          '<span class="badge"><i class="fa fa-heart"></i></span>' +
+          '<a href="#"  class="view" data-productid="' + obj.id + 
+          '"><i class="fa fa-align-left"></i></a><a href="#" class="remove-fave" data-productid="' + 
+          obj.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-times"></i></a>' +
+          sold_out + '</div>'
+        ); 
+             
+      }
+      $('#fave-prods').html(fave_items.join(''));
+      var fd = $('#fave-draggable');
+      if(fd.length > 0){
+        fd.html(fave_items.join(''));
       }
     }
     $('#rack-tabs a.tab').click(function(e){
@@ -305,7 +376,11 @@ var rack_builder = {
         div.addClass('show').siblings('div.rack-section').removeClass('show')
       }
     });
-    $('#favorites-list').on('click','a.rack-section-toggle', function(e){
+    $('#favorites-list').on('click', 'a.view', function(e){
+      e.preventDefault();
+      var link = $(this);
+      rack_builder.inspectItem(link, 'compare');
+    }).on('click','a.rack-section-toggle', function(e){
       e.preventDefault();
       var link = $(this);
       var i = link.find('i')
@@ -319,41 +394,39 @@ var rack_builder = {
         i.removeClass('fa-angle-down').addClass('fa-angle-right');
         div.slideUp();       
       }
-    }).on('click', 'a.fave-object', function(e){
+    }).on('click', 'a.remove-fave', function(e){
       e.preventDefault();
-      var target = $(e.target);
       var link = $(this);
-      if(target.hasClass('fa')){
-        var fave = target.closest('span').data('faveid');
-        var product_id = target.closest('span').data('productid');
-        var index = rack_builder.favorites_product_ids.indexOf(product_id);
-        rack_builder.favorites_product_ids.splice(index, 1);
-        rack_builder.favorites.splice(index, 1);
-        $.ajax({
-          contentType : 'application/json',
-          error: function(response){
-            console.log(response);
-          },
-          success:function(response){
-            var result_links = $('#results a.favorited');
-            if(result_links.length > 0){
-              $.each(result_links, function(idx){
-                var fav = $(this);
-                var fav_id = fav.data('faveid');
-                if(fav_id == fave){
-                  fav.data('faveid','').removeClass('favorited').find('i')
-                  .removeClass('fa-heart').addClass('fa-heart-o');
-                }
-              });
-            }
-            link.closest('.item').remove();
-          },
-          type: 'DELETE',
-          url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
-        });
-      }else{
-        rack_builder.inspectItem(link);
-      }       
+      var fave = link.data('faveid');
+      var product_id = link.data('productid');
+      var index = rack_builder.favorites_product_ids.indexOf(product_id);
+      rack_builder.favorites_product_ids.splice(index, 1);
+      rack_builder.favorites.splice(index, 1);
+      $.ajax({
+        beforeSend:function(){
+          link.closest('div.item').hide();
+          var result_links = $('#results a.favorited');
+          if(result_links.length > 0){
+            $.each(result_links, function(idx){
+              var fav = $(this);
+              var fav_id = fav.data('faveid');
+              if(fav_id == fave){
+                fav.data('faveid','').removeClass('favorited').find('i')
+                .removeClass('fa-heart').addClass('fa-heart-o');
+              }
+            });
+          }          
+        },
+        contentType : 'application/json',
+        error: function(response){
+          console.log(response);
+        },
+        success:function(response){
+          link.closest('.item').remove();
+        },
+        type: 'DELETE',
+        url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
+      });      
     }).on('click','a.view-look-details', function(e){
       e.preventDefault();
       var link = $(this);
@@ -382,35 +455,7 @@ var rack_builder = {
       }
       return false;
     });
-    rack_list.on('click','a.close-all-rack-sections', function(e){
-      e.preventDefault();
-      var link = $(this);
-      if(link.hasClass('open-all') == false){
-        link.addClass('open-all').html('<i class="fa fa-caret-square-o-down"></i>expand all sections');
-        $.each(rack_list.find('a.rack-section-toggle'),function(idx){
-          var link = $(this);
-          var i = link.find('i')
-          var div = link.next('div.block');
-          if(link.hasClass('closed') == false){
-            link.addClass('closed');
-            i.removeClass('fa-angle-down').addClass('fa-angle-right');
-            div.slideUp();
-          }
-        });        
-      }else{
-        link.removeClass('open-all').html('<i class="fa fa-caret-square-o-up"></i>collapse all sections');
-        $.each(rack_list.find('a.rack-section-toggle'),function(idx){
-          var link = $(this);
-          var i = link.find('i')
-          var div = link.next('div.block');
-          if(link.hasClass('closed') == true){
-            link.removeClass('closed');
-            i.removeClass('fa-angle-right').addClass('fa-angle-down');
-            div.slideDown();
-          }
-        });
-      }
-    }).on('click','a.remove-from-rack',function(e){
+    rack_list.on('click','a.remove-from-rack',function(e){
       e.preventDefault();
       var link = $(this);
       var sku = link.data('sku');
@@ -431,6 +476,9 @@ var rack_builder = {
         } 
       });
       $.ajax({
+        beforeSend:function(){
+          link.closest('div.item').hide();
+        },
         success:function(response){
           var parent_block = link.closest('div.block');
           link.closest('div.item').remove();
@@ -447,20 +495,11 @@ var rack_builder = {
         type: 'DELETE',
         url: '/shopping_tool_api/rack_item/' + link.data('rackid') + '/'
       });
-    }).on('click','a.rack-section-toggle', function(e){
+    }).on('click', 'a.view', function(e){
       e.preventDefault();
       var link = $(this);
-      var i = link.find('i')
-      var div = link.next('div.block')
-      if(link.hasClass('closed')){
-        link.removeClass('closed');
-        i.removeClass('fa-angle-right').addClass('fa-angle-down');
-        div.slideDown();
-      }else{
-        link.addClass('closed');
-        i.removeClass('fa-angle-down').addClass('fa-angle-right');
-        div.slideUp();       
-      }
+      console.log(link.data())
+      rack_builder.inspectItem(link, 'compare');
     });
     /* inspect item functionality events */
     $('#inspect-item').on('click', 'a.close-inspect', function(e){
@@ -501,13 +540,7 @@ var rack_builder = {
         var option = data.details[i];
         if(option._source.merchant_color.toLowerCase() == color){
           matching = option;
-          var retail = matching._source.retail_price;
-          var sale =  matching._source.sale_price;
-          if((sale >= retail)||(sale == 0)){
-            price_display = numeral(retail).format('$0,0.00');
-          }else{
-            price_display = '<em>(' + numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00');
-          }
+          price_display = '<em class="label">price:</em>' + numeral(matching._source.current_price).format('$0,0.00');
           fave_link = '<a href="#" class="favorite" data-productid="' + 
             matching._source.id + '"><i class="fa fa-heart-o"></i></a>';
           var fave_idx = rack_builder.favorites_product_ids.indexOf(matching._source.id);
@@ -522,7 +555,7 @@ var rack_builder = {
           var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
           if(rack_idx > -1){
             rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
-              matching._source.product_id + '"><i class="fa fa-check"></i> in rack</a>';
+              matching._source.product_id + '"><i class="fa fa-check"></i> racked</a>';
           }
           break;
         }
@@ -555,130 +588,155 @@ var rack_builder = {
   * @param {string} view - option view flag to add additional processing if required
   */
   inspectItem: function(link, view){
-    var view_class = view == undefined ? '' : view;
     var id = parseInt(link.data('productid'));
-    $.ajax({
-      beforeSend: function(){
-        $('#inspect-item').html(
-          '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
-        '<div class="loader">' +
-        '<span class="pulse_loader"></span>' +
-        '<span class="pulse_message">Finding your requested item...</span>' +
-        '</div></div>'
-        ).fadeIn();
-      },
-      type: "GET",
-      url: '/product_api/get_product/' + id + '/',
-      error: function(){
-        $('#inspect-item').html(
-          '<div class="stage"><a href="#" class="close-inspect">' +
-          '<i class="fa fa-times"></i></a><h2>could not find product...</h2></div>'
-        );
-      },
-      success: function(results){
-        console.log(results)
-        var inspect = $('#inspect-item');
-        var markup = [];
-        var matching;
-        var colors_hash = {color_names: [], color_sizes: {}};
-        for(var i = 0, l = results.data.length; i<l; i++){
-          var product = results.data[i]._source;
-          var product_color = product.merchant_color.toLowerCase();
-          if(colors_hash.color_names.indexOf(product_color) == -1){
-            colors_hash.color_names.push(product_color)
-            colors_hash.color_sizes[product_color] = [];
-          }
-          colors_hash.color_sizes[product_color] = colors_hash.color_sizes[product_color].concat(product.size.split(','));
-          if(product.id == id){
-            matching = product;
-          }
-        }
-        colors_hash.color_names.sort();
-        var product = matching;
-        if(product != undefined){
-          var color_options = [];
-          var color_link = '';
-          var sizes = '';
-          for(var i = 0, l = colors_hash.color_names.length; i<l; i++){
-            var color = colors_hash.color_names[i];
-            if(color == product.merchant_color.toLowerCase()){
-              if(l > 1){
-                color_link = '<a href="#" id="color-toggle">' + color + '<i class="fa fa-caret-down"></i></a>'
-              }else{
-                color_link = color;
-              }
-              color_options.push('<a href="#" class="size-by-color selected" data-color="' + color + '">' + color + '</a>');
-              var sizes_list = [...new Set(colors_hash.color_sizes[color])].filter(String);
-              sizes = '<span id="sizes-list">' + sizes_list.join(', ') + '</span>';
-            }else{
-              color_options.push('<a href="#" class="size-by-color" data-color="' + color + '">' + color + '</a>');
-            }
-          }
-          var fave_link = '<a href="#" class="favorite" data-productid="' + 
-            product.id + '"><i class="fa fa-heart-o"></i></a>';
-          var fave_idx = rack_builder.favorites_product_ids.indexOf(product.id);
-          if(fave_idx > -1){
-            var favorite_object = rack_builder.favorites[fave_idx];
-            fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
-            product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
-          }
-          var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
-            product.id + '"><i class="icon-hanger"></i>add to rack</a>';
-          var rack_sku = product.id + '_' + product.merchant_id + '_' + product.product_id + '_' + product.sku;
-          var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
-          if(rack_idx > -1){
-            rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
-              product.id + '"><i class="fa fa-check"></i> in rack</a>';
-          }
-          var retail = product.retail_price;
-          var sale = product.sale_price;
-          var price_display = '';
-          var merch = '<span class="merch">' + product.merchant_name + '</span>';
-          var manu = '<span class="manu">by ' + product.manufacturer_name + '</span>';  
-          if((sale >= retail)||(sale == 0)){
-            price_display = '<span class="price" id="inspected-item-price">' + numeral(retail).format('$0,0.00') + '</span>';
+    var inspect = $('#inspect-item');
+    inspect.html(
+      '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
+      '<div class="loader">' +
+      '<span class="pulse_loader"></span>' +
+      '<span class="pulse_message">Finding your requested item...</span>' +
+      '</div></div>'
+    ).fadeIn();    
+    
+    /**
+    * @description private function to create the inspect markup
+    * @param {object} colors_hash - color hash used to allow product switcher
+    * @param {object} product - the product details hash 
+    * @returns {array} - markup array
+    */
+    function createInspectMarkup(colors_hash, product){
+      var markup = []
+      var color_options = [];
+      var color_link = '';
+      var sizes = '';
+      for(var i = 0, l = colors_hash.color_names.length; i<l; i++){
+        var color = colors_hash.color_names[i];
+        if(color == product.merchant_color.toLowerCase()){
+          if(l > 1){
+            color_link = '<a href="#" id="color-toggle">' + color + '<i class="fa fa-caret-down"></i></a>'
           }else{
-            price_display = '<span class="price" id="inspected-item-price"><em>(' + numeral(retail).format('$0,0.00') + 
-              ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
+            color_link = color;
           }
-          if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }
-          if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }  
-          var options_header = '';
-          var options_class = '';
-          if(color_options.length > 4){
-            options_class = 'with-header'
-            options_header = '<h6>' + (color_options.length - 1) + ' other color options</h6>';
-          }  
-          markup.push(
-            '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
-            '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
-            '<tr><td class="img" rowspan="2"><img id="inspected-item-img" src="' + product.product_image_url + '"/>' + 
-            fave_link + '' + rack_link + '<a href="' + product.product_url + '" target="_blank" class="link-to-store">' + 
-            '<i class="fa fa-search"></i>view at store</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
-            merch + '' + manu + '<p class="item-desc"> '+ 
-            product.short_product_description + '</p>' + price_display +
-            '<span class="general" id="inspected-item-sku"><em>sku:</em>' + product.sku + '</span>' +
-            '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
-            '<div id="color-options" class="' + options_class + '">' + options_header + 
-            '<div>' + color_options.join('') + '</div></div>' +
-            '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
-            '<span class="general"><em>category:</em>' + product.allume_category  + 
-            '</span></td></tr></table><span class="shopping-for">styling for:</span>' + 
-            $('#client-details-template').html() + '</div></div>'
-          );
-          inspect.html(markup.join(''));
-          /* add info to each link */
-          inspect.find('a.add-to-rack').data('details', product);
-          inspect.find('a.favorite').data('details', product);
-          inspect.find('a#color-toggle').data('colormap', colors_hash.color_sizes).data('details', results.data);
+          color_options.push('<a href="#" class="size-by-color selected" data-color="' + color + '">' + color + '</a>');
+          var sizes_list = [...new Set(colors_hash.color_sizes[color])].filter(String);
+          sizes = '<span id="sizes-list">' + sizes_list.join(', ') + '</span>';
         }else{
-          inspect.html(
-            '<div class="stage"><a href="#" class="close-inspect">' +
-            '<i class="fa fa-times"></i></a><h2>could not find product...</h2></div>'
-          );
+          color_options.push('<a href="#" class="size-by-color" data-color="' + color + '">' + color + '</a>');
         }
       }
-    });
+      var fave_link = '<a href="#" class="favorite" data-productid="' + 
+        product.id + '"><i class="fa fa-heart-o"></i></a>';
+      var fave_idx = rack_builder.favorites_product_ids.indexOf(product.id);
+      if(fave_idx > -1){
+        var favorite_object = rack_builder.favorites[fave_idx];
+        fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
+        product.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
+      }
+      var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
+        product.id + '"><i class="icon-hanger"></i>add to rack</a>';
+      var rack_sku = product.id + '_' + product.merchant_id + '_' + product.product_id + '_' + product.sku;
+      var rack_idx = rack_builder.rack_product_ids.indexOf(rack_sku);
+      if(rack_idx > -1){
+        rack_link = '<a href="#" class="add-to-rack selected" data-productid="' + 
+          product.id + '"><i class="fa fa-check"></i> racked</a>';
+      }
+      var price_display = '<span class="price" id="inspected-item-price"><em class="label">price:</em>' + numeral(product.current_price).format('$0,0.00') + '</span>';
+      var merch = '<span class="merch">' + product.merchant_name + '</span>';
+      var manu = '<span class="manu">by ' + product.manufacturer_name + '</span>';  
+      if(product.merchant_name == undefined || product.merchant_name == ''){ merch = ''; }
+      if(product.manufacturer_name == undefined || product.manufacturer_name == ''){ manu = ''; }  
+      var options_header = '';
+      var options_class = '';
+      if(color_options.length > 4){
+        options_class = 'with-header'
+        options_header = '<h6>' + (color_options.length - 1) + ' other color options</h6>';
+      } 
+      markup.push(
+        '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
+        '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
+        '<tr><td class="img" rowspan="2"><img id="inspected-item-img" src="' + product.product_image_url + '"/>' + 
+        fave_link + '' + rack_link + '<a href="' + product.product_url + '" target="_blank" class="link-to-store">' + 
+        '<i class="fa fa-tag"></i>view at store</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
+        merch + '' + manu + '<p class="item-desc"> '+ 
+        product.short_product_description + '</p>' + price_display +
+        '<span class="general" id="inspected-item-sku"><em>sku:</em>' + product.sku + '</span>' +
+        '<span class="general"><em>colors:</em>' + color_link + '</span>' + 
+        '<div id="color-options" class="' + options_class + '">' + options_header + 
+        '<div>' + color_options.join('') + '</div></div>' +
+        '<span class="general"><em>sizes:</em>' + sizes + '</span>' +             
+        '<span class="general"><em>category:</em>' + product.allume_category  + 
+        '</span><span class="general"><em>availability:</em>' + product.availability  + 
+        '</span></td></tr></table><span class="shopping-for">styling for:</span>' + 
+        $('#client-details-template').html() + '</div></div>'
+      );
+      return markup;
+    }
+    /** 
+    * if inspect item click comes from search page, we have all items that match it as 
+    * data attribute on the link. We simply need to analyze the data and draw the 
+    * resultant html, no need to re-touch database
+    */
+    if(view == 'search'){
+      /* get inner hits and concat with transformed (into matching object structure) currect product details */
+      var product = link.data('details');
+      var products = link.data('hits').concat({_source: product});
+      var colors_hash = rack_builder.createColorHash(products);
+      var markup = createInspectMarkup(colors_hash, product);
+      inspect.html(markup.join(''));
+      /* add info to each link */
+      inspect.find('a.add-to-rack').data('details', product);
+      inspect.find('a.favorite').data('details', product);
+      inspect.find('a#color-toggle').data('colormap', colors_hash.color_sizes).data('details', products);
+    /**
+    * any other click to inspect an item (rack, look builder) need to get the info from the db
+    */
+    }else{
+      $.ajax({
+        type: "GET",
+        url: '/product_api/get_product/' + id + '/',
+        error: function(){
+          inspect.html(
+            '<div class="stage"><a href="#" class="close-inspect">' +
+            '<i class="fa fa-times"></i></a><h2>could not find product...</h2>' +
+            '<div class="lookup-error-msg">Please copy and paste the information below and send to ' +
+            'Pamela Nguesseu &lt;pamela@allume.co&gt;:' +
+            '<span class="msg"><strong>/product_api/get_product/ Error</strong>Product ' + id + ' failed to load ' +
+            'at:<br/> ' +  moment().format('MM/DD/YYYY - HH:mm a') + '</span>Thank you.<br/>The Allume team</div></div>'
+          );
+        },
+        success: function(results){
+          console.log(results)
+          var markup = [];
+          var matching = '';
+          var colors_hash = rack_builder.createColorHash(results.data);
+          for(var i = 0, l = results.data.length; i<l; i++){
+            var product = results.data[i]._source;
+            if(product.id == id){
+              matching = product;
+              break;
+            }
+          }
+          if(matching != ''){
+            var markup = createInspectMarkup(colors_hash, matching);
+            inspect.html(markup.join(''));
+            /* add info to each link */
+            inspect.find('a.add-to-rack').data('details', matching);
+            inspect.find('a.favorite').data('details', matching);
+            inspect.find('a#color-toggle').data('colormap', colors_hash.color_sizes).data('details', results.data);
+          }else{
+            inspect.html(
+              '<div class="stage"><a href="#" class="close-inspect">' +
+              '<i class="fa fa-times"></i></a><h2>could not find product...</h2>' +
+              '<div class="lookup-error-msg">There was an issue finding your product, please close this ' +
+              'window and try again. If the issue persists, please copy and paste the information below and send to ' +
+              'Pamela Nguesseu &lt;pamela@allume.co&gt;:' +
+              '<span class="msg"><strong>/product_api/get_product/ Error</strong>Product ' + id + ' did not retun in the lookup ' +
+              'at:<br/>' +  moment().format('MM/DD/YYYY - HH:mm a') + '</span>Thank you.<br/>The Allume team</div></div>'
+            );
+          }
+        }
+      });
+    }
   },
   /**
   * @description item template for results and rack
@@ -689,15 +747,7 @@ var rack_builder = {
   * @returns {string} HTML
   */   
   itemTemplate: function(details, view, idx, rack_item_id){
-    var retail = details.retail_price;
-    var sale = details.sale_price;
-    var price_display = '';   
-    if((sale >= retail)||(sale == 0)){
-      price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-    }else{
-      price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-        ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-    }
+    var price_display = '<span class="price">' + numeral(details.current_price).format('$0,0.00') + '</span>';
     var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
     return '<div class="item" data-productid="' + details.id + '" title="' + details.merchant_name + ' by ' + 
       details.manufacturer_name + '" data-productname="' + details.product_name + '" data-sku="' + sku + 

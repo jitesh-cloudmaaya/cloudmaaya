@@ -29,6 +29,14 @@ from product_doc import EProductSearch#, EProduct
 
 
 @api_view(['GET'])
+def sort_options(self):
+    options = EProductSearch.sort_options()
+
+    return Response(options) 
+
+
+
+@api_view(['GET'])
 @permission_classes((AllowAny, ))
 def facets(self):
     """
@@ -45,6 +53,11 @@ def facets(self):
     text_query = self.query_params.get('text', '*')
     num_per_page = int(self.query_params.get('num_per_page', 100))
     page = int(self.query_params.get('page', 1))
+
+    sort_order = self.query_params.get('sort')
+    if not sort_order:
+        #sort_order = "-allume_score"
+        sort_order = "_score"
 
     filter_favs = self.query_params.get('favs')
     if filter_favs:
@@ -64,7 +77,7 @@ def facets(self):
             whitelisted_facet_args[key] = urllib.unquote(value).split("|")
 
 
-    es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs)
+    es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, sort=sort_order)
     es_count = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, card_count=True)
     es = es[start_record:end_record]
     results = es.execute().to_dict()
@@ -166,7 +179,7 @@ def get_allume_product(self, product_id):
 
     get:
         Convert product data to allume product data by id
-        URL: /product_api/super_get_product/1570
+        URL: /product_api/get_allume_product/1570
     """
     product = Product.objects.get(id = product_id)
     p_name = product.product_name
@@ -223,6 +236,10 @@ def get_allume_product(self, product_id):
                 size_data = {'image': product['product_image_url'], 'price': product['current_price'], 'text': size, 'value': size} # change formatting?
                 tmp['color_objects'][clr]['size_data'][size] = size_data
 
+    # a mapping of the text field, 'availability', to a boolean flag, 'available'
+    availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False, 'yes': True, 'no': False}
+    # either update above as more or fields are added or mold availability field across feeds to the same form
+
     # create payload object
     merchant_node = str(matching_object['product_api_merchant'])
     product_node = str(product_id)
@@ -235,6 +252,14 @@ def get_allume_product(self, product_id):
     payload['sites'][merchant_node]['add_to_cart'][product_node]['original_price'] = matching_object['retail_price']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['image'] = matching_object['product_image_url']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['description'] = matching_object['long_product_description']
+
+    try:
+        payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = availability_mapping[matching_object['availability']]
+    except KeyError as e:
+        print "The 'availablity' text field value present in this product does not have a known mapping, it was assumed to 'available' = False"
+        print matching_object['availability']
+        payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = False
+
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_names'] = ["color", "size", "quantity"]
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_values'] = {}
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_values']['color'] = []
