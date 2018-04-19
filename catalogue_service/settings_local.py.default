@@ -78,5 +78,5 @@ ALLUME_API_AUTH_USER = 'admin'
 ALLUME_API_AUTH_PASS = 'xxxx'
 
 # TO-DO: need to define the credentials for the email to use for this alerting service eventually
-# ALERT_EMAIL_ADDRESS = 
-# ALERT_EMAIL_PASSWORD = 
+ALERT_EMAIL_ADDRESS = ''
+ALERT_EMAIL_PASSWORD = ''
