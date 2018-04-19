@@ -209,7 +209,13 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
                             availability = datum2['availability']
                             availability = availability.replace(' ', '-')
+
+                            if availability == '' or availability == 'no':
+                                availability = 'out-of-stock'
+                            elif availability == 'yes':
+                                availability = 'in-stock'
                             record['availability'] = availability
+
                             record['brand'] = datum2['brand']
 
                             # derived

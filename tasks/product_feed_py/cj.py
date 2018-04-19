@@ -232,8 +232,10 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             record['currency'] = datum[currency_key]
 
                             availability = datum[availability_key]
-                            if availability == '': # might want to double check this
+                            if availability == '' or availability == 'no':
                                 availability = 'out-of-stock'
+                            elif availability == 'yes':
+                                availability = 'in-stock'
                             record['availability'] = availability
 
                             record['keywords'] = datum[keywords_key]

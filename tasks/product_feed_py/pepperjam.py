@@ -268,10 +268,11 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
 
                     record['currency'] = product['currency']
 
-                    if product['in_stock'] == '':
+                    availability = product['in_stock']
+                    if availability == 'no':
+                        availability = 'out-of-stock'
+                    elif availability == '' or availability == 'yes':
                         availability = 'in-stock'
-                    else:
-                        availability = product['in_stock']
                     record['availability'] = availability
 
                     record['keywords'] = product['keywords']
