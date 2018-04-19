@@ -515,9 +515,14 @@ import smtplib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from catalogue_service.settings import ALERT_EMAIL_ADDRESS, ALERT_EMAIL_PASSWORD
-def send_email():
+def send_email(e):
     """
-    Helper to support sending email as part of failure tracking of a job
+    Helper to support sending email as part of failure tracking of a job.
+    Still raises e, the error at the end of the email.
+
+    Args:
+      e: An Exception object raised by the product_feed calling send_email. Will send an email to appropriate
+      parties with a summary message and some logging using smtp lib.
     """
 
 
@@ -538,6 +543,6 @@ def send_email():
     server.sendmail(fromaddr, toaddr, text)
     server.quit()
 
-
+    raise e
 
 
