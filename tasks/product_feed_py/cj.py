@@ -233,9 +233,9 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
                             availability = datum[availability_key]
                             if availability == '' or availability == 'no':
-                                availability = 'out-of-stock'
+                                availability = u'out-of-stock'
                             elif availability == 'yes':
-                                availability = 'in-stock'
+                                availability = u'in-stock'
                             record['availability'] = availability
 
                             record['keywords'] = datum[keywords_key]

@@ -270,9 +270,9 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
 
                     availability = product['in_stock']
                     if availability == 'no':
-                        availability = 'out-of-stock'
+                        availability = u'out-of-stock'
                     elif availability == '' or availability == 'yes':
-                        availability = 'in-stock'
+                        availability = u'in-stock'
                     record['availability'] = availability
 
                     record['keywords'] = product['keywords']
