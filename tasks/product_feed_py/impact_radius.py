@@ -164,7 +164,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             merchant_color = datum1['Color'].lower()
                             try:
                                 allume_color = color_mapping[merchant_color]
-                            except:
+                            except KeyError:
                                 allume_color = u'other'
                             record['color'] = allume_color
 
@@ -247,9 +247,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             record['currency'] = u''
                             record['keywords'] = u''
                             record['secondary_category'] = secondary_category
-
-
-
 
                             # size splitting stuff
                             parent_attributes = copy(record)

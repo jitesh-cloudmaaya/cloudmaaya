@@ -174,7 +174,7 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
                             merchant_color = merchant_color.split(',')[0].lower()
                             try:
                                 allume_color = color_mapping[merchant_color]
-                            except:
+                            except KeyError:
                                 allume_color = u'other'
                             record['color'] = allume_color
 

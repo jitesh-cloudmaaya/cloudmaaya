@@ -211,7 +211,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             merchant_color = attribute_5_color.split(',')[0].lower()
                             try:
                                 allume_color = color_mapping[merchant_color]
-                            except:
+                            except KeyError:
                                 allume_color = u'other'
                             record['color'] = allume_color
 
@@ -260,7 +260,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                                     record['current_price'] = sale_price
                                 else:
                                     record['current_price'] = retail_price
-                            except:
+                            except (TypeError, ValueError):
                                 record['current_price'] = retail_price
 
                             # is_deleted logic
