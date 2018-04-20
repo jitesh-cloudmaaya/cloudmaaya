@@ -498,6 +498,8 @@ def parse_other_terms(product_name, synonym_other_category_mapping):
 
     return u''
 
+
+# this is probably going to be deprecated...
 def normalize_data(text, form='NFD'):
     """
     Necessary to fit potential unicode data to MySQL tables with latin1 charsets.

@@ -103,8 +103,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
 
                         # do unicode sandwich stuff
                         for key, value in datum.iteritems():
-                            # datum[key] = value.decode('UTF-8')
-                            datum[key] = product_feed_helpers.normalize_data(value)
+                            datum[key] = value.decode('UTF-8')
 
                         # breaking down the data from the merchant files
                         product_id = datum['product_id']
@@ -269,6 +268,11 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                                 record['is_deleted'] = u'1'
                             else:
                                 record['is_deleted'] = u'0'
+
+                            # for key, value in record.iteritems():
+                            #     print (type(key), type(value))
+                            #     print (key, value)
+                            # return
 
                             # unicode sandwich finish
                             for key, value in record.iteritems():
