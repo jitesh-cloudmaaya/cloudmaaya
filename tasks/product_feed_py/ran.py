@@ -269,10 +269,10 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             else:
                                 record['is_deleted'] = u'0'
 
-                            for key, value in record.iteritems():
-                                print (type(key), type(value))
-                                print (key, value)
-                            return
+                            # for key, value in record.iteritems():
+                            #     print (type(key), type(value))
+                            #     print (key, value)
+                            # return
 
                             # unicode sandwich finish
                             for key, value in record.iteritems():
