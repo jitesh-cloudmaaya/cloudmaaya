@@ -245,7 +245,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             record['allume_category'] = allume_category
                             record['brand'] = brand
 
-                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
                             record['merchant_name'] = merchant_name
 
                             # set defaults
@@ -269,8 +269,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             else:
                                 record['is_deleted'] = u'0'
 
-
-                            # print record
                             # check size here to see if we should write additional 'child' records?
                             parent_attributes = copy(record)
                             sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
