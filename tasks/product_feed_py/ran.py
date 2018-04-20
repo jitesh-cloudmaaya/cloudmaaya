@@ -290,7 +290,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                                     writer.writerow(child_record)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
-                                record['is_deleted'] = 1
+                                record['is_deleted'] = u'1'
 
                             # unicode sandwich finish
                             for key, value in record.iteritems():
