@@ -27,6 +27,29 @@ from tasks.product_feed_py.product_feed_helpers import determine_allume_size
 from tasks.product_feed_py import mappings
 from tasks.tasks import add_client_to_360
 
+@api_view(['POST']) # ?
+def add_look_to_session(look_id, session_id):
+    """
+    Copy all products in look to the rack
+    Copy Look to the session
+    Copy Look Products to the new Look
+    """
+    # get the look and session by id
+    look = Look.objects.get(id = look_id)
+    session = AllumeStylingSessions(id = session_id)
+
+    # copy all products in the look to the rack
+    # get all the look's products
+    for product in look.look_products.all():
+        # add it to the rack
+        pass
+
+    pass
+
+    # copy the look to the session
+
+    # copy look products to the new look
+
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
 def add_client_to_360_api(request, wp_user_id):
