@@ -177,6 +177,8 @@ class CategoryMap(models.Model):
             return self.merchant_name
 
     class Meta:
+        ordering = ['id']
+
         indexes = [
             models.Index(fields=['external_cat1']),
             models.Index(fields=['external_cat2']),
