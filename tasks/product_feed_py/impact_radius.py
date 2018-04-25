@@ -93,7 +93,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
         # this way we will run ir once for each found pair (altho currently only 1)
         for file_pair in merchant_file_pairs:
             print file_pair
-            merchant_name = file_pair[0]
+            merchant_name = file_pair[0].decode('UTF-8')
             merchant_id = product_feed_helpers.generate_merchant_id(merchant_name)
             product_catalog_IR = file_pair[1]
             product_catalog_GOOGLE = file_pair[2]
@@ -164,7 +164,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             merchant_color = datum1['Color'].lower()
                             try:
                                 allume_color = color_mapping[merchant_color]
-                            except:
+                            except KeyError:
                                 allume_color = u'other'
                             record['color'] = allume_color
 
@@ -211,9 +211,9 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             availability = availability.replace(' ', '-')
 
                             if availability == '' or availability == 'no':
-                                availability = 'out-of-stock'
+                                availability = u'out-of-stock'
                             elif availability == 'yes':
-                                availability = 'in-stock'
+                                availability = u'in-stock'
                             record['availability'] = availability
 
                             record['brand'] = datum2['brand']
@@ -247,7 +247,6 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             record['currency'] = u''
                             record['keywords'] = u''
                             record['secondary_category'] = secondary_category
-
 
                             # size splitting stuff
                             parent_attributes = copy(record)
