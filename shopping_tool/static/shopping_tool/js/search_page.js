@@ -131,7 +131,15 @@ var search_page = {
       e.preventDefault();
       var link = $(this);
       rack_builder.inspectItem(link, 'search');
-    });       
+    });   
+    /* clear search filters */
+    $('#clear-search-filters').click(function(e){
+      e.preventDefault()
+      var link = $(this);
+      $.each($('#facets input:checked'), function(idx){
+        $(this).prop('checked', false);
+      });
+    });
     /* check last search cookie and load if exists */
     var search_cookie = utils.readCookie('lastShoppingToolSearch' + search_page.session_id);
     if(search_cookie != null){
@@ -407,7 +415,9 @@ var search_page = {
     }
     if(text != search_box.data('lookup')){
       search_box.data('lookup', text);
-      new_search = true;
+      /* no longer is a search text change a new search 4/25
+      /* new_search = true;
+      */
     }
     if(category != search_box.data('cat')){
       new_search = true;

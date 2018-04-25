@@ -3955,7 +3955,8 @@ a#close-user-clip {
 #sort-dd + .selectize-control {float:right; margin-right:5px; width:150px;}
 #look-desc-count {color:#777; font-size:11px; padding:3px 0 0;}
 
-#clear-filters {
+#clear-filters,
+#clear-search-filters {
   border:1px solid #ddd;
   border-radius:3px;
   color:#777;
@@ -3969,11 +3970,14 @@ a#close-user-clip {
   text-decoration: none;
   width:100px;
 }
-#clear-filters:hover {
+#clear-search-filters {margin-left:0;}
+#clear-filters:hover,
+#clear-search-filters:hover {
   border-color:#ccc;
   box-shadow:0 1px 1px rgba(0,0,0,0.1);
 }
-#clear-filters:active {
+#clear-filters:active,
+#clear-search-filters:active {
   background:#fafafa;
   border-color:#fff;
   box-shadow: inset 0 0 3px rgba(0,0,0,0.3)
