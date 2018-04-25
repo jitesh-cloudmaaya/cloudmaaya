@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import uuid
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.db import DatabaseError, IntegrityError
@@ -30,25 +31,54 @@ from tasks.tasks import add_client_to_360
 @api_view(['POST']) # ?
 def add_look_to_session(look_id, session_id):
     """
-    Copy all products in look to the rack
-    Copy Look to the session
-    Copy Look Products to the new Look
+    post:
+        Copy all products in look to the rack
+        Copy Look to the session
+        Copy Look Products to the new Look
+
+        Sample JSON object 1
+        {
+          "look": could just be look_id?
+          "allume_styling_session": could just be session_id?
+          "stylist": 32 # can just be retrieved from the AllumeStylingSessions instance, if shopper is correct
+        }
+
+
     """
+    # maybe hardcode the look_id and session_id briefly to test
+    # then actually add tests
+
+
     # get the look and session by id
     look = Look.objects.get(id = look_id)
     session = AllumeStylingSessions(id = session_id)
+    stylist = session.shopper
 
     # copy all products in the look to the rack
+
+    # original_look_products = look.look_products.all() # should be a QuerySet object that I will iterate over twice
+    original_look_products = LookProduct.objects.filter(look = look)
+
     # get all the look's products
     for product in look.look_products.all():
         # add it to the rack
-        pass
-
-    pass
+        Rack.objects.create(allume_styling_session = session, product = product, stylist = stylist)
 
     # copy the look to the session
+    look.pk = None
+    look.allume_styling_session = session
+    look.token = uuid.uuid4()
+    look.save() # django way of cloning an object
+
+    # potentially might need to perform the original_look_products call here
 
     # copy look products to the new look
+    for look_product in original_look_products:
+        look_product.pk = None
+        look_product.look = look
+        look_product.save()
+
+
 
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
