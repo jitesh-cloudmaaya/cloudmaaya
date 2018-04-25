@@ -140,7 +140,7 @@ var search_page = {
       var category = $('#search-categories');
       var sanitized_primary ='';
       if(last_search.primary_category != undefined){
-        sanitized_primary = last_search.primary_category.replace('|Unsure','')
+        sanitized_primary = last_search.primary_category;
       }
 
       category[0].selectize.setValue(sanitized_primary, false);
@@ -420,7 +420,7 @@ var search_page = {
     */
     if(lastSearch == true){ new_search = false; }
     if(category != ''){
-      facets.push('&primary_category=' + category + '|Unsure');
+      facets.push('&primary_category=' + category);
       selection_markup.push(
         '<a href="#" class="remove-category" data-qparam="primary_category" ' +
         'data-facet="' + category + '">' + category + 
