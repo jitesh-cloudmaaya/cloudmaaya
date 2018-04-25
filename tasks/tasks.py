@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
-from celery import task
+from celery import task, shared_task
 from django.db import connection, transaction
 import os
 import time
@@ -27,6 +27,9 @@ def pepperjam_pull():
     print("Update API products table")
     pf.load_cleaned_data()
     print("Successfully updated API products table")
+    print("Now setting deleted for non-upserted products")
+    pf.set_deleted_network_products()
+    print("Successfully set non-upserted products to deleted")
 
 @task(base=QueueOnce)
 def ran_delta_pull():
@@ -40,6 +43,7 @@ def ran_delta_pull():
     print("Update API products table")
     pf.load_cleaned_data()
     print("Successfully updated API products table")
+    # TO-DO: handling the deleted call for delta files
 
 @task(base=QueueOnce)
 def ran_full_pull():
@@ -53,7 +57,41 @@ def ran_full_pull():
     print("Update API products table")
     pf.load_cleaned_data()
     print("Successfully updated API products table")
+    print("Now setting deleted for non-upserted products")
+    pf.set_deleted_network_products()
+    print("Successfully set non-upserted products to deleted")
 
+@task(base=QueueOnce)
+def impact_radius_pull():
+    pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/impact_radius.yaml'))
+    print("Pulling files from FTP")
+    pf.get_files_ftp()
+    print("Decompressing files")
+    pf.decompress_data()
+    print("Cleaning files")
+    pf.clean_data()
+    print("Update API products table")
+    pf.load_cleaned_data()
+    print("Sucessfully updated API products table")
+    print("Now setting deleted for non-upserted products")
+    pf.set_deleted_network_products()
+    print("Successfully set non-upserted products to deleted")
+
+@task(base=QueueOnce)
+def cj_pull():
+    pf = ProductFeed(os.path.join(BASE_DIR, 'catalogue_service/cj.yaml'))
+    print("Pulling files from FTP")
+    pf.get_files_sftp()
+    print("Decompressing files")
+    pf.decompress_data()
+    print("Cleaning files")
+    pf.clean_data()
+    print("Update API products table")
+    pf.load_cleaned_data()
+    print("Successfully updated API products table")
+    print("Now setting deleted for non-upserted products")
+    pf.set_deleted_network_products()
+    print("Successfully set non-upserted products to deleted")
 
 @task(base=QueueOnce)
 def build_client_360():
@@ -75,6 +113,24 @@ def update_client_360():
     cursor = connection.cursor()
     etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/update_client_360.sql'))
     statement = etl_file.read()
+    statements = statement.split(';')
+
+    try:
+        with transaction.atomic():
+            for i in range(0, len(statements)):
+                statement = statements[i]
+                if statement.strip(): # avoid 'query was empty' operational error
+                    cursor.execute(statement)
+    finally:
+        cursor.close()
+
+@shared_task
+def add_client_to_360(wp_user_id):
+    cursor = connection.cursor()
+    etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360_one.sql'))
+    statement = etl_file.read()
+    print "Adding User to Client 360"
+    statement = statement.replace('$WPUSERID', str(wp_user_id))
     statements = statement.split(';')
 
     try:
@@ -124,23 +180,16 @@ def index_deleted_products_cleanup(days_threshold = 5):
     statement1 = 'UPDATE %s pap' % product_table
     statement1 += ' INNER JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
     statement1 += ' AND pap.secondary_category = pac.external_cat2'
-    statement1 += ' SET is_deleted = 1 WHERE pac.active = 0'
+    statement1 += ' SET is_deleted = 1 AND pap.updated_at = NOW() WHERE pac.active = 0 and pap.is_deleted != 1'
 
     statement2 = 'UPDATE %s pap' % product_table
-    statement2 += ' INNER JOIN %s pam ON pap.merchant_name = pam.name' % merchant_table
-    statement2 += ' SET is_deleted = 1 WHERE pam.active = 0'
+    statement2 += ' INNER JOIN %s pam ON pap.merchant_id = pam.external_merchant_id' % merchant_table
+    statement2 += ' SET is_deleted = 1 AND pap.updated_at = NOW() WHERE pam.active = 0 and pap.is_deleted != 1'
 
     statement3 = 'UPDATE %s pap' % product_table
     statement3 += ' INNER JOIN %s paa ON pap.allume_category = paa.name' % allumecategory_table
-    statement3 += ' SET is_deleted = 1 WHERE paa.active = 0'
+    statement3 += ' SET is_deleted = 1 AND pap.updated_at = NOW() WHERE paa.active = 0 and pap.is_deleted != 1'
 
-    # statement = 'UPDATE %s pap' % product_table
-    # statement += ' INNER JOIN %s pac ON pap.primary_category = pac.external_cat1' % categorymap_table
-    # statement += ' AND pap.secondary_category = pac.external_cat2'
-    # statement += ' INNER JOIN %s pam ON pap.merchant_name = pam.name' % merchant_table
-    # statement += ' INNER JOIN %s paa ON pap.allume_category = paa.name' % allumecategory_table
-    # statement += ' SET is_deleted = 1'
-    # statement += ' WHERE pac.active = 0 OR pam.active = 0 OR paa.active = 0;'
 
     with connection.cursor() as cursor:
         cursor.execute(statement1)
@@ -148,12 +197,10 @@ def index_deleted_products_cleanup(days_threshold = 5):
         cursor.execute(statement2)
         print 'Setting the inactive products to deleted took %s seconds' % (time.time() - start)
         cursor.execute(statement3)
-        # print 'Setting the inactive products to deleted took %s seconds' % (time.time() - start)
         cursor.close()
 
     print 'Setting the inactive products to deleted took %s seconds' % (time.time() - start)
 
-    return
     checkpoint = time.time()
 
     datetime_threshold = datetime.now() - timedelta(days = days_threshold) # query products as far back as days_threshold

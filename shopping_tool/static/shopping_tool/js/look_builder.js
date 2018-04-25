@@ -11,6 +11,16 @@ var look_builder = {
   */
   stylist_id: '',    
   /**
+  * @description calculate the remaining character for look descriptions
+  * @param {DOM Object} box - DOM textarea for calculation
+  * @param {integer} limit - number of max characters allowed
+  * @param returns {integer}
+  */
+  calcRemaining: function(box, limit){
+    var remain = parseInt(limit - box.val().length);
+    return remain;
+  },
+  /**
   * @description gather the compare looks objects and create markup for display
   * @param {object} lookup - json data for API call
   * @param {integer} at_load - id of currently being edited look or null
@@ -151,6 +161,14 @@ var look_builder = {
         type: 'DELETE',
         url: '/shopping_tool_api/look/' + link.data('lookid') + '/'
       });
+      if(link.hasClass('inprocess')){
+        link.removeClass('inprocess');
+        $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
+        $('#publish-lookbook').data('allowed', 'false');
+        collage.canvas = null;
+        collage.initial_load = null;
+        collage.product_cache = null; 
+      }
       $('#delete-look-overlay').fadeOut();
       var remaining_looks = $('#compare-looks div.other-looks div.comp-look').length;
       if(remaining_looks == 0){
@@ -162,13 +180,11 @@ var look_builder = {
       $('#delete-look-overlay').fadeOut();
     });
     $('#preview-lookbook').click(function(e){
-      e.preventDefault();
       var edit_status = $('#look-drop').find('div.start').length;
       if(edit_status != 1){
+        e.preventDefault();
         alert('You must finish editing your selected look before you can preview the lookbook.')
       }else{
-        $('#previewIframe').attr('src', 'https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
-        $('#preview-lookbook-overlay').fadeIn();
         $('#publish-lookbook').data('allowed', 'true');
       }
     });
@@ -179,7 +195,8 @@ var look_builder = {
         var lookup = {
           "client": parseInt($('#user-clip').data('userid')),
           "allume_styling_session": rack_builder.session_id,
-          "page": 1
+          "page": 1,
+          "with_products": "False"
         }
         $.ajax({
           contentType : 'application/json',
@@ -189,6 +206,7 @@ var look_builder = {
             var cropped_images = [];
             var look_occasions = [];
             var look_styles = [];
+            var show_do_not_send = false;
             for(var i = 0, l = style_types.length; i<l; i++){
               var ls = style_types[i];
               look_styles.push(
@@ -211,6 +229,9 @@ var look_builder = {
             var first_half_occs = look_occasions.splice(0,half_occs);
             for(var i = 0, l = response.looks.length; i<l; i++){
               var look = response.looks[i];
+              if(look.status == 'published'){
+                show_do_not_send = true;
+              }
               var collage_img = '<div class="collage-placeholder">no collage</div>';
               if(look.collage != null){
                 collage_img = '<img class="collage" src="' + look.collage + '"/>';
@@ -233,6 +254,13 @@ var look_builder = {
               '<a href="#" class="next-tab">next<i class="fa fa-chevron-right"></i></a>' +
               markup.join('')
             );
+            if(show_do_not_send == true){
+              $('#do-not-send-toggle').closest('label').show();
+              $('#send-later-wrapper').removeClass('higher');
+            }else{
+              $('#do-not-send-toggle').closest('label').hide();
+              $('#send-later-wrapper').addClass('higher');
+            }            
             /* settings the styles/occasions if they exist */
             for(var i = 0, l = response.looks.length; i<l; i++){
               var look = response.looks[i];
@@ -258,14 +286,23 @@ var look_builder = {
           '</div>'
         ).addClass('on').siblings('div').removeClass('on');
         $('#pub-wizard-step1').addClass('on').siblings('a').removeClass('on');
-        $('#send-toggle').prop('checked', false);
+        $('#send-now').prop('checked', true);
         $('#send-later-wrapper').hide();
-        var start_id = document.getElementById('send-later')
+        var start_id = document.getElementById('send-later');
+        var start_time = moment().hour(12).minute(0).format('YYYY-MM-DD HH:mm');
         rome(start_id, {
-          initialValue:  moment().startOf('day').format('YYYY-MM-DD'),
+          initialValue:  start_time,
           min: moment().startOf('day').format('YYYY-MM-DD'),
+          max: moment().add(2, 'day').endOf('day').format('YYYY-MM-DD'),
           time: true,
-          timeFormat: 'h:mm a'
+          timeFormat: 'h:mm a',
+          timeInterval: 900,
+          timeValidator: function (d) {
+            var m = moment(d);
+            var start = m.clone().hour(6).minute(59).second(59);
+            var end = m.clone().hour(23).minute(0).second(1);
+            return m.isAfter(start) && m.isBefore(end);
+          }
         });
         $('#publish-lookbook-overlay').fadeIn();
       }else{
@@ -279,6 +316,8 @@ var look_builder = {
     $('#close-lb-pre').click(function(e){
       e.preventDefault();
       $('#preview-lookbook-overlay').fadeOut();
+      /* set iframe src back to empty so it will force a reload when preview is opened again */
+      $('#previewIframe').attr('src','');
     }); 
     /* wizard tabs, their status checking and other functionality for publish lookbook */
     $('#pub-section1').on('click', 'a.next-tab', function(e){
@@ -303,7 +342,7 @@ var look_builder = {
       e.preventDefault();
       look_builder.toTabThree($(this));
     });
-    $('#send-toggle').change(function(e){
+    $('#send-later-toggle').change(function(e){
       var box = $(this);
       var div = $('#send-later-wrapper')
       if(box.prop('checked')){
@@ -312,29 +351,37 @@ var look_builder = {
         div.hide();
       }
     });
+    $('#do-not-send-toggle, #send-now').change(function(e){
+      var box = $(this);
+      var div = $('#send-later-wrapper')
+      if(box.prop('checked')){
+        div.hide();
+      }
+    });
     $('#pub-section3').on('click', 'a#submit-lookbook', function(e){
       e.preventDefault();
       var lookbook = {
         styling_session_id: look_builder.session_id,
         send_at: null,
-        text_content: $('#publish-email').val().replace(
-          /\[Link to Lookbook\]/g, 
-          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') + '">Your Lookbook</a>'
-        )
+        text_content: $('#publish-email').val(),
+        notify_user : true
       }
-      if($('#send-toggle').prop('checked') == true){
+      if($('#send-later-toggle').prop('checked') == true){
         var t = rome.find(document.getElementById('send-later'))
         var tz = $('#send-later').data('tz')
-        var reg_str = t.getMoment().format('YYYY-MM-DD HH:MM');
+        var reg_str = t.getMoment().format('YYYY-MM-DD HH:mm');
         var send_string = moment.tz(reg_str, tz).format('X');
         lookbook.send_at = parseInt(send_string);
+      }
+      if($('#do-not-send-toggle').prop('checked') == true){
+        lookbook.notify_user = false;
       }
       $.ajax({       
         contentType : 'application/json',
         crossDomain: true,
         data: JSON.stringify(lookbook),
         type: 'POST',
-        url: 'https://styling-service-stage.allume.co/publish_looks/',
+        url: 'https://styling-service-' + local_environment + '.allume.co/publish_looks/',
         xhrFields: {
           withCredentials: true
         }
@@ -379,28 +426,12 @@ var look_builder = {
       collage.updateCollage(div);
       $('#look-drop').html('<div class="start">Select or add a look to edit...</div>');
       $('#publish-lookbook').data('allowed', 'false');
-    });
-    /*
-    .on('click', 'a.zoom-in', function(e){
+    }).on('click', 'a#delete-look-inprocess', function(e){
       e.preventDefault();
-      collage.zoomBy(0,0,10);
-    }).on('click', 'a.zoom-out', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,0,-10);
-    }).on('click', 'a.shift-left', function(e){
-      e.preventDefault();
-      collage.zoomBy(5,0,0);
-    }).on('click', 'a.shift-right', function(e){
-      e.preventDefault();
-      collage.zoomBy(-5,0,0);
-    }).on('click', 'a.shift-up', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,5,0);
-    }).on('click', 'a.shift-down', function(e){
-      e.preventDefault();
-      collage.zoomBy(0,-5,0);
+      var link = $(this);
+      var look = link.data('lookid');
+      $('#delete-look-overlay').find('a.yes').addClass('inprocess').data('lookid', look).end().fadeIn();      
     })
-    */
     /* rack functionality */
     $('#rack-draggable').on('click', 'a.add', function(e){
       e.preventDefault();
@@ -508,7 +539,11 @@ var look_builder = {
     $('#pg-cropper-btns').find('a.save').click(function(e){
       e.preventDefault();
       var link = $(this);
-      collage.saveCrop(link, link.data('path'));
+      if(link.data('ok') == 'true'){
+        collage.saveCrop(link, link.data('path'));
+      }else{
+        alert('You must finish your polygon in order to crop and save the image.\nIf you have started a polygon, simply click the circle to close the shape.')
+      }
     }).end().find('a.cancel').click(function(e){
       e.preventDefault();
       $('#pg-crop-look-image').fadeOut();
@@ -516,7 +551,7 @@ var look_builder = {
       e.preventDefault();
       var link = $(this);
       if(link.data('path') !== undefined){
-        link.siblings('a.save').data('path', link.data('path'));
+        link.siblings('a.save').data('path', link.data('path')).data('ok','false');
         $('#pg-cropper-container').html('<canvas id="pg-cropper" width="415" height="415"></canvas>');
         collage.setUpPolygonCropper(link.data('path'));
       }
@@ -529,7 +564,56 @@ var look_builder = {
     $('#close-pg-crop-image').click(function(e){
       e.preventDefault();
       $('#pg-crop-look-image').fadeOut();
-    })
+    });
+    $('#drag-rack-tabs a').click(function(e){
+      e.preventDefault();
+      var link = $(this);
+      if(link.hasClass('on') == false){
+        var div = $(link.attr('href'))
+        link.addClass('on').siblings('a').removeClass('on');
+        div.addClass('show').siblings('div.drag-section').removeClass('show');
+      }
+    });
+    $('#fave-draggable').on('click','a.view',function(e){
+      e.preventDefault();
+      var link = $(this);
+      rack_builder.inspectItem(link, 'compare');
+    }).on('click', 'a.remove-fave', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var fave = link.data('faveid');
+      var product_id = link.data('productid');
+      var index = rack_builder.favorites_product_ids.indexOf(product_id);
+      rack_builder.favorites_product_ids.splice(index, 1);
+      rack_builder.favorites.splice(index, 1);
+      $.ajax({
+        beforeSend:function(){
+          link.closest('div.item').hide();         
+        },
+        contentType : 'application/json',
+        error: function(response){
+          console.log(response);
+        },
+        success:function(response){
+          link.closest('.item').remove();
+        },
+        type: 'DELETE',
+        url: '/shopping_tool_api/user_product_favorite/' + fave + '/'
+      });      
+    });
+    /* add drag drop to faves */
+    new Sortable($('#fave-draggable')[0], {
+      handle: ".handle",
+      group: { name: "look", pull: 'clone', put: false },
+      sort: false,
+      draggable: ".item",
+      onStart: function(){
+        var cc = $('#canvas-container');
+        if(cc.length > 0){
+          collage.collageSortable.option('disabled', false);
+        }
+      }
+    });
   },
   /**
   * @description setup look builder page
@@ -538,6 +622,8 @@ var look_builder = {
     rack_builder.init();
     look_builder.session_id = $('body').data('stylesession');  
     look_builder.stylist_id = parseInt($('#stylist').data('stylistid'));
+    var web_address_prefix = local_environment == 'prod' ? 'www' : local_environment ;
+    $('#preview-lookbook').attr('href', 'https://' + web_address_prefix + '.allume.co/looks/' + $('body').data('sessiontoken') + '#preview');
     /* attach the functionality */
     look_builder.functionality();
     /* set up the initial rack display */
@@ -570,21 +656,13 @@ var look_builder = {
       for(var i = 0, l = result.look_products.length; i<l; i++){
         var prod = result.look_products[i];
         if(prod.product != undefined){
-          var retail = prod.product.retail_price;
-          var sale = prod.product.sale_price;
-          var price_display = '';
+          var price_display = '<span class="price"><em class="label">price:</em>' + 
+              numeral(prod.product.current_price).format('$0,0.00') + '</span>'
           var merch = '<span class="merch">' + prod.product.merchant_name + '</span>';
           var manu = '<span class="manu">by ' + prod.product.manufacturer_name + '</span>'; 
           var fave_link = '';
           var rack_link = '';  
           merchants.push(prod.product.merchant_name); 
-          if((sale >= retail)||(sale == 0)){
-            price_display = '<span class="price"><em class="label">price:</em>' + 
-              numeral(retail).format('$0,0.00') + '</span>';
-          }else{
-            price_display = '<span class="price"><em class="label">price:</em><em class="sale">(' + 
-              numeral(retail).format('$0,0.00') + ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-          }
           fave_link = '<a href="#" class="favorite" data-productid="' + 
             prod.product.id + '"><i class="fa fa-heart-o"></i></a>';
           var fave_idx = rack_builder.favorites_product_ids.indexOf(prod.product.id);
@@ -648,8 +726,9 @@ var look_builder = {
             prod.product.short_product_description + '</p>' + price_display +
             '<span class="general"><em>size:</em>' + prod.product.size + '</span>' +
             '<span class="general"><em>category:</em>' + prod.product.allume_category + 
+            '</span><span class="general"><em>availability:</em>' + prod.product.availability + 
             '</span>' + fave_link + '' + rack_link + '<a href="' + prod.product.product_url + 
-            '" target="_blank" class="link-to-store"><i class="fa fa-search"></i>' +
+            '" target="_blank" class="link-to-store"><i class="fa fa-tag"></i>' +
             'view at store</a></td>' + other_details.join('') + '</tr>'
           );
         }
@@ -764,10 +843,10 @@ var look_builder = {
     /* add the clones and assign drag/drop functionality */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(
-      '<h2>' + $('#rack').find('h2').html() + 
-      '</h2><div class="look-builder-rack">' + 
+      '<div class="look-builder-rack">' + 
       rack_items.join('') + '</div>'
     );
+    look_builder.rackDragDrop(false, 'ordered');
   },
   /**
   * @description helper fuction to verify user has selected at least 
@@ -797,29 +876,43 @@ var look_builder = {
     }
   },
   /**
-  * @description generate rack itmes for favorits
-  * @param {array} faves - array of jquery items
-  * @returns {string} - HTML
+  * @description helper function to dry up drag and drop
+  * @param {boolean} sort - whether to allow sorting in the drag list
+  * @param {string} type - display type 
   */
-  rackFavorites: function(faves){
-    var markup = [];
-    $.each(faves, function(index){
-      var item = $(this);
-      var data = item.data();
-      var src = item.find('img').attr('src');
-      markup.push(
-        '<div class="item fave" data-productid="' + data.productid + 
-        '" data-url="' + src + '"><span class="fave"><i class="fa fa-heart"></i></span>' +
-        '<img class="handle" src="' + src + '"/>' +
-        '<a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
-        src + '"><i class="fa fa-plus-circle"></i></a>' +
-        '<a href="#"  class="view" data-productid="' + data.productid + 
-        '"><i class="fa fa-search"></i></a><a href="#" class="remove" ' +
-        'data-lookitemid=""><i class="fa fa-times"></i></a></div>'
-      );
-    });
-    return markup.join('');
-  },
+  rackDragDrop: function(sort, type){
+    if(type == 'unordered'){
+      new Sortable($('#rack-draggable div.look-builder-rack')[0], {
+        handle: ".handle",
+        group: { name: "look", pull: 'clone', put: false },
+        sort: sort,
+        draggable: ".item",
+        onStart: function(){
+          var cc = $('#canvas-container');
+          if(cc.length > 0){
+            collage.collageSortable.option('disabled', false);
+          }
+        }
+      });
+    }else{
+      var blocks = $('#rack-draggable div.look-builder-rack div.block');
+      $.each(blocks, function(idx){
+        var block = $(this)[0]
+        new Sortable(block, {
+          handle: ".handle",
+          group: { name: "look", pull: 'clone', put: false },
+          sort: sort,
+          draggable: ".item",
+          onStart: function(){
+            var cc = $('#canvas-container');
+            if(cc.length > 0){
+              collage.collageSortable.option('disabled', false);
+            }
+          }
+        });        
+      })
+    }
+  },  
   /**
   * @description perform a simple name match filter against items in the rack and favroites
   * @param {string} q - the term to match against
@@ -839,15 +932,6 @@ var look_builder = {
         items.push(item)
       }
     });
-    var faves = $('#fave-prods div.item');
-    $.each(faves, function(index){
-      var item = $(this).data();
-      if(item.productname.toLowerCase().indexOf(q.toLowerCase()) > -1){
-        items.push(item)
-      }else if(q == ''){
-        items.push(item)
-      }
-    });
     if(q == ''){
       $('#rack-search-term').html('All rack items...');
     }else{
@@ -860,28 +944,13 @@ var look_builder = {
     }
     for(var i = 0, l = items.length; i<l; i++){
       var datum = items[i];
-      if(datum.fave != undefined){
-        items_markup.push(
-          '<div class="item fave" data-productid="' + datum.productid + 
-          '" data-url="' + datum.src + '"><span class="fave"><i class="fa fa-heart"></i></span>' +
-          '<img class="handle" src="' + datum.src + '"/>' +
-          '<a href="#" class="add" data-productid="' + datum.productid + '" data-imgsrc="' + 
-          datum.src + '"><i class="fa fa-plus-circle"></i></a>' +
-          '<a href="#"  class="view" data-productid="' + datum.productid + 
-          '"><i class="fa fa-search"></i></a><a href="#" class="remove" ' +
-          'data-lookitemid=""><i class="fa fa-times"></i></a></div>'
-        );
-      }else{
-        items_markup.push(
-          '<div class="item" data-productid="' + datum.productid + 
-          '" data-url="' + datum.src + '"><img class="handle" src="' + datum.src + 
-          '"/><a href="#" class="add" data-productid="' + datum.productid + '" data-imgsrc="' + 
-          datum.src + '"><i class="fa fa-plus-circle"></i></a>' +
-          '<a href="#"  class="view" data-productid="' + datum.productid + 
-          '"><i class="fa fa-search"></i></a><a href="#" class="remove" data-sku="' + datum.sku + 
-          '" data-rackid="' + datum.rackid + '"><i class="fa fa-times"></i></a></div>'
-        );
-      }
+      items_markup.push(
+        '<div class="item" data-productid="' + datum.productid + 
+        '" data-url="' + datum.url + '"><img class="handle" src="' + datum.url + 
+        '"/><a href="#"  class="view" data-productid="' + datum.productid + 
+        '"><i class="fa fa-align-left"></i></a><a href="#" class="remove" data-sku="' + datum.sku + 
+        '" data-rackid="' + datum.rackid + '"><i class="fa fa-times"></i></a></div>'
+      );
     }
     drag_rack.append(items_markup.join(''));
   },
@@ -896,12 +965,14 @@ var look_builder = {
       $('#creating-look').hide();
       if(result.allume_styling_session == look_builder.session_id){
         $('#look-drop').html(
-          '<div id="canvas-container">' +
+          '<div id="canvas-container" class="white">' +
           '<canvas id="c" width="760" height="415"></canvas>' +
           '</div><div class="collage-controls">'+
           '<a href="#" id="finish-editing-look" data-lookid="' + id + 
           '"><i class="fa fa-check"></i>finished editing look</a>' +
-          '<a class="bg-toggle checker-bg" data-balloon="toggle collage ' +
+          '<a href="#" id="delete-look-inprocess" data-lookid="' + id + 
+          '"><i class="fa fa-times"></i>delete look</a>' +
+          '<a class="bg-toggle checker-bg white" data-balloon="toggle collage ' +
           'background" data-balloon-pos="up" href="#"><em></em></a>' +
           '<a href="#" data-balloon="move to back" data-balloon-pos="up" class="send-back">' +
           '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" enable-background="new 0 0 512 512">' +
@@ -932,11 +1003,25 @@ var look_builder = {
           '<table class="collage-meta-fields"><tr><td>' +
           '<label>Name</label><input id="look-name" value="' + 
           result.name + '"/><label>Description</label><textarea id="look-desc">' + 
-          result.description + '</textarea></td><td><label>Additional Products</label>' +
+          result.description + '</textarea><p id="look-desc-count"></p></td><td><label>Additional Products</label>' +
           '<div id="non-collage-items"></div><a href="#" class="look-more-details" data-look="' + id + 
           '"><i class="fa fa-search"></i>view more details about this look</a></td></tr></table>' +
           '<input type="hidden" id="look-id" value="' + id + '"/>'
         );
+        $('#look-desc').keyup(function(e) {
+          var box = $(this)
+          var num = look_builder.calcRemaining(box, 600);
+          var desc_words = num == 1 ? 'character' : 'characters';
+          if(num <= 0){
+            num = 0;
+            var str = box.val()
+            box.val(box.val().substring(0, 600));
+          }
+          $('#look-desc-count').html(num + ' ' + desc_words + ' remaining...');
+        })
+        var initial_desc_length = look_builder.calcRemaining($('#look-desc'), 600);
+        var initial_desc_word = initial_desc_length == 1 ? 'character' : 'characters';
+        $('#look-desc-count').html(initial_desc_length + ' ' + initial_desc_word + ' remaining...');
         collage.collageSortable = null;
         collage.collageSortable = new Sortable($('#canvas-container')[0], {
           group: { name: "look", pull: false, put: true },
@@ -945,12 +1030,16 @@ var look_builder = {
             var el = evt.item;
             var adding = $('#adding-product').length;
             if(adding == 0){
-             $('#look-drop').append(
-                '<div id="adding-product"><div class="loading-prod">' +
-                '</div><span class="loading-prod-msg">adding product ' + 
-                'to look...</span></div>'
-              );            
-              collage.addCanvasImage(el.dataset.productid, el.dataset.url);
+              if(el.dataset.availability != 'in-stock'){
+                alert("you cannot add sold out items to a look.");
+              }else{
+                $('#look-drop').append(
+                  '<div id="adding-product"><div class="loading-prod">' +
+                  '</div><span class="loading-prod-msg">adding product ' + 
+                  'to look...</span></div>'
+                );            
+                collage.addCanvasImage(el.dataset.productid, el.dataset.url);
+              }
             }
             el.parentNode.removeChild(el);
           }
@@ -961,24 +1050,33 @@ var look_builder = {
           onAdd: function (evt) {
             var item = $(evt.item)
             var data = evt.item.dataset;
-            var look_product_obj = {
-              layout_position: 100,
-              look: parseInt($('input#look-id').val()),
-              product: parseInt(data.productid),
-              cropped_dimensions: null,
-              in_collage: 'False',
-              cropped_image_code: null      
+            if(data.availability != 'in-stock'){
+              alert("you cannot add sold out items to a look.");
+              evt.item.parentNode.removeChild(evt.item);
+            }else{
+              var look_product_obj = {
+                layout_position: 100,
+                look: parseInt($('input#look-id').val()),
+                product: parseInt(data.productid),
+                cropped_dimensions: null,
+                in_collage: 'False',
+                cropped_image_code: null      
+              }
+              $.ajax({
+                contentType : 'application/json',
+                data: JSON.stringify(look_product_obj),
+                success:function(response){
+                  item.find('a.remove').data('lookitemid', response.id)
+                  collage.addAllumeProduct(response.product, response.id, response, null, null);
+                },
+                error: function(){
+                  alert('There was a problem adding that product. Please try another.');
+                  item.remove();
+                },
+                type: 'PUT',
+                url: '/shopping_tool_api/look_item/0/'
+              });
             }
-            $.ajax({
-              contentType : 'application/json',
-              data: JSON.stringify(look_product_obj),
-              success:function(response){
-                item.find('a.remove').data('lookitemid', response.id)
-                collage.addAllumeProduct(response.product, response.id);
-              },
-              type: 'PUT',
-              url: '/shopping_tool_api/look_item/0/'
-            });
           }
         });
         $('#non-collage-items').on('click', 'a.remove', function(e){
@@ -1011,20 +1109,17 @@ var look_builder = {
     /* set up the search ui */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(
-      '<h2>' + $('#rack').find('h2').html() + 
-      '</h2><div class="look-builder-rack">' +
+      '<div class="look-builder-rack">' +
       '<div id="rack-search-toggles">' +
-      '<a class="sort-link sort-items" href="#">' +
-      '<i class="fa fa-th-list"></i>back to sorted</a>' +
       '<a class="sort-link unsort-items" href="#">' +
-      '<i class="fa fa-th"></i>back to unsorted</a></div>' +      
+      '<i class="fa fa-th"></i>back to full rack</a></div>' +      
       '<input id="rack-search" placeholder="Start typing to find rack items..."/>' +
       '<div id="rack-search-term"></div>' +
       '</div>'
     );
     var div = drag_rack.find('div.look-builder-rack')
-    /* attahc same functionality to search results as regular unoredered rack */
-    look_builder.unorderedDrag();
+    /* attach same functionality to search results as regular unoredered rack */
+    look_builder.rackDragDrop(false, 'unordered');
     /* attached event listener to filter results */
     $('#rack-search').keyup(function(e){
       var q = $(this).val();
@@ -1071,101 +1166,84 @@ var look_builder = {
           });
           look_summary.push(
             '<div class="look-summary"><span class="name">' + div.data('lookname') + 
-            '</span><span class="categories"><em>style:</em>' + styles.join(', ') + 
+            '</span><img class="final-review" src="' + div.find('img.collage').attr('src')+ '"/>' +
+            '<span class="categories"><em>style:</em>' + styles.join(', ') + 
             '</span><span class="categories"><em>occasion:</em>' + occs.join(', ') + 
             '</span></div>'
           )
         });
         var step_div = $(link.attr('href'));
         var email_at = '<span class="summary-sent">Text will be sent <strong>now</strong>.</span>';
-        if($('#send-toggle').prop('checked')){
-          var t = rome.find(document.getElementById('send-later'))
+        if($('#send-later-toggle').prop('checked')){
+          var t = rome.find(document.getElementById('send-later'));
           email_at = '<span class="summary-sent">Text will be sent <strong>' + 
           t.getMoment().format('MMMM Do, YYYY h:mm a') + 
           ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
         }
+        if($('#do-not-send-toggle').prop('checked') == true){
+          email_at = '<span class="summary-sent">A text will <strong>NOT</strong> be sent.</span>';
+        }
         var email_text = $('#publish-email').val();
-        email_text = email_text.replace(
-          /\[Link to Lookbook\]/g, 
-          '<a href="https://stage.allume.co/looks/' + $('body').data('sessiontoken') +
-          '" target="_blank">Your Lookbook</a>'
-        );
-
         step_div.html(
-          '<h5>Looks</h5><div class="look-summary-section">' +
-          look_summary.join('') + '</div>' +
-          '<h5>Text</h5>' + email_at +
-          '<div class="summary-email">' + email_text +
-          '</div><a href="#" id="submit-lookbook">complete publishing</a>' 
+          '<div id="final-text-preview"><h5>Text</h5>' + email_at +
+          '<div class="summary-email">' + email_text + '</div></div>' +
+          '<div id="final-looks-preview">' +
+          '<h5>Looks</h5><div class="look-summary-section">' + look_summary.join('') + 
+          '</div></div><a href="#" id="submit-lookbook">complete publishing</a>' 
         );
         link.addClass('on').siblings('a').removeClass('on');
         step_div.addClass('on').siblings('div').removeClass('on');
+        utils.equalHeight($('#final-looks-preview div.look-summary'));
       }
     }    
-  },
-  /**
-  * @description helper function to dry up drag and drop
-  */
-  unorderedDrag: function(){
-    new Sortable($('#rack-draggable div.look-builder-rack')[0], {
-      handle: ".handle",
-      group: { name: "look", pull: 'clone', put: false },
-      sort: true,
-      draggable: ".item",
-      onStart: function(){
-        var cc = $('#canvas-container');
-        if(cc.length > 0){
-          collage.collageSortable.option('disabled', false);
-        }
-      }
-    });
   },
   /**
   * @description the unordered look and feel for look builder rack
   */
   unorderedRack: function(){
     var rack_items = [];
-    var rack_items_dom = $('#rack-list').find('div.item');
-    if(rack_items_dom.length > 0){
+    var compare_array = [];
+    if(initial_rack.length > 0){
       rack_items.push(
         '<a href="#" class="lb-search-link">' +
-        '<i class="fa fa-search"></i>search rack</a>' +
-        '<a class="sort-link sort-items" href="#">' +
-        '<i class="fa fa-th-list"></i>sort items</a>'
+        '<i class="fa fa-search"></i>search rack</a>'
       );
+      $.each($('#rack-list').find('div.item'), function(idx){
+        var item = $(this);
+        compare_array.push(item.find('a.remove-from-rack').data('rackid'));
+      });
     }else{
       rack_items.push('<div class="empty">Your rack is empty...</div>');
     }
-    $.each(rack_items_dom, function(index){
-      var item = $(this);
-      var data = item.data();
-      var src = item.find('img').attr('src');
-      var link = item.find('a.remove-from-rack')
-      var sku = link.data('sku');
-      var rack_id = link.data('rackid');
-      rack_items.push(
-        '<div class="item" data-productid="' + data.productid + 
-        '" data-url="' + src + '"><img class="handle" src="' + src + 
-        '"/><a href="#" class="add" data-productid="' + data.productid + '" data-imgsrc="' + 
-        src + '"><i class="fa fa-plus-circle"></i></a>' +
-        '<a href="#"  class="view" data-productid="' + data.productid + 
-        '"><i class="fa fa-search"></i></a>' +
-        '<a href="#" class="remove" data-sku="' + sku + 
-        '" data-rackid="' + rack_id + '"><i class="fa fa-times"></i></a></div>'
-      );
+    initial_rack.sort(function(a,b){
+      if(a.added > b.added){ return -1}
+      if(a.added < b.added){ return 1}
+      return 0;      
     });
-    var faves = $('#fave-prods div.item');
-    if(faves.length > 0){
-      rack_items.push(look_builder.rackFavorites(faves));
+    for(var i = 0, l = initial_rack.length; i<l; i++){
+      var data = initial_rack[i];
+      var src = data.product_image_url;
+      var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
+      var sold_out = data.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
+      if(compare_array.indexOf(data.rack_id) > -1){
+        rack_items.push(
+          '<div class="item" data-productid="' + data.id + 
+          '" data-url="' + src + '" data-availability="' + 
+          data.availability + '"><img class="handle" src="' + src + 
+          '"/><a href="#"  class="view" data-productid="' + data.id + 
+          '"><i class="fa fa-align-left"></i></a>' +
+          '<a href="#" class="remove" data-sku="' + sku + 
+          '" data-rackid="' + data.rack_id + '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
+        ); 
+      }     
     }
     /* add the clones and assign drag/drop functionality */
     var drag_rack = $('#rack-draggable');
     drag_rack.html(
-      '<h2>' + $('#rack').find('h2').html() + 
-      '</h2><div class="look-builder-rack">' + 
+      '<div class="look-builder-rack">' + 
       rack_items.join('') + '</div>'
     );
-    look_builder.unorderedDrag();  
+    look_builder.rackDragDrop(false, 'unordered');  
   },  
   /**
   * @description update a look with any changes to its fields
@@ -1183,6 +1261,7 @@ var look_builder = {
     var src = collage.canvas.toDataURL({
       format: 'jpeg',
       quality: 1,
+      multiplier: 2
     });
     /* the look object to save */
     var look_obj = {

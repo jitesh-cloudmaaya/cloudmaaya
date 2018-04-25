@@ -29,6 +29,14 @@ from product_doc import EProductSearch#, EProduct
 
 
 @api_view(['GET'])
+def sort_options(self):
+    options = EProductSearch.sort_options()
+
+    return Response(options) 
+
+
+
+@api_view(['GET'])
 @permission_classes((AllowAny, ))
 def facets(self):
     """
@@ -45,6 +53,11 @@ def facets(self):
     text_query = self.query_params.get('text', '*')
     num_per_page = int(self.query_params.get('num_per_page', 100))
     page = int(self.query_params.get('page', 1))
+
+    sort_order = self.query_params.get('sort')
+    if not sort_order:
+        #sort_order = "-allume_score"
+        sort_order = "_score"
 
     filter_favs = self.query_params.get('favs')
     if filter_favs:
@@ -64,11 +77,12 @@ def facets(self):
             whitelisted_facet_args[key] = urllib.unquote(value).split("|")
 
 
-    es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs)
+    es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, sort=sort_order)
     es_count = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, card_count=True)
     es = es[start_record:end_record]
     results = es.execute().to_dict()
     results_count = es_count.execute().to_dict()
+    #results_count['aggregations']['unique_count']['value'] = 0
     #results = results_count
 
 
@@ -223,7 +237,7 @@ def get_allume_product(self, product_id):
                 tmp['color_objects'][clr]['size_data'][size] = size_data
 
     # a mapping of the text field, 'availability', to a boolean flag, 'available'
-    availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False}
+    availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False, 'yes': True, 'no': False}
     # either update above as more or fields are added or mold availability field across feeds to the same form
 
     # create payload object

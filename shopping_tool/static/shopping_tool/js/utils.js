@@ -28,7 +28,11 @@ var utils = {
     Mousetrap.bind('shift+a+s', function(e) {
       $('#user-card').toggleClass('show')
       return false;
-    });    
+    });
+    $('#close-user-clip').click(function(e){
+      e.preventDefault();
+      $('#user-card').removeClass('show looker');
+    })    
     var clip = $('#user-clip');
     clip.delay(750)
       .queue(function (next) { 
@@ -42,7 +46,25 @@ var utils = {
     $('#design-look-user-toggle').click(function(e){
       e.preventDefault();
       $('#user-card').addClass('show').addClass('looker');
-    }).html('View ' + clip.data('username'))
+    }).html('View ' + clip.data('username'));
+    /* get next session info with subscription_id
+      $.ajax({
+        contentType: 'application/x-www-form-urlencoded',
+        crossDomain: true,
+        data: $.param({subscription_id: id here),
+        type: 'POST',
+        url: '$https://styling-service-' + local_environment + '.allume.co/repeat/get_next_styling_session_info',
+        xhrFields: {
+          withCredentials: true
+        },
+        success: function(response){
+          console.log(response)
+        },
+        error: function(response){
+          console.log(response)
+        }
+      });
+    */
     /* correctly display bra size */
     var bra = $('#bra-size');
     var bra_size = bra.data('sizes');
@@ -77,7 +99,7 @@ var utils = {
     var city_state = locale.data('cs');
     if((city_state != undefined)&&(typeof city_state == 'object')){
       var cs_display = city_state.city + ', ' + city_state.state;
-      locale.html('<em>location:</em>' + cs_display);
+      locale.html('<em>location:</em>' + cs_display + ' &nbsp;&nbsp;(' + locale.data('tz') + ' timezone)');
       $('#prev-client-locale').html('<em>location:</em>' + cs_display)
       $('#client-weather-locale').html('Seasonal norms for ' + cs_display + ':');
     }    
@@ -133,7 +155,7 @@ var utils = {
         data: JSON.stringify(note_obj),        
         success: function(response){
           $('#notes-loader').remove();
-          nl.prepend(utils.noteTemplate(response, current_stylist));
+          nl.prepend(utils.noteTemplate(response, current_stylist, $('#header').data('stylistname')));
           $('#added-note').val('');
           var header = $('#client-notes h3');
           var count = parseInt(header.data('num')) + 1;
@@ -183,7 +205,7 @@ var utils = {
           var notes_markup = [];
           for(var i = 0; i<count; i++){
             var note = response[i];
-            notes_markup.push(utils.noteTemplate(note, current_stylist));
+            notes_markup.push(utils.noteTemplate(note, current_stylist, null));
           }
           ui_div.html(notes_markup.join(''));
         }else{
@@ -217,6 +239,34 @@ var utils = {
         rack_builder.addToRack(link, 'inspect', from_compare);
       }
     });
+
+    /* add possesives to rack tabs */
+    var rack_tabs = $('#rack-tabs');
+    var rack_tab = rack_tabs.find('a.rack-tab');
+    var look_tab = rack_tabs.find('a.look-tab');
+    var fave_tab = rack_tabs.find('a.fave-tab');
+    var rack_txt = utils.posessive(look_tab.text()) + ' Rack';
+    var fave_txt = utils.posessive(fave_tab.text()) + ' Favorites';
+    rack_tab.html(rack_txt);
+    look_tab.html(utils.posessive(look_tab.text()) + ' Looks');
+    fave_tab.html(fave_txt);
+    if(document.location.href.indexOf('look_builder') > -1){
+      $('#drag-rack-tabs a.fave-tab').html(fave_txt);
+      $('#drag-rack-tabs a.rack-tab').html(rack_txt);
+    }
+  },
+  /**
+  * @description helper function that takes a string and returns posessive version of it
+  * @params {string} str - word to turn posessive
+  * @returns {string}
+  */
+  posessive: function(str){
+    if(str == '') {
+      return str;
+    }
+    var lastChar = str.slice(-1);
+    var endOfWord = lastChar.toLowerCase() == 's' ? "'" : "'s";
+    return str + '' + endOfWord;
   },
   /**
   * @description create function which sets document cookies
@@ -286,17 +336,25 @@ var utils = {
   * @description template for note display
   * @params {object} note - json for note object
   * @params {integer} stylist_id - id of the current stylist logged in
+  * @params {string|null} name - stylist name or null
   * @returns {string} HTML
   */
-  noteTemplate: function(note, stylist_id){
+  noteTemplate: function(note, stylist_id, name){
     var delete_link = '';
-    if(note.stylist == stylist_id){
+    if(note.stylist.id == stylist_id){
+      delete_link = '<a href="#" data-noteid="' + note.id + '" class="delete-note"><i class="fa fa-times"></i></a>'
+    }
+    var stylist_name = ''
+    if(name == null){
+      stylist_name = '<span class="name">' + note.stylist.first_name + 
+      ' ' + note.stylist.last_name + '</span>';
+    }else{
+      stylist_name = '<span class="name">' + name + '</span>';
       delete_link = '<a href="#" data-noteid="' + note.id + '" class="delete-note"><i class="fa fa-times"></i></a>'
     }
     return '<div class="client-note" id="client-note-id-' + note.id + '"><p>' + note.notes+ '</p>' +
       '<span class="date">' + moment(note.last_modified).format('MMMM Do, YYYY h:mm a') + 
-      '</span><span class="tail"></span><span class="name">' + note.stylist.first_name + 
-      ' ' + note.stylist.last_name + '</span>' + delete_link + '</div>';
+      '</span><span class="tail"></span>' + stylist_name + '' + delete_link + '</div>';
   },
   /**
   * @description processing and template for pagination of results

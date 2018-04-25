@@ -22,7 +22,19 @@ var search_page = {
         search_page.performSearch(1, false, null);
       }
     });
-    $('#search-categories').val('').selectize({ create: false, sortField: 'text'}).change(function(){
+
+    $('#sort-dd').val(' ').selectize({ create: false, sortField: 'text'}).change(function(e){
+      search_page.performSearch(1, false, null);
+    });
+
+    $('#client-defaults').html(
+      '<div class="client-settings"><h5>Client preferences:</h5>' +
+      '<span><em>colors:</em>' + client_360.colors + '</span>' +
+      '<span><em>styles to avoid:</em>' + client_360.avoid + '</span></div>'
+    );
+    $('#search-categories').val('').selectize({ 
+      create: false
+    }).change(function(){
       var dd = $(this);
       var val = dd.val();
       var def_div = $('#client-defaults');
@@ -44,7 +56,7 @@ var search_page = {
           '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
           general + '</div>'
         );  
-      }else if(val == 'Pants'){
+      }else if(val == "Bottoms"){
         def_div.html(
           '<div class="client-settings">' + header +
           '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
@@ -52,7 +64,11 @@ var search_page = {
           general + '</div>'
         );          
       }else{
-        def_div.html('');
+        def_div.html(
+          '<div class="client-settings"><h5>Client preferences:</h5>' +
+          '<span><em>colors:</em>' + client_360.colors + '</span>' +
+          '<span><em>styles to avoid:</em>' + client_360.avoid + '</span></div>'
+        );
       }
     });
     /* facets functionality */
@@ -114,7 +130,7 @@ var search_page = {
     }).on('click','a.item-detail',function(e){
       e.preventDefault();
       var link = $(this);
-      rack_builder.inspectItem(link, 'rack');
+      rack_builder.inspectItem(link, 'search');
     });       
     /* check last search cookie and load if exists */
     var search_cookie = utils.readCookie('lastShoppingToolSearch' + search_page.session_id);
@@ -122,7 +138,12 @@ var search_page = {
       var last_search = utils.parseQuery(search_cookie);
       var search_box = $('#search-field');
       var category = $('#search-categories');
-      category[0].selectize.setValue(last_search.primary_category, false);
+      var sanitized_primary ='';
+      if(last_search.primary_category != undefined){
+        sanitized_primary = last_search.primary_category;
+      }
+
+      category[0].selectize.setValue(sanitized_primary, false);
       search_box.val(last_search.text);
       if(last_search.favs != undefined){
         $('#facet-show-faves').prop('checked', true);
@@ -166,6 +187,82 @@ var search_page = {
                 if(a.from < b.from){ return -1}
                 return 0;
               })
+            }else if(display_name == 'size'){
+              /* size type array holders */
+              var nums = [];
+              var letters = [];
+              var petites = [];
+              /* name size sorting weight */
+              var size_name_weight = {
+                "L":10,"LARGE":11,"M":8,"MEDIUM":9,
+                "NO SIZE":18,"S":6,"SMALL":7,"X LARGE":13,
+                "X SMALL":3,"X-LARGE":14,"X-SMALL":5,
+                "XL":12,"XS":4,"XX-SMALL":2,"XXS":1,
+                "XXL": 15,"XX LARGE": 16,"XX-LARGE": 17,
+                "XXS P":20,"P/XS":21,"XS P":22,"P/S":23,
+                "S P":24,"P/M":25,"P/L":26,"P/XL":27
+              }
+              /* push facets into correct subcategories */
+              for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
+                var facet = facet_list[display_name].buckets[j];
+                if(facet.key != ''){
+                  if(Number.isInteger(parseInt(facet.key.charAt(0)))){
+                    nums.push(facet)
+                  }else{
+                    if (facet.key.match(/[p]/i)){
+                      petites.push(facet)
+                    }else{
+                      letters.push(facet)
+                    }
+                  }
+                }
+              }
+              /* sort the numbered sizes */
+              nums.sort(function(a,b){
+                var num_a, num_b;
+                if(!Number.isInteger(parseInt(a.key.charAt(1)))){
+                  num_a = parseInt(a.key.slice(0,1));
+                }else{
+                  num_a = parseInt(a.key.slice(0,2));
+                }
+                if(!Number.isInteger(parseInt(b.key.charAt(1)))){
+                  num_b = parseInt(b.key.slice(0,1));
+                }else{
+                  num_b = parseInt(b.key.slice(0,2));
+                }
+                return num_a - num_b
+              });
+              /* sort name sizes by weight */
+              letters.sort(function(a,b){
+                var num_a = size_name_weight[a.key] == undefined ? 0 : size_name_weight[a.key];
+                var num_b = size_name_weight[b.key] == undefined ? 0 : size_name_weight[b.key];
+                return num_a - num_b
+              });
+              /* sort petite sizes by weight */
+              petites.sort(function(a,b){
+                var num_a = size_name_weight[a.key] == undefined ? 0 : size_name_weight[a.key];
+                var num_b = size_name_weight[b.key] == undefined ? 0 : size_name_weight[b.key];
+                return num_a - num_b
+              }); 
+              /* new facets array */
+              var new_facets = [];
+              if(nums.length > 0){ new_facets = new_facets.concat(nums) };
+              if(letters.length > 0){
+                if(new_facets.length > 0){
+                  new_facets = new_facets.concat([{key:'special-breaker'}],letters)
+                }else{
+                  new_facets = new_facets.concat(letters)
+                }
+              }
+              if(petites.length > 0){
+                if(new_facets.length > 0){
+                  new_facets = new_facets.concat([{key:'special-breaker'}],petites)
+                }else{
+                  new_facets = new_facets.concat(petites)
+                }                
+              }
+              facet_list[display_name].buckets = new_facets;
+              facet_list[display_name].buckets.push({key: 'facet-clear'})
             }else{
               facet_list[display_name].buckets.sort(function(a,b){
                 if(a.key.toLowerCase() > b.key.toLowerCase()){ return 1}
@@ -181,23 +278,25 @@ var search_page = {
                 if(sizes.indexOf(facet.key) > -1){
                   checked = "checked";
                 }
-              }else if((pretty_name == 'price_range')&&(cs.clientsettings == true)){
-                var spend = cs.clientspend.split('|');
-                if(spend.indexOf(facet.key) > -1){
-                  checked = "checked";
-                }
               }
-              if(facet.key != ''){
-                group_markup.markup[display_name].push(
-                  '<label class="facet">' +
-                  '<input class="facet-box" type="checkbox" value="' + 
-                  facet.key + '" ' + checked + ' data-facetgroup="' + 
-                  display_name + '"/><span>' + '<i class="fa fa-circle-thin"></i>' +
-                  '<i class="fa fa-check-circle"></i>' +
-                  '</span><em class="number">' + 
-                  numeral(facet.doc_count).format('0,0') +
-                  '</em><em class="key">' + facet.key + '</em></label>'
-                );
+              /* for facets with subcategories add breakers and clearers */
+              if(facet.key == 'special-breaker'){
+                group_markup.markup[display_name].push('<span class="facet-breaker"></span>')
+              }else if(facet.key == 'facet-clear'){
+                group_markup.markup[display_name].push('<span class="facet-clear"></span>')
+              }else{
+                if((facet.key != '')&&(facet.key != 'sort')){
+                  group_markup.markup[display_name].push(
+                    '<label class="facet">' +
+                    '<input class="facet-box" type="checkbox" value="' + 
+                    facet.key + '" ' + checked + ' data-facetgroup="' + 
+                    display_name + '"/><span>' + '<i class="fa fa-circle-thin"></i>' +
+                    '<i class="fa fa-check-circle"></i>' +
+                    '</span><em class="number">' + 
+                    numeral(facet.doc_count).format('0,0') +
+                    '</em><em class="key">' + facet.key + '</em></label>'
+                  );
+                }
               }
             }
             group_markup.markup[display_name].push('</div>');
@@ -246,25 +345,19 @@ var search_page = {
   * @description item template for results and rack
   * @param {object} details - item details JSON
   * @param {string} view - which display 
+  * @param {array} hits - other versions of the product 
   * @returns {string} HTML
   */   
-  itemTemplate: function(details, view){
-    var w = $('#results').width() / 3;   
+  itemTemplate: function(details, view, hits){
+    var products = hits.concat({_source: details});
+    var colors_hash = rack_builder.createColorHash(products);
     var desc = details.long_product_description == '' ? details.short_product_description : details.long_product_description ;
-    var retail = details.retail_price;
-    var sale = details.sale_price;
-    var price_display = '';
+    var price_display = '<span class="price">' + numeral(details.current_price).format('$0,0.00') + '</span>';
     var merch = ' at ' + details.merchant_name;
     var manu = details.manufacturer_name;    
-    if((sale >= retail)||(sale == 0)){
-      price_display = '<span class="price">' + numeral(retail).format('$0,0.00') + '</span>';
-    }else{
-      price_display = '<span class="price"><em>(' + numeral(retail).format('$0,0.00') + 
-        ')</em>' + numeral(sale).format('$0,0.00') + '</span>';
-    }
     if(details.merchant_name == undefined || details.merchant_name == ''){ merch = ''; }
     if(details.manufacturer_name == undefined || details.manufacturer_name == ''){ manu = ''; }
-
+    var size_div = colors_hash.color_names.length > 1 ? '<span class="sizing"><em></em> <strong>more colors available</strong></span>' : '' ;
     var rack_link = '<a href="#" class="add-to-rack" data-productid="' + 
       details.id + '"><i class="icon-hanger"></i>add to rack</a>';
     var rack_sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
@@ -285,8 +378,8 @@ var search_page = {
       '<a href="#" class="item-detail" data-name="' + details.product_name + 
       '" data-brand="' + details.manufacturer_name + 
       '" data-productid="' + details.id + '" data-merchantid="' + details.merchant_id + 
-      '"><img src="' + details.product_image_url + '"><span>view details</span></a></div>' +
-      '<a href="' + details.product_url + '"  title="' + details.product_name + 
+      '"><img src="' + details.product_image_url + '"><span>view details</span></a>' +
+      size_div + '</div><a href="' + details.product_url + '"  title="' + details.product_name + 
       '" target="_blank" class="name">' + details.product_name + '</a><span class="manu"' + 
       ' title="' + manu + '' + merch + '">' + manu + '' + merch + 
       '</span>' + price_display + '' + rack_link + '</div>';
@@ -295,7 +388,7 @@ var search_page = {
   * @description ajax call to get search results
   * @param {integer} page - the page to fetch
   * @param {boolean} lastSearch - boolen is performSearh is being called via cookie
-  * @param {object} additionalCriteria - other searcj settings if from cookie
+  * @param {object} additionalCriteria - other search settings if from cookie
   */
   performSearch: function(page, lastSearch, additionalCriteria){
     $('#facet-bar').removeClass('show');
@@ -327,19 +420,20 @@ var search_page = {
     */
     if(lastSearch == true){ new_search = false; }
     if(category != ''){
+      facets.push('&primary_category=' + category);
+      selection_markup.push(
+        '<a href="#" class="remove-category" data-qparam="primary_category" ' +
+        'data-facet="' + category + '">' + category + 
+        '<i class="fa fa-times-circle"></i></a>'
+      );
       /**
       * if it is a new search we need to see if we have any client
       * data to prepopulate some of our facets with
       */
       if(new_search == true){
-        var spend = [];
         var sizes = [];
         var cleaned_sizes = [];
-        var cleaned_spend = [];
-        if(["Dresses", "Jackets"].indexOf(category) > -1){
-          spend = client_360.categories[category].spend.split(', ');       
-        }else if(["Jeans", "Shoes", "Tops", "Pants"].indexOf(category) > -1){
-          spend = client_360.categories[category].spend.split(', ');
+        if(["Jeans", "Shoes", "Tops", "Pants", "Bottoms"].indexOf(category) > -1){
           sizes = client_360.categories[category].size.split(',');   
         }
         for(i = 0, l = sizes.length; i<l; i++){
@@ -351,20 +445,10 @@ var search_page = {
             size + '">' + size + '<i class="fa fa-times-circle"></i></a>'
           );
         }
-        for(i = 0, l = spend.length; i<l; i++){
-          var range = spend[i].replace(/\$/g, '').split(' - ');
-          var propper_range = '$' + range[0] + ' - $' + range[1];
-          if(range[0] == '200+'){
-            propper_range = '$200+';
-          }
-          cleaned_spend.push(propper_range);
-          selection_markup.push(
-            '<a href="#" class="remove-facet" data-qparam="price_range" data-facet="' + 
-            propper_range + '">' + propper_range + '<i class="fa fa-times-circle"></i></a>'
-          );
-        }
-        search_box.data('clientsize', cleaned_sizes.join('|')).data('clientspend', cleaned_spend.join('|')).data('clientsettings', true);
+        search_box.data('clientsize', cleaned_sizes.join('|')).data('clientsettings', true);
       }
+    }else{
+      
     }
     if(new_search == false){
       $.each($('#facets div.facet-list'), function(idx){
@@ -396,7 +480,9 @@ var search_page = {
       var keys = Object.keys(additionalCriteria);
       for(var i = 0, l = keys.length; i<l; i++){
         var key = keys[i];
-        if(['page', 'text', 'primary_category'].indexOf(key) == -1){
+        if(key == 'sort'){
+          $('#sort-dd')[0].selectize.setValue(additionalCriteria[key], true);
+        }else if(['page', 'text', 'primary_category'].indexOf(key) == -1){
           var terms = additionalCriteria[key].split('|');
           for(var ix = 0, lx = terms.length; ix < lx; ix++){
             var term = terms[ix];
@@ -418,22 +504,17 @@ var search_page = {
     if(selection_markup.length > 0){
       $('#facet-bar').addClass('show');
     }
-    /* set the session search cookie so search will persist */
-    var saved_search = q;
-    if(category != ''){
-      saved_search += '&primary_category=' + category;
+    var sort_value = $('#sort-dd').val();
+    if((sort_value != '')&&(sort_value != ' ')){
+      q += '&sort=' + sort_value;
     }
-    if(text != '') { 
-      saved_search += '&text=' + encodeURIComponent(text); 
-    }    
-    utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
+    /* set the session search cookie so search will persist */
     if(text != '') { 
       var text_term = '&text=' + encodeURIComponent(text);
-      if(category != ''){
-        text_term += ' ' + category;
-      }
       q += text_term; 
     }
+    var saved_search = q;
+    utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
     $.ajax({
       beforeSend: function(){
         $('#results').html(
@@ -442,6 +523,7 @@ var search_page = {
           '<span class="pulse_message">Finding things you\'ll love...</span>' +
           '</div>'
         );
+        $('#sort-selection').hide();
         $('#pager-message').html('');
         $('#pager').html('');
         if(new_search == true){
@@ -468,7 +550,7 @@ var search_page = {
             var keys = Object.keys(additionalCriteria);
             for(var i = 0, l = keys.length; i<l; i++){
               var key = keys[i];
-              if(['page', 'text', 'primary_category'].indexOf(key) == -1){
+              if(['page', 'text', 'primary_category', 'sort'].indexOf(key) == -1){
                 var facet_block = $('#facets div.facet-list[data-qparam="' + key + '"]');
                 var terms = additionalCriteria[key].split('|');
                 for(var ix = 0, lx = terms.length; ix < lx; ix++){
@@ -492,20 +574,30 @@ var search_page = {
     var markup = [];
     if(results != undefined && results.length > 0){
       for(var i = 0, l = results.length; i<l; i++){
-        markup.push(search_page.itemTemplate(results[i]._source, 'list'));
+        markup.push(
+          search_page.itemTemplate(
+            results[i]._source, 
+            'list', 
+            results[i].inner_hits.collapsed_by_product_name.hits.hits
+          )
+        );
       }
       $('#results').html(markup.join(''));
       if(markup.length > 0){
         var items = $('#results div.item');
         for(var i = 0, l = results.length; i<l; i++){
           var item = results[i];
-          var details = item._source;   
+          var details = item._source;  
+          var inner_hits = item.inner_hits.collapsed_by_product_name.hits.hits; 
           var dom = items.eq(i)
           dom.find('a.add-to-rack').data('details',details);
-          dom.find('a.favorite').data('details',details);     
+          dom.find('a.favorite').data('details',details); 
+          /* add the details and inner hits to the item-details dataset */
+          dom.find('a.item-detail').data('hits', inner_hits).data('details', details)
         }
       }
       utils.equalHeight($('#results div.item'));
+      $('#sort-selection').show()
     }else{
       $('#results').html('<div class="no-results">There were no products matching your supplied criteria...</div>');
     }

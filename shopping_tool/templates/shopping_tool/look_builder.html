@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Allume Shopping Tool - Look Builder</title>
+  <title>ANNA - Look Builder</title>
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css" rel="stylesheet"/>
@@ -16,14 +16,28 @@
 {% include "shopping_tool/header_partial.html" %}
 {% include "shopping_tool/client_partial.html" %}
 <div id="content">
-  <div id="rack-draggable">
+
+  <div id="rack-col">
     <h2><i class="icon-hanger"></i>Rack for {{ client.first_name }} {{ client.last_name }}</h2>
-    <div class="empty">building the rack...</div>
+    <div id="drag-rack-tabs">
+      <a href="#rack-draggable" class="tab on rack-tab">{{ client.first_name }}</a>
+      <a href="#fave-draggable" class="tab fave-tab">{{ user.first_name }}</a>
+    </div>    
+    <div id="rack-draggable" class="drag-section show">
+      <div class="empty">building the rack...</div>
+    </div>
+    <div id="fave-draggable" class="drag-section">
+
+    </div>
   </div>
+
+
+
+
   <div id="look-drop"><div class="start">Select or add a look to edit...</div></div>
   <div id="compare-looks">
     <div class="lookbook-btns">
-      <a href="#" id="preview-lookbook">preview lookbook</a>
+      <a href="#" id="preview-lookbook" target="_blank">preview lookbook</a>
       <a href="#" id="publish-lookbook">publish lookbook</a>
     </div>
     <div class="other-looks" id="look-builder-session-looks">
@@ -48,77 +62,60 @@
     </div>
   </div>
 </div>
-<!-- preview overlay -->
-<div id="preview-lookbook-overlay">
-  <div class="stage">
-    <a href="#" id="close-lb-pre"><i class="fa fa-times"></i></a>
-    <h2>Preview Lookbook</h2>
-      <div class="preview-container">
-        <div class="client-details">
-          <p>
-            <span><strong>spend:</strong></span>
-            <span><em>tops:</em>{{ client.client_360.spending_tops }}</span>
-            <span><em>bottoms:</em>{{ client.client_360.spending_bottoms }}</span>
-            <span><em>dresses:</em>{{ client.client_360.spending_dresses }}</span>
-            <span><em>jackets:</em>{{ client.client_360.spending_jackets }}</span>
-            <span><em>shoes:</em>{{ client.client_360.spending_shoes }}</span>
-          </p>
-          <p>
-            <span><strong>sizes:</strong></span>
-            <span id="prev-bra-size"></span>
-            <span><em>tops:</em>{{ client.client_360.size_tops }}</span>
-            <span><em>pants:</em>{{ client.client_360.size_pants }}</span>
-            <span><em>jeans:</em>{{ client.client_360.size_jeans }}</span>
-            <span><em>shoe:</em>{{ client.client_360.size_shoe }}</span>
-          </p>
-
-          <div class="bio">
-            <img class="client" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/>
-            <h3>{{ client.first_name }} {{ client.last_name }}</h3>
-            <span id="prev-client-locale"></span>
-            <span id="prev-client-birthday"></span>  
-            <span><em>occupation:</em>{{ client.client_360.occupation }}</span>
-            <span><em>look goals:</em>{{ client.client_360.looks_goal }}</span>
-            <span><em>other goals:</em>{{ client.client_360.other_goals }}</span>
-          </div>
-        </div>
-        <h4>Live Preview:</h4>
-        <iframe id="previewIframe" src=""></iframe>
-      </div>
-  </div>
-</div>
 <div id="publish-lookbook-overlay" data-allowed="false">
   <div class="stage">
     <a href="#" id="close-lb"><i class="fa fa-times"></i></a>
     <h2>Publish Lookbook</h2>
     <div id="publish-wizard">
       <a href="#pub-section1" id="pub-wizard-step1" class="on"><span>Step 1:</span>Categorize Looks</a>
-      <a href="#pub-section2" id="pub-wizard-step2"><span>Step 2:</span>Customize Email</a>
+      <a href="#pub-section2" id="pub-wizard-step2"><span>Step 2:</span>Customize Text Message</a>
       <a href="#pub-section3" id="pub-wizard-step3"><span>Step 3:</span>Finalize and Publish</a>
     </div>
     <div class="publish-sections">
       <div class="publish-section on" id="pub-section1"></div>
       <div class="publish-section" id="pub-section2">
         <a href="#" class="next-tab">next<i class="fa fa-chevron-right"></i></a>
-        <label class="toggle" id="send-email"><em class="left">send now</em><input id="send-toggle" type="checkbox"/><span><small></small></span><em>send later</em></label>
+        <div id="publication-send-type">
+          <label class="switch">
+            <input name="send_type" id="send-now" type="radio" value="send_now"/>
+            <span>
+              <em class="right"><i class="fa fa-times"></i></em>
+              <em class="left"><i class="fa fa-check"></i></em>
+              <small></small>
+            </span>
+            <em class="label">send now</em>
+          </label>
+          <label class="switch">
+            <input id="send-later-toggle" name="send_type" type="radio" value="send_later"/>
+            <span>
+              <em class="right"><i class="fa fa-times"></i></em>
+              <em class="left"><i class="fa fa-check"></i></em>
+              <small></small>
+            </span>
+            <em class="label">send later</em>
+          </label>
+          <label class="switch">
+            <input name="send_type" id="do-not-send-toggle" type="radio" value="do_not_send"/>
+            <span>
+              <em class="right"><i class="fa fa-times"></i></em>
+              <em class="left"><i class="fa fa-check"></i></em>
+              <small></small>
+            </span>
+            <em class="label">do not send</em>
+          </label>
+        </div>
         <div id="send-later-wrapper">
-          <label>Please select a date and time to send the text:</label>
+          <label>Please select a date and time to send the text.</label>
+          <label style="margin-top:10px">Time is in {{ client.first_name }} {{ client.last_name }} timezone: <strong>{{client.timezone}}</strong></label>
           <div id="send-later" data-tz="{{client.timezone}}"></div>
-          <label style="margin-top:10px">{{ client.first_name }} {{ client.last_name }} timezone: <strong>{{client.timezone}}</strong></label>
         </div>
         <h5>Client text:</h5>
-        <textarea id="publish-email">
-Hey {{ client.first_name }} {{ client.last_name }}, I have your Lookbook ready and am excited for you to see the pieces I've found for you.
+        <textarea id="publish-email" data-urllink="https://www.allume.co/looks/{{ styling_session.token }}#intro">
+Hi {{ client.first_name }}, your new Looks are ready! You can buy right from your Lookbook & prices are never marked up.  I would really appreciate if you purchase the items you love through Allume :-).  If you find additional items at one of the retailers I picked for you, please send them to me so I can easily add them to your Lookbook.  
 
-On your lookbook you'll see a collage of each look with a description so you can get an idea of how to coordinate your outfits. Then you'll see each piece. It's like your own online store filled with all of the pieces I've chosen for you.
-
-[Link to Lookbook]
-
-On your Lookbook you'll be able to 'heart' and comment on each look, and you can click on an item to open up more photos and information about it.  When you decide which items you want to purchase, simply select the size, and add it to your cart where you can check out. Just a heads up, pieces sell out fast with online retailers.
-
-I can also help you with choosing which pieces to try. Just a heads up that pieces do sell out online, I don't want you to miss out on anything that you love.  I'm excited to hear what you think after taking a further look!  Remember the more feedback you give me, the more it will help me do a good job for your next styling sessions.
+You can leave me feedback by 'hearting' and commenting on each Look or texting back! Items do sell out fast, so be sure to purchase quickly. Don't hesitate to reach out, I'm here to help! I'm excited to hear what you think!
 </textarea>
-<em class="help"><strong>[Link to Lookbook]</strong> snippet will be turned into an actual link.</em>
+<em class="help">The following link will be appended to your message: <strong>https://www.allume.co/looks/{{ styling_session.token }}#intro</strong></em>
       </div>
       <div class="publish-section" id="pub-section3"></div>
     </div>
@@ -142,6 +139,7 @@ I can also help you with choosing which pieces to try. Just a heads up that piec
 <script src="{% static 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
 {% include "shopping_tool/js_arrays.html" %}
+var local_environment = "{{env}}";
 utils.menu();
 utils.client();
 collage.setUpObject();

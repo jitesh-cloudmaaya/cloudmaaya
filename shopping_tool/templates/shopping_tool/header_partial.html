@@ -1,12 +1,12 @@
-<div id="header">
+<div id="header" data-stylistname="{{ user.first_name }} {{ user.last_name }}">
   <a href="#" id="menu-toggle"><i class="fa fa-bars"></i></a>
-  <a href="/{{ styling_session.id }}/" class="logo"><i class="icon-dress-form"></i>Allume Shopping Tool</a>
+  <a href="/{{ styling_session.id }}/" class="logo"><i class="icon-dress-form"></i>ANNA</a>
   <span id="stylist" data-stylistid="{{ user.id }}"></span>
 </div>
 <div id="nav-menu">
   <div class="menu">
     <a href="#" id="close-nav-menu"><i class="fa fa-times"></i></a>
-    <h2><i class="icon-dress-form"></i>Allume Shopping Tool</h2>
+    <h2><i class="icon-dress-form"></i>ANNA</h2>
     <a href="/{{ styling_session.id }}/" class="menu-item"><i class="fa fa-search"></i> Product Search</a>
     <a href="/look_builder/{{ styling_session.id }}/" class="menu-item"><i class="fa fa-cog"></i> Look Builder</a>
     <a href="/explore_looks/{{ styling_session.id }}/" class="menu-item"><i class="fa fa-shopping-bag"></i> Explore Looks</a>

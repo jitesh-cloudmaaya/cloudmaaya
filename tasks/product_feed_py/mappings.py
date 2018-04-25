@@ -1,5 +1,40 @@
+import os
+import re
+import yaml
 from django.db import connection
-from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory
+from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, SynonymCategoryMap, ExclusionTerm
+from catalogue_service.settings import BASE_DIR
+
+
+### Added mappings... move to bottom
+
+def create_synonym_category_mapping():
+    """
+    Returns a dict of synonym terms as strings mapped to the synonym's
+    category.
+    """
+    synonym_category_mapping = {}
+
+    synonym_category_maps = SynonymCategoryMap.objects.values_list('synonym', 'category')
+    for synonym_category_map in synonym_category_maps:
+        synonym_category_mapping[synonym_category_map[0]] = synonym_category_map[1]
+
+    return synonym_category_mapping
+
+def create_synonym_other_category_mapping():
+    """
+    Returns a list of synonym terms that map to the category 'Other'.
+    """
+    return SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+
+def create_exclusion_term_mapping():
+    """
+    Returns a list of exclusion terms.
+    """
+    return ExclusionTerm.objects.values_list('term', flat=True)
+
+### end added mappings
+
 
 def create_merchant_mapping():
     """
@@ -13,6 +48,19 @@ def create_merchant_mapping():
         merchant_mapping[merchant[0]] = merchant[1]
 
     return merchant_mapping
+
+def create_merchant_search_rank_mapping():
+    """
+    Returns a dict of merchant_ids as longs mapped to the merchant's
+    search_rank field value.
+    """
+    merchant_search_rank_mapping = {}
+
+    merchants = Merchant.objects.values_list('external_merchant_id', 'search_rank')
+    for merchant in merchants:
+        merchant_search_rank_mapping[merchant[0]] = merchant[1]
+
+    return merchant_search_rank_mapping
 
 def create_color_mapping():
     """
@@ -28,7 +76,6 @@ def create_color_mapping():
 
     return color_mapping
 
-
 def create_category_mapping():
     """
     Returns a dict of (primary_category, secondary_category) as keys mapped to 
@@ -37,10 +84,10 @@ def create_category_mapping():
     """
     category_mapping = {}
 
-    category_maps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'active', 'id')
+    category_maps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'turned_on', 'id', 'merchant_name')
     for category_map in category_maps:
-        key_tup = (category_map[0], category_map[1])
-        val_tup = (category_map[2], category_map[3], category_map[4])
+        key_tup = (category_map[0].lower(), category_map[1].lower())
+        val_tup = (category_map[2], category_map[3], category_map[4], category_map[5])
         category_mapping[key_tup] = val_tup
 
     return category_mapping
@@ -61,15 +108,200 @@ def create_allume_category_mapping():
 
     return allume_category_mapping
 
-def add_new_merchant(external_merchant_id, name, network, active = False):
-    Merchant.objects.create(external_merchant_id = external_merchant_id, name = name, network = network, active = active)
+
+def create_size_mapping():
+    """
+    Returns a dict of merchant_size mapped to the allume_size. Both values are strings.
+    """
+    filepath = os.path.join(BASE_DIR, 'product_api/fixtures/SizeMap.yaml')
+    f = open(filepath, 'r')
+    size_maps = yaml.load(f)
+    size_mapping = {}
+    for size_map in size_maps:
+        fields = size_map['fields']
+        sm = SizeMap(merchant_size = fields['merchant_size'].decode('UTF-8'), allume_size = fields['allume_size'].decode('UTF-8'))
+        size_mapping[sm.merchant_size] = sm.allume_size
+
+    return size_mapping
+
+def create_shoe_size_mapping():
+    """
+    Returns a dict of merchant_size mapped to the allume_size for shoes. Both values are strings.
+    """
+    filepath = os.path.join(BASE_DIR, 'product_api/fixtures/ShoeSizeMap.yaml')
+    f = open(filepath, 'r')
+    shoe_size_maps = yaml.load(f)
+    shoe_size_mapping = {}
+    for shoe_size_map in shoe_size_maps:
+        fields = shoe_size_map['fields']
+        ssm = ShoeSizeMap(merchant_size = fields['merchant_size'].decode('UTF-8'), allume_size = fields['allume_size'].decode('UTF-8'))
+        shoe_size_mapping[ssm.merchant_size] = ssm.allume_size
+
+    return shoe_size_mapping
+
+def create_size_term_mapping():
+    """
+    Returns a dict of merchant_phrase mapped to the allume_attribute for term expansion.
+    Both values are strings.
+    """
+    filepath = os.path.join(BASE_DIR, 'product_api/fixtures/SizeTermMap.yaml')
+    f = open(filepath, 'r')
+    size_term_maps = yaml.load(f)
+    size_term_mapping = {}
+    for size_term_map in size_term_maps:
+        fields = size_term_map['fields']
+        stm = SizeTermMap(merchant_phrase = fields['merchant_phrase'].decode('UTF-8'), allume_attribute = fields['allume_attribute'].decode('UTF-8'))
+        size_term_mapping[stm.merchant_phrase] = stm.allume_attribute
+
+    return size_term_mapping
+
+def add_new_merchant(external_merchant_id, name, network, active = False, search_rank = 0):
+    Merchant.objects.create(external_merchant_id = external_merchant_id, name = name, network = network, active = active, search_rank = search_rank)
 
 def get_network(network_name):
-    return Network.objects.get(name = network_name)
+    try:
+        return Network.objects.get(name = network_name)
+    except Network.DoesNotExist:
+        Network.objects.create(name = network_name, active = True)
+        return Network.objects.get(name = network_name)
 
-def add_category_map(external_cat1, external_cat2, merchant_name, allume_category, active = False, pending_review=True):
-    CategoryMap.objects.create(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
-                               allume_category = None, active = active, pending_review=pending_review)
+def is_merchant_in_category(category_mapping, identifier, merchant_name):
+    allume_category_id, categories_are_active, category_map_id, merchant_name_list = category_mapping[identifier]
+
+    if merchant_name_list:
+        merchants_list = merchant_name_list.split("|")
+    else:
+        merchants_list = []
+
+    if merchant_name not in merchants_list:
+
+        merchants_list.append(merchant_name)
+
+        cm = CategoryMap.objects.get(id = category_map_id)
+        #print merchants_list
+        merchants_list.sort()
+        cm.merchant_name = '|'.join(set(merchants_list))
+        cm.save()
+
+    return True
+
+def add_category_map(external_cat1, external_cat2, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms, allume_category=None, active=False, pending_review=True):
+    """
+    Takes in arguments to create a new CategoryMap object. Checks for the presence of an ExclusionTerm in external_cat1
+    and external_cat2 to get additional information on how to formulate the CategoryMap.
+
+    Args:
+      external_cat1 (str): Corresponds to the primary category of a product.
+      external_cat2 (str): Corresponds to the secondary category of a product.
+      merchant_name (str): A string representing the merchant's name.
+      allume_category (obj): The AllumeCategory object to reference. Can be None.
+      active (bool): Whether or not the CategoryMap will be used. Defaults to False.
+      pending_review (bool): Whether or not the CategoryMap is pending review for validity. Defaults to True.
+
+    Returns:
+      tup: Returns a tuple of allume category id (int), active (bool), the new categorymap id (int), and merchant_name (str).
+    """
+    external_cat1 = external_cat1.lower()
+    external_cat2 = external_cat2.lower()
+    if _check_exclusion_terms(external_cat1, external_cat2, exclusion_terms):
+        allume_category = AllumeCategory.objects.get(name__iexact='exclude')
+        active = False
+        pending_review = False
+    elif _check_other_term_maps(external_cat1, external_cat2, synonym_other_terms):
+        allume_category = AllumeCategory.objects.get(name__iexact='other')
+        active = True
+        pending_review = False
+    elif _check_synonym_term_maps(external_cat2, synonym_terms):
+        try:
+            allume_category = AllumeCategory.objects.get(name__iexact=external_cat2)
+            active = True
+            pending_review = False
+        except AllumeCategory.DoesNotExist as e:
+            print 'The SynonymCategoryMap category must map to an existing AllumeCategory name.'
+            print external_cat2
+            print e
+            allume_category = None
+            active = False
+            pending_review = True
+
+    cm = CategoryMap(external_cat1 = external_cat1, external_cat2 = external_cat2, merchant_name = merchant_name,
+                               allume_category = allume_category, turned_on = active, pending_review=pending_review)
+    cm.save()
+    new_categorymap_id = cm.id
+    if allume_category:
+        allume_category_id = allume_category.id
+    else:
+        allume_category_id = None
+
+    return (allume_category_id, active, new_categorymap_id, merchant_name)
+
+def _check_exclusion_terms(primary_category, secondary_category, exclusion_terms):
+    """
+    Takes in both a primary and secondary category. Checks the list of exclusion terms as modeled by
+    ExclusionTerm for the presence of any exclusion terms on word boundaries. If one is found, returns
+    True; else, returns False.
+
+    Args:
+      primary_category (str): A string representing a product category.
+      secondary_category (str): A string representing a product category.
+
+    Returns:
+      bool: A boolean value representing whether or not any exclusion terms were found in either string
+      argument, respecting word boundaries.
+    """
+    primary_category = primary_category.lower()
+    secondary_category = secondary_category.lower()
+    for term in exclusion_terms:
+        pattern = re.compile(r'\b' + term.lower() + r'\b')
+        primary_match = re.search(pattern, primary_category)
+        secondary_match = re.search(pattern, secondary_category)
+        if primary_match or secondary_match:
+            return True
+    return False
+
+def _check_other_term_maps(primary_category, secondary_category, synonym_other_terms):
+    """
+    Takes in both a primary and secondary category. Checks the list of terms that will
+    force a CategoryMap to Allume category as 'Other'. Uses terms modeled by SynonymCategoryMap
+    of the category 'Other' and checks the strings for membership of any of the terms.
+
+    Args:
+      primary_category (str): A string representing a product category.
+      secondary_category (str): A string representing a product category.
+
+    Returns:
+      bool: A boolean value representing whether or not any other term maps were found
+      in either string argument.
+    """
+    primary_category = primary_category.lower()
+    secondary_category = secondary_category.lower()
+    for term in synonym_other_terms:
+        term = term.lower()
+        if term in primary_category or term in secondary_category:
+            return True
+    return False
+
+def _check_synonym_term_maps(secondary_category, synonym_terms):
+    """
+    Takes in a product secondary category. Checks secondary_category for a list of synonym categories,
+    governed by SynonymCategoryMap. If secondary_category is a SynonymCategoryMap category, determines
+    that the category was formulated using a SynonymCategoryMap and the resulting CategoryMap can be
+    shortcut mapped, thus returning True. Returns False otherwise.
+
+    Args:
+      secondary_category: A string representing a product category.
+
+    Returns:
+      bool: A boolean value representing whether or not any synonym term maps were found in either
+      string argument.
+    """
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
+    secondary_category = secondary_category.lower()
+    for category in synonym_terms:
+        category = category.lower()
+        if secondary_category == category:
+            return True
+    return False
 
 def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     """
@@ -84,7 +316,7 @@ def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
         # if not in the map
         if merchant_id not in merchant_mapping.keys():
             # create a new instance and save
-            add_new_merchant(merchant_id, merchant_name, network, False)
+            add_new_merchant(merchant_id, merchant_name, network, active=False, search_rank=10)
             # edit the passed-in dict
             merchant_mapping[merchant_id] = False
         if merchant_mapping[merchant_id]:
@@ -93,7 +325,7 @@ def is_merchant_active(merchant_id, merchant_name, network, merchant_mapping):
     except KeyError:
         return False
 
-def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name):
+def are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, input_merchant_name, exclusion_terms, synonym_other_terms, synonym_terms):
     """
     Takes in a primary category and a secondary category as strings and a
     category_mapping dictionary and checks to see if they constitute an
@@ -103,24 +335,18 @@ def are_categories_active(primary_category, secondary_category, category_mapping
     False otherwise.
     """
     # print category_mapping
+    primary_category = primary_category.lower()
+    secondary_category = secondary_category.lower()
     try:
         identifier = (primary_category, secondary_category)
         if identifier not in category_mapping.keys():
-            add_category_map(primary_category, secondary_category, merchant_name, None, False, True)
             # edit the mapping instance
-            category_mapping[identifier] = (None, False, -1)
-            # print discovered categories pair
-            print identifier
-        allume_category_id, categories_are_active, category_map_id = category_mapping[identifier]
-        # if id == -1, then category is newly added with merchant_name, no need to backfill
-        if category_map_id != -1:
-            # check if the merchant_name for this category exists
-            cm = CategoryMap.objects.get(pk=category_map_id)
-            # if it does not
-            if cm.merchant_name == None:
-                # print 'backfilling occurs'
-                cm.merchant_name = merchant_name
-                cm.save()
+            category_mapping[identifier] = add_category_map(primary_category, secondary_category, input_merchant_name, exclusion_terms, synonym_other_terms, synonym_terms, None, False, True)
+            # add_category_map returns a tuple of (allume_category_id, new_categorymap_id, active, merchant_name)
+
+        allume_category_id, categories_are_active, category_map_id, merchant_name = category_mapping[identifier]
+        # checks if merchant needs to be appended to a category
+        is_merchant_in_category(category_mapping, identifier, input_merchant_name)
         if allume_category_id == None:
             # allume_category_id is None because it is either a newly discovered category
             # or a category that is still pending review post-discovery
@@ -133,5 +359,6 @@ def are_categories_active(primary_category, secondary_category, category_mapping
         if not allume_category_is_active:
             return False
         return allume_category
+
     except KeyError:
         return False

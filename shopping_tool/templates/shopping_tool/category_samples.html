@@ -1,0 +1,51 @@
+{% load staticfiles %}
+{% load sstatic %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ANNA - Category Samples</title>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css" rel="stylesheet"/>
+  {% load static %}
+  <link href="{% sstatic 'shopping_tool/css/croppr.min.css' %}" media="all" rel="stylesheet"/>
+  <link href="{% sstatic 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
+</head>
+
+<div id="header">
+  <a href="/{{ styling_session.id }}/" class="logo"><i class="icon-dress-form"></i>Category Samples</a>
+  <span id="stylist" data-stylistid="{{ user.id }}"></span>
+</div>
+
+
+
+
+
+
+
+
+<div id="results-wrapper">
+    <div id="client-defaults"></div>
+    <div id="facet-bar" class="show"><span class="title">your selection:</span>
+    	<span id="search-form-selections">
+    		<a href="#" class="remove-search">{{cat1}}</a>
+    		<a href="#" class="remove-search">{{cat2}}</a>
+    	</span>
+    </div>
+
+    <div id="results">
+    	{% for product in products %}
+
+    	<div class="item" style="height: 341px;">
+    		<div class="image">
+    			<img src="{{ product.product_image_url }}">
+    		</div>
+    					<a href="http://click.linksynergy.com/link?id=fRObjjh00YI&amp;offerid=467515.10494167&amp;type=15&amp;murl=https%3A%2F%2Fwww.italist.com%2Fen%2Fwomen%2Fclothing%2Fshirts%2Fzucca-denim-shirt%2F10324539%2F10494167%2Fzucca%2F%3Fsembox_source%3DLinkshareUS%26sembox_content%3DFeed%26utm_source%3DLinkshareUS%26utm_content%3DFeed" title="Zucca Denim Shirt" target="_blank" class="name">{{ product.product_name }}</a><span class="manu" title="Zucca at Italist.com US">{{ product.brand }} at {{ product.merchant_name }}</span><span class="price">${{ product.current_price }}</span>
+    	
+
+    	</div>
+    	{% endfor %}
+
+
+  </div>

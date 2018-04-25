@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^image_proxy/$', views.image_proxy, name='image_proxy'),
     url(r'^collage/(?P<look_id>[0-9]+)/$', views.collage, name='collage'),
     url(r'^collage_image/(?P<look_id>[0-9]+)\.jpg', views.collage_image, name='collage_image'),
+    url(r'^category_samples/$', views.category_samples, name='category_samples'),
 ]

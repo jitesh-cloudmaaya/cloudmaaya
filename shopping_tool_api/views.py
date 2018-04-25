@@ -23,6 +23,72 @@ from serializers import *
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from tasks.product_feed_py.product_feed_helpers import determine_allume_size
+from tasks.product_feed_py import mappings
+from tasks.tasks import add_client_to_360
+
+@api_view(['GET'])
+@permission_classes((AllowAny, ))
+def add_client_to_360_api(request, wp_user_id):
+    """
+    post:
+        Get Allume Size
+
+        /shopping_tool_api/add_client_to_360/{wp_user_id}
+
+    """
+    #print wp_user_id
+    #wp_user_id = 200
+
+    add_client_to_360.delay(wp_user_id)
+    return JsonResponse({"Status": "Success"}, safe=False)
+
+
+
+@api_view(['POST'])
+@permission_classes((AllowAny, ))
+def get_allume_size(request):
+    """
+    post:
+        Get Allume Size
+
+        /shopping_tool_api/get_allume_size/  
+
+        Sample JSON Object 1
+
+        {
+          "size": "x-small",
+          "category": "Tops"
+        }    
+
+        Sample JSON Response 1
+        {
+          "allume_size": "XS"
+        }
+
+        Sample JSON Object 2
+
+        {
+          "size": "46",
+          "category": "Shoes"
+        }
+
+        Sample JSON Response 2
+        {
+          "allume_size": "12 & 12.5 & 13 & 13.5"
+        }
+
+    """
+
+    size_mapping = mappings.create_size_mapping()
+    shoe_size_mapping = mappings.create_shoe_size_mapping()
+    size_term_mapping = mappings.create_size_term_mapping()
+    allume_category = request.data['category']
+    size = request.data['size'].upper()
+
+    allume_size = determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+
+    return JsonResponse({"allume_size": allume_size}, safe=False)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @check_login
@@ -548,18 +614,20 @@ def look_list(request):
          "name": "Body Suit",
          "page": 1,
          "per_page": 20,
-         "favorites_only": True,
+         "favorites_only": "True",
          "total_look_price_minimum": 500.00,
          "total_look_price_maximum": 1000.00,
          "average_item_price_minimum": 20.00,
          "average_item_price_maximum": 45.00,
-         "show_deleted": True
+         "show_deleted": "True"
           "style_type": [1,2,4],
-          "style_occasion": [3,4]
+          "style_occasion": [3,4],
+          "is_published": "True",
+          "with_products": "False"
         }
     """
-    looks = Look.objects.all()  
-    # looks = looks.filter(look_layout__isnull=False)
+    looks = Look.objects.all()
+    looks = looks.filter(is_legacy=False)
     # looks = looks.exclude(look_layout = 0)
 
     page = 1
@@ -574,6 +642,10 @@ def look_list(request):
         looks = looks
     else:
         looks = looks.exclude(status = 'Deleted')
+
+    if 'is_published' in request.data:
+        if request.data['is_published'] == "True":
+            looks = looks.filter(status = 'published')
 
     if 'client' in request.data:
         client = request.data['client']
@@ -631,6 +703,9 @@ def look_list(request):
         looks_paged = paginator.page(paginator.num_pages)
 
     serializer = LookSerializer(looks_paged, many=True)
+    if 'with_products' in request.data:
+        if request.data['with_products'] == "False":
+            serializer = LookSerializerNoLookProducts(looks_paged, many=True)
     return JsonResponse({"num_pages": paginator.num_pages, "total_looks": paginator.count, "page": page, "per_page": per_page, "looks": serializer.data}, safe=False)
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -685,6 +760,11 @@ def look_item(request, pk=None):
 
         try:
             look_item = LookProduct.objects.get(id=pk)
+
+            #Test to see if product_clipped_stylist_id is already set, if so keep o.g. value
+            if look_item.product_clipped_stylist_id:
+                item['product_clipped_stylist_id'] = look_item.product_clipped_stylist_id
+
             serializer = LookProductCreateSerializer(look_item, data=item)
 
         except LookProduct.DoesNotExist:

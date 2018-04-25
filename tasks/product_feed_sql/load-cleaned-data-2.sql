@@ -1,4 +1,4 @@
-ALTER TABLE product_api_product CONVERT TO CHARACTER SET utf8;
+-- ALTER TABLE product_api_product CONVERT TO CHARACTER SET utf8;
 INSERT INTO product_api_product (
     product_id,
     merchant_id,
@@ -74,7 +74,7 @@ SELECT
     papt.end_date,
     papt.merchant_name,
     papt.created_at,
-    papt.updated_at,
+    NOW(),
     papt.allume_score,
     papt.brand,
     papt.is_best_seller,
@@ -88,7 +88,7 @@ SELECT
     papt.merchant_color,
     papt.allume_size,
     papt.allume_category
-FROM product_api_product_temp papt
+FROM [STAGING_TABLE] papt
 ON DUPLICATE KEY UPDATE
     product_id = VALUES(product_id),
     merchant_id = VALUES(merchant_id),
@@ -135,4 +135,4 @@ ON DUPLICATE KEY UPDATE
     allume_category = VALUES(allume_category);
 
 
-DROP TABLE product_api_product_temp;
+-- DROP TABLE [STAGING_TABLE];

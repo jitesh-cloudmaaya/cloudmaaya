@@ -22,6 +22,7 @@ fields:
 - gender
 - style
 - size
+- allume_size
 - material
 - age
 - currency
@@ -39,8 +40,8 @@ fields:
 - current_price
 - is_deleted
 local_temp_dir: pd_temp/pepperjam
-table: product_api_product_temp
-clean_data_method: pepperjam.get_data(self._local_temp_dir_cleaned, self._fields)
+table: product_api_product_temp_pj
+clean_data_method: pepperjam.get_data(self._local_temp_dir_cleaned, self._fields, dev=False)
 # not used
 leave_temp_files: false
 etl_file_name: tasks/product_feed_sql/ran.sql
@@ -49,5 +50,8 @@ ftp_config:
   host: aftp.linksynergy.com
   password: yT%6-Pl@h
   user: allumestye
+  host_key: N/A
+  algorithm: N/A
 file_ending: mp.txt
 remote_dir: /
+network: PepperJam

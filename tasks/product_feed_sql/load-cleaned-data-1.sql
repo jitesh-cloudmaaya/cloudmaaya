@@ -1,6 +1,6 @@
 SET SESSION sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
-DROP TABLE IF EXISTS product_api_product_temp;
-CREATE TABLE IF NOT EXISTS product_api_product_temp (
+DROP TABLE IF EXISTS [STAGING_TABLE];
+CREATE TABLE IF NOT EXISTS [STAGING_TABLE] (
     id integer AUTO_INCREMENT NOT NULL PRIMARY KEY, 
     product_id bigint(20) NULL, 
     merchant_id bigint(20) NULL, 
@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS product_api_product_temp (
     begin_date datetime(6) NULL,
     end_date datetime(6) NULL,
     merchant_name varchar(2000) NULL,
-    created_at datetime(6) NULL, 
-    updated_at datetime(6) NULL,
+    created_at datetime NULL, 
+    updated_at datetime NULL,
     allume_score integer NULL,
     brand varchar(255) NULL,
     is_best_seller tinyint(1) NULL,

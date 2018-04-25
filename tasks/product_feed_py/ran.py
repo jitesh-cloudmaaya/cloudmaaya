@@ -5,19 +5,29 @@ import csv
 import re
 from copy import copy
 from django.db import connection
-from . import mappings
-from . import product_feed_helpers
+from tasks.product_feed_py import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR
-from product_api.models import Merchant, CategoryMap, Network, Product
+from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap, ExclusionTerm
 from datetime import datetime, timedelta
 
 ### attempt at writing record with logic
-def clean_ran(local_temp_dir, file_ending, cleaned_fields):
+def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     # instantiate relevant mappings
     merchant_mapping = mappings.create_merchant_mapping()
+    merchant_search_rank_mapping = mappings.create_merchant_search_rank_mapping()
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+    size_mapping = mappings.create_size_mapping()
+    shoe_size_mapping = mappings.create_shoe_size_mapping()
+    size_term_mapping = mappings.create_size_term_mapping()
+    synonym_category_mapping = mappings.create_synonym_category_mapping()
+    synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+
+    # for use when adding a mapping
+    exclusion_terms = mappings.create_exclusion_term_mapping()
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
 
     # initialize network instance for adding potential new merchants
     network = mappings.get_network('RAN')
@@ -42,12 +52,6 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
         # different dialects for reading and writing
         csv.register_dialect('reading', delimiter='|', quoting=csv.QUOTE_NONE, quotechar='')
-        # second dialect
-        # set the delimiter as a pipe character
-        # quote all the fields when written to flat file
-        # use " as the quoting character
-        # use the escapecharacter and set it to \
-        # match line terminator with what is used in load data
         csv.register_dialect('writing', delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"', doublequote=False, escapechar='\\', lineterminator='\n')
 
         cleaned_fieldnames = cleaned_fields.split(',')
@@ -66,7 +70,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                 merchant_is_active = mappings.is_merchant_active(merchant_id, merchant_name, network, merchant_mapping)
                 if merchant_is_active: # set the merchant_table active column to 1 for a few companies when testing
                     # check config files
-                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/'
+                    config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/ran/'
                     fd = os.listdir(config_path)
 
                     default = 'default'
@@ -85,6 +89,13 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         # we shall use the default
                         config_dict = yaml.load(config)
                         fields = config_dict['fields'] # grabs the fields as an array
+
+                        try: # not all merchants will have this field
+                            # the above will now be a dictionary like {'primary_category': ['primary_category', 'product_type']}
+                            tiered_assignments = config_dict['tiered_assignment_fields']
+                        except KeyError:
+                            tiered_assignments = {}
+
                     # print fields
                     reader = csv.DictReader(lines, fieldnames = fields, restval='', dialect = 'reading')
                     for datum in reader:
@@ -98,14 +109,14 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         product_id = datum['product_id']
                         product_name = datum['product_name']
                         SKU = datum['SKU']
-                        primary_category = datum['primary_category']
-                        secondary_category = datum['secondary_category']
+                        primary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'primary_category', datum, datum['primary_category'])
+                        secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', datum, datum['secondary_category'], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping, exclusion_terms = exclusion_terms)
                         product_url = datum['product_url']
 
                         try:
                             raw_product_url = product_feed_helpers.parse_raw_product_url(product_url, 'murl')
                             # raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)['murl'][0]
-                        except Exception as e:
+                        except KeyError as e:
                             print e
                             raw_product_url = u'' # there was an error of some kind
 
@@ -113,6 +124,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         buy_url = datum['buy_url']
                         short_product_description = datum['short_product_description']
                         long_product_description = datum['long_product_description']
+
                         discount = datum['discount']
                         if not discount:
                             discount = u'0.00' # unicode necessary or not
@@ -162,11 +174,12 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                         gender = gender.replace('MAN', 'MEN')
 
                         # check if gender makes record 'inactive'
-                        if gender == 'MEN' or gender == 'CHILD' or gender == 'KIDS': # girls and boys?
+                        skippedGenders = ['MEN', 'CHILD', 'KIDS', 'BOYS', 'GIRLS', 'BABY']
+                        if gender in skippedGenders:
                             genderSkipped += 1
                             continue
 
-                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
+                        allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
                         if allume_category:
                             # new logic for writing record
                             record = {}
@@ -209,6 +222,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             attribute_3_size = attribute_3_size.replace('~', ',')
                             record['size'] = attribute_3_size
 
+
+                            record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+
                             record['material'] = attribute_4_material
 
                             attribute_8_age = attribute_8_age.upper()
@@ -216,8 +232,10 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
 
                             record['currency'] = currency
 
-                            if availability == '':
+                            if availability == '' or availability == 'no':
                                 availability = 'out-of-stock'
+                            elif availability == 'yes':
+                                availability = 'in-stock'
                             record['availability'] = availability
 
                             record['keywords'] = keywords
@@ -233,7 +251,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             # set defaults
                             record['is_best_seller'] = u'0'
                             record['is_trending'] = u'0'
-                            record['allume_score'] = u'0'
+
+                            record['allume_score'] = unicode(merchant_search_rank_mapping[long(merchant_id)])
 
                             # if there is a sale
                             try:
@@ -250,6 +269,11 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             else:
                                 record['is_deleted'] = u'0'
 
+                            # for key, value in record.iteritems():
+                            #     print (type(key), type(value))
+                            #     print (key, value)
+                            # return
+
                             # unicode sandwich finish
                             for key, value in record.iteritems():
                                 record[key] = value.encode('UTF-8')
@@ -260,8 +284,10 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    # use the size mapping here also
                                     parent_attributes['size'] = size
+                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
                                     writer.writerow(parent_attributes)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
@@ -281,25 +307,8 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields):
     print('Dropped %s records due to gender' % genderSkipped)
     print('Dropped %s records due to inactive categories' % categoriesSkipped)
 
-
     # test the theory
-    print('Setting deleted for non-upserted products')
-    set_deleted_ran_products()
-
-
-def set_deleted_ran_products(threshold = 12):
-    """
-    Sets RAN products for the current run to deleted if they were not upserted.
-    """
-    ran_id = Network.objects.get(name ='RAN')
-    merchants = Merchant.objects.filter(active = True, network_id = ran_id)
-    merchant_ids = merchants.values_list('external_merchant_id')
-    products = Product.objects.filter(merchant_id__in = merchant_ids, is_deleted = False)
-    datetime_threshold = datetime.now() - timedelta(hours = threshold)
-    # print datetime_threshold # in case behavior is not as expected
-    deleted_products = products.filter(updated_at__lte = datetime_threshold)
-    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    deleted_products.update(is_deleted = True, updated_at = updated_at)
-    print('Set %s non-upserted products to deleted' % deleted_products.count())
-
-
+    # UPDATE: Csn't use on the Delta File as it will not include records that didn't change but are still live
+    # if not is_delta:
+    #     print('Setting deleted for non-upserted products')
+    #     product_feed_helpers.set_deleted_network_products('RAN')

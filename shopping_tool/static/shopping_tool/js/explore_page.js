@@ -71,7 +71,7 @@ var explore_page = {
           "stylist": parseInt($('#stylist').data('stylistid')) ,
           "look": parseInt(link.data('lookid'))     
         }
-        link.data('faveid', response.id).addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+        link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
         $.ajax({
           contentType : 'application/json',
           data: JSON.stringify(fave),
@@ -82,18 +82,13 @@ var explore_page = {
             //console.log(response);
             explore_page.favorite_looks.push(response);
             explore_page.favorite_look_ids.push(response.look);
-            
+            link.data('faveid', response.id)
             rack_builder.getRackLooks('favorites', '#fave-looks');
           },
           type: 'PUT',
           url: '/shopping_tool_api/user_look_favorite/0/'
         }); 
       }
-    });
-    /* toggle price display in looks */
-    $('#explore-looks-prices').prop('checked',false).click(function(e){
-      var box = $(this);
-      $('#all-looks-list').toggleClass('priceme');
     });
     /* infinte scroll/paging listen for when user scrolls within 100 px of bnottom of page */
     document.addEventListener('scroll', function(evt){
@@ -177,6 +172,9 @@ var explore_page = {
     if((typeof explore_page.fetch == 'object')&&(explore_page.fetch.readyState != 4)){
       explore_page.fetch.abort();
     }
+    /* add is_published and with_products flags */
+    lookup.is_published = 'True';
+    lookup.with_products = 'False';
     $('#looks-header h2').html('loading looks...');
     explore_page.fetch = $.ajax({
       contentType : 'application/json',
@@ -323,6 +321,41 @@ var explore_page = {
     $('#explore-only-faves').prop('checked', false).click(function(){
       explore_page.generateSearch();
     });
+    explore_page.searchSliders();
+    $("#explore-form input.ranger").keydown(function(event) {
+      // Allowing backspace, delete, enter
+      if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 13 ) {
+        
+      }else {
+        // Ensure that it is a number and stop the keypress
+        if (event.keyCode < 48 || event.keyCode > 57 ) {
+          event.preventDefault(); 
+        } 
+      }
+    });    
+    $('#clear-filters').click(function(e){
+      e.preventDefault()
+      var link = $(this);
+      /* reset the stylist to all, search term, style, and occasions to blank */
+      $('#stylist-select')[0].selectize.setValue(' ', true);
+      $('#explore-style')[0].selectize.setValue('', true);
+      $('#explore-occasion')[0].selectize.setValue('', true);
+      $('#search-terms').val('');
+      /* turn off favorites */
+      $('#explore-only-faves').prop('checked', false);
+      /* destroy sliders */
+      $('#avg-price-range')[0].noUiSlider.destroy();
+      $('#total-price-range')[0].noUiSlider.destroy();
+      /* re-set up sliders with beginning values */
+      explore_page.searchSliders();
+      /* generate new search */
+      explore_page.generateSearch();
+    });
+  },
+  /*
+  * @description independent function to set up sliders allowing for destruction on clear filter press
+  */
+  searchSliders: function(){
     var total_slider = $('#total-price-range')[0];
     var total_slider_min = $('#total-price-min')[0];
     var total_slider_max = $('#total-price-max')[0];
@@ -374,18 +407,6 @@ var explore_page = {
         r[handle] = this.value;
         avg_slider.noUiSlider.set(r);
       });
-    });
-    $("#explore-form input.ranger").keydown(function(event) {
-      console.log(event.keyCode)
-      // Allowing backspace, delete, enter
-      if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 13 ) {
-        
-      }else {
-        // Ensure that it is a number and stop the keypress
-        if (event.keyCode < 48 || event.keyCode > 57 ) {
-          event.preventDefault(); 
-        } 
-      }
     });
   }
 }

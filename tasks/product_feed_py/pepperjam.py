@@ -9,16 +9,15 @@ import time
 import re
 from copy import copy
 from django.db import connection
-from . import mappings
-from . import product_feed_helpers
+from tasks.product_feed_py import mappings, product_feed_helpers
 from catalogue_service.settings import BASE_DIR, PEPPERJAM_API_VERSION, PEPPERJAM_API_KEY
-from product_api.models import CategoryMap, Network, Merchant, Product
+from product_api.models import CategoryMap, Network, Merchant, Product, SynonymCategoryMap, ExclusionTerm
 from datetime import datetime, timedelta
 
 # Set Up PepeprJam URL
 PEPPER_JAM_API_BASE_URL = "https://api.pepperjamnetwork.com/%s/" % (PEPPERJAM_API_VERSION)
 
-def get_merchants(status='joined'):
+def get_merchants(status='joined', dev=False):
 
     # Set Up PepperJam URL
     pepper_jam_api_merchant_url = PEPPER_JAM_API_BASE_URL + "publisher/advertiser?apiKey=%s&status=%s&format=json" % (PEPPERJAM_API_KEY, status)
@@ -29,23 +28,25 @@ def get_merchants(status='joined'):
 
     ## Dev Only
     # # Test Merchants Data
-    # print("Getting local test data")
-    # json_data = open('tasks/product_feed_py/sample_data/pepperjam_merchant.json')
-    # merchants = json.load(json_data)
-    # json_data.close()
+    if dev:
+        print("Getting local test data")
+        json_data = open('tasks/product_feed_py/sample_data/pepperjam_merchant.json')
+        merchants = json.load(json_data)
+        json_data.close()
 
     # Get Merchants
     ## Prod & Staging Only
-    print 'Getting merchants using API call'
+    else:
+        print 'Getting merchants using API call'
 
-    # set api call variables
-    numTries = 4 # total number of tries
-    timeout = 60 # in seconds
-    delay = 3 # pause in seconds between retries
-    backoff = 2 # multiplier on timeout between retries
+        # set api call variables
+        numTries = 4 # total number of tries
+        timeout = 60 # in seconds
+        delay = 3 # pause in seconds between retries
+        backoff = 2 # multiplier on timeout between retries
 
-    json_data = open_w_timeout_retry(pepper_jam_api_merchant_url, numTries, timeout, delay, backoff)
-    merchants = json.load(json_data)
+        json_data = open_w_timeout_retry(pepper_jam_api_merchant_url, numTries, timeout, delay, backoff)
+        merchants = json.load(json_data)
     
     # Create some variables to count process metrics
     new_merchants = 0
@@ -64,40 +65,30 @@ def get_merchants(status='joined'):
     merchant_mapping = mappings.create_merchant_mapping() # reload mapping to reflect new merchants
     return merchant_mapping
 
-def set_deleted_pepperjam_products(threshold = 12):
-    """
-    Helper method for use in the main get_data method. Collects a list of Pepperjam products
-    that should have been upserted in the current run. For those that were not upserted, determined
-    by a settable time threshold, set those products to a status of is_deleted = True.
-
-    Args:
-        threshold (int): The time threshold in hours. If the updated_at value of a record is threshold
-        or more hours old, conclude it was not updated in the current upsert and set to deleted. 
-    """
-    # id of the pepperjam network for use in merchants' network_id
-    pepperjam_id = Network.objects.get(name='PepperJam').id
-    # get the pepperjam merchants that were active (and hence were just updated)
-    merchants = Merchant.objects.filter(active=True, network_id = pepperjam_id) # multiple arguments over chaining for performance
-    merchant_ids = merchants.values_list('external_merchant_id')
-    # get the products of these merchants
-    products = Product.objects.filter(merchant_id__in = merchant_ids) # up to here is confirmed what we want
-    datetime_threshold = datetime.now() - timedelta(hours = threshold) # comparison threshold is 12 hours ago or more
-    deleted_products = products.filter(updated_at__lte = datetime_threshold)
-    # set is deleted for all of them and save in bulk (WILL NOT perform Product save callbacks)
-    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    deleted_products.update(is_deleted = True, updated_at = updated_at)
-
-def get_data(local_temp_dir, cleaned_fieldnames):
+def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
 
      # Set Up PepperJam URL
     pepper_jam_api_product_url = PEPPER_JAM_API_BASE_URL + "publisher/creative/product?apiKey=%s&format=json" % (PEPPERJAM_API_KEY)
     #pepper_jam_api_product_url = "https://api.pepperjamnetwork.com/20120402/publisher/creative/product?apiKey=48db78a072444a019989822d21aa513a5f0f67bb2363d6370b9e59b23bd4b29d&format=json&page=26"
 
     # Get Mapping Data
-    merchant_mapping = get_merchants(status='joined') # new way to create merchant_mapping?
+    merchant_mapping = get_merchants(status='joined',dev=dev) # new way to create merchant_mapping?
+    merchant_search_rank_mapping = mappings.create_merchant_search_rank_mapping()
     color_mapping = mappings.create_color_mapping()
     category_mapping = mappings.create_category_mapping()
     allume_category_mapping = mappings.create_allume_category_mapping()
+    size_mapping = mappings.create_size_mapping()
+    shoe_size_mapping = mappings.create_shoe_size_mapping()
+    size_term_mapping = mappings.create_size_term_mapping()
+    synonym_category_mapping = mappings.create_synonym_category_mapping()
+    synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+
+    # for use when adding a mapping
+    exclusion_terms = mappings.create_exclusion_term_mapping()
+    synonym_other_terms = SynonymCategoryMap.objects.filter(category = 'Other').values_list('synonym', flat=True)
+    synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
+
+
     network = mappings.get_network('PepperJam')
 
     # Set Up PepeprJam URL
@@ -127,26 +118,28 @@ def get_data(local_temp_dir, cleaned_fieldnames):
 
         while more_pages:
             ## Dev Only
-            # print("Getting Data")
-            # print(pepper_jam_api_product_url)
-            # json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
-            # product_feed = json.load(json_data)
-            # json_data.close()
+            if dev:
+                print("Getting Data")
+                print(pepper_jam_api_product_url)
+                json_data = open('tasks/product_feed_py/sample_data/pepperjam_product.json')
+                product_feed = json.load(json_data)
+                json_data.close()
 
             # commenting out because API only has X amount of access allowed in a day
             ## Prod & Staging Only
-            print 'Getting data using the API calls'
-            print("Getting Data")
+            else:
+                print 'Getting data using the API calls'
+                print("Getting Data")
 
-            # set api call variables
-            numTries = 4 # total number of tries
-            timeout = 60 # in seconds
-            delay = 3 # pause in seconds between retries
-            backoff = 2 # multiplier on timeout between retries
+                # set api call variables
+                numTries = 4 # total number of tries
+                timeout = 60 # in seconds
+                delay = 3 # pause in seconds between retries
+                backoff = 2 # multiplier on timeout between retries
 
-            print(pepper_jam_api_product_url)
-            json_data = open_w_timeout_retry(pepper_jam_api_product_url, numTries, timeout, delay, backoff)
-            product_feed = json.load(json_data)
+                print(pepper_jam_api_product_url)
+                json_data = open_w_timeout_retry(pepper_jam_api_product_url, numTries, timeout, delay, backoff)
+                product_feed = json.load(json_data)
 
 
             if 'next' in product_feed['meta']['pagination']:
@@ -164,16 +157,38 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                 try:
                     # update if merchant is active, should always have entry
                     merchant_is_active = merchant_mapping[long(merchant_id)]
-                except:
-                    print 'somehow used a merchant_id now present in the mapping'
+                except KeyError:
+                    print 'somehow used a merchant_id not present in the mapping'
                     continue
                 # check that the merchant_id is active in the merchant mapping
                 if merchant_is_active == False:
                     continue
 
+                # config files
+                config_path = BASE_DIR + '/tasks/product_feed_py/merchants_config/pepperjam/'
+                fd = os.listdir(config_path)
+                default = 'default'
+                extension = '.yaml'
+                default_filename = default + extension
+                merchant_id_filename = str(merchant_id) + extension
+
+                full_path = config_path + default_filename
+
+                if merchant_id_filename in fd:
+                    full_path = config_path + merchant_id_filename
+
+                with open(full_path, "r") as config:
+                    config_dict = yaml.load(config)
+                    try:
+                        tiered_assignments = config_dict['tiered_assignment_fields']
+                    except KeyError:
+                        tiered_assignments = {}
+
                 primary_category = product['category_program']
-                secondary_category = product['category_network']
-                allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name)
+                # secondary_category = product['category_network']
+                secondary_category = product_feed_helpers.product_field_tiered_assignment(tiered_assignments, 'secondary_category', product, product['category_network'], synonym_category_mapping = synonym_category_mapping, synonym_other_category_mapping = synonym_other_category_mapping, exclusion_terms = exclusion_terms)
+
+                allume_category = mappings.are_categories_active(primary_category, secondary_category, category_mapping, allume_category_mapping, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
                 # allume_category = 'allume_category' # include to overrule category activity checks
 
                 if allume_category:
@@ -186,7 +201,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     record['product_url'] = buy_url # product_url == buy_url?
                     try:
                         record['raw_product_url'] = product_feed_helpers.parse_raw_product_url(buy_url, 'url')
-                    except Exception as e:
+                    except KeyError as e:
                         print e
                         record['raw_product_url'] = u''
                     # record['raw_product_url'] = urlparse.parse_qs(urlparse.urlsplit(buy_url).query)['url'][0]
@@ -196,7 +211,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     record['manufacturer_part_number'] = product['mpn']
                     record['SKU'] = product['sku']
 
-                    product_id = generate_product_id(product['sku'], merchant_id)
+                    product_id = generate_product_id_pepperjam(product['sku'], merchant_id)
                     # print product_id
                     # print type(product_id)
                     record['product_id'] = product_id
@@ -227,8 +242,8 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     if shipping != None:
                         record['shipping_price'] = shipping
 
-                    merchant_color = product['color']
-                    record['merchant_color'] = merchant_color
+                    record['merchant_color'] = product['color']
+                    merchant_color = product['color'].lower()
                     try:
                         allume_color = color_mapping[merchant_color]
                     except:
@@ -243,6 +258,8 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     attribute_3_size = attribute_3_size.replace('~', ',')
                     record['size'] = attribute_3_size
 
+                    record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+
                     record['material'] = product['material']
 
                     attribute_8_age = product['age_range']
@@ -251,10 +268,11 @@ def get_data(local_temp_dir, cleaned_fieldnames):
 
                     record['currency'] = product['currency']
 
-                    if product['in_stock'] == '':
+                    availability = product['in_stock']
+                    if availability == 'no':
                         availability = 'out-of-stock'
-                    else:
-                        availability = product['in_stock']
+                    elif availability == '' or availability == 'yes':
+                        availability = 'in-stock'
                     record['availability'] = availability
 
                     record['keywords'] = product['keywords']
@@ -269,7 +287,7 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     # set defaults
                     record['is_best_seller'] = u'0'
                     record['is_trending'] = u'0'
-                    record['allume_score'] = u'0'
+                    record['allume_score'] = unicode(merchant_search_rank_mapping[long(merchant_id)])
 
                     # if there is a sale
                     try:
@@ -286,22 +304,29 @@ def get_data(local_temp_dir, cleaned_fieldnames):
                     else:
                         record['is_deleted'] = u'0'
 
-                    # end unicode sandwich
-                    for key, value in record.iteritems():
-                        record[key] = value.encode('UTF-8')
-
-                    # check size here to see if we should write additional 'child' records?
+                    # size splitting stuff
                     parent_attributes = copy(record)
                     sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                     product_id = parent_attributes['product_id']
                     if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                         for size in sizes:
-                            parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                            parent_attributes['size'] = size
-                            writer.writerow(parent_attributes)
+                            child_record = copy(parent_attributes)
+                            child_record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                            # use the size mapping here also
+
+                            child_record['size'] = size
+                            child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                            for key, value in child_record.iteritems():
+                                child_record[key] = value.encode('UTF-8')
+
+                            writer.writerow(child_record)
                             writtenCount += 1
                         # set the parent record to is_deleted
-                        record['is_deleted'] = 1
+                        record['is_deleted'] = u'1'
+
+                    # finish unicode sandwich
+                    for key, value in record.iteritems():
+                        record[key] = value.encode('UTF-8')
 
                     # write the reconstructed line to the cleaned file using the csvwriter
                     writer.writerow(record)
@@ -318,10 +343,10 @@ def get_data(local_temp_dir, cleaned_fieldnames):
     # new_merchants ?
 
     # call update_pepperjam here?
-    print('Updating non-upserted records')
-    set_deleted_pepperjam_products()
+    # print('Updating non-upserted records')
+    # product_feed_helpers.set_deleted_network_products('PepperJam')
 
-def generate_product_id(SKU, merchant_id):
+def generate_product_id_pepperjam(SKU, merchant_id):
     """
     Takes in the product's SKU as unicode and merchant_id as unicode and generates
     a product_id as unicode to be used. Necessary because PepperJam data does not
