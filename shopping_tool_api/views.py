@@ -28,8 +28,8 @@ from tasks.product_feed_py.product_feed_helpers import determine_allume_size
 from tasks.product_feed_py import mappings
 from tasks.tasks import add_client_to_360
 
-@api_view(['POST']) # ?
-def add_look_to_session(look_id, session_id):
+@api_view(['PUT']) # ?
+def add_look_to_session(request, look_id, session_id):
     """
     post:
         Copy all products in look to the rack
@@ -38,20 +38,15 @@ def add_look_to_session(look_id, session_id):
 
         Sample JSON object 1
         {
-          "look": could just be look_id?
-          "allume_styling_session": could just be session_id?
-          "stylist": 32 # can just be retrieved from the AllumeStylingSessions instance, if shopper is correct
+          "look_id": 1
+          "session_id": 1
         }
 
 
     """
-    # maybe hardcode the look_id and session_id briefly to test
-    # then actually add tests
-
-
     # get the look and session by id
     look = Look.objects.get(id = look_id)
-    session = AllumeStylingSessions(id = session_id)
+    session = AllumeStylingSessions.objects.get(id = session_id)
     stylist = session.shopper
 
     # copy all products in the look to the rack
@@ -60,9 +55,9 @@ def add_look_to_session(look_id, session_id):
     original_look_products = LookProduct.objects.filter(look = look)
 
     # get all the look's products
-    for product in look.look_products.all():
+    for look_product in original_look_products:
         # add it to the rack
-        Rack.objects.create(allume_styling_session = session, product = product, stylist = stylist)
+        Rack.objects.create(allume_styling_session = session, product = look_product.product, stylist = stylist)
 
     # copy the look to the session
     look.pk = None
@@ -78,7 +73,8 @@ def add_look_to_session(look_id, session_id):
         look_product.look = look
         look_product.save()
 
-
+    # change this maybe
+    return JsonResponse({"status": "success"}, safe=False)
 
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
