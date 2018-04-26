@@ -108,7 +108,6 @@ var search_page = {
         div.slideDown();
       }
     }).on('change','input.allume-size',function(e){
-      console.log('change event')
       var box = $(this);
       var div = $(box.data('groupdiv'));
       if(box.prop('checked')){
@@ -329,6 +328,12 @@ var search_page = {
       $('#search-field').data('clientsettings', false);
     }    
   },
+  /**
+  * @description from facet values return array of "allume" sizes
+  * @param {array} sizes - list of sizes to process
+  * @param {string} category - search category
+  * @returns {array} Array of allume sizes
+  */
   getAllumSizes: function(sizes, category){
     /* get all the various sizes for each type */
     var clothing_sizes = facet_sizing.regular_sizes.concat(facet_sizing.petite_sizes.concat(facet_sizing.plus_sizes));
@@ -366,6 +371,7 @@ var search_page = {
           }
         }
       }
+      /* unique the matched sizes */
       return [...new Set(matched_size)];
     }
     if (category == '') {
@@ -535,7 +541,7 @@ var search_page = {
           /* get unique list of szie params */
           var clean_size_params = [...new Set(size_params)];
           if(clean_size_params.length > 0){
-            console.log(clean_size_params.join('|'))
+            //console.log(clean_size_params.join('|'))
             facets.push(
               '&size=' + encodeURIComponent(clean_size_params.join('|'))
             )
@@ -556,11 +562,8 @@ var search_page = {
         if (key == 'sort') {
           $('#sort-dd')[0].selectize.setValue(additionalCriteria[key], true);
         } else if (key == 'size') {
-          console.log('size in last')
           var terms = additionalCriteria[key].split('|');
-          console.log(terms)
           var allume_sizes = search_page.getAllumSizes(terms, category);
-          console.log(allume_sizes)
           var id_mod = 'nosize';
           if(category == 'Shoes'){
             id_mod = 'shoe';
@@ -609,9 +612,7 @@ var search_page = {
     }
     var saved_search = q;
     utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
-
-
-    console.log(q)
+    /* async call to get search results */
     $.ajax({
       beforeSend: function(){
         $('#results').html(
@@ -776,8 +777,6 @@ var search_page = {
       }
       return sectional.join('');
     }
-    console.log(allume_sizes)
-    //var actual_sizes = cs.clientsettings == true ? cs.storesizes.split('|') : [] ;
     /* size facet markup */
     var markup = [
       '<a href="#" class="facet-group"><span>+</span>Size</a>',
