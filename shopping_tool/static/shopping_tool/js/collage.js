@@ -46,7 +46,7 @@ var collage = {
           }
           /* create payload object */
           console.log('merchant product api ' + matching_object.product_api_merchant)
-          console.log(matching_object)
+          //console.log(matching_object)
           var merchant_node = matching_object.product_api_merchant.toString();
           var product_node = product_id.toString();
           payload.sites[merchant_node] = {}
