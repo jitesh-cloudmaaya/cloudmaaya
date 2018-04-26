@@ -252,6 +252,7 @@ def get_allume_product(self, product_id):
     payload['sites'][merchant_node]['add_to_cart'][product_node]['original_price'] = matching_object['retail_price']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['image'] = matching_object['product_image_url']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['description'] = matching_object['long_product_description']
+    payload['sites'][merchant_node]['add_to_cart'][product_node]['categories'] = [matching_object['primary_category'], matching_object['secondary_category'], matching_object['allume_category']]
 
     try:
         payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = availability_mapping[matching_object['availability']]

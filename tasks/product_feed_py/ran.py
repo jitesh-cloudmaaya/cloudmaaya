@@ -211,7 +211,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             merchant_color = attribute_5_color.split(',')[0].lower()
                             try:
                                 allume_color = color_mapping[merchant_color]
-                            except:
+                            except KeyError:
                                 allume_color = u'other'
                             record['color'] = allume_color
 
@@ -233,9 +233,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             record['currency'] = currency
 
                             if availability == '' or availability == 'no':
-                                availability = 'out-of-stock'
+                                availability = u'out-of-stock'
                             elif availability == 'yes':
-                                availability = 'in-stock'
+                                availability = u'in-stock'
                             record['availability'] = availability
 
                             record['keywords'] = keywords
@@ -245,7 +245,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             record['allume_category'] = allume_category
                             record['brand'] = brand
 
-                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
                             record['merchant_name'] = merchant_name
 
                             # set defaults
@@ -260,7 +260,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                                     record['current_price'] = sale_price
                                 else:
                                     record['current_price'] = retail_price
-                            except:
+                            except (TypeError, ValueError):
                                 record['current_price'] = retail_price
 
                             # is_deleted logic
@@ -269,29 +269,30 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             else:
                                 record['is_deleted'] = u'0'
 
-                            # for key, value in record.iteritems():
-                            #     print (type(key), type(value))
-                            #     print (key, value)
-                            # return
-
-                            # unicode sandwich finish
-                            for key, value in record.iteritems():
-                                record[key] = value.encode('UTF-8')
-
                             # check size here to see if we should write additional 'child' records?
                             parent_attributes = copy(record)
                             sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
                             if len(sizes) > 1: # the size attribute of the record was a comma seperated list
                                 for size in sizes:
-                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
+                                    child_record = copy(parent_attributes)
+                                    child_record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
                                     # use the size mapping here also
-                                    parent_attributes['size'] = size
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                                    writer.writerow(parent_attributes)
+
+                                    child_record['size'] = size
+                                    child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+
+                                    for key, value in child_record.iteritems():
+                                        child_record[key] = value.encode('UTF-8')
+
+                                    writer.writerow(child_record)
                                     writtenCount += 1
                                 # set the parent record to is_deleted
-                                record['is_deleted'] = 1
+                                record['is_deleted'] = u'1'
+
+                            # unicode sandwich finish
+                            for key, value in record.iteritems():
+                                record[key] = value.encode('UTF-8')
 
                             # write the reconstructed line to the cleaned file using the csvwriter
                             writer.writerow(record)
