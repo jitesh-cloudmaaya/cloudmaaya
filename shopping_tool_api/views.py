@@ -74,7 +74,7 @@ def add_look_to_session(request, look_id, session_id):
         look_product.save()
 
     # change this maybe
-    return JsonResponse({"status": "success"}, safe=False)
+    return JsonResponse({"status": "success", "new_look_id": look.id}, safe=False)
 
 @api_view(['GET'])
 @permission_classes((AllowAny, ))

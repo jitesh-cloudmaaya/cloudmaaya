@@ -710,6 +710,11 @@ class ShoppingToolAPITestCase(APITestCase):
 
 #         response = self.client.put(url)
 #         self.assertEqual(200, response.status_code)
+#         # return
+#         data = json.loads(response.content)
+
+#         self.assertEqual('success', data['status'])
+#         self.assertEqual(3, data['new_look_id'])
 
 #         # assertions on count
 #         self.assertEqual(3, Look.objects.count())
