@@ -58,6 +58,7 @@ var collage = {
           payload.sites[merchant_node].add_to_cart[product_node].original_price = matching_object.retail_price;
           payload.sites[merchant_node].add_to_cart[product_node].image = matching_object.product_image_url;
           payload.sites[merchant_node].add_to_cart[product_node].description = matching_object.long_product_description;
+          payload.sites[merchant_node].add_to_cart[product_node].categories = [matching_object.primary_category, matching_object.secondary_category, matching_object.allume_category];
           var avail = matching_object.availability == 'in-stock' ? true : false;
           payload.sites[merchant_node].add_to_cart[product_node].available = avail;
           payload.sites[merchant_node].add_to_cart[product_node].required_field_names = ["color", "size", "quantity"];
@@ -923,6 +924,7 @@ var collage = {
       }
     }
     /* reset the collage cache holders so collage is ready for new look to edit */
+    collage.canvas.dispose();
     collage.canvas = null;
     collage.initial_load = null;
     collage.product_cache = null;  
