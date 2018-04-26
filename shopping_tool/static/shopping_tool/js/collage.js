@@ -923,6 +923,7 @@ var collage = {
       }
     }
     /* reset the collage cache holders so collage is ready for new look to edit */
+    collage.canvas.dispose();
     collage.canvas = null;
     collage.initial_load = null;
     collage.product_cache = null;  
