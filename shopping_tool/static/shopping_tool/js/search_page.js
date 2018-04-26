@@ -369,13 +369,13 @@ var search_page = {
       return [...new Set(matched_size)];
     }
     if (category == '') {
-
+      return [];
     } else if (category == 'Shoes') {
- 
+      return sizeMatching(shoe_sizes, facet_sizing.shoe_members, sizes);
     } else if (["Shoes","Accessories","Other","Beauty","Unsure"].indexOf(category) == -1) {
       return sizeMatching(clothing_sizes, facet_sizing.clothing_members, sizes);
     } else {
-      
+      return sizeMatching(facet_sizing.no_sizes, facet_sizing.clothing_members, sizes);
     }
   },
   /**
@@ -489,7 +489,7 @@ var search_page = {
         }
         for(i = 0, l = allume_sizes.length; i<l; i++){
           var size = allume_sizes[i];
-          var size_group = '#sizegroup' + id_mod + '' + size;
+          var size_group = '#sizegroup' + id_mod + '' + size.replace('.','');
           selection_markup.push(
             '<a href="#" class="remove-facet size" data-sizegroup="' + size_group + 
             '">' + size + '<i class="fa fa-times-circle"></i></a>'
@@ -569,7 +569,7 @@ var search_page = {
           }
           for(ix = 0, lx = allume_sizes.length; ix<lx; ix++){
             var size = allume_sizes[ix];
-            var size_group = '#sizegroup' + id_mod + '' + size;
+            var size_group = '#sizegroup' + id_mod + '' + size.replace('.','');
             selection_markup.push(
               '<a href="#" class="remove-facet size" data-sizegroup="' + size_group + 
               '">' + size + '<i class="fa fa-times-circle"></i></a>'
@@ -722,16 +722,16 @@ var search_page = {
     function sizeGroup(group, checked, id_modifier){
       return '<div class="size-grouping-wrapper">' + 
         '<a href="#sizegroup' + id_modifier + 
-        '' + group + '" class="size-group-toggle"><span>+</span></a>' +
+        '' + group.replace('.','') + '" class="size-group-toggle"><span>+</span></a>' +
         '<label class="size-grouping">' +
         '<input class="allume-size" type="checkbox" value="' + 
         group + '" ' + checked + ' data-sizegroup="' + 
-        group + '" data-groupdiv="#sizegroup' + id_modifier + 
+        group.replace('.','') + '" data-groupdiv="#sizegroup' + id_modifier + 
         '' + group + '"/><span><i class="fa fa-square-o"></i>' +
         '<i class="fa fa-check-square"></i>' +
         '</span><em class="key">' + group + '</em></label>' +
         '<div class="sizegroup-list" id="sizegroup' + 
-        id_modifier + '' + group + '">';
+        id_modifier + '' + group.replace('.','') + '">';
     }
     /**
     * @description private helper function to create size group memberHTML
