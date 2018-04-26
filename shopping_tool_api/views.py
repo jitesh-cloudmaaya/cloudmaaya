@@ -19,7 +19,7 @@ from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
 from product_api.models import Product
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, AllumeUserStylistNotes
-from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360
+from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUsers
 from serializers import *
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -28,7 +28,12 @@ from tasks.product_feed_py.product_feed_helpers import determine_allume_size
 from tasks.product_feed_py import mappings
 from tasks.tasks import add_client_to_360
 
-@api_view(['PUT']) # ?
+# change the stylist of the cloned look
+# add the rack of the current user session
+
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
 def add_look_to_session(request, look_id, session_id):
     """
     post:
@@ -36,33 +41,26 @@ def add_look_to_session(request, look_id, session_id):
         Copy Look to the session
         Copy Look Products to the new Look
 
-        Sample JSON object 1
-        {
-          "look_id": 1
-          "session_id": 1
-        }
-
-
     """
+
     # get the look and session by id
     look = Look.objects.get(id = look_id)
     session = AllumeStylingSessions.objects.get(id = session_id)
-    stylist = session.shopper
+    user = request.user
 
-    # copy all products in the look to the rack
-
-    # original_look_products = look.look_products.all() # should be a QuerySet object that I will iterate over twice
     original_look_products = LookProduct.objects.filter(look = look)
 
+    # copy all products in the look to the rack
     # get all the look's products
     for look_product in original_look_products:
         # add it to the rack
-        Rack.objects.create(allume_styling_session = session, product = look_product.product, stylist = stylist)
+        Rack.objects.create(allume_styling_session = session, product = look_product.product, stylist = user)
 
     # copy the look to the session
     look.pk = None
     look.allume_styling_session = session
     look.token = uuid.uuid4()
+    look.stylist = user
     look.save() # django way of cloning an object
 
     # potentially might need to perform the original_look_products call here

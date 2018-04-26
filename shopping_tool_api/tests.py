@@ -697,11 +697,20 @@ class ShoppingToolAPITestCase(APITestCase):
 
 #     fixtures = ['CloneLooksTestCase']
 
+#     # a few class variables
+#     user = None
+
+#     def setUp(self):
+#         client = WpUsers.objects.create(first_name = 'Bow', last_name = 'Wow', user_email= 'testemail@gmail.com', user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+#         self.user = client
+#         self.client.cookies = SimpleCookie({AUTH_EMAIL_KEY: 'testemail@gmail.com'})
+
 #     # check the governing fixture file for exact details on the pk setup to understand the assertions
 #     def test_clone_looks(self):
 #         """
 #         Test to verify the behavior of shopping_tool_api/add_look_to_session
 #         """
+
 #         self.assertEqual(2, Look.objects.count())
 #         self.assertEqual(4, LookProduct.objects.count())
 #         self.assertEqual(0, Rack.objects.count())
@@ -710,7 +719,6 @@ class ShoppingToolAPITestCase(APITestCase):
 
 #         response = self.client.put(url)
 #         self.assertEqual(200, response.status_code)
-#         # return
 #         data = json.loads(response.content)
 
 #         self.assertEqual('success', data['status'])
@@ -726,27 +734,29 @@ class ShoppingToolAPITestCase(APITestCase):
 #         r1 = Rack.objects.get(pk=1)
 #         self.assertEqual(1, r1.product.id)
 #         self.assertEqual(4, r1.allume_styling_session.id)
-#         self.assertEqual(8, r1.stylist.id)
+#         self.assertEqual(self.user.id, r1.stylist.id)
 #         r2 = Rack.objects.get(pk=2)
 #         self.assertEqual(2, r2.product.id)
 #         self.assertEqual(4, r2.allume_styling_session.id)
-#         self.assertEqual(8, r2.stylist.id)
+#         self.assertEqual(self.user.id, r2.stylist.id)
 #         r3 = Rack.objects.get(pk=3)
 #         self.assertEqual(3, r3.product.id)
 #         self.assertEqual(4, r3.allume_styling_session.id)
-#         self.assertEqual(8, r3.stylist.id)
+#         self.assertEqual(self.user.id, r3.stylist.id)
 #         r4 = Rack.objects.get(pk=4)
 #         self.assertEqual(4, r4.product.id)
 #         self.assertEqual(4, r4.allume_styling_session.id)
-#         self.assertEqual(8, r4.stylist.id)
+#         self.assertEqual(self.user.id, r4.stylist.id)
 
 
 #         # copy the look to the session
 #         original_look = Look.objects.get(pk=1)
 #         self.assertEqual(3, original_look.allume_styling_session.id)
+#         self.assertEqual(9, original_look.stylist.id)
 
 #         copied_look = Look.objects.get(pk=3)
 #         self.assertEqual(4, copied_look.allume_styling_session.id)
+#         self.assertEqual(self.user.id, copied_look.stylist.id)
 
 
 #         # copy look products to the new look
