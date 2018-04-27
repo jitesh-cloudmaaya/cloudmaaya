@@ -89,6 +89,31 @@ var explore_page = {
           url: '/shopping_tool_api/user_look_favorite/0/'
         }); 
       }
+    }).on('click','a.clone-look',function(e){
+      e.preventDefault();
+      var link = $(this);
+      $('#cloning-look').fadeIn();
+      $.ajax({
+        error: function(response){
+          console.log(response);
+          $('#cloning-look').hide();
+          alert('There was a problem copying the look...');
+        },
+        success: function(response){
+          if(response != undefined && response.new_look_id != undefined){
+            $('#cloning-look div.stage').html('<span class="cloned">Redirecting to your new look...</span>')
+            window.setTimeout(function(){
+              window.location = '/look_builder/' + explore_page.session_id + '/?look=' + response.new_look_id
+            },
+            500);
+          }else{
+            $('#cloning-look').hide();
+            alert('There was a problem copying the look...');
+          }
+        },
+        type: 'PUT',
+        url: '/shopping_tool_api/add_look_to_session/' + link.data('lookid') + '/' + explore_page.session_id + '/'
+      });
     });
     /* infinte scroll/paging listen for when user scrolls within 100 px of bnottom of page */
     document.addEventListener('scroll', function(evt){
@@ -194,19 +219,19 @@ var explore_page = {
   looksDisplay: function(list_object){
     var div = $('#all-looks-list');
     console.log(list_object.looks)
-    var cropped_images = [];
     for(var i = 0, l = list_object.looks.length; i<l; i++){
       var look = list_object.looks[i];
       var markup = [];
       var merchants = [];
       var prices = [];
-      var look_fave_link = '<a href="#" class="favorite-look" data-lookid="' + 
+      var look_fave_link = '<a href="#" title="Favorite look" class="favorite-look" data-lookid="' + 
         look.id + '"><i class="fa fa-heart-o"></i></a>';
       var look_fave_idx = explore_page.favorite_look_ids.indexOf(look.id);
       if(look_fave_idx > -1){
         var look_favorite_object = explore_page.favorite_looks[look_fave_idx];
         look_fave_link = '<a href="#" class="favorite-look favorited" data-lookid="' + 
-        look.id + '" data-faveid="' + look_favorite_object.id + '"><i class="fa fa-heart"></i></a>';
+        look.id + '" data-faveid="' + look_favorite_object.id + 
+        '" title="Unfavorite look"><i class="fa fa-heart"></i></a>';
       }
       var collage_img = '<div class="collage-placeholder">collage not yet created</div>';
       if(look.collage != null){
@@ -215,9 +240,10 @@ var explore_page = {
       }
       markup.push(
         '<div class="look"><div class="display">' + look_fave_link  +
-        '<h3><em data-lookid="' + look.id + '">' + look.name + '</em><span>by ' + 
-        look.stylist.first_name + ' ' + look.stylist.last_name + '</span></h3>' + 
-        collage_img
+        '<a href="#" class="clone-look" title="Copy look" data-lookid="' + look.id + 
+        '"><i class="fa fa-clone"></i></a><h3><em data-lookid="' + 
+        look.id + '">' + look.name + '</em><span>by ' + look.stylist.first_name + 
+        ' ' + look.stylist.last_name + '</span></h3>' + collage_img
       );
 
       var avg_price = '';
@@ -263,11 +289,6 @@ var explore_page = {
       });
     }else{
       explore_page.masonry.recalculate();
-    }
-    if(cropped_images.length > 0){
-      for(var i = 0, l = cropped_images.length; i<l; i++){
-        look_builder.getCroppedImage(cropped_images[i], '#all-looks-list');
-      }
     }
     var num = div.find('div.look').length
     var plural = num == 1 ? '' : 's';

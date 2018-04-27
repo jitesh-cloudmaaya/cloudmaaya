@@ -510,6 +510,15 @@ input.search {
   line-height:48px;
   padding-left:22px;
 }
+span.cloned {
+  color:#555;
+  display:block;
+  font-size:28px;
+  font-weight:100;
+  line-height:48px;
+  padding-top:50px;
+  text-align:center;
+}
 /* :not(:required) hides this rule from IE9 and below */
 .pulse_loader:not(:required) {
   -webkit-animation: heartbeat 1300ms ease 0s infinite normal;
@@ -682,7 +691,8 @@ div#look-list h2 {font-size:14px; font-weight:500;}
   position:relative;
   top:0px;
   text-decoration: none;
-}#compare-looks h2 a.look-filter i {margin-left:3px; font-size:14px;}
+}
+#compare-looks h2 a.look-filter i {margin-left:3px; font-size:14px;}
 #compare-looks h2 a.look-filter:hover { border-color:#ccc; box-shadow:0 1px 1px rgba(0,0,0,0.1);}
 #compare-looks h2 a.look-filter:active,
 #compare-looks h2 a.look-filter.open{ 
@@ -1428,6 +1438,7 @@ div.layout-option span.name {
 
 #create-look,
 #creating-look,
+#cloning-look,
 #crop-look-image,
 #pg-crop-look-image,
 #updating-crop,
@@ -1445,6 +1456,7 @@ div.deletion-confirm {
 }
 #create-look div.stage,
 #creating-look div.stage,
+#cloning-look div.stage,
 #updating-crop div.stage,
 #publish-lookbook-overlay div.stage,
 #preview-lookbook-overlay div.stage,
@@ -1552,6 +1564,7 @@ div.indepth-loading {
 #inspect-item div.client-details p.style.first {clear:both; padding-top:15px;}
 #creating-look div.stage,
 #updating-crop div.stage,
+#cloning-look div.stage,
 div.indepth-loading {
   height:150px; 
   left:calc(50% - 250px);
@@ -1560,6 +1573,7 @@ div.indepth-loading {
 }
 #creating-look div.stage span.pulse_loader,
 #updating-crop div.stage span.pulse_loader,
+#cloning-look div.stage span.pulse_loader,
 div.indepth-loading span.pulse_loader {margin:49px 0 0 75px;}
 #create-look div.stage h2,
 #publish-lookbook-overlay h2,
@@ -1833,6 +1847,26 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   margin:10px 15px;
   padding:10px 5px;
 }
+#looks-list div.rack-look a.clone-look {display:none;}
+#fave-looks div.rack-look a.clone-look{
+  background:#999;
+  border-radius:5px;
+  color:#fff;
+  display:inline-block;
+  float:right;
+  font-size:14px;
+  font-variant: small-caps;
+  font-weight:500;
+  margin:0 7px 0 0;
+  padding:2px 10px 4px;
+  text-align: center;
+  text-decoration:none;
+  z-index:4;
+}
+#fave-looks div.rack-look a.clone-look i {margin-right:5px;font-size:12px;}
+#fave-looks div.rack-look a.clone-look:hover {background: #555}
+#fave-looks div.rack-look a.clone-look:active{ background:#fff; box-shadow:inset 0 0 3px rgba(0,0,0,0.3); color:#474747; }
+
 #compare-looks div.comp-look {position:relative;margin-bottom:15px;}
 #looks-list div.rack-look,
 #fave-looks div.rack-look {margin-bottom:20px;}
@@ -2484,6 +2518,20 @@ div.publish-section label.toggle input:checked + span > small,
   text-decoration: none;
   top:11px;
 }
+#all-looks-list div.look div.display a.clone-look {
+  color:#999;
+  display:block;
+  font-size:20px;
+  padding:4px;
+  position:absolute;
+  right:41px;
+  text-decoration: none;
+  top:11px;
+}
+#all-looks-list div.look div.display a.clone-look:hover {color:#666;}
+#all-looks-list div.look div.display a.clone-look:active {color:#ed8365;}
+
+
 #all-looks-list div.look div.display h3 {
   background:#fafafa;
   border-bottom:1px solid #ddd;
