@@ -285,8 +285,7 @@ class Weather(models.Model):
           on the front end.
         """
         if model_field:
-            print model_field
-            return model_field
+            return int(round(model_field))
         return '--'
 
     def select_icon(self, sunny, windy, gusty, rainy, snowy):
