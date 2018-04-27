@@ -22,6 +22,7 @@ import datetime
 import urllib
 from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite
 from models import Product, Merchant
+from elasticsearch_dsl.query import Q
 
 
 from elasticsearch_dsl.connections import connections
@@ -148,12 +149,10 @@ def get_product(self, product_id):
 
     s = Search(index="products")
 
-    s = s.query("match_phrase", product_name=product.product_name)[0:100]
+    #s = s.query("match_phrase", product_name=product.product_name)[:100]
+    
+    s.query = Q("match_phrase", product_name=product.product_name) | Q({"ids" : {"values" : product_id}})
     s = s.filter("match_phrase", merchant_name=product.merchant_name)
-
-    #Bool(must=[Terms(brand__keyword=[u'Hudson']), Terms(merchant_name__keyword=[u'Bergdorf Goodman (Neiman Marcus)', u'Lord & Taylor'])]) 
-
-
 
     results = s.execute()
 
