@@ -82,7 +82,7 @@ class EProductSearch(FacetedSearch):
         ('color', TermsFacet(field='color.keyword', size=100)),
         ('merchant_name', TermsFacet(field='merchant_name.keyword', size=100)),
         ('style', TermsFacet(field='style.keyword', size=100)),
-        ('size', TermsFacet(field='size.keyword', size=100)),
+        ('size', TermsFacet(field='allume_size.keyword', size=100)),
         ('gender', TermsFacet(field='gender.keyword', size=100)),
         ('age', TermsFacet(field='age.keyword', size=100)),
         ('brand', TermsFacet(field='brand.keyword', size=100)),
