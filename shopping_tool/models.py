@@ -566,6 +566,12 @@ class StyleType(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Style Types"
+
 class StyleOccasion(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     looks = models.ManyToManyField(Look, db_constraint=False)
@@ -573,6 +579,11 @@ class StyleOccasion(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Style Occasions"
 
 @receiver(pre_save, sender=Look)
 def set_look_client_id(sender, instance, *args, **kwargs):
