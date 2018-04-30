@@ -1,0 +1,183 @@
+-   model: shopping_tool.allumestylingsessions
+    pk: 3
+    fields: {token: NeUi4OaFf4mK9bFvZYCzWasLwuCSfN, name: Test Session 1, client: 6,
+        shopper: 5, start_date: !!timestamp '2017-03-28 00:39:25+00:00', end_date: !!timestamp '2017-04-27
+            00:39:25+00:00', date_created: !!timestamp '2017-03-28 00:39:25+00:00',
+        last_modified: !!timestamp '2017-10-04 06:36:45+00:00', revised_session_id: null,
+        stylist_assignment: 4}
+-   model: shopping_tool.allumestylingsessions
+    pk: 4
+    fields: {token: NeUi4OaFf4mK9bFvZYCzWasLwuCSfN, name: Test Session 2, client: 7,
+        shopper: 8, start_date: !!timestamp '2017-03-28 00:39:25+00:00', end_date: !!timestamp '2017-04-27
+            00:39:25+00:00', date_created: !!timestamp '2017-03-28 00:39:25+00:00',
+        last_modified: !!timestamp '2017-10-04 06:36:45+00:00', revised_session_id: null,
+        stylist_assignment: 4}
+-   model: shopping_tool.wpusers
+    pk: 5
+    fields: {user_login: e151734d09af3d8d7afee65c2fd43052, user_pass: c566c6b09c9d1990ed1448f02ed6347f,
+        user_nicename: d007c42c81cbfb0131f3a6cf4c5b6853, user_email: 38f08b89deb5e3ed3f33dd6ca9c97907er96@yahoo.com,
+        user_url: '', user_registered: !!timestamp '2017-03-22 08:26:35+00:00', user_activation_key: '',
+        user_status: 0, display_name: 502598f6cf446b3761e8538b1b69a5fe, first_name: Jennifer,
+        last_name: Baker, user_phone: 7f3bddec9f7f532cf05a51a18bc51d2c, notes: null,
+        timezone: null, last_modified: null, last_login: !!timestamp '2017-11-13 21:52:03+00:00',
+        is_superuser: 0, is_staff: 0, is_active: 1, system_generated: "\0"}
+-   model: shopping_tool.wpusers
+    pk: 6
+    fields: {user_login: 01d5eab2db796e457cf8d3cab2162a90, user_pass: 0f954c9b7cf0368caa58ace736607e07,
+        user_nicename: 2fab46de67d3fad94dbfca60f6d9b5c2, user_email: 2f5619dfadbf7ed844f478f0c45d178ara@healthiq.com,
+        user_url: '', user_registered: !!timestamp '2017-03-22 08:26:35+00:00', user_activation_key: '',
+        user_status: 0, display_name: 06a3cb5f1e0942e54818949e69739174, first_name: Alexandra,
+        last_name: Marshall, user_phone: 6e36bd27dd12c668721a92556f2a39e5, notes: null,
+        timezone: null, last_modified: null, last_login: null, is_superuser: 0, is_staff: 0,
+        is_active: 1, system_generated: "\x01"}
+-   model: shopping_tool.wpusers
+    pk: 7
+    fields: {user_login: b0e130fbf2c42aec07991d68ba490408, user_pass: 7090bcc87addde4419c49f3513d9484e,
+        user_nicename: 414d5243cdaec888443bf7c6047500dd, user_email: 207e3683a2862919b26a0e44eb58af5c.pandya@gmail.com,
+        user_url: '', user_registered: !!timestamp '2017-03-22 08:26:35+00:00', user_activation_key: '',
+        user_status: 0, display_name: 5c37a88e3b7274bf2f8016ed5bc80bd1, first_name: Shailini,
+        last_name: Pandya, user_phone: d41ac38839e27e0061a182c845dec963, notes: null,
+        timezone: null, last_modified: null, last_login: null, is_superuser: 0, is_staff: 0,
+        is_active: 1, system_generated: "\x01"}
+-   model: shopping_tool.wpusers
+    pk: 8
+    fields: {user_login: ce91cd85e22e4e858b7e01d8affb9a5b, user_pass: 5fa9dae21afa7968b1e7c9828182df87,
+        user_nicename: 9163c173cd50f6cc611e02fee502b772, user_email: 1b24e84c595467c917ba48cb0b3b81fcwelch@gmail.com,
+        user_url: '', user_registered: !!timestamp '2017-03-22 08:26:35+00:00', user_activation_key: '',
+        user_status: 0, display_name: e657720fb6d6a65e336d3e5049ea9be3, first_name: Alissa,
+        last_name: Welch, user_phone: 022a3b77684584e2fd8d029e5ae80bdc, notes: null,
+        timezone: null, last_modified: null, last_login: null, is_superuser: 0, is_staff: 0,
+        is_active: 1, system_generated: "\x01"}
+-   model: shopping_tool.wpusers
+    pk: 9
+    fields: {user_login: 6b27e9e2305d89b145894614436bd387, user_pass: f57d943e4058c319a35cfa195c8d28d7,
+        user_nicename: 362358ff76a57f73d34a3e61b2e8bb3a, user_email: 481a0144a1737716021030eebcbed175ley1@gmail.com,
+        user_url: '', user_registered: !!timestamp '2017-03-22 08:26:36+00:00', user_activation_key: '',
+        user_status: 0, display_name: 2abe2ffe4195c9308826ceda3ee567a1, first_name: Chrlsea,
+        last_name: Teilley, user_phone: 45f8d9deb1daa7879e4edb60116a4616, notes: null,
+        timezone: null, last_modified: null, last_login: null, is_superuser: 0, is_staff: 0,
+        is_active: 1, system_generated: "\x01"}
+-   model: shopping_tool.wpusers
+    pk: 10
+    fields: {user_login: 933a44b196d12fd48b4a83d00c7e2f52, user_pass: e4c62bf6061e58c5dbd0304e71c0f97d,
+        user_nicename: ac2ef197d7c98c845ac439a6dcb8be0e, user_email: fe5eff1ffc6e8213ccf1a224dd7aba68ey11@gmail.com,
+        user_url: '', user_registered: !!timestamp '2017-03-22 08:26:36+00:00', user_activation_key: '',
+        user_status: 0, display_name: 1189439c8f041d31256614b0f6e2a1c6, first_name: Kate,
+        last_name: Reilley, user_phone: efaa315637a1720775e6dc983ca984db, notes: null,
+        timezone: null, last_modified: null, last_login: null, is_superuser: 0, is_staff: 0,
+        is_active: 1, system_generated: "\x01"}
+-   model: shopping_tool.look
+    pk: 1
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c9470, allume_styling_session: 3, name: Fixture Test Look, stylist: 9,
+        status: Active, created_at: !!timestamp '2017-11-29 01:04:53.813751+00:00',
+        updated_at: !!timestamp '2017-11-29 01:04:53.813834+00:00', is_legacy: 0, wp_client_id: 8, description: Wes}
+-   model: shopping_tool.look
+    pk: 2
+    fields: {token: ef21ff84-9bf2-48f0-bd77-3e04563c94w0, allume_styling_session: 3, name: Fixture Test Look 2, stylist: 9,
+        status: Active, created_at: !!timestamp '2017-11-29 17:36:28.436062+00:00',
+        updated_at: !!timestamp '2017-11-29 17:36:28.436188+00:00', is_legacy: 0, wp_client_id: 8, description: Wes}
+-   model: shopping_tool.lookproduct
+    pk: 1
+    fields: {look: 1, wp_product_id: -1, created_at: !!timestamp '2018-01-16
+            23:23:22.432965+00:00', updated_at: !!timestamp '2018-01-16 23:23:22.433026+00:00',
+        product_clipped_stylist_id: -1, cropped_dimensions: null, layout_position: 1,
+        product: 1}
+-   model: shopping_tool.lookproduct
+    pk: 2
+    fields: {look: 1, wp_product_id: -1, created_at: !!timestamp '2018-01-16
+            23:23:30.911944+00:00', updated_at: !!timestamp '2018-01-16 23:23:30.912015+00:00',
+        product_clipped_stylist_id: -1, cropped_dimensions: null, layout_position: 2,
+        product: 2}
+-   model: shopping_tool.lookproduct
+    pk: 3
+    fields: {look: 1, wp_product_id: -1, created_at: !!timestamp '2018-01-16
+            23:32:19.314900+00:00', updated_at: !!timestamp '2018-01-16 23:32:19.314971+00:00',
+        product_clipped_stylist_id: 997, cropped_dimensions: null, layout_position: 3,
+        product: 3}
+-   model: shopping_tool.lookproduct
+    pk: 4
+    fields: {look: 1, wp_product_id: -1, created_at: !!timestamp '2018-01-17
+            07:14:30.312746+00:00', updated_at: !!timestamp '2018-01-17 07:15:23.593724+00:00',
+        product_clipped_stylist_id: 997, cropped_dimensions: '790,889,332,278', layout_position: 4,
+        product: 4}
+-   model: product_api.product
+    pk: 1
+    fields: {product_id: 312, merchant_id: 36145, product_name: 7 For All
+            Mankind Cut Off Short in Clean White, long_product_description: 'White
+            is always in season and with these truly classic and modern styles, white
+            is exciting again! A more authentic white twill, with a 9 oz weight, is
+            perfect for our Cut Off Short. With tonal threads and silver hardware,
+            these are sexier in white.', short_product_description: 'White is always
+            in season and with these truly classic and modern styles, white is exciting
+            again! A more authentic white twill, with a 9 oz weight, is perfect for
+            our Cut Off Short. With tonal threads and silver hardware, these are sexier
+            in white.', product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136989188&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fcut-off-short-in-clean-white%2Fd%2F13231',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13231_clean_white_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AU5159495S,
+        sku: '13231:26827:120655', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '0.00', retail_price: '139.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00'}
+-   model: product_api.product
+    pk: 2
+    fields: {product_id: 3212, merchant_id: 36145, product_name: 7 For All
+            Mankind Denim Trucker Shirt in Destroyed Indigo, long_product_description: This
+            season our classic denim trucker shirt is adorned with new and modern
+            details. Beautiful highs and lows on the seams mixed with natural handsanding
+            gives an authentic vibe. The finishing touches include subtle paint splatter
+            and minimal rips and repairs., short_product_description: This season
+            our classic denim trucker shirt is adorned with new and modern details.
+            Beautiful highs and lows on the seams mixed with natural handsanding gives
+            an authentic vibe. The finishing touches include subtle paint splatter
+            and minimal rips and repairs., product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136989582&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fdenim-trucker-shirt-in-destroyed-indigo%2Fd%2F13105',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13105_destroyind_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AM0266A184,
+        sku: '13105:26338:117187', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '99.00', retail_price: '189.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00'}
+-   model: product_api.product
+    pk: 3
+    fields: {product_id: 14324, merchant_id: 36145, product_name: 7 For All
+            Mankind Luxe Sport Paxtyn Skinny in Retrograde, long_product_description: 'Luxe
+            Sport, stretch without limits! Stretching the standards of denim comfort
+            for the ultimate in unrestricted motion. A super stretch 9.8oz denim that
+            you can wear anywhere, and maintain your authentic denim look. A Unique
+            fiber mix provides the mobility of activewear with sweat-pant like comfort.
+            Finished with silver hardware, burgundy woven label, zip fly and button
+            closure.', short_product_description: 'Luxe Sport, stretch without limits!
+            Stretching the standards of denim comfort for the ultimate in unrestricted
+            motion. A super stretch 9.8oz denim that you can wear anywhere, and maintain
+            your authentic denim look. A Unique fiber mix provides the mobility of
+            activewear with sweat-pant like comfort. Finished with silver hardware,
+            burgundy woven label, zip fly and button closure.', product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136989604&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fluxe-sport-paxtyn-skinny-in-retrograde-%2Fd%2F13078',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13078_retrograde_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AT139942AP,
+        sku: '13078:26257:116425', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '129.00', retail_price: '199.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-11
+            00:19:09+00:00'}
+-   model: product_api.product
+    pk: 4
+    fields: {product_id: 344, merchant_id: 36145, product_name: 7 For All
+            Mankind Vintage Flap Pocket in Camel, long_product_description: Our jaspe
+            double flap pocket shirt is constructed from a soft 100% cotton and available
+            in classic camel. The simplistic styling of this piece makes it extremely
+            versatile and easy to pair back to any denim., short_product_description: Our
+            jaspe double flap pocket shirt is constructed from a soft 100% cotton
+            and available in classic camel. The simplistic styling of this piece makes
+            it extremely versatile and easy to pair back to any denim., product_url: 'http://click.linksynergy.com/link?id=fRObjjh00YI&offerid=256004.10136990318&type=15&murl=http%3A%2F%2Fwww.7forallmankind.com%2Fvintage-flap-pocket-in-camel%2Fd%2F13245',
+        product_image_url: 'http://www.7forallmankind.com/store/productimages/details/13245_camel_l.jpg',
+        buy_url: '', manufacturer_name: 7 For All Mankind, manufacturer_part_number: AM0280A159,
+        sku: '13245:26869:121069', product_type: '', discount: '0.00', discount_type: amount,
+        sale_price: '79.00', retail_price: '149.00', shipping_price: '0.00', color: '',
+        gender: '', style: '', size: '', material: '', age: '', currency: USD, availability: null,
+        begin_date: null, end_date: null, merchant_name: '7 For All Mankind, a division
+            of DG Premium Brands, LLC', created_at: null, updated_at: !!timestamp '2017-11-12
+            09:28:21+00:00'}

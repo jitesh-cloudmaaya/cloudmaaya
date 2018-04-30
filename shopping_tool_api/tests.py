@@ -10,6 +10,7 @@ from shopping_tool_api.serializers import LookMetricsSerializer, LookSerializer
 
 from shopping_tool.models import *
 from django.http.cookie import SimpleCookie
+from django.test import TestCase
 from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY
 
 #http://www.django-rest-framework.org/api-guide/testing/
@@ -690,3 +691,107 @@ class ShoppingToolAPITestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
         
+
+# place in a separate TestCase to more easily isolate fixture data
+# class CloneLooksTestCase(TestCase):
+
+#     fixtures = ['CloneLooksTestCase']
+
+#     # a few class variables
+#     user = None
+
+#     def setUp(self):
+#         client = WpUsers.objects.create(first_name = 'Bow', last_name = 'Wow', user_email= 'testemail@gmail.com', user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+#         self.user = client
+#         self.client.cookies = SimpleCookie({AUTH_EMAIL_KEY: 'testemail@gmail.com'})
+
+#     # check the governing fixture file for exact details on the pk setup to understand the assertions
+#     def test_clone_looks(self):
+#         """
+#         Test to verify the behavior of shopping_tool_api/add_look_to_session
+#         """
+
+#         self.assertEqual(2, Look.objects.count())
+#         self.assertEqual(4, LookProduct.objects.count())
+#         self.assertEqual(0, Rack.objects.count())
+
+#         url = reverse("shopping_tool_api:add_look_to_session", kwargs={'look_id': 1, 'session_id': 4})
+
+#         response = self.client.put(url)
+#         self.assertEqual(200, response.status_code)
+#         data = json.loads(response.content)
+
+#         self.assertEqual('success', data['status'])
+#         self.assertEqual(3, data['new_look_id'])
+
+#         # assertions on count
+#         self.assertEqual(3, Look.objects.count())
+#         self.assertEqual(8, LookProduct.objects.count())
+#         self.assertEqual(4, Rack.objects.count())
+
+
+#         # copy all the products in the look to the rack
+#         r1 = Rack.objects.get(pk=1)
+#         self.assertEqual(1, r1.product.id)
+#         self.assertEqual(4, r1.allume_styling_session.id)
+#         self.assertEqual(self.user.id, r1.stylist.id)
+#         r2 = Rack.objects.get(pk=2)
+#         self.assertEqual(2, r2.product.id)
+#         self.assertEqual(4, r2.allume_styling_session.id)
+#         self.assertEqual(self.user.id, r2.stylist.id)
+#         r3 = Rack.objects.get(pk=3)
+#         self.assertEqual(3, r3.product.id)
+#         self.assertEqual(4, r3.allume_styling_session.id)
+#         self.assertEqual(self.user.id, r3.stylist.id)
+#         r4 = Rack.objects.get(pk=4)
+#         self.assertEqual(4, r4.product.id)
+#         self.assertEqual(4, r4.allume_styling_session.id)
+#         self.assertEqual(self.user.id, r4.stylist.id)
+
+
+#         # copy the look to the session
+#         original_look = Look.objects.get(pk=1)
+#         self.assertEqual(3, original_look.allume_styling_session.id)
+#         self.assertEqual(9, original_look.stylist.id)
+
+#         copied_look = Look.objects.get(pk=3)
+#         self.assertEqual(4, copied_look.allume_styling_session.id)
+#         self.assertEqual(self.user.id, copied_look.stylist.id)
+
+
+#         # copy look products to the new look
+#         # original lookproducts
+#         lp_1 = LookProduct.objects.get(pk=1)
+#         self.assertEqual(1, lp_1.look.id)
+#         self.assertEqual(1, lp_1.product.id)
+#         self.assertEqual(1, lp_1.layout_position)
+#         lp_2 = LookProduct.objects.get(pk=2)
+#         self.assertEqual(1, lp_2.look.id)
+#         self.assertEqual(2, lp_2.product.id)
+#         self.assertEqual(2, lp_2.layout_position)
+#         lp_3 = LookProduct.objects.get(pk=3)
+#         self.assertEqual(1, lp_3.look.id)
+#         self.assertEqual(3, lp_3.product.id)
+#         self.assertEqual(3, lp_3.layout_position)
+#         lp_4 = LookProduct.objects.get(pk=4)
+#         self.assertEqual(1, lp_1.look.id)
+#         self.assertEqual(4, lp_4.product.id)
+#         self.assertEqual(4, lp_4.layout_position)
+
+#         # copied look products
+#         lp_5 = LookProduct.objects.get(pk=5)
+#         self.assertEqual(3, lp_5.look.id)
+#         self.assertEqual(1, lp_5.product.id)
+#         self.assertEqual(1, lp_5.layout_position)
+#         lp_6 = LookProduct.objects.get(pk=6)
+#         self.assertEqual(3, lp_6.look.id)
+#         self.assertEqual(2, lp_6.product.id)
+#         self.assertEqual(2, lp_6.layout_position)
+#         lp_7 = LookProduct.objects.get(pk=7)
+#         self.assertEqual(3, lp_7.look.id)
+#         self.assertEqual(3, lp_7.product.id)
+#         self.assertEqual(3, lp_7.layout_position)
+#         lp_8 = LookProduct.objects.get(pk=8)
+#         self.assertEqual(3, lp_8.look.id)
+#         self.assertEqual(4, lp_8.product.id)
+#         self.assertEqual(4, lp_8.layout_position)

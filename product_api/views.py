@@ -22,6 +22,7 @@ import datetime
 import urllib
 from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite
 from models import Product, Merchant
+from elasticsearch_dsl.query import Q
 
 
 from elasticsearch_dsl.connections import connections
@@ -148,12 +149,10 @@ def get_product(self, product_id):
 
     s = Search(index="products")
 
-    s = s.query("match_phrase", product_name=product.product_name)[0:100]
+    #s = s.query("match_phrase", product_name=product.product_name)[:100]
+    
+    s.query = Q("match_phrase", product_name=product.product_name) | Q({"ids" : {"values" : product_id}})
     s = s.filter("match_phrase", merchant_name=product.merchant_name)
-
-    #Bool(must=[Terms(brand__keyword=[u'Hudson']), Terms(merchant_name__keyword=[u'Bergdorf Goodman (Neiman Marcus)', u'Lord & Taylor'])]) 
-
-
 
     results = s.execute()
 
@@ -253,6 +252,7 @@ def get_allume_product(self, product_id):
     payload['sites'][merchant_node]['add_to_cart'][product_node]['image'] = matching_object['product_image_url']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['description'] = matching_object['long_product_description']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['categories'] = [matching_object['primary_category'], matching_object['secondary_category'], matching_object['allume_category']]
+    payload['sites'][merchant_node]['add_to_cart'][product_node]['material'] = matching_object['material']
 
     try:
         payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = availability_mapping[matching_object['availability']]
