@@ -111,79 +111,195 @@ class Weather(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    spring_temperature_average = models.FloatField(default=None, null=True)
-    spring_temperature_high = models.FloatField(default=None, null=True)
-    spring_temperature_low = models.FloatField(default=None, null=True)
-    spring_precipitation = models.FloatField(default=0.0)
-    spring_snowfall = models.FloatField(default=0.0)
-    spring_wind = models.FloatField(default=0.0)
-    spring_sun = models.FloatField(default=0.0)
+    _spring_temperature_average = models.FloatField(default=None, null=True, db_column='spring_temperature_average')
+    _spring_temperature_high = models.FloatField(default=None, null=True, db_column='spring_temperature_high')
+    _spring_temperature_low = models.FloatField(default=None, null=True, db_column='spring_temperature_low')
+    _spring_precipitation = models.FloatField(default=None, null=True, db_column='spring_precipitation')
+    _spring_snowfall = models.FloatField(default=None, null=True, db_column='spring_snowfall')
+    _spring_wind = models.FloatField(default=None, null=True, db_column='spring_wind')
+    _spring_sun = models.FloatField(default=None, null=True, db_column='spring_sun')
 
-    summer_temperature_average = models.FloatField(default=None, null=True)
-    summer_temperature_high = models.FloatField(default=None, null=True)
-    summer_temperature_low = models.FloatField(default=None, null=True)
-    summer_precipitation = models.FloatField(default=0.0)
-    summer_snowfall = models.FloatField(default=0.0)
-    summer_wind = models.FloatField(default=0.0)
-    summer_sun = models.FloatField(default=0.0)
+    _summer_temperature_average = models.FloatField(default=None, null=True, db_column='summer_temperature_average')
+    _summer_temperature_high = models.FloatField(default=None, null=True, db_column='summer_temperature_high')
+    _summer_temperature_low = models.FloatField(default=None, null=True, db_column='summer_temperature_low')
+    _summer_precipitation = models.FloatField(default=None, null=True, db_column='summer_precipitation')
+    _summer_snowfall = models.FloatField(default=None, null=True, db_column='summer_snowfall')
+    _summer_wind = models.FloatField(default=None, null=True, db_column='summer_wind')
+    _summer_sun = models.FloatField(default=None, null=True, db_column='summer_sun')
 
-    autumn_temperature_average = models.FloatField(default=None, null=True)
-    autumn_temperature_high = models.FloatField(default=None, null=True)
-    autumn_temperature_low = models.FloatField(default=None, null=True)
-    autumn_precipitation = models.FloatField(default=0.0)
-    autumn_snowfall = models.FloatField(default=0.0)
-    autumn_wind = models.FloatField(default=0.0)
-    autumn_sun = models.FloatField(default=0.0)
+    _autumn_temperature_average = models.FloatField(default=None, null=True, db_column='autumn_temperature_average')
+    _autumn_temperature_high = models.FloatField(default=None, null=True, db_column='autumn_temperature_high')
+    _autumn_temperature_low = models.FloatField(default=None, null=True, db_column='autumn_temperature_low')
+    _autumn_precipitation = models.FloatField(default=None, null=True, db_column='autumn_precipitation')
+    _autumn_snowfall = models.FloatField(default=None, null=True, db_column='autumn_snowfall')
+    _autumn_wind = models.FloatField(default=None, null=True, db_column='autumn_wind')
+    _autumn_sun = models.FloatField(default=None, null=True, db_column='autumn_sun')
 
-    winter_temperature_average = models.FloatField(default=None, null=True)
-    winter_temperature_high = models.FloatField(default=None, null=True)
-    winter_temperature_low = models.FloatField(default=None, null=True)
-    winter_precipitation = models.FloatField(default=0.0)
-    winter_snowfall = models.FloatField(default=0.0)
-    winter_wind = models.FloatField(default=0.0)
-    winter_sun = models.FloatField(default=0.0)
+    _winter_temperature_average = models.FloatField(default=None, null=True, db_column='winter_temperature_average')
+    _winter_temperature_high = models.FloatField(default=None, null=True, db_column='winter_temperature_high')
+    _winter_temperature_low = models.FloatField(default=None, null=True, db_column='winter_temperature_low')
+    _winter_precipitation = models.FloatField(default=None, null=True, db_column='winter_precipitation')
+    _winter_snowfall = models.FloatField(default=None, null=True, db_column='winter_snowfall')
+    _winter_wind = models.FloatField(default=None, null=True, db_column='winter_wind')
+    _winter_sun = models.FloatField(default=None, null=True, db_column='winter_sun')
 
     objects = WeatherManager()
 
+    # spring attribute property methods
+    @property
+    def spring_temperature_average(self):
+        return self.model_field_helper(self._spring_temperature_average)
+    @property
+    def spring_temperature_high(self):
+        return self.model_field_helper(self._spring_temperature_high)
+    @property
+    def spring_temperature_low(self):
+        return self.model_field_helper(self._spring_temperature_low)
+    @property
+    def spring_precipitation(self):
+        return self.model_field_helper(self._spring_precipitation)
+    @property
+    def spring_snowfall(self):
+        return self.model_field_helper(self._spring_snowfall)
+    @property
+    def spring_wind(self):
+        return self.model_field_helper(self._spring_wind)
+    @property
+    def spring_sun(self):
+        return self.model_field_helper(self._spring_sun)
+
+    # summer attribute property methods
+    @property
+    def summer_temperature_average(self):
+        return self.model_field_helper(self._summer_temperature_average)
+    @property
+    def summer_temperature_high(self):
+        return self.model_field_helper(self._summer_temperature_high)
+    @property
+    def summer_temperature_low(self):
+        return self.model_field_helper(self._summer_temperature_low)
+    @property
+    def summer_precipitation(self):
+        return self.model_field_helper(self._summer_precipitation)
+    @property
+    def summer_snowfall(self):
+        return self.model_field_helper(self._summer_snowfall)
+    @property
+    def summer_wind(self):
+        return self.model_field_helper(self._summer_wind)
+    @property
+    def summer_sun(self):
+        return self.model_field_helper(self._summer_sun)
+
+    # autumn attribute property methods
+    @property
+    def autumn_temperature_average(self):
+        return self.model_field_helper(self._autumn_temperature_average)
+    @property
+    def autumn_temperature_high(self):
+        return self.model_field_helper(self._autumn_temperature_high)
+    @property
+    def autumn_temperature_low(self):
+        return self.model_field_helper(self._autumn_temperature_low)
+    @property
+    def autumn_precipitation(self):
+        return self.model_field_helper(self._autumn_precipitation)
+    @property
+    def autumn_snowfall(self):
+        return self.model_field_helper(self._autumn_snowfall)
+    @property
+    def autumn_wind(self):
+        return self.model_field_helper(self._autumn_wind)
+    @property
+    def autumn_sun(self):
+        return self.model_field_helper(self._autumn_sun)
+
+    # winter attribute property methods
+    @property
+    def winter_temperature_average(self):
+        return self.model_field_helper(self._winter_temperature_average)
+    @property
+    def winter_temperature_high(self):
+        return self.model_field_helper(self._winter_temperature_high)
+    @property
+    def winter_temperature_low(self):
+        return self.model_field_helper(self._winter_temperature_low)
+    @property
+    def winter_precipitation(self):
+        return self.model_field_helper(self._winter_precipitation)
+    @property
+    def winter_snowfall(self):
+        return self.model_field_helper(self._winter_snowfall)
+    @property
+    def winter_wind(self):
+        return self.model_field_helper(self._winter_wind)
+    @property
+    def winter_sun(self):
+        return self.model_field_helper(self._winter_sun)
+
     @property
     def spring_icon(self):
-        sunny = self.spring_sun >= 50
-        windy = self.spring_wind >= 8
-        gusty = self.spring_wind > 15
-        rainy = self.spring_precipitation > 3
-        snowy = self.spring_snowfall > 2
+        sunny = self._spring_sun >= 50
+        windy = self._spring_wind >= 8
+        gusty = self._spring_wind > 15
+        rainy = self._spring_precipitation > 3
+        snowy = self._spring_snowfall > 2
         return self.select_icon(sunny, windy, gusty, rainy, snowy)
     
     @property
     def summer_icon(self):
-        sunny = self.summer_sun >= 50
-        windy = self.summer_wind >= 8
-        gusty = self.summer_wind > 15
-        rainy = self.summer_precipitation > 3
-        snowy = self.summer_snowfall > 2
+        sunny = self._summer_sun >= 50
+        windy = self._summer_wind >= 8
+        gusty = self._summer_wind > 15
+        rainy = self._summer_precipitation > 3
+        snowy = self._summer_snowfall > 2
         return self.select_icon(sunny, windy, gusty, rainy, snowy)
 
     @property
     def autumn_icon(self):
-        sunny = self.autumn_sun >= 50
-        windy = self.autumn_wind >= 8
-        gusty = self.autumn_wind > 15
-        rainy = self.autumn_precipitation > 3
-        snowy = self.autumn_snowfall > 2
+        sunny = self._autumn_sun >= 50
+        windy = self._autumn_wind >= 8
+        gusty = self._autumn_wind > 15
+        rainy = self._autumn_precipitation > 3
+        snowy = self._autumn_snowfall > 2
         return self.select_icon(sunny, windy, gusty, rainy, snowy)
 
     @property
     def winter_icon(self):
-        sunny = self.winter_sun >= 50
-        windy = self.winter_wind >= 8
-        gusty = self.winter_wind > 15
-        rainy = self.winter_precipitation > 3
-        snowy = self.winter_snowfall > 2
+        sunny = self._winter_sun >= 50
+        windy = self._winter_wind >= 8
+        gusty = self._winter_wind > 15
+        rainy = self._winter_precipitation > 3
+        snowy = self._winter_snowfall > 2
         return self.select_icon(sunny, windy, gusty, rainy, snowy)
+
+    def model_field_helper(self, model_field):
+        """
+        Helper method for newly defined properties to handle null values
+        Args:
+          model_field (float): The Weather object's model FloatField value.
+
+        Returns:
+          float: Returns the float value that is passed to the method.
+          str: Returns the string '--' as a replacement for emtpy values for display
+          on the front end.
+        """
+        if model_field:
+            return int(round(model_field))
+        return '--'
 
     def select_icon(self, sunny, windy, gusty, rainy, snowy):
         """
         Helper method that takes in boolean weather conditions to determine which icon to use.
+        Args:
+          sunny (bool): A boolean determining whether the weather is considered sunny.
+          windy (bool): A boolean determining whether the weather is considered windy.
+          gusty (bool): A boolean determining whether the weather is considered gusty.
+          rainy (bool): A boolean determining whether the weather is considered rainy.
+          snowy (bool): A boolean determining whether the weather is considered snowy.
+
+        Returns:
+          str: The class name string to use on the front end. Corresponds to an icon class.
         """
         icon_id = 'wi-day-cloudy' # default
         if sunny:
@@ -231,67 +347,67 @@ class Weather(models.Model):
                 if season == 'spring':
                     for attr, value in values.items():
                         if attr == 'TAVG':
-                            self.spring_temperature_average = value
+                            self._spring_temperature_average = value
                         elif attr == 'TMAX':
-                            self.spring_temperature_high = value
+                            self._spring_temperature_high = value
                         elif attr == 'TMIN':
-                            self.spring_temperature_low = value
+                            self._spring_temperature_low = value
                         elif attr == 'SNOW':
-                            self.spring_snowfall = value
+                            self._spring_snowfall = value
                         elif attr == 'PRCP':
-                            self.spring_precipitation = value
+                            self._spring_precipitation = value
                         elif attr == 'AWND':
-                            self.spring_wind = value
+                            self._spring_wind = value
                         elif attr == 'PSUN':
-                            self.spring_sunshine = value
+                            self._spring_sun = value
                 if season == 'summer':
                     for attr, value in values.items():
                         if attr == 'TAVG':
-                            self.summer_temperature_average = value
+                            self._summer_temperature_average = value
                         elif attr == 'TMAX':
-                            self.summer_temperature_high = value
+                            self._summer_temperature_high = value
                         elif attr == 'TMIN':
-                            self.summer_temperature_low = value
+                            self._summer_temperature_low = value
                         elif attr == 'SNOW':
-                            self.summer_snowfall = value
+                            self._summer_snowfall = value
                         elif attr == 'PRCP':
-                            self.summer_precipitation = value
+                            self._summer_precipitation = value
                         elif attr == 'AWND':
-                            self.summer_wind = value
+                            self._summer_wind = value
                         elif attr == 'PSUN':
-                            self.summer_sunshine = value
+                            self._summer_sun = value
                 if season == 'autumn':
                     for attr, value in values.items():
                         if attr == 'TAVG':
-                            self.autumn_temperature_average = value
+                            self._autumn_temperature_average = value
                         elif attr == 'TMAX':
-                            self.autumn_temperature_high = value
+                            self._autumn_temperature_high = value
                         elif attr == 'TMIN':
-                            self.autumn_temperature_low = value
+                            self._autumn_temperature_low = value
                         elif attr == 'SNOW':
-                            self.autumn_snowfall = value
+                            self._autumn_snowfall = value
                         elif attr == 'PRCP':
-                            self.autumn_precipitation = value
+                            self._autumn_precipitation = value
                         elif attr == 'AWND':
-                            self.autumn_wind = value
+                            self._autumn_wind = value
                         elif attr == 'PSUN':
-                            self.autumn_sunshine = value
+                            self._autumn_sun = value
                 if season == 'winter':
                     for attr, value in values.items():
                         if attr == 'TAVG':
-                            self.winter_temperature_average = value
+                            self._winter_temperature_average = value
                         elif attr == 'TMAX':
-                            self.winter_temperature_high = value
+                            self._winter_temperature_high = value
                         elif attr == 'TMIN':
-                            self.winter_temperature_low = value
+                            self._winter_temperature_low = value
                         elif attr == 'SNOW':
-                            self.winter_snowfall = value
+                            self._winter_snowfall = value
                         elif attr == 'PRCP':
-                            self.winter_precipitation = value
+                            self._winter_precipitation = value
                         elif attr == 'AWND':
-                            self.winter_wind = value
+                            self._winter_wind = value
                         elif attr == 'PSUN':
-                            self.winter_sunshine = value
+                            self._winter_sun = value
 
         super(Weather, self).save(*args, **kwargs)
 

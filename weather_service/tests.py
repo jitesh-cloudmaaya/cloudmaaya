@@ -6,6 +6,8 @@ import datetime
 from django.test import TestCase
 from weather_service.models import Weather
 
+NULL_WEATHER_STRING_REPLACEMENT = '--'
+
 class SingleWeatherRetrievalTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -37,13 +39,13 @@ class SingleWeatherRetrievalTests(TestCase):
         """
         # locations with no zip codes or no data for zip codes initialize with zeros
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='Atlantis', state='OC').spring_wind) # fake city and state
+        self.assertEqual(NULL_WEATHER_STRING_REPLACEMENT, Weather.objects.retrieve_weather_object(city='Atlantis', state='OC').spring_wind) # fake city and state
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+1, Weather.objects.count())
-        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='San Jose', state='MD').summer_wind) # mismatched city and state
+        self.assertEqual(NULL_WEATHER_STRING_REPLACEMENT, Weather.objects.retrieve_weather_object(city='San Jose', state='MD').summer_wind) # mismatched city and state
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+2, Weather.objects.count())
-        self.assertIsNone(Weather.objects.retrieve_weather_object(city='Emerald City', state='OZ').winter_temperature_average) # fake city
+        self.assertEqual(NULL_WEATHER_STRING_REPLACEMENT, Weather.objects.retrieve_weather_object(city='Emerald City', state='OZ').winter_temperature_average) # fake city
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+3, Weather.objects.count())
-        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='Merced', state='RA').autumn_snowfall) # fake state
+        self.assertEqual(NULL_WEATHER_STRING_REPLACEMENT, Weather.objects.retrieve_weather_object(city='Merced', state='RA').autumn_snowfall) # fake state
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+4, Weather.objects.count())
 
     def test_retrieve_weather_empty(self):
@@ -55,11 +57,11 @@ class SingleWeatherRetrievalTests(TestCase):
         """
         # locations with no zip codes or no data for zip codes initialize with zeros
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
-        self.assertIsNone(Weather.objects.retrieve_weather_object(city='', state='').spring_temperature_average)
+        self.assertEqual(NULL_WEATHER_STRING_REPLACEMENT, Weather.objects.retrieve_weather_object(city='', state='').spring_temperature_average)
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+1, Weather.objects.count())
-        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='San Jose', state='').summer_precipitation)
+        self.assertEqual(NULL_WEATHER_STRING_REPLACEMENT, Weather.objects.retrieve_weather_object(city='San Jose', state='').summer_precipitation)
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+2, Weather.objects.count())
-        self.assertEqual(0.0, Weather.objects.retrieve_weather_object(city='', state='CA').autumn_sun)
+        self.assertEqual(NULL_WEATHER_STRING_REPLACEMENT, Weather.objects.retrieve_weather_object(city='', state='CA').autumn_sun)
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+3, Weather.objects.count())
 
 

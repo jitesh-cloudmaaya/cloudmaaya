@@ -5,7 +5,7 @@
   <span class="expanded bday" id="client-birthday" data-bd="{{ client.client_360.birthday }}"></span> 
   <span class="expanded style"><em>occupation:</em>{{ client.client_360.occupation }}</span> 
   <span class="expanded style" id="client-locale" data-cs="{{ client.client_360.where_live }}" data-tz="{{client.timezone}}"></span>
-  <span class="expanded weather"><i class="fa fa-thermometer-three-quarters"></i>winter {{ weather_info.winter_temperature_average|floatformat:"0" }}&deg;,  spring {{ weather_info.spring_temperature_average|floatformat:"0" }}&deg;,  summer {{ weather_info.summer_temperature_average|floatformat:"0" }}&deg;,  fall {{ weather_info.autumn_temperature_average|floatformat:"0" }}&deg;</span>
+  <span class="expanded weather"><i class="fa fa-thermometer-three-quarters"></i>winter {{ weather_info.winter_temperature_average }}&deg;,  spring {{ weather_info.spring_temperature_average }}&deg;,  summer {{ weather_info.summer_temperature_average }}&deg;,  fall {{ weather_info.autumn_temperature_average }}&deg;</span>
   <img class="client" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/></a>
   <div class="details">
     <span class="goal"><em>goal:</em>{{ client.client_360.looks_goal }}</span>
@@ -77,22 +77,22 @@
           <span>
             <em class="season">winter</em>
             <i class="wi {{ weather_info.winter_icon }}"></i>
-            <em class="desc">avg temp: {{ weather_info.winter_temperature_average|floatformat:"0" }}&deg; F</em>
+            <em class="desc">avg temp: {{ weather_info.winter_temperature_average }}&deg; F</em>
           </span>
           <span> 
             <em class="season">spring</em>
             <i class="wi {{ weather_info.spring_icon }}"></i>
-            <em class="desc">avg temp: {{ weather_info.spring_temperature_average|floatformat:"0" }}&deg; F</em>
+            <em class="desc">avg temp: {{ weather_info.spring_temperature_average }}&deg; F</em>
           </span>
           <span> 
             <em class="season">summer</em>
             <i class="wi {{ weather_info.summer_icon }}"></i>
-            <em class="desc">avg temp: {{ weather_info.summer_temperature_average|floatformat:"0" }}&deg; F</em>
+            <em class="desc">avg temp: {{ weather_info.summer_temperature_average }}&deg; F</em>
           </span>
           <span> 
             <em class="season">fall</em>
             <i class="wi {{ weather_info.autumn_icon }}"></i>
-            <em class="desc">avg temp: {{ weather_info.autumn_temperature_average|floatformat:"0" }}&deg; F</em>
+            <em class="desc">avg temp: {{ weather_info.autumn_temperature_average }}&deg; F</em>
           </span>     
         </div>
     	</div>
