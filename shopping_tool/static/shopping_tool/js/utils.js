@@ -61,6 +61,7 @@ var utils = {
       },
       success: function(response){
         var obj = JSON.parse(response);
+        console.log(obj)
         /**
         * example response payload:
         * {
@@ -113,7 +114,11 @@ var utils = {
           session_string = session_type + '' + cadence; 
         }
         var div = $('#client-next-session');
-        div.html('<em>next session:</em> ' + session_string);
+        if(session_string == ''){
+          div.html('');
+        }else{
+          div.html('<em>next session:</em> ' + session_string);
+        }
       },
       error: function(response){
         console.log(response)
@@ -147,7 +152,7 @@ var utils = {
           }
         }
         if(goals.length > 0){
-          div.html('<em class="goal-header">goals:</em>' + goals.join(''));
+          div.html(goals.join(''));
         }
       },
       error: function(response){
