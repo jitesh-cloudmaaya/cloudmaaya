@@ -60,9 +60,60 @@ var utils = {
         withCredentials: true
       },
       success: function(response){
-        console.log(response)
+        var obj = JSON.parse(response);
+        /**
+        * example response payload:
+        * {
+        *  "status": "success",
+        *  "data": {
+        *    "subscription_auto_renew": false,
+        *    "slotted": false,
+        *    "styling_session_cadence_in_weeks": 0,
+        *    "next_styling_session_stylist": {
+        *     "user_id": 3916,
+        *      "user_name": "Anna Roberson",
+        *      "first_name": "Anna",
+        *      "last_name": "Roberson",
+        *      "user_phone": "3109275694",
+        *      "user_email": "aroberson@allume.co"
+        *    },
+        *    "next_styling_session_type": null,
+        *    "next_styling_session_start_date": null
+        *  }
+        * }
+        */
+        var session_string = ''
+        if(obj.data != undefined){
+          var cadence = '';
+          var session_type = '';
+          if(obj.data.next_styling_session_type == null){
+            session_type = 'None';
+          }else{
+            if(obj.data.slotted == false){
+              session_type = 'Week of ' + moment(obj.data.next_styling_session_start_date).format('MMMM D');
+            }else{
+              session_type = moment(obj.data.next_styling_session_start_date).format('MMMM D');
+            }
+          }
+          if(obj.data.styling_session_cadence_in_weeks == 0){
+            cadence = ', no cadence';
+          }else{
+            switch(obj.data.styling_session_cadence_in_weeks){
+              case 2:
+                cadence = ', every 2 weeks';
+              break;
+              case 4:
+                cadence = ', every month'
+              break;
+              case 8:
+                cadence = ', every 2 months'
+              break;
+            }
+          }
+          session_string = session_type + '' + cadence; 
+        }
         var div = $('#client-next-session');
-        div.html('<em>next session:</em>')
+        div.html('<em>next session:</em>' + session_string);
       },
       error: function(response){
         console.log(response)
@@ -81,9 +132,10 @@ var utils = {
         withCredentials: true
       },
       success: function(response){
-        console.log(response)
+        var obj = JSON.parse(response);
+        console.log(obj)
         var div = $('#client-session-goal');
-        div.html('<em>goal:</em>')
+        //div.html('<em>goal:</em>')
       },
       error: function(response){
         console.log(response)
