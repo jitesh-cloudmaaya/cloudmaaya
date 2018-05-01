@@ -8,12 +8,15 @@
   <span class="expanded weather"><i class="fa fa-thermometer-three-quarters"></i>winter {{ weather_info.winter_temperature_average }}&deg;,  spring {{ weather_info.spring_temperature_average }}&deg;,  summer {{ weather_info.summer_temperature_average }}&deg;,  fall {{ weather_info.autumn_temperature_average }}&deg;</span>
   <img class="client" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/></a>
   <div class="details">
-    <span class="goal"><em>goal:</em>{{ client.client_360.looks_goal }}</span>
-    <div class="social" id="client-social">
-    	<span>social media:</span>
-      <a href="https://www.instagram.com/{{ client.client_360.instagram }}" class="instagram" target="_blank"><i class="fa fa-instagram"></i></a>
-      <a href="{{ client.client_360.pinterest }}" class="pinterest" target="_blank"><i class="fa fa-pinterest"></i></a>
-      <a href="{{ client.client_360.linkedin }}" class="linkedin" target="_blank"><i class="fa fa-linkedin"></i></a>
+    <div id="client-dynamic-section">
+      <span class="goal" id="client-session-goal"><em>goal:</em>{{ client.client_360.looks_goal }}</span>
+      <span class="next-session" id="client-next-session"><em>next session:</em></span>
+      <div class="social" id="client-social">
+        <span>social media:</span>
+        <a href="https://www.instagram.com/{{ client.client_360.instagram }}" class="instagram" target="_blank"><i class="fa fa-instagram"></i></a>
+        <a href="{{ client.client_360.pinterest }}" class="pinterest" target="_blank"><i class="fa fa-pinterest"></i></a>
+        <a href="{{ client.client_360.linkedin }}" class="linkedin" target="_blank"><i class="fa fa-linkedin"></i></a>
+      </div>
     </div>
     <div id="client-tabs">
     	<a href="#client-bio" class="on">Sizing</a>

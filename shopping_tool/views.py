@@ -73,12 +73,13 @@ def index(request, styling_session_id=None):
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
+    env = ENV_LOCAL
 
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
                'looks': looks, 'weather_info': weather_info,'styles': styles,
-               'occasions': occasions}
+               'occasions': occasions, 'env': env}
                
     return render(request, 'shopping_tool/index.html', context)
 
@@ -127,6 +128,7 @@ def collage(request, look_id=None):
     serializer = LookSerializer(look)
     json = JSONRenderer().render(serializer.data)
     product_image_proxy = PRODUCT_IMAGE_PROXY
+
     context = { 'look': look, 'look_json': json, 'product_image_proxy': product_image_proxy }
 
     return render(request, 'shopping_tool/collage.html', context)
@@ -166,12 +168,13 @@ def explore(request, styling_session_id=None):
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
+    env = ENV_LOCAL
 
     context = {'favorites': favorites, 'user': user, 'stylists': stylists, 
                'styling_session': styling_session, 'rack_items': rack_items, 
                'client': client, 'layouts': layouts, 'looks': looks,
                'product_image_proxy': product_image_proxy, 'styles': styles,
-               'occasions': occasions, 'weather_info': weather_info}
+               'occasions': occasions, 'weather_info': weather_info, 'env': env}
 
     return render(request, 'shopping_tool/explore.html', context)
 

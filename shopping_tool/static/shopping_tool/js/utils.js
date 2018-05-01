@@ -47,24 +47,48 @@ var utils = {
       e.preventDefault();
       $('#user-card').addClass('show').addClass('looker');
     }).html('View ' + clip.data('username'));
-    /* get next session info with subscription_id
-      $.ajax({
-        contentType: 'application/x-www-form-urlencoded',
-        crossDomain: true,
-        data: $.param({subscription_id: id here),
-        type: 'POST',
-        url: '$https://styling-service-' + local_environment + '.allume.co/repeat/get_next_styling_session_info',
-        xhrFields: {
-          withCredentials: true
-        },
-        success: function(response){
-          console.log(response)
-        },
-        error: function(response){
-          console.log(response)
-        }
-      });
+    /**
+    * @description get next styling session info
     */
+    $.ajax({
+      contentType: 'application/json',
+      crossDomain: true,
+      data: JSON.stringify({user_id: $('#user-clip').data('userid')}),
+      type: 'POST',
+      url: 'https://styling-service-' + local_environment + '.allume.co/repeat/get_next_styling_session_info_by_user_admin/',
+      xhrFields: {
+        withCredentials: true
+      },
+      success: function(response){
+        console.log(response)
+        var div = $('#client-next-session');
+        div.html('<em>next session:</em>')
+      },
+      error: function(response){
+        console.log(response)
+      }
+    });
+    /**
+    * @description get styling session goals 
+    */
+    $.ajax({
+      contentType: 'application/json',
+      crossDomain: true,
+      data: JSON.stringify({styling_session_id: $('body').data('stylesession')}),
+      type: 'POST',
+      url: 'https://styling-service-' + local_environment + '.allume.co/repeat/get_styling_session_goals_admin/',
+      xhrFields: {
+        withCredentials: true
+      },
+      success: function(response){
+        console.log(response)
+        var div = $('#client-session-goal');
+        div.html('<em>goal:</em>')
+      },
+      error: function(response){
+        console.log(response)
+      }
+    });
     /* correctly display bra size */
     var bra = $('#bra-size');
     var bra_size = bra.data('sizes');
@@ -112,7 +136,7 @@ var utils = {
       var href = link.attr('href')
       var div = $(href);
       /* calculate the correct max height of tab sections */
-      var h = 625 - ($('#client-tabs').outerHeight() + $('#user-card div.social').outerHeight() + $('#user-card span.goal').outerHeight());
+      var h = 625 - ($('#client-tabs').outerHeight() + $('#client-dynamic-section').outerHeight());
       div.css('maxHeight', h + 'px')
       if(link.hasClass('on') == false){
         link.addClass('on').siblings('a').removeClass('on');
