@@ -113,7 +113,7 @@ var utils = {
           session_string = session_type + '' + cadence; 
         }
         var div = $('#client-next-session');
-        div.html('<em>next session:</em>' + session_string);
+        div.html('<em>next session:</em> ' + session_string);
       },
       error: function(response){
         console.log(response)
@@ -135,7 +135,20 @@ var utils = {
         var obj = JSON.parse(response);
         console.log(obj)
         var div = $('#client-session-goal');
-        //div.html('<em>goal:</em>')
+        var goals = [];
+        if(obj.data != undefined){
+          for(key in obj.data){
+            if(obj.data.hasOwnProperty(key)){
+              goals.push(
+                '<div class="qa"><em>' + obj.data[key].q +
+                '</em> ' + obj.data[key].a + '</div>'
+              )
+            }
+          }
+        }
+        if(goals.length > 0){
+          div.html('<em class="goal-header">goals:</em>' + goals.join(''));
+        }
       },
       error: function(response){
         console.log(response)

@@ -1129,8 +1129,10 @@ body.explore-page #user-card{position:absolute;}
   padding: 5px 10px 10px;
 }
 #user-card div.details span.goal {border:0;}
-#user-card div.details span.goal em {display:block;}
-#user-card div.details span.next-session em {display:inline-block;}
+#user-card div.details span.goal em.goal-header {display:block;}
+#user-card div.details span.next-session em,
+#user-card div.details span.goal em {display:inline-block;}
+#user-card div.details span.goal div.qa {padding:0 0 5px;}
 
 #user-card.show #user-clip.ready {
   background:#000;
