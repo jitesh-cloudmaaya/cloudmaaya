@@ -1,0 +1,2583 @@
+-   model: product_api.allumeretailersizemapping
+    pk: 1
+    fields: {retailer_size: '6X', allume_size: '6XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 2
+    fields: {retailer_size: '5X', allume_size: '5XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 3
+    fields: {retailer_size: 'XXXXX-LARGE', allume_size: '5XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 4
+    fields: {retailer_size: 'XXXXLARGE', allume_size: '4XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 5
+    fields: {retailer_size: 'XXXX-LARGE', allume_size: '4XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 6
+    fields: {retailer_size: 'XXXX LARGE', allume_size: '4XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 7
+    fields: {retailer_size: 'XXXXL', allume_size: '4XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 8
+    fields: {retailer_size: '4X-LARGE', allume_size: '4XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 9
+    fields: {retailer_size: '4XLRG', allume_size: '4XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 10
+    fields: {retailer_size: '4XL', allume_size: '4XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 11
+    fields: {retailer_size: '4X', allume_size: '4XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 12
+    fields: {retailer_size: 'XXXXLRG', allume_size: '4XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 13
+    fields: {retailer_size: 'XXXLARGE', allume_size: '3XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 14
+    fields: {retailer_size: 'XXX-LARGE', allume_size: '3XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 15
+    fields: {retailer_size: 'XXX LARGE', allume_size: '3XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 16
+    fields: {retailer_size: 'XXXL', allume_size: '3XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 17
+    fields: {retailer_size: '3X-LARGE', allume_size: '3XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 18
+    fields: {retailer_size: '3XLRG', allume_size: '3XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 19
+    fields: {retailer_size: '3XL', allume_size: '3XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 20
+    fields: {retailer_size: '3X', allume_size: '3XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 21
+    fields: {retailer_size: 'XXXLRG', allume_size: '3XL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 22
+    fields: {retailer_size: 'XXLARGE', allume_size: 'XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 23
+    fields: {retailer_size: 'XX-LARGE', allume_size: 'XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 24
+    fields: {retailer_size: 'XX LARGE', allume_size: 'XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 25
+    fields: {retailer_size: '2X-LARGE', allume_size: 'XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 26
+    fields: {retailer_size: '2XLRG', allume_size: 'XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 27
+    fields: {retailer_size: '2XL', allume_size: 'XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 28
+    fields: {retailer_size: '2X', allume_size: 'XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 29
+    fields: {retailer_size: 'XXL', allume_size: 'XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 30
+    fields: {retailer_size: 'XXLRG', allume_size: 'XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 31
+    fields: {retailer_size: 'XX- LARGE', allume_size: 'XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 32
+    fields: {retailer_size: 'XLARGE', allume_size: 'X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 33
+    fields: {retailer_size: 'X-LARGE', allume_size: 'X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 34
+    fields: {retailer_size: 'X LARGE', allume_size: 'X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 35
+    fields: {retailer_size: 'XL', allume_size: 'X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 36
+    fields: {retailer_size: 'XLRG', allume_size: 'X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 37
+    fields: {retailer_size: '1X', allume_size: 'X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 38
+    fields: {retailer_size: 'LARGE', allume_size: 'LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 39
+    fields: {retailer_size: 'L', allume_size: 'LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 40
+    fields: {retailer_size: 'LRG', allume_size: 'LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 41
+    fields: {retailer_size: 'MEDIUM', allume_size: 'MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 42
+    fields: {retailer_size: 'MEDIIUM', allume_size: 'MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 43
+    fields: {retailer_size: 'M', allume_size: 'MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 44
+    fields: {retailer_size: 'MED', allume_size: 'MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 45
+    fields: {retailer_size: 'SMALL', allume_size: 'SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 46
+    fields: {retailer_size: 'S', allume_size: 'SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 47
+    fields: {retailer_size: 'SML', allume_size: 'SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 48
+    fields: {retailer_size: 'XSMALL', allume_size: 'X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 49
+    fields: {retailer_size: 'X-SMALL', allume_size: 'X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 50
+    fields: {retailer_size: 'X SMALL', allume_size: 'X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 51
+    fields: {retailer_size: 'XS', allume_size: 'X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 52
+    fields: {retailer_size: 'XSML', allume_size: 'X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 53
+    fields: {retailer_size: 'X-SML', allume_size: 'X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 54
+    fields: {retailer_size: 'X-SMLL', allume_size: 'X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 55
+    fields: {retailer_size: 'XXSMALL', allume_size: 'XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 56
+    fields: {retailer_size: 'XX-SMALL', allume_size: 'XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 57
+    fields: {retailer_size: 'XX SMALL', allume_size: 'XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 58
+    fields: {retailer_size: 'XXS', allume_size: 'XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 59
+    fields: {retailer_size: 'XXSML', allume_size: 'XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 60
+    fields: {retailer_size: 'XX-SML', allume_size: 'XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 61
+    fields: {retailer_size: '2XS', allume_size: 'XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 62
+    fields: {retailer_size: 'XXXSMALL', allume_size: 'XXX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 63
+    fields: {retailer_size: 'XXX-SMALL', allume_size: 'XXX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 64
+    fields: {retailer_size: 'XXX SMALL', allume_size: 'XXX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 65
+    fields: {retailer_size: 'XXXS', allume_size: 'XXX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 66
+    fields: {retailer_size: 'XXXSML', allume_size: 'XXX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 67
+    fields: {retailer_size: 'XXX-SML', allume_size: 'XXX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 68
+    fields: {retailer_size: 'PETITE 00', allume_size: '00P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 69
+    fields: {retailer_size: '00P', allume_size: '00P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 70
+    fields: {retailer_size: '00 P', allume_size: '00P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 71
+    fields: {retailer_size: 'PETITE00', allume_size: '00P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 72
+    fields: {retailer_size: 'PETITE 0', allume_size: '0P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 73
+    fields: {retailer_size: '0P', allume_size: '0P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 74
+    fields: {retailer_size: '0 P', allume_size: '0P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 75
+    fields: {retailer_size: 'PETITE0', allume_size: '0P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 76
+    fields: {retailer_size: 'PETITE XX-SMALL', allume_size: 'PETITE XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 77
+    fields: {retailer_size: 'PETITEXX-SMALL', allume_size: 'PETITE XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 78
+    fields: {retailer_size: 'P/XXS', allume_size: 'PETITE XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 79
+    fields: {retailer_size: 'PETITE/XX-SMALL', allume_size: 'PETITE XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 80
+    fields: {retailer_size: 'PETITE XXS', allume_size: 'PETITE XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 81
+    fields: {retailer_size: 'PETITEXXS', allume_size: 'PETITE XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 82
+    fields: {retailer_size: 'PETITE/XXS', allume_size: 'PETITE XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 83
+    fields: {retailer_size: 'XXS P', allume_size: 'PETITE XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 84
+    fields: {retailer_size: 'XXSP', allume_size: 'PETITE XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 85
+    fields: {retailer_size: 'PETITE: XX-SMALL', allume_size: 'PETITE XX-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 86
+    fields: {retailer_size: 'PETITE X-SMALL', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 87
+    fields: {retailer_size: 'PETITEX-SMALL', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 88
+    fields: {retailer_size: 'PETITE/X-SMALL', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 89
+    fields: {retailer_size: 'PETITE XS', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 90
+    fields: {retailer_size: 'PETITEXS', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 91
+    fields: {retailer_size: 'PETITE/XS', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 92
+    fields: {retailer_size: 'P/XS', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 93
+    fields: {retailer_size: 'PXS', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 94
+    fields: {retailer_size: 'XS P', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 95
+    fields: {retailer_size: 'XSP', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 96
+    fields: {retailer_size: 'PETITE XSMALL', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 97
+    fields: {retailer_size: 'PETITE/X SMALL', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 98
+    fields: {retailer_size: 'PETITE: X-SMALL', allume_size: 'PETITE X-SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 99
+    fields: {retailer_size: 'PETITE 2', allume_size: '2P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 100
+    fields: {retailer_size: '2P', allume_size: '2P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 101
+    fields: {retailer_size: '2 P', allume_size: '2P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 102
+    fields: {retailer_size: 'PETITE2', allume_size: '2P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 103
+    fields: {retailer_size: 'PETTIE 2', allume_size: '2P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 104
+    fields: {retailer_size: 'PETITE 4', allume_size: '4P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 105
+    fields: {retailer_size: '4P', allume_size: '4P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 106
+    fields: {retailer_size: '4 P', allume_size: '4P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 107
+    fields: {retailer_size: 'PETITE4', allume_size: '4P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 108
+    fields: {retailer_size: 'PETTIE 4', allume_size: '4P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 109
+    fields: {retailer_size: 'PETITE 6', allume_size: '6P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 110
+    fields: {retailer_size: '6P', allume_size: '6P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 111
+    fields: {retailer_size: '6 P', allume_size: '6P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 112
+    fields: {retailer_size: 'PETITE6', allume_size: '6P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 113
+    fields: {retailer_size: 'PETTIE 6', allume_size: '6P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 114
+    fields: {retailer_size: 'PETITE SMALL', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 115
+    fields: {retailer_size: 'PETITESMALL', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 116
+    fields: {retailer_size: 'PETITE/SMALL', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 117
+    fields: {retailer_size: 'PETITE S', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 118
+    fields: {retailer_size: 'PETITES', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 119
+    fields: {retailer_size: 'P/S', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 120
+    fields: {retailer_size: 'PS', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 121
+    fields: {retailer_size: 'P S', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 122
+    fields: {retailer_size: 'SP', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 123
+    fields: {retailer_size: 'S P', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 124
+    fields: {retailer_size: 'PETITE: SMALL', allume_size: 'PETITE SMALL', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 125
+    fields: {retailer_size: 'PETITE 8', allume_size: '8P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 126
+    fields: {retailer_size: '8P', allume_size: '8P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 127
+    fields: {retailer_size: '8 P', allume_size: '8P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 128
+    fields: {retailer_size: 'PETITE8', allume_size: '8P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 129
+    fields: {retailer_size: 'PETTIE 8', allume_size: '8P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 130
+    fields: {retailer_size: 'PETITE 10', allume_size: '10P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 131
+    fields: {retailer_size: '10P', allume_size: '10P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 132
+    fields: {retailer_size: '10 P', allume_size: '10P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 133
+    fields: {retailer_size: 'PETITE10', allume_size: '10P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 134
+    fields: {retailer_size: 'PETTIE 10', allume_size: '10P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 135
+    fields: {retailer_size: 'PETITIE 10', allume_size: '10P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 136
+    fields: {retailer_size: 'PETITE MEDIUM', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 137
+    fields: {retailer_size: 'PETITEMEDIUM', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 138
+    fields: {retailer_size: 'PETITE/MEDIUM', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 139
+    fields: {retailer_size: 'PETITE M', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 140
+    fields: {retailer_size: 'PETITEM', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 141
+    fields: {retailer_size: 'P/M', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 142
+    fields: {retailer_size: 'PM', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 143
+    fields: {retailer_size: 'MP', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 144
+    fields: {retailer_size: 'M P', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 145
+    fields: {retailer_size: 'PETITE: MEDIUM', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 146
+    fields: {retailer_size: 'PETITE-SMALL', allume_size: 'PETITE MEDIUM', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 147
+    fields: {retailer_size: 'PETITE 12', allume_size: '12P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 148
+    fields: {retailer_size: '12P', allume_size: '12P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 149
+    fields: {retailer_size: '12 P', allume_size: '12P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 150
+    fields: {retailer_size: 'PETITE12', allume_size: '12P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 151
+    fields: {retailer_size: 'PETTIE 12', allume_size: '12P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 152
+    fields: {retailer_size: 'PETITE 14', allume_size: '14P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 153
+    fields: {retailer_size: '14P', allume_size: '14P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 154
+    fields: {retailer_size: '14 P', allume_size: '14P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 155
+    fields: {retailer_size: 'PETITE14', allume_size: '14P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 156
+    fields: {retailer_size: 'PETTIE 14', allume_size: '14P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 157
+    fields: {retailer_size: 'PETITE LARGE', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 158
+    fields: {retailer_size: 'PETITELARGE', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 159
+    fields: {retailer_size: 'PETITE/LARGE', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 160
+    fields: {retailer_size: 'PETITE L', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 161
+    fields: {retailer_size: 'PETITEL', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 162
+    fields: {retailer_size: 'P/L', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 163
+    fields: {retailer_size: 'PL', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 164
+    fields: {retailer_size: 'LP', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 165
+    fields: {retailer_size: 'L P', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 166
+    fields: {retailer_size: 'PETITE: LARGE', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 167
+    fields: {retailer_size: 'PETITLE LARGE', allume_size: 'PETITE LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 168
+    fields: {retailer_size: 'PETITE 16', allume_size: '16P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 169
+    fields: {retailer_size: 'PETITIE 16', allume_size: '16P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 170
+    fields: {retailer_size: 'PETITIE16', allume_size: '16P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 171
+    fields: {retailer_size: '16P', allume_size: '16P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 172
+    fields: {retailer_size: '16 P', allume_size: '16P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 173
+    fields: {retailer_size: 'PETITE16', allume_size: '16P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 174
+    fields: {retailer_size: 'PETITE 18', allume_size: '18P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 175
+    fields: {retailer_size: 'PETITIE 18', allume_size: '18P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 176
+    fields: {retailer_size: 'PETITIE18', allume_size: '18P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 177
+    fields: {retailer_size: '18P', allume_size: '18P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 178
+    fields: {retailer_size: '18 P', allume_size: '18P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 179
+    fields: {retailer_size: 'PETITE18', allume_size: '18P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 180
+    fields: {retailer_size: 'PETITE20', allume_size: '20P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 181
+    fields: {retailer_size: '20P', allume_size: '20P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 182
+    fields: {retailer_size: '20 P', allume_size: '20P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 183
+    fields: {retailer_size: 'PETITE22', allume_size: '22P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 184
+    fields: {retailer_size: '22P', allume_size: '22P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 185
+    fields: {retailer_size: '22 P', allume_size: '22P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 186
+    fields: {retailer_size: 'PETITE24', allume_size: '24P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 187
+    fields: {retailer_size: '24P', allume_size: '24P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 188
+    fields: {retailer_size: '24 P', allume_size: '24P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 189
+    fields: {retailer_size: 'PETITE25', allume_size: '25P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 190
+    fields: {retailer_size: '25P', allume_size: '25P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 191
+    fields: {retailer_size: '25 P', allume_size: '25P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 192
+    fields: {retailer_size: 'PETITE26', allume_size: '26P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 193
+    fields: {retailer_size: '26P', allume_size: '26P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 194
+    fields: {retailer_size: '26 P', allume_size: '26P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 195
+    fields: {retailer_size: '27P', allume_size: '28P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 196
+    fields: {retailer_size: '27 P', allume_size: '28P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 197
+    fields: {retailer_size: 'PETITE28', allume_size: '28P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 198
+    fields: {retailer_size: '28P', allume_size: '28P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 199
+    fields: {retailer_size: '28 P', allume_size: '28P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 200
+    fields: {retailer_size: 'PETITE29', allume_size: '29P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 201
+    fields: {retailer_size: '29P', allume_size: '29P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 202
+    fields: {retailer_size: '29 P', allume_size: '29P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 203
+    fields: {retailer_size: 'PETITE30', allume_size: '30P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 204
+    fields: {retailer_size: '30P', allume_size: '30P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 205
+    fields: {retailer_size: '30 P', allume_size: '30P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 206
+    fields: {retailer_size: '31P', allume_size: '31P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 207
+    fields: {retailer_size: '31 P', allume_size: '31P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 208
+    fields: {retailer_size: 'PETITE32', allume_size: '32P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 209
+    fields: {retailer_size: '32P', allume_size: '32P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 210
+    fields: {retailer_size: '32 P', allume_size: '32P', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 211
+    fields: {retailer_size: 'PETITE X-LARGE', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 212
+    fields: {retailer_size: 'PETITEX-LARGE', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 213
+    fields: {retailer_size: 'PETITE/X-LARGE', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 214
+    fields: {retailer_size: 'PETITE XL', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 215
+    fields: {retailer_size: 'PETITEXL', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 216
+    fields: {retailer_size: 'PETITE/XL', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 217
+    fields: {retailer_size: 'P/XL', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 218
+    fields: {retailer_size: 'PXL', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 219
+    fields: {retailer_size: 'XLP', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 220
+    fields: {retailer_size: '1XP', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 221
+    fields: {retailer_size: '1XLP', allume_size: 'PETITE X-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 222
+    fields: {retailer_size: 'PETITE XX-LARGE', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 223
+    fields: {retailer_size: 'PETITEXX-LARGE', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 224
+    fields: {retailer_size: 'PETITE/XX-LARGE', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 225
+    fields: {retailer_size: 'PETITE XXL', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 226
+    fields: {retailer_size: 'PETITEXXL', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 227
+    fields: {retailer_size: 'PETITE/XXL', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 228
+    fields: {retailer_size: 'P/XXL', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 229
+    fields: {retailer_size: 'PXXL', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 230
+    fields: {retailer_size: 'XXLP', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 231
+    fields: {retailer_size: '2XP', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 232
+    fields: {retailer_size: '2XLP', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 233
+    fields: {retailer_size: 'PETITE: XX-LARGE', allume_size: 'PETITE XX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 234
+    fields: {retailer_size: 'PETITE XXX-LARGE', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 235
+    fields: {retailer_size: 'PETITEXXX-LARGE', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 236
+    fields: {retailer_size: 'PETITE/XXX-LARGE', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 237
+    fields: {retailer_size: 'PETITE XXXL', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 238
+    fields: {retailer_size: 'PETITEXXXL', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 239
+    fields: {retailer_size: 'PETITE/XXXL', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 240
+    fields: {retailer_size: 'P/XXXL', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 241
+    fields: {retailer_size: 'PXXXL', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 242
+    fields: {retailer_size: 'XXXLP', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 243
+    fields: {retailer_size: '3XP', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 244
+    fields: {retailer_size: '3XLP', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 245
+    fields: {retailer_size: 'PETITE: XXX-LARGE', allume_size: 'PETITE XXX-LARGE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 246
+    fields: {retailer_size: 'PETITE -', allume_size: 'PETITE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 247
+    fields: {retailer_size: 'PETITE PETITE', allume_size: 'PETITE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 248
+    fields: {retailer_size: 'PP', allume_size: 'PETITE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 249
+    fields: {retailer_size: 'P', allume_size: 'PETITE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 250
+    fields: {retailer_size: 'ALL', allume_size: 'ONE SIZE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 251
+    fields: {retailer_size: 'ONE SIZE', allume_size: 'ONE SIZE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 252
+    fields: {retailer_size: 'ONESIZE', allume_size: 'ONE SIZE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 253
+    fields: {retailer_size: 'OS', allume_size: 'ONE SIZE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 254
+    fields: {retailer_size: 'ONE SIZE WOMENS', allume_size: 'ONE SIZE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 255
+    fields: {retailer_size: 'U', allume_size: 'ONE SIZE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 256
+    fields: {retailer_size: 'ONE', allume_size: 'ONE SIZE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 257
+    fields: {retailer_size: 'ONE SIZE WOMEN', allume_size: 'ONE SIZE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 258
+    fields: {retailer_size: 'TALL0', allume_size: 'TALL0', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 259
+    fields: {retailer_size: 'TALL2', allume_size: 'TALL2', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 260
+    fields: {retailer_size: 'TALL4', allume_size: 'TALL4', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 261
+    fields: {retailer_size: 'TALL6', allume_size: 'TALL6', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 262
+    fields: {retailer_size: 'TALL8', allume_size: 'TALL8', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 263
+    fields: {retailer_size: 'TALL10', allume_size: 'TALL10', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 264
+    fields: {retailer_size: 'TALL12', allume_size: 'TALL12', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 265
+    fields: {retailer_size: 'TALL14', allume_size: 'TALL14', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 266
+    fields: {retailer_size: 'TALL16', allume_size: 'TALL16', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 267
+    fields: {retailer_size: 'TALL18', allume_size: 'TALL18', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 268
+    fields: {retailer_size: 'TALL20', allume_size: 'TALL20', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 269
+    fields: {retailer_size: 'TALL22', allume_size: 'TALL22', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 270
+    fields: {retailer_size: 'TALL24', allume_size: 'TALL24', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 271
+    fields: {retailer_size: 'TALL26', allume_size: 'TALL26', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 272
+    fields: {retailer_size: 'TALL28', allume_size: 'TALL28', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 273
+    fields: {retailer_size: 'TALL30', allume_size: 'TALL30', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 274
+    fields: {retailer_size: 'TALL32', allume_size: 'TALL32', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 275
+    fields: {retailer_size: 'NO SIZE', allume_size: 'NO SIZE', is_text: 1}
+-   model: product_api.allumeretailersizemapping
+    pk: 276
+    fields: {retailer_size: 'WAIST20', allume_size: 'W20', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 277
+    fields: {retailer_size: 'WAIST21', allume_size: 'W21', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 278
+    fields: {retailer_size: 'WAIST22', allume_size: 'W22', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 279
+    fields: {retailer_size: 'WAIST23', allume_size: 'W23', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 280
+    fields: {retailer_size: 'WAIST24', allume_size: 'W24', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 281
+    fields: {retailer_size: 'WAIST25', allume_size: 'W25', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 282
+    fields: {retailer_size: 'WAIST26', allume_size: 'W26', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 283
+    fields: {retailer_size: 'WAIST27', allume_size: 'W27', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 284
+    fields: {retailer_size: 'WAIST28', allume_size: 'W28', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 285
+    fields: {retailer_size: 'WAIST29', allume_size: 'W29', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 286
+    fields: {retailer_size: 'WAIST30', allume_size: 'W30', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 287
+    fields: {retailer_size: 'WAIST31', allume_size: 'W31', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 288
+    fields: {retailer_size: 'WAIST32', allume_size: 'W32', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 289
+    fields: {retailer_size: 'WAIST33', allume_size: 'W33', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 290
+    fields: {retailer_size: 'WAIST34', allume_size: 'W34', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 291
+    fields: {retailer_size: 'SHOENARROW4', allume_size: '4N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 292
+    fields: {retailer_size: 'SHOENARROW4.5', allume_size: '4.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 293
+    fields: {retailer_size: 'SHOENARROW5', allume_size: '5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 294
+    fields: {retailer_size: 'SHOENARROW5.5', allume_size: '5.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 295
+    fields: {retailer_size: 'SHOENARROW6', allume_size: '6N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 296
+    fields: {retailer_size: 'SHOENARROW6.5', allume_size: '6.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 297
+    fields: {retailer_size: 'SHOENARROW7', allume_size: '7N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 298
+    fields: {retailer_size: 'SHOENARROW7.5', allume_size: '7.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 299
+    fields: {retailer_size: 'SHOENARROW8', allume_size: '8N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 300
+    fields: {retailer_size: 'SHOENARROW8.5', allume_size: '8.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 301
+    fields: {retailer_size: 'SHOENARROW9', allume_size: '9N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 302
+    fields: {retailer_size: 'SHOENARROW9.5', allume_size: '9.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 303
+    fields: {retailer_size: 'SHOENARROW10', allume_size: '10N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 304
+    fields: {retailer_size: 'SHOENARROW10.5', allume_size: '10.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 305
+    fields: {retailer_size: 'SHOENARROW11', allume_size: '11N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 306
+    fields: {retailer_size: 'SHOENARROW11.5', allume_size: '11.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 307
+    fields: {retailer_size: 'SHOENARROW12', allume_size: '12N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 308
+    fields: {retailer_size: 'SHOENARROW12.5', allume_size: '12.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 309
+    fields: {retailer_size: 'SHOENARROW13', allume_size: '13N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 310
+    fields: {retailer_size: 'SHOENARROW13.5', allume_size: '13.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 311
+    fields: {retailer_size: 'SHOENARROW14', allume_size: '14N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 312
+    fields: {retailer_size: 'SHOENARROW14.5', allume_size: '14.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 313
+    fields: {retailer_size: 'SHOENARROW15', allume_size: '15N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 314
+    fields: {retailer_size: 'SHOENARROW15.5', allume_size: '15.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 315
+    fields: {retailer_size: 'SHOENARROW16', allume_size: '16N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 316
+    fields: {retailer_size: 'SHOENARROW16.5', allume_size: '16.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 317
+    fields: {retailer_size: 'SHOENARROW17', allume_size: '17N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 318
+    fields: {retailer_size: 'SHOENARROW17.5', allume_size: '17.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 319
+    fields: {retailer_size: 'SHOENARROW18', allume_size: '18N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 320
+    fields: {retailer_size: 'SHOENARROW18.5', allume_size: '18.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 321
+    fields: {retailer_size: 'SHOENARROW19', allume_size: '19N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 322
+    fields: {retailer_size: 'SHOENARROW19.5', allume_size: '19.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 323
+    fields: {retailer_size: 'SHOENARROW20', allume_size: '20N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 324
+    fields: {retailer_size: 'SHOENARROW20.5', allume_size: '20.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 325
+    fields: {retailer_size: 'SHOENARROW21', allume_size: '21N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 326
+    fields: {retailer_size: 'SHOENARROW21.5', allume_size: '21.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 327
+    fields: {retailer_size: 'SHOENARROW22', allume_size: '22N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 328
+    fields: {retailer_size: 'SHOENARROW22.5', allume_size: '22.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 329
+    fields: {retailer_size: 'SHOENARROW23', allume_size: '23N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 330
+    fields: {retailer_size: 'SHOENARROW23.5', allume_size: '23.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 331
+    fields: {retailer_size: 'SHOENARROW24', allume_size: '24N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 332
+    fields: {retailer_size: 'SHOENARROW24.5', allume_size: '24.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 333
+    fields: {retailer_size: 'SHOENARROW25', allume_size: '25N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 334
+    fields: {retailer_size: 'SHOENARROW25.5', allume_size: '25.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 335
+    fields: {retailer_size: 'SHOENARROW26', allume_size: '26N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 336
+    fields: {retailer_size: 'SHOENARROW26.5', allume_size: '26.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 337
+    fields: {retailer_size: 'SHOENARROW27', allume_size: '27N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 338
+    fields: {retailer_size: 'SHOENARROW27.5', allume_size: '27.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 339
+    fields: {retailer_size: 'SHOENARROW28', allume_size: '28N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 340
+    fields: {retailer_size: 'SHOENARROW28.5', allume_size: '28.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 341
+    fields: {retailer_size: 'SHOENARROW29', allume_size: '29N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 342
+    fields: {retailer_size: 'SHOENARROW29.5', allume_size: '29.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 343
+    fields: {retailer_size: 'SHOENARROW30', allume_size: '30N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 344
+    fields: {retailer_size: 'SHOENARROW30.5', allume_size: '30.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 345
+    fields: {retailer_size: 'SHOENARROW31', allume_size: '31N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 346
+    fields: {retailer_size: 'SHOENARROW31.5', allume_size: '31.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 347
+    fields: {retailer_size: 'SHOENARROW32', allume_size: '32N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 348
+    fields: {retailer_size: 'SHOENARROW32.5', allume_size: '32.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 349
+    fields: {retailer_size: 'SHOENARROW33', allume_size: '33N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 350
+    fields: {retailer_size: 'SHOENARROW33.5', allume_size: '33.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 351
+    fields: {retailer_size: 'SHOENARROW34', allume_size: '34N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 352
+    fields: {retailer_size: 'SHOENARROW34.5', allume_size: '34.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 353
+    fields: {retailer_size: 'SHOENARROW35', allume_size: '35N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 354
+    fields: {retailer_size: 'SHOENARROW35.5', allume_size: '35.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 355
+    fields: {retailer_size: 'SHOENARROW36', allume_size: '36N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 356
+    fields: {retailer_size: 'SHOENARROW36.5', allume_size: '36.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 357
+    fields: {retailer_size: 'SHOENARROW37', allume_size: '37N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 358
+    fields: {retailer_size: 'SHOENARROW37.5', allume_size: '37.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 359
+    fields: {retailer_size: 'SHOENARROW38', allume_size: '38N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 360
+    fields: {retailer_size: 'SHOENARROW38.5', allume_size: '38.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 361
+    fields: {retailer_size: 'SHOENARROW39', allume_size: '39N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 362
+    fields: {retailer_size: 'SHOENARROW39.5', allume_size: '39.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 363
+    fields: {retailer_size: 'SHOENARROW40', allume_size: '40N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 364
+    fields: {retailer_size: 'SHOENARROW40.5', allume_size: '40.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 365
+    fields: {retailer_size: 'SHOENARROW41', allume_size: '41N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 366
+    fields: {retailer_size: 'SHOENARROW41.5', allume_size: '41.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 367
+    fields: {retailer_size: 'SHOENARROW42', allume_size: '42N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 368
+    fields: {retailer_size: 'SHOENARROW42.5', allume_size: '42.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 369
+    fields: {retailer_size: 'SHOENARROW43', allume_size: '43N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 370
+    fields: {retailer_size: 'SHOENARROW43.5', allume_size: '43.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 371
+    fields: {retailer_size: 'SHOENARROW44', allume_size: '44N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 372
+    fields: {retailer_size: 'SHOENARROW44.5', allume_size: '44.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 373
+    fields: {retailer_size: 'SHOENARROW45', allume_size: '45N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 374
+    fields: {retailer_size: 'SHOENARROW45.5', allume_size: '45.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 375
+    fields: {retailer_size: 'SHOENARROW46', allume_size: '46N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 376
+    fields: {retailer_size: 'SHOENARROW46.5', allume_size: '46.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 377
+    fields: {retailer_size: 'SHOENARROW47', allume_size: '47N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 378
+    fields: {retailer_size: 'SHOENARROW47.5', allume_size: '47.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 379
+    fields: {retailer_size: 'SHOENARROW48', allume_size: '48N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 380
+    fields: {retailer_size: 'SHOENARROW48.5', allume_size: '48.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 381
+    fields: {retailer_size: 'SHOENARROW49', allume_size: '49N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 382
+    fields: {retailer_size: 'SHOENARROW49.5', allume_size: '49.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 383
+    fields: {retailer_size: 'SHOENARROW50', allume_size: '50N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 384
+    fields: {retailer_size: 'SHOENARROW50.5', allume_size: '50.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 385
+    fields: {retailer_size: 'SHOENARROW51', allume_size: '51N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 386
+    fields: {retailer_size: 'SHOENARROW51.5', allume_size: '51.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 387
+    fields: {retailer_size: 'SHOENARROW52', allume_size: '52N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 388
+    fields: {retailer_size: 'SHOENARROW52.5', allume_size: '52.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 389
+    fields: {retailer_size: 'SHOENARROW53', allume_size: '53N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 390
+    fields: {retailer_size: 'SHOENARROW53.5', allume_size: '53.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 391
+    fields: {retailer_size: 'SHOENARROW54', allume_size: '54N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 392
+    fields: {retailer_size: 'SHOENARROW54.5', allume_size: '54.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 393
+    fields: {retailer_size: 'SHOENARROW55', allume_size: '55N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 394
+    fields: {retailer_size: 'SHOENARROW55.5', allume_size: '55.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 395
+    fields: {retailer_size: 'SHOENARROW56', allume_size: '56N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 396
+    fields: {retailer_size: 'SHOENARROW56.5', allume_size: '56.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 397
+    fields: {retailer_size: 'SHOENARROW57', allume_size: '57N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 398
+    fields: {retailer_size: 'SHOENARROW57.5', allume_size: '57.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 399
+    fields: {retailer_size: 'SHOENARROW58', allume_size: '58N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 400
+    fields: {retailer_size: 'SHOENARROW58.5', allume_size: '58.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 401
+    fields: {retailer_size: 'SHOENARROW59', allume_size: '59N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 402
+    fields: {retailer_size: 'SHOENARROW59.5', allume_size: '59.5N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 403
+    fields: {retailer_size: 'SHOENARROW60', allume_size: '60N', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 404
+    fields: {retailer_size: 'SHOEWIDE4', allume_size: '4W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 405
+    fields: {retailer_size: 'SHOEWIDE4.5', allume_size: '4.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 406
+    fields: {retailer_size: 'SHOEWIDE5', allume_size: '5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 407
+    fields: {retailer_size: 'SHOEWIDE5.5', allume_size: '5.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 408
+    fields: {retailer_size: 'SHOEWIDE6', allume_size: '6W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 409
+    fields: {retailer_size: 'SHOEWIDE6.5', allume_size: '6.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 410
+    fields: {retailer_size: 'SHOEWIDE7', allume_size: '7W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 411
+    fields: {retailer_size: 'SHOEWIDE7.5', allume_size: '7.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 412
+    fields: {retailer_size: 'SHOEWIDE8', allume_size: '8W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 413
+    fields: {retailer_size: 'SHOEWIDE8.5', allume_size: '8.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 414
+    fields: {retailer_size: 'SHOEWIDE9', allume_size: '9W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 415
+    fields: {retailer_size: 'SHOEWIDE9.5', allume_size: '9.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 416
+    fields: {retailer_size: 'SHOEWIDE10', allume_size: '10W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 417
+    fields: {retailer_size: 'SHOEWIDE10.5', allume_size: '10.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 418
+    fields: {retailer_size: 'SHOEWIDE11', allume_size: '11W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 419
+    fields: {retailer_size: 'SHOEWIDE11.5', allume_size: '11.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 420
+    fields: {retailer_size: 'SHOEWIDE12', allume_size: '12W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 421
+    fields: {retailer_size: 'SHOEWIDE12.5', allume_size: '12.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 422
+    fields: {retailer_size: 'SHOEWIDE13', allume_size: '13W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 423
+    fields: {retailer_size: 'SHOEWIDE13.5', allume_size: '13.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 424
+    fields: {retailer_size: 'SHOEWIDE14', allume_size: '14W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 425
+    fields: {retailer_size: 'SHOEWIDE14.5', allume_size: '14.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 426
+    fields: {retailer_size: 'SHOEWIDE15', allume_size: '15W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 427
+    fields: {retailer_size: 'SHOEWIDE15.5', allume_size: '15.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 428
+    fields: {retailer_size: 'SHOEWIDE16', allume_size: '16W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 429
+    fields: {retailer_size: 'SHOEWIDE16.5', allume_size: '16.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 430
+    fields: {retailer_size: 'SHOEWIDE17', allume_size: '17W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 431
+    fields: {retailer_size: 'SHOEWIDE17.5', allume_size: '17.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 432
+    fields: {retailer_size: 'SHOEWIDE18', allume_size: '18W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 433
+    fields: {retailer_size: 'SHOEWIDE18.5', allume_size: '18.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 434
+    fields: {retailer_size: 'SHOEWIDE19', allume_size: '19W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 435
+    fields: {retailer_size: 'SHOEWIDE19.5', allume_size: '19.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 436
+    fields: {retailer_size: 'SHOEWIDE20', allume_size: '20W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 437
+    fields: {retailer_size: 'SHOEWIDE20.5', allume_size: '20.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 438
+    fields: {retailer_size: 'SHOEWIDE21', allume_size: '21W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 439
+    fields: {retailer_size: 'SHOEWIDE21.5', allume_size: '21.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 440
+    fields: {retailer_size: 'SHOEWIDE22', allume_size: '22W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 441
+    fields: {retailer_size: 'SHOEWIDE22.5', allume_size: '22.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 442
+    fields: {retailer_size: 'SHOEWIDE23', allume_size: '23W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 443
+    fields: {retailer_size: 'SHOEWIDE23.5', allume_size: '23.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 444
+    fields: {retailer_size: 'SHOEWIDE24', allume_size: '24W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 445
+    fields: {retailer_size: 'SHOEWIDE24.5', allume_size: '24.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 446
+    fields: {retailer_size: 'SHOEWIDE25', allume_size: '25W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 447
+    fields: {retailer_size: 'SHOEWIDE25.5', allume_size: '25.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 448
+    fields: {retailer_size: 'SHOEWIDE26', allume_size: '26W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 449
+    fields: {retailer_size: 'SHOEWIDE26.5', allume_size: '26.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 450
+    fields: {retailer_size: 'SHOEWIDE27', allume_size: '27W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 451
+    fields: {retailer_size: 'SHOEWIDE27.5', allume_size: '27.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 452
+    fields: {retailer_size: 'SHOEWIDE28', allume_size: '28W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 453
+    fields: {retailer_size: 'SHOEWIDE28.5', allume_size: '28.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 454
+    fields: {retailer_size: 'SHOEWIDE29', allume_size: '29W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 455
+    fields: {retailer_size: 'SHOEWIDE29.5', allume_size: '29.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 456
+    fields: {retailer_size: 'SHOEWIDE30', allume_size: '30W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 457
+    fields: {retailer_size: 'SHOEWIDE30.5', allume_size: '30.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 458
+    fields: {retailer_size: 'SHOEWIDE31', allume_size: '31W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 459
+    fields: {retailer_size: 'SHOEWIDE31.5', allume_size: '31.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 460
+    fields: {retailer_size: 'SHOEWIDE32', allume_size: '32W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 461
+    fields: {retailer_size: 'SHOEWIDE32.5', allume_size: '32.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 462
+    fields: {retailer_size: 'SHOEWIDE33', allume_size: '33W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 463
+    fields: {retailer_size: 'SHOEWIDE33.5', allume_size: '33.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 464
+    fields: {retailer_size: 'SHOEWIDE34', allume_size: '34W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 465
+    fields: {retailer_size: 'SHOEWIDE34.5', allume_size: '34.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 466
+    fields: {retailer_size: 'SHOEWIDE35', allume_size: '35W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 467
+    fields: {retailer_size: 'SHOEWIDE35.5', allume_size: '35.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 468
+    fields: {retailer_size: 'SHOEWIDE36', allume_size: '36W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 469
+    fields: {retailer_size: 'SHOEWIDE36.5', allume_size: '36.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 470
+    fields: {retailer_size: 'SHOEWIDE37', allume_size: '37W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 471
+    fields: {retailer_size: 'SHOEWIDE37.5', allume_size: '37.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 472
+    fields: {retailer_size: 'SHOEWIDE38', allume_size: '38W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 473
+    fields: {retailer_size: 'SHOEWIDE38.5', allume_size: '38.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 474
+    fields: {retailer_size: 'SHOEWIDE39', allume_size: '39W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 475
+    fields: {retailer_size: 'SHOEWIDE39.5', allume_size: '39.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 476
+    fields: {retailer_size: 'SHOEWIDE40', allume_size: '40W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 477
+    fields: {retailer_size: 'SHOEWIDE40.5', allume_size: '40.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 478
+    fields: {retailer_size: 'SHOEWIDE41', allume_size: '41W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 479
+    fields: {retailer_size: 'SHOEWIDE41.5', allume_size: '41.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 480
+    fields: {retailer_size: 'SHOEWIDE42', allume_size: '42W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 481
+    fields: {retailer_size: 'SHOEWIDE42.5', allume_size: '42.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 482
+    fields: {retailer_size: 'SHOEWIDE43', allume_size: '43W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 483
+    fields: {retailer_size: 'SHOEWIDE43.5', allume_size: '43.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 484
+    fields: {retailer_size: 'SHOEWIDE44', allume_size: '44W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 485
+    fields: {retailer_size: 'SHOEWIDE44.5', allume_size: '44.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 486
+    fields: {retailer_size: 'SHOEWIDE45', allume_size: '45W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 487
+    fields: {retailer_size: 'SHOEWIDE45.5', allume_size: '45.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 488
+    fields: {retailer_size: 'SHOEWIDE46', allume_size: '46W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 489
+    fields: {retailer_size: 'SHOEWIDE46.5', allume_size: '46.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 490
+    fields: {retailer_size: 'SHOEWIDE47', allume_size: '47W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 491
+    fields: {retailer_size: 'SHOEWIDE47.5', allume_size: '47.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 492
+    fields: {retailer_size: 'SHOEWIDE48', allume_size: '48W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 493
+    fields: {retailer_size: 'SHOEWIDE48.5', allume_size: '48.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 494
+    fields: {retailer_size: 'SHOEWIDE49', allume_size: '49W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 495
+    fields: {retailer_size: 'SHOEWIDE49.5', allume_size: '49.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 496
+    fields: {retailer_size: 'SHOEWIDE50', allume_size: '50W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 497
+    fields: {retailer_size: 'SHOEWIDE50.5', allume_size: '50.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 498
+    fields: {retailer_size: 'SHOEWIDE51', allume_size: '51W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 499
+    fields: {retailer_size: 'SHOEWIDE51.5', allume_size: '51.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 500
+    fields: {retailer_size: 'SHOEWIDE52', allume_size: '52W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 501
+    fields: {retailer_size: 'SHOEWIDE52.5', allume_size: '52.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 502
+    fields: {retailer_size: 'SHOEWIDE53', allume_size: '53W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 503
+    fields: {retailer_size: 'SHOEWIDE53.5', allume_size: '53.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 504
+    fields: {retailer_size: 'SHOEWIDE54', allume_size: '54W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 505
+    fields: {retailer_size: 'SHOEWIDE54.5', allume_size: '54.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 506
+    fields: {retailer_size: 'SHOEWIDE55', allume_size: '55W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 507
+    fields: {retailer_size: 'SHOEWIDE55.5', allume_size: '55.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 508
+    fields: {retailer_size: 'SHOEWIDE56', allume_size: '56W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 509
+    fields: {retailer_size: 'SHOEWIDE56.5', allume_size: '56.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 510
+    fields: {retailer_size: 'SHOEWIDE57', allume_size: '57W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 511
+    fields: {retailer_size: 'SHOEWIDE57.5', allume_size: '57.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 512
+    fields: {retailer_size: 'SHOEWIDE58', allume_size: '58W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 513
+    fields: {retailer_size: 'SHOEWIDE58.5', allume_size: '58.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 514
+    fields: {retailer_size: 'SHOEWIDE59', allume_size: '59W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 515
+    fields: {retailer_size: 'SHOEWIDE59.5', allume_size: '59.5W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 516
+    fields: {retailer_size: 'SHOEWIDE60', allume_size: '60W', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 517
+    fields: {retailer_size: '4', allume_size: '4', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 518
+    fields: {retailer_size: '4.5', allume_size: '4.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 519
+    fields: {retailer_size: '5', allume_size: '5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 520
+    fields: {retailer_size: '5.5', allume_size: '5.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 521
+    fields: {retailer_size: '6', allume_size: '6', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 522
+    fields: {retailer_size: '6.5', allume_size: '6.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 523
+    fields: {retailer_size: '7', allume_size: '7', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 524
+    fields: {retailer_size: '7.5', allume_size: '7.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 525
+    fields: {retailer_size: '8', allume_size: '8', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 526
+    fields: {retailer_size: '8.5', allume_size: '8.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 527
+    fields: {retailer_size: '9', allume_size: '9', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 528
+    fields: {retailer_size: '9.5', allume_size: '9.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 529
+    fields: {retailer_size: '10', allume_size: '10', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 530
+    fields: {retailer_size: '10.5', allume_size: '10.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 531
+    fields: {retailer_size: '11', allume_size: '11', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 532
+    fields: {retailer_size: '11.5', allume_size: '11.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 533
+    fields: {retailer_size: '12', allume_size: '12', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 534
+    fields: {retailer_size: '12.5', allume_size: '12.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 535
+    fields: {retailer_size: '13', allume_size: '13', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 536
+    fields: {retailer_size: '13.5', allume_size: '13.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 537
+    fields: {retailer_size: '14', allume_size: '14', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 538
+    fields: {retailer_size: '14.5', allume_size: '14.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 539
+    fields: {retailer_size: '15', allume_size: '15', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 540
+    fields: {retailer_size: '15.5', allume_size: '15.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 541
+    fields: {retailer_size: '16', allume_size: '16', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 542
+    fields: {retailer_size: '16.5', allume_size: '16.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 543
+    fields: {retailer_size: '17', allume_size: '17', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 544
+    fields: {retailer_size: '17.5', allume_size: '17.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 545
+    fields: {retailer_size: '18', allume_size: '18', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 546
+    fields: {retailer_size: '18.5', allume_size: '18.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 547
+    fields: {retailer_size: '19', allume_size: '19', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 548
+    fields: {retailer_size: '19.5', allume_size: '19.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 549
+    fields: {retailer_size: '20', allume_size: '20', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 550
+    fields: {retailer_size: '20.5', allume_size: '20.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 551
+    fields: {retailer_size: '21', allume_size: '21', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 552
+    fields: {retailer_size: '21.5', allume_size: '21.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 553
+    fields: {retailer_size: '22', allume_size: '22', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 554
+    fields: {retailer_size: '22.5', allume_size: '22.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 555
+    fields: {retailer_size: '23', allume_size: '23', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 556
+    fields: {retailer_size: '23.5', allume_size: '23.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 557
+    fields: {retailer_size: '24', allume_size: '24', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 558
+    fields: {retailer_size: '24.5', allume_size: '24.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 559
+    fields: {retailer_size: '25', allume_size: '25', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 560
+    fields: {retailer_size: '25.5', allume_size: '25.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 561
+    fields: {retailer_size: '26', allume_size: '26', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 562
+    fields: {retailer_size: '26.5', allume_size: '26.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 563
+    fields: {retailer_size: '27', allume_size: '27', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 564
+    fields: {retailer_size: '27.5', allume_size: '27.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 565
+    fields: {retailer_size: '28', allume_size: '28', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 566
+    fields: {retailer_size: '28.5', allume_size: '28.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 567
+    fields: {retailer_size: '29', allume_size: '29', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 568
+    fields: {retailer_size: '29.5', allume_size: '29.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 569
+    fields: {retailer_size: '30', allume_size: '30', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 570
+    fields: {retailer_size: '30.5', allume_size: '30.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 571
+    fields: {retailer_size: '31', allume_size: '31', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 572
+    fields: {retailer_size: '31.5', allume_size: '31.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 573
+    fields: {retailer_size: '32', allume_size: '32', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 574
+    fields: {retailer_size: '32.5', allume_size: '32.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 575
+    fields: {retailer_size: '33', allume_size: '33', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 576
+    fields: {retailer_size: '33.5', allume_size: '33.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 577
+    fields: {retailer_size: '34', allume_size: '34', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 578
+    fields: {retailer_size: '34.5', allume_size: '34.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 579
+    fields: {retailer_size: '35', allume_size: '35', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 580
+    fields: {retailer_size: '35.5', allume_size: '35.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 581
+    fields: {retailer_size: '36', allume_size: '36', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 582
+    fields: {retailer_size: '36.5', allume_size: '36.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 583
+    fields: {retailer_size: '37', allume_size: '37', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 584
+    fields: {retailer_size: '37.5', allume_size: '37.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 585
+    fields: {retailer_size: '38', allume_size: '38', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 586
+    fields: {retailer_size: '38.5', allume_size: '38.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 587
+    fields: {retailer_size: '39', allume_size: '39', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 588
+    fields: {retailer_size: '39.5', allume_size: '39.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 589
+    fields: {retailer_size: '40', allume_size: '40', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 590
+    fields: {retailer_size: '40.5', allume_size: '40.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 591
+    fields: {retailer_size: '41', allume_size: '41', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 592
+    fields: {retailer_size: '41.5', allume_size: '41.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 593
+    fields: {retailer_size: '42', allume_size: '42', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 594
+    fields: {retailer_size: '42.5', allume_size: '42.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 595
+    fields: {retailer_size: '43', allume_size: '43', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 596
+    fields: {retailer_size: '43.5', allume_size: '43.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 597
+    fields: {retailer_size: '44', allume_size: '44', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 598
+    fields: {retailer_size: '44.5', allume_size: '44.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 599
+    fields: {retailer_size: '45', allume_size: '45', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 600
+    fields: {retailer_size: '45.5', allume_size: '45.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 601
+    fields: {retailer_size: '46', allume_size: '46', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 602
+    fields: {retailer_size: '46.5', allume_size: '46.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 603
+    fields: {retailer_size: '47', allume_size: '47', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 604
+    fields: {retailer_size: '47.5', allume_size: '47.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 605
+    fields: {retailer_size: '48', allume_size: '48', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 606
+    fields: {retailer_size: '48.5', allume_size: '48.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 607
+    fields: {retailer_size: '49', allume_size: '49', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 608
+    fields: {retailer_size: '49.5', allume_size: '49.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 609
+    fields: {retailer_size: '50', allume_size: '50', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 610
+    fields: {retailer_size: '50.5', allume_size: '50.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 611
+    fields: {retailer_size: '51', allume_size: '51', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 612
+    fields: {retailer_size: '51.5', allume_size: '51.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 613
+    fields: {retailer_size: '52', allume_size: '52', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 614
+    fields: {retailer_size: '52.5', allume_size: '52.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 615
+    fields: {retailer_size: '53', allume_size: '53', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 616
+    fields: {retailer_size: '53.5', allume_size: '53.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 617
+    fields: {retailer_size: '54', allume_size: '54', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 618
+    fields: {retailer_size: '54.5', allume_size: '54.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 619
+    fields: {retailer_size: '55', allume_size: '55', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 620
+    fields: {retailer_size: '55.5', allume_size: '55.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 621
+    fields: {retailer_size: '56', allume_size: '56', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 622
+    fields: {retailer_size: '56.5', allume_size: '56.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 623
+    fields: {retailer_size: '57', allume_size: '57', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 624
+    fields: {retailer_size: '57.5', allume_size: '57.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 625
+    fields: {retailer_size: '58', allume_size: '58', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 626
+    fields: {retailer_size: '58.5', allume_size: '58.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 627
+    fields: {retailer_size: '59', allume_size: '59', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 628
+    fields: {retailer_size: '59.5', allume_size: '59.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 629
+    fields: {retailer_size: '60', allume_size: '60', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 630
+    fields: {retailer_size: '0', allume_size: '0', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 631
+    fields: {retailer_size: '2', allume_size: '2', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 632
+    fields: {retailer_size: 'UK0', allume_size: 'UK 0', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 633
+    fields: {retailer_size: 'UK2', allume_size: 'UK 2', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 634
+    fields: {retailer_size: 'UK4', allume_size: 'UK 4', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 635
+    fields: {retailer_size: 'UK4.5', allume_size: 'UK 4.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 636
+    fields: {retailer_size: 'UK5', allume_size: 'UK 5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 637
+    fields: {retailer_size: 'UK5.5', allume_size: 'UK 5.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 638
+    fields: {retailer_size: 'UK6', allume_size: 'UK 6', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 639
+    fields: {retailer_size: 'UK6.5', allume_size: 'UK 6.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 640
+    fields: {retailer_size: 'UK7', allume_size: 'UK 7', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 641
+    fields: {retailer_size: 'UK7.5', allume_size: 'UK 7.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 642
+    fields: {retailer_size: 'UK8', allume_size: 'UK 8', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 643
+    fields: {retailer_size: 'UK8.5', allume_size: 'UK 8.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 644
+    fields: {retailer_size: 'UK9', allume_size: 'UK 9', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 645
+    fields: {retailer_size: 'UK9.5', allume_size: 'UK 9.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 646
+    fields: {retailer_size: 'UK10', allume_size: 'UK 10', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 647
+    fields: {retailer_size: 'UK10.5', allume_size: 'UK 10.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 648
+    fields: {retailer_size: 'UK11', allume_size: 'UK 11', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 649
+    fields: {retailer_size: 'UK11.5', allume_size: 'UK 11.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 650
+    fields: {retailer_size: 'UK12', allume_size: 'UK 12', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 651
+    fields: {retailer_size: 'UK12.5', allume_size: 'UK 12.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 652
+    fields: {retailer_size: 'UK13', allume_size: 'UK 13', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 653
+    fields: {retailer_size: 'UK13.5', allume_size: 'UK 13.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 654
+    fields: {retailer_size: 'UK14', allume_size: 'UK 14', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 655
+    fields: {retailer_size: 'UK14.5', allume_size: 'UK 14.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 656
+    fields: {retailer_size: 'UK15', allume_size: 'UK 15', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 657
+    fields: {retailer_size: 'UK15.5', allume_size: 'UK 15.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 658
+    fields: {retailer_size: 'UK16', allume_size: 'UK 16', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 659
+    fields: {retailer_size: 'UK16.5', allume_size: 'UK 16.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 660
+    fields: {retailer_size: 'UK17', allume_size: 'UK 17', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 661
+    fields: {retailer_size: 'UK17.5', allume_size: 'UK 17.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 662
+    fields: {retailer_size: 'UK18', allume_size: 'UK 18', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 663
+    fields: {retailer_size: 'UK18.5', allume_size: 'UK 18.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 664
+    fields: {retailer_size: 'UK19', allume_size: 'UK 19', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 665
+    fields: {retailer_size: 'UK19.5', allume_size: 'UK 19.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 666
+    fields: {retailer_size: 'UK20', allume_size: 'UK 20', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 667
+    fields: {retailer_size: 'UK20.5', allume_size: 'UK 20.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 668
+    fields: {retailer_size: 'UK21', allume_size: 'UK 21', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 669
+    fields: {retailer_size: 'UK21.5', allume_size: 'UK 21.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 670
+    fields: {retailer_size: 'UK22', allume_size: 'UK 22', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 671
+    fields: {retailer_size: 'UK22.5', allume_size: 'UK 22.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 672
+    fields: {retailer_size: 'UK23', allume_size: 'UK 23', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 673
+    fields: {retailer_size: 'UK23.5', allume_size: 'UK 23.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 674
+    fields: {retailer_size: 'UK24', allume_size: 'UK 24', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 675
+    fields: {retailer_size: 'UK24.5', allume_size: 'UK 24.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 676
+    fields: {retailer_size: 'UK25', allume_size: 'UK 25', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 677
+    fields: {retailer_size: 'UK25.5', allume_size: 'UK 25.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 678
+    fields: {retailer_size: 'UK26', allume_size: 'UK 26', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 679
+    fields: {retailer_size: 'UK26.5', allume_size: 'UK 26.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 680
+    fields: {retailer_size: 'UK27', allume_size: 'UK 27', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 681
+    fields: {retailer_size: 'UK27.5', allume_size: 'UK 27.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 682
+    fields: {retailer_size: 'UK28', allume_size: 'UK 28', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 683
+    fields: {retailer_size: 'UK28.5', allume_size: 'UK 28.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 684
+    fields: {retailer_size: 'UK29', allume_size: 'UK 29', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 685
+    fields: {retailer_size: 'UK29.5', allume_size: 'UK 29.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 686
+    fields: {retailer_size: 'UK30', allume_size: 'UK 30', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 687
+    fields: {retailer_size: 'UK30.5', allume_size: 'UK 30.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 688
+    fields: {retailer_size: 'UK31', allume_size: 'UK 31', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 689
+    fields: {retailer_size: 'UK31.5', allume_size: 'UK 31.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 690
+    fields: {retailer_size: 'UK32', allume_size: 'UK 32', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 691
+    fields: {retailer_size: 'UK32.5', allume_size: 'UK 32.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 692
+    fields: {retailer_size: 'UK33', allume_size: 'UK 33', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 693
+    fields: {retailer_size: 'UK33.5', allume_size: 'UK 33.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 694
+    fields: {retailer_size: 'UK34', allume_size: 'UK 34', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 695
+    fields: {retailer_size: 'UK34.5', allume_size: 'UK 34.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 696
+    fields: {retailer_size: 'UK35', allume_size: 'UK 35', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 697
+    fields: {retailer_size: 'UK35.5', allume_size: 'UK 35.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 698
+    fields: {retailer_size: 'UK36', allume_size: 'UK 36', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 699
+    fields: {retailer_size: 'UK36.5', allume_size: 'UK 36.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 700
+    fields: {retailer_size: 'UK37', allume_size: 'UK 37', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 701
+    fields: {retailer_size: 'UK37.5', allume_size: 'UK 37.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 702
+    fields: {retailer_size: 'UK38', allume_size: 'UK 38', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 703
+    fields: {retailer_size: 'UK38.5', allume_size: 'UK 38.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 704
+    fields: {retailer_size: 'UK39', allume_size: 'UK 39', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 705
+    fields: {retailer_size: 'UK39.5', allume_size: 'UK 39.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 706
+    fields: {retailer_size: 'UK40', allume_size: 'UK 40', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 707
+    fields: {retailer_size: 'UK40.5', allume_size: 'UK 40.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 708
+    fields: {retailer_size: 'UK41', allume_size: 'UK 41', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 709
+    fields: {retailer_size: 'UK41.5', allume_size: 'UK 41.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 710
+    fields: {retailer_size: 'UK42', allume_size: 'UK 42', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 711
+    fields: {retailer_size: 'UK42.5', allume_size: 'UK 42.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 712
+    fields: {retailer_size: 'UK43', allume_size: 'UK 43', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 713
+    fields: {retailer_size: 'UK43.5', allume_size: 'UK 43.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 714
+    fields: {retailer_size: 'UK44', allume_size: 'UK 44', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 715
+    fields: {retailer_size: 'UK44.5', allume_size: 'UK 44.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 716
+    fields: {retailer_size: 'UK45', allume_size: 'UK 45', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 717
+    fields: {retailer_size: 'UK45.5', allume_size: 'UK 45.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 718
+    fields: {retailer_size: 'UK46', allume_size: 'UK 46', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 719
+    fields: {retailer_size: 'UK46.5', allume_size: 'UK 46.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 720
+    fields: {retailer_size: 'UK47', allume_size: 'UK 47', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 721
+    fields: {retailer_size: 'UK47.5', allume_size: 'UK 47.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 722
+    fields: {retailer_size: 'UK48', allume_size: 'UK 48', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 723
+    fields: {retailer_size: 'UK48.5', allume_size: 'UK 48.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 724
+    fields: {retailer_size: 'UK49', allume_size: 'UK 49', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 725
+    fields: {retailer_size: 'UK49.5', allume_size: 'UK 49.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 726
+    fields: {retailer_size: 'UK50', allume_size: 'UK 50', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 727
+    fields: {retailer_size: 'UK50.5', allume_size: 'UK 50.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 728
+    fields: {retailer_size: 'UK51', allume_size: 'UK 51', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 729
+    fields: {retailer_size: 'UK51.5', allume_size: 'UK 51.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 730
+    fields: {retailer_size: 'UK52', allume_size: 'UK 52', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 731
+    fields: {retailer_size: 'UK52.5', allume_size: 'UK 52.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 732
+    fields: {retailer_size: 'UK53', allume_size: 'UK 53', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 733
+    fields: {retailer_size: 'UK53.5', allume_size: 'UK 53.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 734
+    fields: {retailer_size: 'UK54', allume_size: 'UK 54', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 735
+    fields: {retailer_size: 'UK54.5', allume_size: 'UK 54.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 736
+    fields: {retailer_size: 'UK55', allume_size: 'UK 55', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 737
+    fields: {retailer_size: 'UK55.5', allume_size: 'UK 55.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 738
+    fields: {retailer_size: 'UK56', allume_size: 'UK 56', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 739
+    fields: {retailer_size: 'UK56.5', allume_size: 'UK 56.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 740
+    fields: {retailer_size: 'UK57', allume_size: 'UK 57', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 741
+    fields: {retailer_size: 'UK57.5', allume_size: 'UK 57.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 742
+    fields: {retailer_size: 'UK58', allume_size: 'UK 58', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 743
+    fields: {retailer_size: 'UK58.5', allume_size: 'UK 58.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 744
+    fields: {retailer_size: 'UK59', allume_size: 'UK 59', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 745
+    fields: {retailer_size: 'UK59.5', allume_size: 'UK 59.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 746
+    fields: {retailer_size: 'UK60', allume_size: 'UK 60', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 747
+    fields: {retailer_size: 'AUS0', allume_size: 'AUS 0', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 748
+    fields: {retailer_size: 'AUS2', allume_size: 'AUS 2', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 749
+    fields: {retailer_size: 'AUS4', allume_size: 'AUS 4', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 750
+    fields: {retailer_size: 'AUS4.5', allume_size: 'AUS 4.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 751
+    fields: {retailer_size: 'AUS5', allume_size: 'AUS 5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 752
+    fields: {retailer_size: 'AUS5.5', allume_size: 'AUS 5.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 753
+    fields: {retailer_size: 'AUS6', allume_size: 'AUS 6', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 754
+    fields: {retailer_size: 'AUS6.5', allume_size: 'AUS 6.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 755
+    fields: {retailer_size: 'AUS7', allume_size: 'AUS 7', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 756
+    fields: {retailer_size: 'AUS7.5', allume_size: 'AUS 7.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 757
+    fields: {retailer_size: 'AUS8', allume_size: 'AUS 8', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 758
+    fields: {retailer_size: 'AUS8.5', allume_size: 'AUS 8.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 759
+    fields: {retailer_size: 'AUS9', allume_size: 'AUS 9', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 760
+    fields: {retailer_size: 'AUS9.5', allume_size: 'AUS 9.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 761
+    fields: {retailer_size: 'AUS10', allume_size: 'AUS 10', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 762
+    fields: {retailer_size: 'AUS10.5', allume_size: 'AUS 10.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 763
+    fields: {retailer_size: 'AUS11', allume_size: 'AUS 11', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 764
+    fields: {retailer_size: 'AUS11.5', allume_size: 'AUS 11.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 765
+    fields: {retailer_size: 'AUS12', allume_size: 'AUS 12', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 766
+    fields: {retailer_size: 'AUS12.5', allume_size: 'AUS 12.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 767
+    fields: {retailer_size: 'AUS13', allume_size: 'AUS 13', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 768
+    fields: {retailer_size: 'AUS13.5', allume_size: 'AUS 13.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 769
+    fields: {retailer_size: 'AUS14', allume_size: 'AUS 14', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 770
+    fields: {retailer_size: 'AUS14.5', allume_size: 'AUS 14.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 771
+    fields: {retailer_size: 'AUS15', allume_size: 'AUS 15', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 772
+    fields: {retailer_size: 'AUS15.5', allume_size: 'AUS 15.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 773
+    fields: {retailer_size: 'AUS16', allume_size: 'AUS 16', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 774
+    fields: {retailer_size: 'AUS16.5', allume_size: 'AUS 16.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 775
+    fields: {retailer_size: 'AUS17', allume_size: 'AUS 17', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 776
+    fields: {retailer_size: 'AUS17.5', allume_size: 'AUS 17.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 777
+    fields: {retailer_size: 'AUS18', allume_size: 'AUS 18', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 778
+    fields: {retailer_size: 'AUS18.5', allume_size: 'AUS 18.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 779
+    fields: {retailer_size: 'AUS19', allume_size: 'AUS 19', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 780
+    fields: {retailer_size: 'AUS19.5', allume_size: 'AUS 19.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 781
+    fields: {retailer_size: 'AUS20', allume_size: 'AUS 20', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 782
+    fields: {retailer_size: 'AUS20.5', allume_size: 'AUS 20.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 783
+    fields: {retailer_size: 'AUS21', allume_size: 'AUS 21', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 784
+    fields: {retailer_size: 'AUS21.5', allume_size: 'AUS 21.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 785
+    fields: {retailer_size: 'AUS22', allume_size: 'AUS 22', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 786
+    fields: {retailer_size: 'AUS22.5', allume_size: 'AUS 22.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 787
+    fields: {retailer_size: 'AUS23', allume_size: 'AUS 23', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 788
+    fields: {retailer_size: 'AUS23.5', allume_size: 'AUS 23.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 789
+    fields: {retailer_size: 'AUS24', allume_size: 'AUS 24', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 790
+    fields: {retailer_size: 'AUS24.5', allume_size: 'AUS 24.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 791
+    fields: {retailer_size: 'AUS25', allume_size: 'AUS 25', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 792
+    fields: {retailer_size: 'AUS25.5', allume_size: 'AUS 25.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 793
+    fields: {retailer_size: 'AUS26', allume_size: 'AUS 26', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 794
+    fields: {retailer_size: 'AUS26.5', allume_size: 'AUS 26.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 795
+    fields: {retailer_size: 'AUS27', allume_size: 'AUS 27', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 796
+    fields: {retailer_size: 'AUS27.5', allume_size: 'AUS 27.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 797
+    fields: {retailer_size: 'AUS28', allume_size: 'AUS 28', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 798
+    fields: {retailer_size: 'AUS28.5', allume_size: 'AUS 28.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 799
+    fields: {retailer_size: 'AUS29', allume_size: 'AUS 29', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 800
+    fields: {retailer_size: 'AUS29.5', allume_size: 'AUS 29.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 801
+    fields: {retailer_size: 'AUS30', allume_size: 'AUS 30', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 802
+    fields: {retailer_size: 'AUS30.5', allume_size: 'AUS 30.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 803
+    fields: {retailer_size: 'AUS31', allume_size: 'AUS 31', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 804
+    fields: {retailer_size: 'AUS31.5', allume_size: 'AUS 31.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 805
+    fields: {retailer_size: 'AUS32', allume_size: 'AUS 32', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 806
+    fields: {retailer_size: 'AUS32.5', allume_size: 'AUS 32.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 807
+    fields: {retailer_size: 'AUS33', allume_size: 'AUS 33', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 808
+    fields: {retailer_size: 'AUS33.5', allume_size: 'AUS 33.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 809
+    fields: {retailer_size: 'AUS34', allume_size: 'AUS 34', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 810
+    fields: {retailer_size: 'AUS34.5', allume_size: 'AUS 34.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 811
+    fields: {retailer_size: 'AUS35', allume_size: 'AUS 35', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 812
+    fields: {retailer_size: 'AUS35.5', allume_size: 'AUS 35.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 813
+    fields: {retailer_size: 'AUS36', allume_size: 'AUS 36', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 814
+    fields: {retailer_size: 'AUS36.5', allume_size: 'AUS 36.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 815
+    fields: {retailer_size: 'AUS37', allume_size: 'AUS 37', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 816
+    fields: {retailer_size: 'AUS37.5', allume_size: 'AUS 37.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 817
+    fields: {retailer_size: 'AUS38', allume_size: 'AUS 38', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 818
+    fields: {retailer_size: 'AUS38.5', allume_size: 'AUS 38.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 819
+    fields: {retailer_size: 'AUS39', allume_size: 'AUS 39', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 820
+    fields: {retailer_size: 'AUS39.5', allume_size: 'AUS 39.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 821
+    fields: {retailer_size: 'AUS40', allume_size: 'AUS 40', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 822
+    fields: {retailer_size: 'AUS40.5', allume_size: 'AUS 40.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 823
+    fields: {retailer_size: 'AUS41', allume_size: 'AUS 41', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 824
+    fields: {retailer_size: 'AUS41.5', allume_size: 'AUS 41.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 825
+    fields: {retailer_size: 'AUS42', allume_size: 'AUS 42', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 826
+    fields: {retailer_size: 'AUS42.5', allume_size: 'AUS 42.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 827
+    fields: {retailer_size: 'AUS43', allume_size: 'AUS 43', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 828
+    fields: {retailer_size: 'AUS43.5', allume_size: 'AUS 43.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 829
+    fields: {retailer_size: 'AUS44', allume_size: 'AUS 44', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 830
+    fields: {retailer_size: 'AUS44.5', allume_size: 'AUS 44.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 831
+    fields: {retailer_size: 'AUS45', allume_size: 'AUS 45', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 832
+    fields: {retailer_size: 'AUS45.5', allume_size: 'AUS 45.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 833
+    fields: {retailer_size: 'AUS46', allume_size: 'AUS 46', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 834
+    fields: {retailer_size: 'AUS46.5', allume_size: 'AUS 46.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 835
+    fields: {retailer_size: 'AUS47', allume_size: 'AUS 47', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 836
+    fields: {retailer_size: 'AUS47.5', allume_size: 'AUS 47.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 837
+    fields: {retailer_size: 'AUS48', allume_size: 'AUS 48', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 838
+    fields: {retailer_size: 'AUS48.5', allume_size: 'AUS 48.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 839
+    fields: {retailer_size: 'AUS49', allume_size: 'AUS 49', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 840
+    fields: {retailer_size: 'AUS49.5', allume_size: 'AUS 49.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 841
+    fields: {retailer_size: 'AUS50', allume_size: 'AUS 50', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 842
+    fields: {retailer_size: 'AUS50.5', allume_size: 'AUS 50.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 843
+    fields: {retailer_size: 'AUS51', allume_size: 'AUS 51', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 844
+    fields: {retailer_size: 'AUS51.5', allume_size: 'AUS 51.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 845
+    fields: {retailer_size: 'AUS52', allume_size: 'AUS 52', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 846
+    fields: {retailer_size: 'AUS52.5', allume_size: 'AUS 52.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 847
+    fields: {retailer_size: 'AUS53', allume_size: 'AUS 53', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 848
+    fields: {retailer_size: 'AUS53.5', allume_size: 'AUS 53.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 849
+    fields: {retailer_size: 'AUS54', allume_size: 'AUS 54', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 850
+    fields: {retailer_size: 'AUS54.5', allume_size: 'AUS 54.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 851
+    fields: {retailer_size: 'AUS55', allume_size: 'AUS 55', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 852
+    fields: {retailer_size: 'AUS55.5', allume_size: 'AUS 55.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 853
+    fields: {retailer_size: 'AUS56', allume_size: 'AUS 56', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 854
+    fields: {retailer_size: 'AUS56.5', allume_size: 'AUS 56.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 855
+    fields: {retailer_size: 'AUS57', allume_size: 'AUS 57', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 856
+    fields: {retailer_size: 'AUS57.5', allume_size: 'AUS 57.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 857
+    fields: {retailer_size: 'AUS58', allume_size: 'AUS 58', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 858
+    fields: {retailer_size: 'AUS58.5', allume_size: 'AUS 58.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 859
+    fields: {retailer_size: 'AUS59', allume_size: 'AUS 59', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 860
+    fields: {retailer_size: 'AUS59.5', allume_size: 'AUS 59.5', is_text: 0}
+-   model: product_api.allumeretailersizemapping
+    pk: 861
+    fields: {retailer_size: 'AUS60', allume_size: 'AUS 60', is_text: 0}
