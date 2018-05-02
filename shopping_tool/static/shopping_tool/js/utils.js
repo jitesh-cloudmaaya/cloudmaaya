@@ -47,24 +47,118 @@ var utils = {
       e.preventDefault();
       $('#user-card').addClass('show').addClass('looker');
     }).html('View ' + clip.data('username'));
-    /* get next session info with subscription_id
-      $.ajax({
-        contentType: 'application/x-www-form-urlencoded',
-        crossDomain: true,
-        data: $.param({subscription_id: id here),
-        type: 'POST',
-        url: '$https://styling-service-' + local_environment + '.allume.co/repeat/get_next_styling_session_info',
-        xhrFields: {
-          withCredentials: true
-        },
-        success: function(response){
-          console.log(response)
-        },
-        error: function(response){
-          console.log(response)
-        }
-      });
+    /**
+    * @description get next styling session info
     */
+    $.ajax({
+      contentType: 'application/json',
+      crossDomain: true,
+      data: JSON.stringify({user_id: $('#user-clip').data('userid')}),
+      type: 'POST',
+      url: 'https://styling-service-' + local_environment + '.allume.co/repeat/get_next_styling_session_info_by_user_admin/',
+      xhrFields: {
+        withCredentials: true
+      },
+      success: function(response){
+        var obj = JSON.parse(response);
+        console.log(obj)
+        /**
+        * example response payload:
+        * {
+        *  "status": "success",
+        *  "data": {
+        *    "subscription_auto_renew": false,
+        *    "slotted": false,
+        *    "styling_session_cadence_in_weeks": 0,
+        *    "next_styling_session_stylist": {
+        *     "user_id": 3916,
+        *      "user_name": "Anna Roberson",
+        *      "first_name": "Anna",
+        *      "last_name": "Roberson",
+        *      "user_phone": "3109275694",
+        *      "user_email": "aroberson@allume.co"
+        *    },
+        *    "next_styling_session_type": null,
+        *    "next_styling_session_start_date": null
+        *  }
+        * }
+        */
+        var session_string = ''
+        if(obj.data != undefined){
+          var cadence = '';
+          var session_type = '';
+          if(obj.data.next_styling_session_type == null){
+            session_type = 'None';
+          }else{
+            if(obj.data.slotted == false){
+              session_type = 'Week of ' + moment(obj.data.next_styling_session_start_date).format('MMMM D');
+            }else{
+              session_type = moment(obj.data.next_styling_session_start_date).format('MMMM D');
+            }
+          }
+          if(obj.data.styling_session_cadence_in_weeks == 0){
+            cadence = ', no cadence';
+          }else{
+            switch(obj.data.styling_session_cadence_in_weeks){
+              case 2:
+                cadence = ', every 2 weeks';
+              break;
+              case 4:
+                cadence = ', every month'
+              break;
+              case 8:
+                cadence = ', every 2 months'
+              break;
+            }
+          }
+          session_string = session_type + '' + cadence; 
+        }
+        var div = $('#client-next-session');
+        if(session_string == ''){
+          div.html('');
+        }else{
+          div.html('<em>next session:</em> ' + session_string);
+        }
+      },
+      error: function(response){
+        console.log(response)
+      }
+    });
+    /**
+    * @description get styling session goals 
+    */
+    $.ajax({
+      contentType: 'application/json',
+      crossDomain: true,
+      data: JSON.stringify({styling_session_id: $('body').data('stylesession')}),
+      type: 'POST',
+      url: 'https://styling-service-' + local_environment + '.allume.co/repeat/get_styling_session_goals_admin/',
+      xhrFields: {
+        withCredentials: true
+      },
+      success: function(response){
+        var obj = JSON.parse(response);
+        console.log(obj)
+        var div = $('#client-session-goal');
+        var goals = [];
+        if(obj.data != undefined){
+          for(key in obj.data){
+            if(obj.data.hasOwnProperty(key)){
+              goals.push(
+                '<div class="qa"><em>' + obj.data[key].q +
+                '</em> ' + obj.data[key].a + '</div>'
+              )
+            }
+          }
+        }
+        if(goals.length > 0){
+          div.html(goals.join(''));
+        }
+      },
+      error: function(response){
+        console.log(response)
+      }
+    });
     /* correctly display bra size */
     var bra = $('#bra-size');
     var bra_size = bra.data('sizes');
@@ -112,7 +206,7 @@ var utils = {
       var href = link.attr('href')
       var div = $(href);
       /* calculate the correct max height of tab sections */
-      var h = 625 - ($('#client-tabs').outerHeight() + $('#user-card div.social').outerHeight() + $('#user-card span.goal').outerHeight());
+      var h = 625 - ($('#client-tabs').outerHeight() + $('#client-dynamic-section').outerHeight());
       div.css('maxHeight', h + 'px')
       if(link.hasClass('on') == false){
         link.addClass('on').siblings('a').removeClass('on');

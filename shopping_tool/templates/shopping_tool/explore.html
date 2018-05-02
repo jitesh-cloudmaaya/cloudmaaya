@@ -100,6 +100,7 @@
 <script src="{% sstatic 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
 {% include "shopping_tool/js_arrays.html" %}
+var local_environment = "{{env}}";
 var stylist_names = {
   {% for stylist in stylists %}
     {{stylist.id}}: "{{stylist.first_name}} {{stylist.last_name}}",

@@ -1122,7 +1122,8 @@ body.explore-page #user-card{position:absolute;}
   width:0;
   z-index:2; 
 }
-#user-card div.details span.goal {
+#user-card div.details span.goal,
+#user-card div.details span.next-session {
   border-bottom: 1px solid #ddd;
   display: block;
   font-size: 18px;
@@ -1130,7 +1131,12 @@ body.explore-page #user-card{position:absolute;}
   line-height: 24px;
   padding: 5px 10px 10px;
 }
-#user-card div.details span.goal em {display:block;}
+#user-card div.details span.goal {border:0;}
+#user-card div.details span.goal em.goal-header {display:block;}
+#user-card div.details span.next-session em,
+#user-card div.details span.goal em {display:inline-block;}
+#user-card div.details span.goal div.qa {padding:0 0 5px;}
+#client-dynamic-section {max-height:325px;}
 
 #user-card.show #user-clip.ready {
   background:#000;

@@ -75,6 +75,7 @@
 <script src="{% sstatic 'shopping_tool/js/look_builder.js' %}"></script>
 <script>
 {% include "shopping_tool/js_arrays.html" %}
+var local_environment = "{{env}}";
 utils.menu();
 utils.client();
 /* call the search page init function to set up the page */
