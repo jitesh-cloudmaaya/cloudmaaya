@@ -39,44 +39,44 @@ var facet_sizing = {
   */
 	clothing_members: {
     '00':{
-      members: [{size:'00',name: '00'},{size:'XXS',name: 'XXS'},{size:'XX SMALL',name: 'XX SMALL'},{size:'XX-SMALL',name: 'XX-SMALL'},{size:'22', name: '22 <i>waistline</i>'},{size:'23',name:'23 <i>waistline</i>'},{size:'24',name:'24 <i>waistline</i>'}],
-      sizes: ['00','XXS','XX SMALL', 'XX-SMALL','22','23','24']
+      members: [{size:'00',name: '00'},{size:'XXS',name: 'XXS'},{size:'XX SMALL',name: 'XX SMALL'},{size:'XX-SMALL',name: 'XX-SMALL'},{size:'W22', name: '22 <i>waistline</i>'},{size:'W23',name:'23 <i>waistline</i>'},{size:'W24',name:'24 <i>waistline</i>'}],
+      sizes: ['00','XXS','XX SMALL', 'XX-SMALL','W22','W23','W24']
     },
     '0':{
-      members: [{size:'0',name: '0'},{size:'XS',name: 'XS'},{size:'X SMALL',name:'X SMALL'},{size:'X-SMALL',name:'X-SMALL'},{size:'24', name:'24 <i>waistline</i>'},{size:'25',name:'25 <i>waistline</i>'}],
-      sizes: ['0','XS','X SMALL','X-SMALL','24','25']
+      members: [{size:'0',name: '0'},{size:'XS',name: 'XS'},{size:'X SMALL',name:'X SMALL'},{size:'X-SMALL',name:'X-SMALL'},{size:'W24', name:'24 <i>waistline</i>'},{size:'W25',name:'25 <i>waistline</i>'}],
+      sizes: ['0','XS','X SMALL','X-SMALL','W24','W25']
     },
     '2':{
-      members: [{size:'2',name: '2'},{size:'XS',name: 'XS'},{size:'XSMALL',name: 'XSMALL'},{size:'X-SMALL',name: 'X-SMALL'},{size:'26',name: '26 <i>waistline</i>'},{size:'32',name: '32 <i>EU</i>'}],
-      sizes: ['2','XS','XSMALL','X-SMALL','26','32']
+      members: [{size:'2',name: '2'},{size:'XS',name: 'XS'},{size:'XSMALL',name: 'XSMALL'},{size:'X-SMALL',name: 'X-SMALL'},{size:'W26',name: '26 <i>waistline</i>'},{size:'32',name: '32 <i>EU</i>'}],
+      sizes: ['2','XS','XSMALL','X-SMALL','W26','32']
     },      
     '4':{
-      members: [{size:'4',name: '4'},{size:'S',name: 'S'},{size:'SMALL',name:'SMALL'},{size:'27',name:'27 <i>waistline</i>'},{size:'34',name: '34 <i>EU</i>'}],
-      sizes: ['4','S','SMALL','27','34']
+      members: [{size:'4',name: '4'},{size:'S',name: 'S'},{size:'SMALL',name:'SMALL'},{size:'W27',name:'27 <i>waistline</i>'},{size:'34',name: '34 <i>EU</i>'}],
+      sizes: ['4','S','SMALL','W27','34']
     },      
     '6':{
-      members: [{size:'6',name: '6'},{size:'S',name: 'S'},{size:'SMALL',name: 'SMALL'},{size:'28',name: '28 <i>waistline</i>'},{size:'36',name: '36 <i>EU</i>'}],
-      sizes: ['6','S','SMALL','28','36']
+      members: [{size:'6',name: '6'},{size:'S',name: 'S'},{size:'SMALL',name: 'SMALL'},{size:'W28',name: '28 <i>waistline</i>'},{size:'36',name: '36 <i>EU</i>'}],
+      sizes: ['6','S','SMALL','W28','36']
     },      
     '8':{
-      members: [{size:'8',name: '8'},{size:'M',name: 'M'},{size:'MEDIUM',name: 'MEDIUM'},{size:'29',name: '29 <i>waistline</i>'},{size:'38',name: '38 <i>EU</i>'}],
-      sizes: ['8','M','MEDIUM','29','38']
+      members: [{size:'8',name: '8'},{size:'M',name: 'M'},{size:'MEDIUM',name: 'MEDIUM'},{size:'W29',name: '29 <i>waistline</i>'},{size:'38',name: '38 <i>EU</i>'}],
+      sizes: ['8','M','MEDIUM','W29','38']
     },      
     '10':{
-      members: [{size:'10',name: '10'},{size:'M',name: 'M'},{size:'MEDIUM',name: 'MEDIUM'},{size:'30',name: '30 <i>waistline</i>'},{size:'40',name: '40 <i>EU</i>'}],
-      sizes: ['10','M','MEDIUM','30','40']
+      members: [{size:'10',name: '10'},{size:'M',name: 'M'},{size:'MEDIUM',name: 'MEDIUM'},{size:'W30',name: '30 <i>waistline</i>'},{size:'40',name: '40 <i>EU</i>'}],
+      sizes: ['10','M','MEDIUM','W30','40']
     },      
     '12':{
-      members: [{size:'12',name: '12'},{size:'L',name: 'L'},{size:'LARGE',name: 'LARGE'},{size:'0X',name: '0X'},{size:'31',name: '31 <i>waistline</i>'},{size:'42',name: '42 <i>EU</i>'}],
-      sizes: ['12','L','LARGE','0X','31','42']
+      members: [{size:'12',name: '12'},{size:'L',name: 'L'},{size:'LARGE',name: 'LARGE'},{size:'0X',name: '0X'},{size:'W31',name: '31 <i>waistline</i>'},{size:'42',name: '42 <i>EU</i>'}],
+      sizes: ['12','L','LARGE','0X','W31','42']
     },      
     '14':{
-      members: [{size:'14',name: '14'},{size:'L',name: 'L'},{size:'LARGE',name: 'LARGE'},{size:'1X',name: '1X'},{size:'32',name: '32 <i>waistline</i>'},{size:'44',name: '44 <i>EU</i>'}],
-      sizes: ['14','L','LARGE','1X','32','44']
+      members: [{size:'14',name: '14'},{size:'L',name: 'L'},{size:'LARGE',name: 'LARGE'},{size:'1X',name: '1X'},{size:'W32',name: '32 <i>waistline</i>'},{size:'44',name: '44 <i>EU</i>'}],
+      sizes: ['14','L','LARGE','1X','W32','44']
     },      
     '16':{
-      members: [{size:'16',name: '16'},{size:'XL',name: 'XL'},{size:'X LARGE',name: 'X LARGE'},{size:'X-LARGE',name: 'X-LARGE'},{size:'1X',name: '1X'},{size:'33',name: '33 <i>waistline</i>'},{size:'46',name: '46 <i>EU</i>'}],
-      sizes: ['16','XL','X LARGE','X-LARGE','1X','33','46']
+      members: [{size:'16',name: '16'},{size:'XL',name: 'XL'},{size:'X LARGE',name: 'X LARGE'},{size:'X-LARGE',name: 'X-LARGE'},{size:'1X',name: '1X'},{size:'W33',name: '33 <i>waistline</i>'},{size:'46',name: '46 <i>EU</i>'}],
+      sizes: ['16','XL','X LARGE','X-LARGE','1X','W33','46']
     },      
     '00P':{
       members: [{size:'00P',name: '00P'},{size:'PETITE X-SMALL',name: 'PETITE X-SMALL'},{size:'P/XS',name:'P/XS'}],
@@ -119,8 +119,8 @@ var facet_sizing = {
       sizes: ['16P','PETITE X-LARGE','P/XL']
     },      
     '18':{
-      members: [{size:'18',name: '18'},{size:'XXL',name: 'XXL'},{size:'XX-LARGE',name: 'XX-LARGE'},{size:'2X',name: '2X'},{size:'34',name: '34 <i>waistline</i>'},{size:'48',name: '48 <i>EU</i>'}],
-      sizes: ['18','XXL','XX-LARGE','2X','34','48']
+      members: [{size:'18',name: '18'},{size:'XXL',name: 'XXL'},{size:'XX-LARGE',name: 'XX-LARGE'},{size:'2X',name: '2X'},{size:'W34',name: '34 <i>waistline</i>'},{size:'48',name: '48 <i>EU</i>'}],
+      sizes: ['18','XXL','XX-LARGE','2X','W34','48']
     },      
     '20':{
       members: [{size:'20',name: '20'},{size:'2X',name: '2X'},{size:'50',name: '50 <i>EU</i>'}],
