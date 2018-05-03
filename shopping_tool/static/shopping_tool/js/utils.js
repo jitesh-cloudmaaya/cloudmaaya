@@ -94,7 +94,7 @@ var utils = {
           for(var i = 0, l = obj.data.user_info.length; i<l; i++){
             var bio_field = obj.data.user_info[i]
             var bio_field_id = 'client-' + bio_field.q.replace(/[\s:]/g, '').toLowerCase();
-            var bio_label = bio_field_id == 'client-name' ? '<em>now styling: </em>' : '<em>' + bio_field.q + '</em>' ;
+            var bio_label = bio_field_id == 'client-name' ? '<em>now styling: </em>' : '<em>' + bio_field.q.toLowerCase() + '</em>' ;
             $('#' + bio_field_id).html(bio_label + '' + bio_field.a);
           }
           /* goals */
