@@ -205,6 +205,14 @@ class ExclusionTerm(models.Model):
     def __str__(self):
         return self.term
 
+class AllumeRetailerSizeMapping(models.Model):
+    retailer_size = models.CharField(max_length=100, null=True, default=None)
+    allume_size = models.CharField(max_length=100, null=True, default=None)
+    is_text = models.BooleanField()
+
+    class Meta:
+        db_table =  'allume_retailer_allume_size_mapping'
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product

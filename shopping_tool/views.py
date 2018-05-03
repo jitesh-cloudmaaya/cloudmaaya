@@ -16,7 +16,7 @@ from rest_framework import serializers
 from decorators import check_login
 from django.core.exceptions import PermissionDenied
 from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUsers, UserProductFavorite
-from product_api.models import Product, MerchantCategory, AllumeCategory
+from product_api.models import Product, MerchantCategory, AllumeCategory, Merchant
 
 from shopping_tool_api.serializers import *
 from rest_framework.renderers import JSONRenderer
@@ -73,13 +73,14 @@ def index(request, styling_session_id=None):
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
+    stores = Merchant.objects.values_list('name', flat = True)
     env = ENV_LOCAL
 
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
                'looks': looks, 'weather_info': weather_info,'styles': styles,
-               'occasions': occasions, 'env': env}
+               'occasions': occasions, 'stores': stores, 'env': env}
                
     return render(request, 'shopping_tool/index.html', context)
 

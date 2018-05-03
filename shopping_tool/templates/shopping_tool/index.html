@@ -30,6 +30,8 @@
       <input id="facet-show-faves" name="show-faves" type="checkbox"><span><small></small></span>
       <em>show only favorites</em>
     </label>
+    <a href="#" id="clear-search-filters">clear filters</a>
+    <a href="#" id="view-stores">stores list</a>
   </div>
   <div id="results-wrapper">
     <div id="client-defaults"></div>
@@ -47,6 +49,17 @@
     <div id="pager"></div>
   </div>
 </div>
+<div id="anna-store-list">
+  <div class="stage">
+    <a href="#" id="close-store-list"><i class="fa fa-times"></i></a>
+    <h2><strong>ANNA Store List</strong> ({{ stores|length }})</h2>
+    <div class="store-list-body">
+      {% for store in stores %}
+        <span class="store">{{ store }}</span>
+      {% endfor %}      
+    </div>
+  </div>
+</div>
 {% include "shopping_tool/rack_partial.html" %}
 {% include "shopping_tool/looks_partial.html" %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -55,6 +68,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
 <script src="{% sstatic 'shopping_tool/js/Sortable.min.js' %}"></script>
+<script src="{% sstatic 'shopping_tool/js/facet_sizing.js' %}"></script>
 <script src="{% sstatic 'shopping_tool/js/utils.js' %}"></script>
 <script src="{% sstatic 'shopping_tool/js/search_page.js' %}"></script>
 <script src="{% sstatic 'shopping_tool/js/rack_builder.js' %}"></script>
