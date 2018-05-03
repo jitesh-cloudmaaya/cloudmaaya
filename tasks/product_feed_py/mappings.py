@@ -2,8 +2,25 @@ import os
 import re
 import yaml
 from django.db import connection
-from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, SynonymCategoryMap, ExclusionTerm
+from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, SynonymCategoryMap, ExclusionTerm, AllumeRetailerSizeMapping
 from catalogue_service.settings import BASE_DIR
+
+def create_retailer_size_mappings():
+    """
+    Returns a tuple of two dicts: known_text_sizes and known_number_sizes
+    """
+    known_text_sizes = {}
+    known_number_sizes = {}
+
+    retailer_allume_size_is_text = AllumeRetailerSizeMapping.objects.filter(is_text=True).values_list('retailer_size', 'allume_size')
+    retailer_allume_size_is_not_text = AllumeRetailerSizeMapping.objects.filter(is_text=False).values_list('retailer_size', 'allume_size')
+
+    for size_map in retailer_allume_size_is_text:
+        known_text_sizes[size_map[0]] = size_map[1]
+    for size_map in retailer_allume_size_is_not_text:
+        known_number_sizes[size_map[0]] = size_map[1]
+
+    return (known_text_sizes, known_number_sizes)
 
 
 ### Added mappings... move to bottom
