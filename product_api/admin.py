@@ -101,6 +101,14 @@ class ExclusionTermInLine(admin.TabularInline):
     model = ExclusionTerm
     extra = 0
 
+class AllumeRetailerSizeMappingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'retailer_size', 'allume_size', 'is_text')
+    search_fields = ('id', 'retailer_size', 'allume_size', 'is_text')
+
+# class AllumeRetailerSizeMappingInLine(admin.TabularInLine):
+#     model = AllumeRetailerSizeMapping
+#     extra = 0
+
 #class MerchantCategoryInLine(admin.TabularInline):
 #    model = MerchantCategory
 #    extra = 0 
@@ -113,3 +121,4 @@ admin.site.register(AllumeCategory, AllumeCategoryAdmin)
 admin.site.register(ColorMap, ColorMapAdmin)
 admin.site.register(SynonymCategoryMap, SynonymCategoryMapAdmin)
 admin.site.register(ExclusionTerm, ExclusionTermAdmin)
+admin.site.register(AllumeRetailerSizeMapping, AllumeRetailerSizeMappingAdmin)
