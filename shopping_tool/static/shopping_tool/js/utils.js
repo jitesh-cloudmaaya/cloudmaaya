@@ -122,28 +122,30 @@ var utils = {
           if(obj.data.next_session_info[0] != undefined){
             var cadence = '';
             var session_type = '';
-            if(obj.data.next_session_info[0].a.next_styling_session_type == null){
-              session_type = 'None';
-            }else{
-              if(obj.data.next_session_info[0].a.slotted == false){
-                session_type = 'Week of ' + moment(obj.data.next_session_info[0].a.next_styling_session_start_date, 'X').format('MMMM D');
+            if(obj.data.next_session_info[0].a != null){
+              if(obj.data.next_session_info[0].a.next_styling_session_type == null){
+                session_type = 'None';
               }else{
-                session_type = moment(obj.data.next_session_info[0].a.next_styling_session_start_date, 'X').format('MMMM D');
+                if(obj.data.next_session_info[0].a.slotted == false){
+                  session_type = 'Week of ' + moment(obj.data.next_session_info[0].a.next_styling_session_start_date, 'X').format('MMMM D');
+                }else{
+                  session_type = moment(obj.data.next_session_info[0].a.next_styling_session_start_date, 'X').format('MMMM D');
+                }
               }
-            }
-            if(obj.data.next_session_info[0].a.styling_session_cadence_in_weeks == 0){
-              cadence = ', no cadence';
-            }else{
-              switch(obj.data.next_session_info[0].a.styling_session_cadence_in_weeks){
-                case 2:
-                  cadence = ', every 2 weeks';
-                break;
-                case 4:
-                  cadence = ', every month';
-                break;
-                case 8:
-                  cadence = ', every 2 months';
-                break;
+              if(obj.data.next_session_info[0].a.styling_session_cadence_in_weeks == 0){
+                cadence = ', no cadence';
+              }else{
+                switch(obj.data.next_session_info[0].a.styling_session_cadence_in_weeks){
+                  case 2:
+                    cadence = ', every 2 weeks';
+                  break;
+                  case 4:
+                    cadence = ', every month';
+                  break;
+                  case 8:
+                    cadence = ', every 2 months';
+                  break;
+                }
               }
             }
             var session_string = session_type + '' + cadence;
