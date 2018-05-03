@@ -47,6 +47,33 @@ var utils = {
       e.preventDefault();
       $('#user-card').addClass('show').addClass('looker');
     }).html('View ' + clip.data('username'));
+    /* correctly display bra size */
+    var bra = $('#bra-size');
+    var bra_size = bra.data('sizes');
+    if((bra_size != undefined)&&(typeof bra_size == 'object')){
+      bra.html('<em>bra:</em>' + bra_size.band + '' + bra_size.cup);
+      $('#prev-bra-size').html('<em>bra:</em>' + bra_size.band + '' + bra_size.cup);
+    }     
+    /* correctly display birthday */
+    var bd = $('#client-age');
+    var bday = bd.data('bd');
+    if((bday != undefined)&&(typeof bday == 'object')){
+      var proc_bday = moment(bday.month +'/' + bday.day +'/' + bday.year, 'M/D/YYYY');
+      var now = moment();
+      var diff = now.diff(proc_bday, 'years')
+      var bd_display = '<em>age:</em>' + diff + ' years old';
+      bd.html(bd_display);
+      $('#prev-client-birthday').html(bd_display);
+    }
+    /** correctly display where the client lives */
+    var locale = $('#client-locale');
+    var city_state = locale.data('cs');
+    if((city_state != undefined)&&(typeof city_state == 'object')){
+      var cs_display = city_state.city + ', ' + city_state.state;
+      locale.html('<em>location:</em>' + cs_display + ' &nbsp;&nbsp;(' + locale.data('tz') + ' timezone)');
+      $('#prev-client-locale').html('<em>location:</em>' + cs_display)
+      $('#client-weather-locale').html('Seasonal norms for ' + cs_display + ':');
+    }
     /**
     * @description get the quiz info
     */
@@ -60,171 +87,131 @@ var utils = {
         withCredentials: true
       },
       success: function(response){
-        console.log(response)
-      },
-      error: function(response){
-        console.log(response)
-      }
-    });    
-
-
-
-
-
-    /**
-    * @description get next styling session info
-    */
-    $.ajax({
-      contentType: 'application/json',
-      crossDomain: true,
-      data: JSON.stringify({user_id: $('#user-clip').data('userid')}),
-      type: 'POST',
-      url: 'https://styling-service-' + local_environment + '.allume.co/repeat/get_next_styling_session_info_by_user_admin/',
-      xhrFields: {
-        withCredentials: true
-      },
-      success: function(response){
         var obj = JSON.parse(response);
-        console.log(obj)
-        /**
-        * example response payload:
-        * {
-        *  "status": "success",
-        *  "data": {
-        *    "subscription_auto_renew": false,
-        *    "slotted": false,
-        *    "styling_session_cadence_in_weeks": 0,
-        *    "next_styling_session_stylist": {
-        *     "user_id": 3916,
-        *      "user_name": "Anna Roberson",
-        *      "first_name": "Anna",
-        *      "last_name": "Roberson",
-        *      "user_phone": "3109275694",
-        *      "user_email": "aroberson@allume.co"
-        *    },
-        *    "next_styling_session_type": null,
-        *    "next_styling_session_start_date": null
-        *  }
-        * }
-        */
-        var session_string = ''
+        console.log(obj);
         if(obj.data != undefined){
-          var cadence = '';
-          var session_type = '';
-          if(obj.data.next_styling_session_type == null){
-            session_type = 'None';
-          }else{
-            if(obj.data.slotted == false){
-              session_type = 'Week of ' + moment(obj.data.next_styling_session_start_date, 'X').format('MMMM D');
+          /* client bio fields */
+          for(var i = 0, l = obj.data.user_info.length; i<l; i++){
+            var bio_field = obj.data.user_info[i]
+            var bio_field_id = 'client-' + bio_field.q.replace(/[\s:]/g, '').toLowerCase();
+            var bio_label = bio_field_id == 'client-name' ? '<em>now styling: </em>' : '<em>' + bio_field.q + '</em>' ;
+            $('#' + bio_field_id).html(bio_label + '' + bio_field.a);
+          }
+          /* goals */
+          var goals_div = $('#client-session-goal');
+          var goals = [];
+          if(obj.data.session_goals[0] != undefined && obj.data.session_goals[0].a != undefined){
+            for(key in obj.data.session_goals[0].a){
+              if(obj.data.session_goals[0].a.hasOwnProperty(key)){
+                goals.push(
+                  '<div class="qa"><em>' + obj.data.session_goals[0].a[key].q +
+                  '</em> ' + obj.data.session_goals[0].a[key].a + '</div>'
+                )
+              }
+            }
+          }
+          if(goals.length > 0){ goals_div.html(goals.join('')); }
+          /* next session */
+          if(obj.data.next_session_info[0] != undefined){
+            var cadence = '';
+            var session_type = '';
+            if(obj.data.next_session_info[0].a.next_styling_session_type == null){
+              session_type = 'None';
             }else{
-              session_type = moment(obj.data.next_styling_session_start_date, 'X').format('MMMM D');
+              if(obj.data.next_session_info[0].a.slotted == false){
+                session_type = 'Week of ' + moment(obj.data.next_session_info[0].a.next_styling_session_start_date, 'X').format('MMMM D');
+              }else{
+                session_type = moment(obj.data.next_session_info[0].a.next_styling_session_start_date, 'X').format('MMMM D');
+              }
+            }
+            if(obj.data.next_session_info[0].a.styling_session_cadence_in_weeks == 0){
+              cadence = ', no cadence';
+            }else{
+              switch(obj.data.next_session_info[0].a.styling_session_cadence_in_weeks){
+                case 2:
+                  cadence = ', every 2 weeks';
+                break;
+                case 4:
+                  cadence = ', every month';
+                break;
+                case 8:
+                  cadence = ', every 2 months';
+                break;
+              }
+            }
+            var session_string = session_type + '' + cadence;
+            var next_session_div = $('#client-next-session');
+            if(session_string == ''){
+              next_session_div.html('');
+            }else{
+              next_session_div.html('<em>next session:</em> ' + session_string);
+            }                        
+          } 
+          /* quiz sections */
+          var tabs = $('#client-tabs');
+          var sections = $('#client-section-wrapper');
+          /* remove old quiz content tabs */
+          tabs.html('');
+          /* remove old quiz content except weather & notes */
+          $.each(sections.find('div.client-section'), function(idx){
+            var div = $(this);
+            if(['client-notes','client-weather'].indexOf(div.attr('id')) == -1 ){ 
+              div.remove();
+            }
+          });
+          var tab_markup = [];
+          var tab_content_markup = [];
+          for(var i = 0, l = obj.data.tabs.length; i<l; i++){
+            var tab = obj.data.tabs[i]
+            var tab_div_id = 'client-' + tab.tab_name.toLowerCase();
+            var tab_class = i == 0 ? 'on' : '' ;
+            var tab_div_class = i == 0 ? 'show' : '' ; 
+            tab_markup.push(
+              '<a href="#' + tab_div_id + '" class="' + 
+              tab_class + '">' + tab.tab_name + '</a>'
+            );
+            if(tab.content != undefined){
+              tab_content_markup.push(
+                '<div id="' + tab_div_id + '" class="client-section ' + 
+                tab_div_class + '">'
+              );
+              for(var ix = 0, lx = tab.content.length; ix<lx; ix++){
+                var detail = tab.content[ix];
+                if(tab.tab_name != 'Picture'){
+                  tab_content_markup.push(
+                    '<span class="client-details"><em>' + detail.q + 
+                    '</em>' + detail.a + '</span>'
+                  );
+                }else{
+                  tab_content_markup.push(
+                    '<img src="https://s3-us-west-2.amazonaws.com/images.allume.co' +
+                    detail.a + '"/>'
+                  );
+                  /* use this image for the quiz toggle */
+                  $('#user-clip-img').attr(
+                    'src', 
+                    'https://s3-us-west-2.amazonaws.com/images.allume.co' + detail.a
+                  );
+                  /* use this image in the details overlay */
+                  $('#view-details-client-picture').attr(
+                    'src', 
+                    'https://s3-us-west-2.amazonaws.com/images.allume.co' + detail.a
+                  );
+                }
+              }
+              tab_content_markup.push('</div>');
             }
           }
-          if(obj.data.styling_session_cadence_in_weeks == 0){
-            cadence = ', no cadence';
-          }else{
-            switch(obj.data.styling_session_cadence_in_weeks){
-              case 2:
-                cadence = ', every 2 weeks';
-              break;
-              case 4:
-                cadence = ', every month'
-              break;
-              case 8:
-                cadence = ', every 2 months'
-              break;
-            }
-          }
-          session_string = session_type + '' + cadence; 
-        }
-        var div = $('#client-next-session');
-        if(session_string == ''){
-          div.html('');
-        }else{
-          div.html('<em>next session:</em> ' + session_string);
+          tabs.html(tab_markup.join('') + '<a href="#client-weather">Weather</a>');
+          sections.append(tab_content_markup.join(''));       
         }
       },
       error: function(response){
         console.log(response)
       }
     });
-    /**
-    * @description get styling session goals 
-    */
-    $.ajax({
-      contentType: 'application/json',
-      crossDomain: true,
-      data: JSON.stringify({styling_session_id: $('body').data('stylesession')}),
-      type: 'POST',
-      url: 'https://styling-service-' + local_environment + '.allume.co/repeat/get_styling_session_goals_admin/',
-      xhrFields: {
-        withCredentials: true
-      },
-      success: function(response){
-        var obj = JSON.parse(response);
-        console.log(obj)
-        var div = $('#client-session-goal');
-        var goals = [];
-        if(obj.data != undefined){
-          for(key in obj.data){
-            if(obj.data.hasOwnProperty(key)){
-              goals.push(
-                '<div class="qa"><em>' + obj.data[key].q +
-                '</em> ' + obj.data[key].a + '</div>'
-              )
-            }
-          }
-        }
-        if(goals.length > 0){
-          div.html(goals.join(''));
-        }
-      },
-      error: function(response){
-        console.log(response)
-      }
-    });
-    /* correctly display bra size */
-    var bra = $('#bra-size');
-    var bra_size = bra.data('sizes');
-    if((bra_size != undefined)&&(typeof bra_size == 'object')){
-      bra.html('<em>bra:</em>' + bra_size.band + '' + bra_size.cup);
-      $('#prev-bra-size').html('<em>bra:</em>' + bra_size.band + '' + bra_size.cup);
-    }
-    /* correctly display birthday */
-    var bd = $('#client-birthday');
-    var bday = bd.data('bd');
-    if((bday != undefined)&&(typeof bday == 'object')){
-      var proc_bday = moment(bday.month +'/' + bday.day +'/' + bday.year, 'M/D/YYYY');
-      var now = moment();
-      var diff = now.diff(proc_bday, 'years')
-      var bd_display = '<em>age:</em>' + diff + ' years old';
-      bd.html(bd_display);
-      $('#prev-client-birthday').html(bd_display);
-    }
-    /* check to see if the social links are valid, if not hide, if they are valid up the link index count */
-    var social = $('#client-social');
-    var social_link_index = 0;
-    $.each(social.find('a'), function(idx){
-      var link = $(this);
-      if(link.attr('href') == 'None'){
-        link.hide();
-      }else{
-        social_link_index++;
-      }
-    });
-    /** correctly display where the client lives */
-    var locale = $('#client-locale');
-    var city_state = locale.data('cs');
-    if((city_state != undefined)&&(typeof city_state == 'object')){
-      var cs_display = city_state.city + ', ' + city_state.state;
-      locale.html('<em>location:</em>' + cs_display + ' &nbsp;&nbsp;(' + locale.data('tz') + ' timezone)');
-      $('#prev-client-locale').html('<em>location:</em>' + cs_display)
-      $('#client-weather-locale').html('Seasonal norms for ' + cs_display + ':');
-    }    
-    /* if link idex is 0, no social links are valid thus hide the whole social div */
-    if(social_link_index == 0){ social.hide(); }
     /* client card tabs */
-    $('#client-tabs a').click(function(e){
+    $('#client-tabs').on('click', 'a', function(e){
       e.preventDefault();
       var link = $(this);
       var href = link.attr('href')
@@ -357,7 +344,6 @@ var utils = {
         rack_builder.addToRack(link, 'inspect', from_compare);
       }
     });
-
     /* add possesives to rack tabs */
     var rack_tabs = $('#rack-tabs');
     var rack_tab = rack_tabs.find('a.rack-tab');

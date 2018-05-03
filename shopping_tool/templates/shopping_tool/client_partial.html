@@ -1,12 +1,12 @@
 <div id="user-card">
   <a id="close-user-clip" href="#"><i class="fa fa-times"></i></a>
   <a id="user-clip" href="#" data-userid="{{ client.id }}" data-username="{{ client.first_name }} {{ client.last_name }}">
-  <span class="name"><em>now styling:</em>{{ client.first_name }} {{ client.last_name }}</span>
-  <span class="expanded bday" id="client-birthday" data-bd="{{ client.client_360.birthday }}"></span> 
-  <span class="expanded style"><em>occupation:</em>{{ client.client_360.occupation }}</span> 
+  <span class="name" id="client-name"><em>now styling:</em>{{ client.first_name }} {{ client.last_name }}</span>
+  <span class="expanded bday" id="client-age" data-bd="{{ client.client_360.birthday }}"></span> 
+  <span class="expanded style" id="client-occupation"><em>occupation:</em>{{ client.client_360.occupation }}</span> 
   <span class="expanded style" id="client-locale" data-cs="{{ client.client_360.where_live }}" data-tz="{{client.timezone}}"></span>
   <span class="expanded weather"><i class="fa fa-thermometer-three-quarters"></i>winter {{ weather_info.winter_temperature_average }}&deg;,  spring {{ weather_info.spring_temperature_average }}&deg;,  summer {{ weather_info.summer_temperature_average }}&deg;,  fall {{ weather_info.autumn_temperature_average }}&deg;</span>
-  <img class="client" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/></a>
+  <img class="client" id="user-clip-img" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/></a>
   <div class="details">
     <div id="client-dynamic-section">
       <span class="goal" id="client-session-goal"><em>goal:</em> {{ client.client_360.looks_goal }}</span>
@@ -27,7 +27,7 @@
       <a href="#client-picture">Picture</a>
       <a href="#client-weather">Weather</a>
     </div>
-    <div class="client-sections">
+    <div class="client-sections" id="client-section-wrapper">
       <div id="client-picture" class="client-section">
         <img src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/>
       </div>
