@@ -321,14 +321,14 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                                     grandchild_record['allume_size'] = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)[0]
                                     grandchild_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, grandchild_record['allume_size'])
                                     for key, value in grandchild_record.iteritems():
-                                        grandchild_record[key] = value.encode('UTF-8')
+                                        grandchild_record[key] = product_feed_helpers.unicode_encode(value)
                                     writer.writerow(grandchild_record)
                                     writtenCount += 1
-                                child_record['allume_size'] = ''
+                                child_record['allume_size'] = u''
                                 child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['size'])
                                 child_record['is_deleted'] = u'1'
                                 for key, value in child_record.iteritems():
-                                    child_record[key] = value.encode('UTF-8')
+                                    child_record[key] = product_feed_helpers.unicode_encode(value)
                                 writer.writerow(child_record)
                                 writtenCount += 1
                             else:
@@ -336,13 +336,13 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                                 child_record['allume_size'] = allume_size_arr[0]
                                 child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['allume_size'])
                                 for key, value in child_record.iteritems():
-                                    child_record[key] = value.encode('UTF-8')
+                                    child_record[key] = product_feed_helpers.unicode_encode(value)
                                 writer.writerow(child_record)
                                 writtenCount += 1
-                        parent_attributes['allume_size'] = ''
+                        parent_attributes['allume_size'] = u''
                         parent_attributes['is_deleted'] = u'1'
                         for key, value in parent_attributes.iteritems():
-                            parent_attributes[key] = value.encode('UTF-8')
+                            parent_attributes[key] = product_feed_helpers.unicode_encode(value)
                         writer.writerow(parent_attributes)
                         writtenCount += 1
                     else:
@@ -356,20 +356,20 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                                 child_record['allume_size'] = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)[0]
                                 child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['allume_size'])
                                 for key, value in child_record.iteritems():
-                                    child_record[key] = value.encode('UTF-8')
+                                    child_record[key] = product_feed_helpers.unicode_encode(value)
                                 writer.writerow(child_record)
                                 writtenCount += 1
-                            parent_attributes['allume_size'] = ''
+                            parent_attributes['allume_size'] = u''
                             parent_attributes['is_deleted'] = u'1'
                             for key, value in parent_attributes.iteritems():
-                                parent_attributes[key] = value.encode('UTF-8')
+                                parent_attributes[key] = product_feed_helpers.unicode_encode(value)
                             writer.writerow(parent_attributes)
                             writtenCount += 1
                         else:
                             parent_attributes['size'] = size
                             parent_attributes['allume_size'] = allume_size_arr[0]
                             for key, value in parent_attributes.iteritems():
-                                parent_attributes[key] = value.encode('UTF-8')
+                                parent_attributes[key] = product_feed_helpers.unicode_encode(value)
                             writer.writerow(parent_attributes)
                             writtenCount += 1
                 else:
