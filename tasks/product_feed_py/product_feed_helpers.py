@@ -523,13 +523,12 @@ def parse_single_size(v, product_name, allume_category, known_text_sizes, known_
     non_eu_us_sizes = ['UK', 'AUS']
     non_eu_us_sizes_obj = {'UK': 'UK', 'AUS': 'AUS'}
 
-
     is_shoe_size = allume_category == 'SHOES'
     name_in_caps = product_name.upper()
     v = v.upper()
-    if re.compile(r"^TALL\s+").match(name_in_caps) and 'LONG' not in v and 'TALL' not in v:
+    if re.compile(r"^TALL").match(name_in_caps) and not re.compile(r"(LONG|TALL|W|E)+").match(v):
         v = 'TALL ' + v
-    if re.compile(r"^PETITE \s+").match(name_in_caps) and 'SHORT' not in v and 'P' not in v:
+    if re.compile(r"^PETITE").match(name_in_caps) and not re.compile(r"(SHORT|P|N|A|PETITE)+").match(v):
         v = 'PETITE ' + v
     saved_parsed_data = v
     parsed_v = saved_parsed_data
@@ -547,7 +546,7 @@ def parse_single_size(v, product_name, allume_category, known_text_sizes, known_
         saved_parsed_data = clean_up_data(parsed_v, is_shoe_size, known_text_sizes, eu_can_obj_sizes, non_eu_us_sizes_obj)
         parsed_v = re.sub(r"^(US|FR|EU|DE|IT|CAN)\s*", '', saved_parsed_data)
         parsed_v = re.sub(r"\s+(US|FR|EU|DE|IT|CAN)\s*", '', parsed_v)
-        if re.compile(r"^[0-9.]+(US|FR|EU|DE|IT|CAN)$").match(parsed_v):
+        if re.compile(r"^(\.|[0-9])+(US|FR|EU|DE|IT|CAN)$").match(parsed_v):
             parsed_v = re.sub(r"(US|FR|EU|DE|IT|CAN)", '', parsed_v)
         single_size_with_country_indicator_and_inseam_removed = re.sub(r"^(UK|AUS|TALL)\s*", '',
                                                                        parsed_v)
@@ -564,7 +563,10 @@ def parse_single_size(v, product_name, allume_category, known_text_sizes, known_
                         if j in parsed_v:
                             has_inseam_sizes = True
                             res.append(
-                                j + ' ' + known_number_sizes[i + single_size_with_country_indicator_and_inseam_removed])
+                                # known_number_sizes[
+                                    j + ' ' + known_number_sizes[i + single_size_with_country_indicator_and_inseam_removed]
+                                # ]
+                             )
                             break
                     if not has_inseam_sizes:
                         res.append(known_number_sizes[i + single_size_with_country_indicator_and_inseam_removed])
@@ -573,7 +575,11 @@ def parse_single_size(v, product_name, allume_category, known_text_sizes, known_
                 for k in inseam_sizes:
                     if k in parsed_v:
                         has_inseam_sizes = True
-                        res.append(k + ' ' + text_sizes[single_size_with_country_indicator_and_inseam_removed])
+                        res.append(
+                            # known_number_sizes[
+                                k + ' ' + text_sizes[single_size_with_country_indicator_and_inseam_removed]
+                            # ]
+                        )
                         break
                 if not has_inseam_sizes:
                     res.append(text_sizes[single_size_with_country_indicator_and_inseam_removed])
@@ -606,7 +612,6 @@ def parse_single_size(v, product_name, allume_category, known_text_sizes, known_
             else:
                 parsed_v = None
     return [saved_parsed_data] if len(res) == 0 else res
-
 
 def get_splitted_sizes_with_known_text_number_sizes(val, separator, known_text_sizes, known_number_sizes):
     import re
