@@ -1,7 +1,7 @@
 <div id="user-card">
   <a id="close-user-clip" href="#"><i class="fa fa-times"></i></a>
   <a id="user-clip" href="#" data-userid="{{ client.id }}" data-username="{{ client.first_name }} {{ client.last_name }}">
-  <span class="name" id="client-name"></span>
+  <span class="name" id="client-name"><em>now styling:</em>{{ client.first_name }} {{ client.last_name }}</span>
   <span class="expanded bday" id="client-age" data-bd="{{ client.client_360.birthday }}"></span> 
   <span class="expanded style" id="client-occupation"></span> 
   <span class="expanded style" id="client-location" data-cs="{{ client.client_360.where_live }}" data-tz="{{client.timezone}}"></span>

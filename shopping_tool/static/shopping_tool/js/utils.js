@@ -215,7 +215,6 @@ var utils = {
             }
           }
           tabs.html(tab_markup.join('') + '<a href="#client-weather">Weather</a>');
-          tabs.find('a:first-child').trigger('click');
           sections.append(tab_content_markup.join(''));       
         }
       },

@@ -1280,7 +1280,7 @@ body.explore-page #user-card{position:absolute;}
   transition: border 0.3s ease-in-out;   
 }
 #client-tabs a.on {border-color:#ed8365;}
-#user-card div.client-sections {border-bottom:1px solid #ddd;}
+#user-card div.client-sections {border-bottom:1px solid #ddd;max-height:300px;}
 #user-card div.client-sections.notes {border:0;}
 #user-card div.client-section {display:none;max-height:540px; overflow: auto}
 #user-card div.client-section.show {display:block;padding:5px 0 0;}
