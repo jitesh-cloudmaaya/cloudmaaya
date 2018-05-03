@@ -91,9 +91,9 @@ var utils = {
             session_type = 'None';
           }else{
             if(obj.data.slotted == false){
-              session_type = 'Week of ' + moment(obj.data.next_styling_session_start_date).format('MMMM D');
+              session_type = 'Week of ' + moment(obj.data.next_styling_session_start_date, 'X').format('MMMM D');
             }else{
-              session_type = moment(obj.data.next_styling_session_start_date).format('MMMM D');
+              session_type = moment(obj.data.next_styling_session_start_date, 'X').format('MMMM D');
             }
           }
           if(obj.data.styling_session_cadence_in_weeks == 0){
