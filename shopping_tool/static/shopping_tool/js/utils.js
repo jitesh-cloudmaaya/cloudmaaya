@@ -98,19 +98,26 @@ var utils = {
             $('#' + bio_field_id).html(bio_label + '' + bio_field.a);
           }
           /* goals */
-          var goals_div = $('#client-session-goal');
           var goals = [];
+          var view_items_goals = [];
           if(obj.data.session_goals[0] != undefined && obj.data.session_goals[0].a != undefined){
             for(key in obj.data.session_goals[0].a){
               if(obj.data.session_goals[0].a.hasOwnProperty(key)){
                 goals.push(
                   '<div class="qa"><em>' + obj.data.session_goals[0].a[key].q +
                   '</em> ' + obj.data.session_goals[0].a[key].a + '</div>'
-                )
+                );
+                view_items_goals.push(
+                  '<span><em>' + obj.data.session_goals[0].a[key].q + '</em>' + 
+                  obj.data.session_goals[0].a[key].a + '</span>'
+                );
               }
             }
           }
-          if(goals.length > 0){ goals_div.html(goals.join('')); }
+          if(goals.length > 0){ 
+            $('#client-session-goal').html(goals.join('')); 
+            $('#view-details-client-goals').html(view_items_goals.join(''))
+          }
           /* next session */
           if(obj.data.next_session_info[0] != undefined){
             var cadence = '';
@@ -178,25 +185,28 @@ var utils = {
               for(var ix = 0, lx = tab.content.length; ix<lx; ix++){
                 var detail = tab.content[ix];
                 if(tab.tab_name != 'Picture'){
+                  var txt = detail.a == null ? '' : detail.a ;
                   tab_content_markup.push(
                     '<span class="client-details"><em>' + detail.q + 
-                    '</em>' + detail.a + '</span>'
+                    '</em>' + txt + '</span>'
                   );
                 }else{
-                  tab_content_markup.push(
-                    '<img src="https://s3-us-west-2.amazonaws.com/images.allume.co' +
-                    detail.a + '"/>'
-                  );
-                  /* use this image for the quiz toggle */
-                  $('#user-clip-img').attr(
-                    'src', 
-                    'https://s3-us-west-2.amazonaws.com/images.allume.co' + detail.a
-                  );
-                  /* use this image in the details overlay */
-                  $('#view-details-client-picture').attr(
-                    'src', 
-                    'https://s3-us-west-2.amazonaws.com/images.allume.co' + detail.a
-                  );
+                  if(detail.a != null){
+                    tab_content_markup.push(
+                      '<img src="https://s3-us-west-2.amazonaws.com/images.allume.co' +
+                      detail.a + '"/>'
+                    );
+                    /* use this image for the quiz toggle */
+                    $('#user-clip-img').attr(
+                      'src', 
+                      'https://s3-us-west-2.amazonaws.com/images.allume.co' + detail.a
+                    );
+                    /* use this image in the details overlay */
+                    $('#view-details-client-picture').attr(
+                      'src', 
+                      'https://s3-us-west-2.amazonaws.com/images.allume.co' + detail.a
+                    );
+                  }
                 }
               }
               tab_content_markup.push('</div>');
