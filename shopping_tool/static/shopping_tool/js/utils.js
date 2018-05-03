@@ -48,6 +48,30 @@ var utils = {
       $('#user-card').addClass('show').addClass('looker');
     }).html('View ' + clip.data('username'));
     /**
+    * @description get the quiz info
+    */
+    $.ajax({
+      contentType: 'application/json',
+      crossDomain: true,
+      data: JSON.stringify({"styling_session_id": $('body').data('stylesession')}),
+      type: 'POST',
+      url: 'https://styling-service-' + local_environment + '.allume.co/quiz/get_formatted_quiz_info/',
+      xhrFields: {
+        withCredentials: true
+      },
+      success: function(response){
+        console.log(response)
+      },
+      error: function(response){
+        console.log(response)
+      }
+    });    
+
+
+
+
+
+    /**
     * @description get next styling session info
     */
     $.ajax({

@@ -728,16 +728,16 @@ var search_page = {
     function sizeGroup(group, checked, id_modifier){
       return '<div class="size-grouping-wrapper">' + 
         '<a href="#sizegroup' + id_modifier + 
-        '' + group.replace('.','') + '" class="size-group-toggle"><span>+</span></a>' +
+        '' + group.replace(' ','').replace('.','') + '" class="size-group-toggle"><span>+</span></a>' +
         '<label class="size-grouping">' +
         '<input class="allume-size" type="checkbox" value="' + 
         group + '" ' + checked + ' data-sizegroup="' + 
-        group.replace('.','') + '" data-groupdiv="#sizegroup' + id_modifier + 
-        '' + group + '"/><span><i class="fa fa-square-o"></i>' +
+        group.replace(' ','').replace('.','') + '" data-groupdiv="#sizegroup' + id_modifier + 
+        '' + group.replace(' ','').replace('.','') + '"/><span><i class="fa fa-square-o"></i>' +
         '<i class="fa fa-check-square"></i>' +
         '</span><em class="key">' + group + '</em></label>' +
         '<div class="sizegroup-list" id="sizegroup' + 
-        id_modifier + '' + group.replace('.','') + '">';
+        id_modifier + '' + group.replace(' ','').replace('.','') + '">';
     }
     /**
     * @description private helper function to create size group memberHTML
@@ -762,7 +762,9 @@ var search_page = {
       for(var i = 0, l = section_sizes.length; i<l; i++){
         var size_grouping = section_sizes[i];
         var sizes = member_hash[size_grouping].sizes;
+        console.log(sizes)
         var size_members = member_hash[size_grouping].members;
+        console.log(size_members)
         var checked = '';
         for(var ix = 0, lx = allume_sizes.length; ix<lx; ix++){
           var allume_size = allume_sizes[ix];
@@ -848,6 +850,7 @@ var search_page = {
         sizeSubsection(facet_sizing.plus_sizes, facet_sizing.clothing_members, 'clothing') + '</div>'
       );  
     }else{
+      console.log(facet_sizing.no_sizes)
       /* things with no size */
       markup.push(
         '<a href="#" class="size-facet-sub"><span>+</span>No Size</a>' +
