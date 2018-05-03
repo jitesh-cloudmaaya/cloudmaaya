@@ -159,60 +159,60 @@ var facet_sizing = {
       sizes: ['ONE','ONE SIZE','NO SIZE']        
     },
     '00T':{
-      members: [{size:'00T',name: '00T'},{size:'TALL X-SMALL',name: 'TALL X-SMALL'}],
-      sizes: ['00T','TALL X-SMALL']
+      members: [{size:'TALL X-SMALL',name: 'TALL X-SMALL'}],
+      sizes: ['TALL X-SMALL']
     },      
     '0T':{
-      members: [{size:'0T',name: '0T'},{size:'TALL X-SMALL',name: 'TALL X-SMALL'}],
-      sizes: ['0T','TALL X-SMALL']
+      members: [{size:'TALL X-SMALL',name: 'TALL X-SMALL'}],
+      sizes: ['TALL X-SMALL']
     },      
     '2T':{
-      members: [{size:'2T',name: '2T'},{size:'TALL SMALL',name: 'TALL SMALL'}],
-      sizes: ['2T','TALL SMALL']
+      members: [{size:'TALL SMALL',name: 'TALL SMALL'}],
+      sizes: ['TALL SMALL']
     },      
     '4T':{
-      members: [{size:'4T',name: '4T'},{size:'TALL SMALL',name: 'TALL SMALL'}],
-      sizes: ['4T','TALL SMALL']
+      members: [{size:'TALL SMALL',name: 'TALL SMALL'}],
+      sizes: ['TALL SMALL']
     },      
     '6T':{
-      members: [{size:'6T',name: '6T'},{size:'TALL SMALL',name: 'TALL SMALL'}],
-      sizes: ['6T','TALL SMALL']
+      members: [{size:'TALL SMALL',name: 'TALL SMALL'}],
+      sizes: ['TALL SMALL']
     },      
     '8T':{
-      members: [{size:'8T',name: '8T'},{size:'TALL MEDIUM',name: 'TALL MEDIUM'}],
-      sizes: ['8T','TALL MEDIUM']
+      members: [{size:'TALL MEDIUM',name: 'TALL MEDIUM'}],
+      sizes: ['TALL MEDIUM']
     },      
     '10T':{
-      members: [{size:'10T',name: '10T'},{size:'TALL MEDIUM',name: 'TALL MEDIUM'}],
-      sizes: ['10T','TALL MEDIUM']
+      members: [{size:'TALL MEDIUM',name: 'TALL MEDIUM'}],
+      sizes: ['TALL MEDIUM']
     },      
     '12T':{
-      members: [{size:'12T',name: '12T'},{size:'TALL LARGE',name: 'TALL LARGE'}],
-      sizes: ['12T','TALL LARGE']
+      members: [{size:'TALL LARGE',name: 'TALL LARGE'}],
+      sizes: ['TALL LARGE']
     },      
     '14T':{
-      members: [{size:'14T',name: '14T'},{size:'TALL LARGE',name: 'TALL LARGE'}],
-      sizes: ['14T','TALL LARGE']
+      members: [{size:'TALL LARGE',name: 'TALL LARGE'}],
+      sizes: ['TALL LARGE']
     },      
     '16T':{
-      members: [{size:'16T',name: '16T'},{size:'TALL X-LARGE',name: 'TALL X-LARGE'}],
-      sizes: ['16T','TALL X-LARGE']
+      members: [{size:'TALL X-LARGE',name: 'TALL X-LARGE'}],
+      sizes: ['TALL X-LARGE']
     },  
     '18T':{
-      members: [{size:'18T',name: '18T'},{size:'TALL XX-LARGE',name: 'TALL XX-LARGE'}],
-      sizes: ['18T','TALL XX-LARGE']
+      members: [{size:'TALL XX-LARGE',name: 'TALL XX-LARGE'}],
+      sizes: ['TALL XX-LARGE']
     },
     '20T':{
-      members: [{size:'20T',name: '20T'},{size:'TALL XX-LARGE',name: 'TALL XX-LARGE'}],
-      sizes: ['20T','TALL XX-LARGE']
+      members: [{size:'TALL XX-LARGE',name: 'TALL XX-LARGE'}],
+      sizes: ['TALL XX-LARGE']
     },
     '22T':{
-      members: [{size:'22T',name: '22T'},{size:'TALL XXX-LARGE',name: 'TALL XXX-LARGE'}],
-      sizes: ['22T','TALL XXX-LARGE']
+      members: [{size:'TALL XXX-LARGE',name: 'TALL XXX-LARGE'}],
+      sizes: ['TALL XXX-LARGE']
     },
     '24T':{
-      members: [{size:'24T',name: '24T'},{size:'TALL XXX-LARGE',name: 'TALL XXX-LARGE'}],
-      sizes: ['24T','TALL XXX-LARGE']
+      members: [{size:'TALL XXX-LARGE',name: 'TALL XXX-LARGE'}],
+      sizes: ['TALL XXX-LARGE']
     }
   },
   /**
