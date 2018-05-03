@@ -336,7 +336,7 @@ var search_page = {
   */
   getAllumSizes: function(sizes, category){
     /* get all the various sizes for each type */
-    var clothing_sizes = facet_sizing.regular_sizes.concat(facet_sizing.petite_sizes.concat(facet_sizing.plus_sizes));
+    var clothing_sizes = facet_sizing.regular_sizes.concat(facet_sizing.petite_sizes.concat(facet_sizing.plus_sizes.concat(facet_sizing.tall_sizes)));
     var shoe_sizes = facet_sizing.regular_shoes.concat(facet_sizing.narrow_shoes.concat(facet_sizing.wide_shoes));
     var allume_sizes = [];
     /**
@@ -762,9 +762,7 @@ var search_page = {
       for(var i = 0, l = section_sizes.length; i<l; i++){
         var size_grouping = section_sizes[i];
         var sizes = member_hash[size_grouping].sizes;
-        console.log(sizes)
         var size_members = member_hash[size_grouping].members;
-        console.log(size_members)
         var checked = '';
         for(var ix = 0, lx = allume_sizes.length; ix<lx; ix++){
           var allume_size = allume_sizes[ix];
@@ -799,9 +797,9 @@ var search_page = {
         '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Petite Sizes)</a>' +
         '<div class="size-facet-sub-group">' + 
         sizeSubsection(facet_sizing.petite_sizes, facet_sizing.clothing_members, 'clothing') + '</div>' +
-        //'<a href="#" class="size-facet-sub"><span>+</span>Clothing (Tall Sizes)</a>' +
-        //'<div class="size-facet-sub-group">' + 
-        //sizeSubsection(facet_sizing.tall_sizes, facet_sizing.clothing_members, 'clothing') + '</div>' +        
+        '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Tall Sizes)</a>' +
+        '<div class="size-facet-sub-group">' + 
+        sizeSubsection(facet_sizing.tall_sizes, facet_sizing.clothing_members, 'clothing') + '</div>' +        
         '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Plus Sizes)</a>' +
         '<div class="size-facet-sub-group">' + 
         sizeSubsection(facet_sizing.plus_sizes, facet_sizing.clothing_members, 'clothing') + '</div>' +
@@ -842,15 +840,14 @@ var search_page = {
         '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Petite Sizes)</a>' +
         '<div class="size-facet-sub-group">' + 
         sizeSubsection(facet_sizing.petite_sizes, facet_sizing.clothing_members, 'clothing') + '</div>' +
-        //'<a href="#" class="size-facet-sub"><span>+</span>Clothing (Tall Sizes)</a>' +
-        //'<div class="size-facet-sub-group">' + 
-        //sizeSubsection(facet_sizing.tall_sizes, facet_sizing.clothing_members, 'clothing') + '</div>' +        
+        '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Tall Sizes)</a>' +
+        '<div class="size-facet-sub-group">' + 
+        sizeSubsection(facet_sizing.tall_sizes, facet_sizing.clothing_members, 'clothing') + '</div>' +        
         '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Plus Sizes)</a>' +
         '<div class="size-facet-sub-group">' + 
         sizeSubsection(facet_sizing.plus_sizes, facet_sizing.clothing_members, 'clothing') + '</div>'
       );  
     }else{
-      console.log(facet_sizing.no_sizes)
       /* things with no size */
       markup.push(
         '<a href="#" class="size-facet-sub"><span>+</span>No Size</a>' +

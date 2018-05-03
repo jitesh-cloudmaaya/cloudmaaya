@@ -13,7 +13,7 @@ var facet_sizing = {
   /**
   * @description tall clothing sizes
   */
-  tall_sizes: [],
+  tall_sizes: ['Tall0','Tall2','Tall4','Tall6','Tall8','Tall10','Tall12','Tall14','Tall16','Tall18','Tall20','Tall22','Tall24'],
   /**
   * @description plus clothing sizes
   */  
@@ -141,7 +141,59 @@ var facet_sizing = {
     'ONE SIZE': {
       members: [{size:'ONE',name: 'ONE'},{size:'ONE SIZE',name: 'ONE SIZE'},{size: 'NO SIZE', name: 'NO SIZE'}],
       sizes: ['ONE','ONE SIZE','NO SIZE']        
-    }    
+    },
+    'Tall0': {
+      members: [{size:'Tall0',name: 'Tall0'}],
+      sizes: ['Tall0']        
+    },
+    'Tall2': {
+      members: [{size:'Tall2',name: 'Tall2'}],
+      sizes: ['Tall2']        
+    },
+    'Tall4': {
+      members: [{size:'Tall4',name: 'Tall4'}],
+      sizes: ['Tall4']        
+    },
+    'Tall6': {
+      members: [{size:'Tall6',name: 'Tall6'}],
+      sizes: ['Tall6']        
+    },
+    'Tall8': {
+      members: [{size:'Tall8',name: 'Tall8'}],
+      sizes: ['Tall8']        
+    },
+    'Tall10': {
+      members: [{size:'Tall10',name: 'Tall10'}],
+      sizes: ['Tall10']        
+    },
+    'Tall12': {
+      members: [{size:'Tall12',name: 'Tall12'}],
+      sizes: ['Tall12']        
+    },
+    'Tall14': {
+      members: [{size:'Tall14',name: 'Tall14'}],
+      sizes: ['Tall14']        
+    },
+    'Tall16': {
+      members: [{size:'Tall16',name: 'Tall16'}],
+      sizes: ['Tall16']        
+    },
+    'Tall18': {
+      members: [{size:'Tall18',name: 'Tall18'}],
+      sizes: ['Tall18']        
+    },
+    'Tall20': {
+      members: [{size:'Tall20',name: 'Tall20'}],
+      sizes: ['Tall20']        
+    },
+    'Tall22': {
+      members: [{size:'Tall22',name: 'Tall22'}],
+      sizes: ['Tall22']        
+    },
+    'Tall24': {
+      members: [{size:'Tall24',name: 'Tall24'}],
+      sizes: ['Tall24']        
+    }
   },
   /**
   * @description member groups for shoe sizes
