@@ -845,3 +845,12 @@ def clean_up_data(val, is_shoe_size, known_text_sizes, eu_can_obj_sizes, non_eu_
 #####################################################################################################################################
 #####   END NEW SIZE PARSING LOGIC
 #####################################################################################################################################
+
+def unicode_encode(value):
+    """
+    try to handle unicode errors more smoothly
+    """
+    try:
+        return value.encode('UTF-8')
+    except UnicodeDecodeError:
+        return value
