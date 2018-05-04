@@ -72,35 +72,7 @@ var search_page = {
           );
         }
       }else{
-        var client_settings = [];
-        for(key in utils.category_settings){
-          if(utils.category_settings.hasOwnProperty(key)){
-            if(key == val){
-              if(utils.category_settings[key] != undefined){
-                for(var i = 0, l = utils.category_settings[key].length; i<l; i++){
-                  var row = utils.category_settings[key][i];
-                  var answer = row.a == null ? '' : row.a ;
-                  client_settings.push(
-                    '<span><em>' + row.q + '</em>' + answer + '</span>'
-                  );
-                }
-              }
-            }
-          }
-        }
-        if(utils.category_settings['no_category'] != undefined){
-          for(var i = 0, l = utils.category_settings['no_category'].length; i<l; i++){
-            var row = utils.category_settings['no_category'][i];
-            var answer = row.a == null ? '' : row.a ;
-            client_settings.push(
-              '<span><em>' + row.q + '</em>' + answer + '</span>'
-            );
-          }
-        }
-        def_div.html(
-          '<div class="client-settings">' + header +
-          client_settings.join('') + '</div>'
-        );        
+        utils.setHelp(val);    
       }
     });
     /* facets functionality */
@@ -515,8 +487,26 @@ var search_page = {
       if(new_search == true){
         var sizes = [];
         var cleaned_sizes = [];
-        if(["Jeans", "Shoes", "Tops", "Pants", "Bottoms"].indexOf(category) > -1){
-          sizes = client_360.categories[category].size.split(',');   
+        if(["Jeans", "Shoes", "Tops", "Pants", "Bottoms", "Dresses"].indexOf(category) > -1){
+          if(utils.category_settings == null){
+            sizes = client_360.categories[category].size.split(','); 
+          }else{
+            var key_match = category == "Jeans" ? 'Bottoms' : category ;
+            for(key in utils.category_settings){
+              if(utils.category_settings.hasOwnProperty(key)){
+                if(key == key_match){
+                  if(utils.category_settings[key] != undefined){
+                    for(var i = 0, l = utils.category_settings[key].length; i<l; i++){
+                      var row = utils.category_settings[key][i];
+                      if(['size: ','Bottoms size: '].indexOf(row.q) > -1){
+                        sizes = row.a.split(',');
+                      } 
+                    }
+                  }
+                }
+              }
+            }
+          }  
         }
         for(i = 0, l = sizes.length; i<l; i++){
           var size = sizes[i];

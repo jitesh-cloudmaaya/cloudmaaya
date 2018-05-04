@@ -97,6 +97,10 @@ var utils = {
           /* category settings */
           if(obj.data.search_client_preferences != undefined){
             utils.category_settings = obj.data.search_client_preferences;
+            var test = $('#search-categories');
+            if(test.length > 0){
+              utils.setHelp(test.val());
+            }
           }
           /* client bio fields */
           if(obj.data.user_info != undefined){
@@ -661,5 +665,43 @@ var utils = {
   readURLParams: function(param){
     var match = RegExp('[?&]' + param + '=([^&]*)').exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+  },
+  /**
+  * @description helper function to set the search help based upon API results
+  * @param {string} val - the selected category
+  */
+  setHelp: function(val){
+    var div = $('#client-defaults');
+    var header = '<h5>Client preferences and sizes for <strong>' + val + '</strong>:</h5>';
+    var client_settings = [];
+    for(key in utils.category_settings){
+      if(utils.category_settings.hasOwnProperty(key)){
+        if(key == val){
+          if(utils.category_settings[key] != undefined){
+            for(var i = 0, l = utils.category_settings[key].length; i<l; i++){
+              var row = utils.category_settings[key][i];
+              var answer = row.a == null ? '' : row.a ;
+              client_settings.push(
+                '<span><em>' + row.q + '</em>' + answer + '</span>'
+              );
+            }
+          }
+        }
+      }
+    }
+    if(utils.category_settings['no_category'] != undefined){
+      for(var i = 0, l = utils.category_settings['no_category'].length; i<l; i++){
+        var row = utils.category_settings['no_category'][i];
+        var answer = row.a == null ? '' : row.a ;
+        var color = row.color != undefined ? 'style="color:' + row.color + '"' : ''; 
+        client_settings.push(
+          '<span ' + color + '><em>' + row.q + '</em>' + answer + '</span>'
+        );
+      }
+    }
+    div.html(
+      '<div class="client-settings">' + header +
+      client_settings.join('') + '</div>'
+    ); 
   }
 }
