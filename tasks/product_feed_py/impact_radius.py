@@ -253,6 +253,13 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             parent_attributes = copy(record)
                             sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
+
+                            # skip records that have a non numeric product id from the data
+                            try:
+                                int(product_id)
+                            except ValueError:
+                                continue
+
                             if len(sizes) > 1:
                                 for size in sizes:
                                     child_record = copy(parent_attributes)
