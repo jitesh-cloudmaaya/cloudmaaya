@@ -21,6 +21,10 @@ var utils = {
     });
   },
   /**
+  * @description category settinsg used in search page
+  */
+  category_settings: null,
+  /**
   * @description client details and presentation checks
   */  
   client: function(){
@@ -90,6 +94,10 @@ var utils = {
         var obj = JSON.parse(response);
         console.log(obj);
         if(obj.data != undefined){
+          /* category settings */
+          if(obj.data.search_client_preferences != undefined){
+            utils.category_settings = obj.data.search_client_preferences;
+          }
           /* client bio fields */
           if(obj.data.user_info != undefined){
             for(var i = 0, l = obj.data.user_info.length; i<l; i++){

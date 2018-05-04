@@ -41,34 +41,66 @@ var search_page = {
       var header = '<h5>Client preferences and sizes for <strong>' + val + '</strong>:</h5>';
       var general = '<span><em>colors:</em>' + client_360.colors + '</span>' +
         '<span><em>styles to avoid:</em>' + client_360.avoid + '</span>';
-      if(["Dresses", "Jackets"].indexOf(val) > -1){
-        def_div.html(
-          '<div class="client-settings">' + header +
-          '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
-          '<span><em>style:</em>' + client_360.categories[val].style + '</span>' +
-          general + '</div>'
-        );        
-      }else if(["Jeans", "Shoes", "Tops"].indexOf(val) > -1){
-        def_div.html(
-          '<div class="client-settings">' + header +
-          '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
-          '<span><em>style:</em>' + client_360.categories[val].style + '</span>' +
-          '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
-          general + '</div>'
-        );  
-      }else if(val == "Bottoms"){
-        def_div.html(
-          '<div class="client-settings">' + header +
-          '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
-          '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
-          general + '</div>'
-        );          
+      if(utils.category_settings == null){
+        if(["Dresses", "Jackets"].indexOf(val) > -1){
+          def_div.html(
+            '<div class="client-settings">' + header +
+            '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
+            '<span><em>style:</em>' + client_360.categories[val].style + '</span>' +
+            general + '</div>'
+          );        
+        }else if(["Jeans", "Shoes", "Tops"].indexOf(val) > -1){
+          def_div.html(
+            '<div class="client-settings">' + header +
+            '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
+            '<span><em>style:</em>' + client_360.categories[val].style + '</span>' +
+            '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
+            general + '</div>'
+          );  
+        }else if(val == "Bottoms"){
+          def_div.html(
+            '<div class="client-settings">' + header +
+            '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
+            '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
+            general + '</div>'
+          );          
+        }else{
+          def_div.html(
+            '<div class="client-settings"><h5>Client preferences:</h5>' +
+            '<span><em>colors:</em>' + client_360.colors + '</span>' +
+            '<span><em>styles to avoid:</em>' + client_360.avoid + '</span></div>'
+          );
+        }
       }else{
+        var client_settings = [];
+        for(key in utils.category_settings){
+          if(utils.category_settings.hasOwnProperty(key)){
+            if(key == val){
+              if(utils.category_settings[key] != undefined){
+                for(var i = 0, l = utils.category_settings[key].length; i<l; i++){
+                  var row = utils.category_settings[key][i];
+                  var answer = row.a == null ? '' : row.a ;
+                  client_settings.push(
+                    '<span><em>' + row.q + '</em>' + answer + '</span>'
+                  );
+                }
+              }
+            }
+          }
+        }
+        if(utils.category_settings['no_category'] != undefined){
+          for(var i = 0, l = utils.category_settings['no_category'].length; i<l; i++){
+            var row = utils.category_settings['no_category'][i];
+            var answer = row.a == null ? '' : row.a ;
+            client_settings.push(
+              '<span><em>' + row.q + '</em>' + answer + '</span>'
+            );
+          }
+        }
         def_div.html(
-          '<div class="client-settings"><h5>Client preferences:</h5>' +
-          '<span><em>colors:</em>' + client_360.colors + '</span>' +
-          '<span><em>styles to avoid:</em>' + client_360.avoid + '</span></div>'
-        );
+          '<div class="client-settings">' + header +
+          client_settings.join('') + '</div>'
+        );        
       }
     });
     /* facets functionality */
