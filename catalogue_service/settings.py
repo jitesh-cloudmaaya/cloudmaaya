@@ -171,6 +171,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 CELERY_RESULT_BACKEND = 'django-db'
+CELERY_SEND_TASK_ERROR_EMAILS = True
+ADMINS = (('Anna Task Failures', 'anna-failures-notification@allume.co'))
 
 # Tell nose to measure coverage 
 NOSE_ARGS = [
