@@ -368,7 +368,7 @@ var search_page = {
       size_block = search_page.cached_sizes.mapped;
     }
     /* get all the various sizes for each type */
-    var clothing_sizes = size_block.regular_sizes.concat(size_block.petite_sizes.concat(size_block.plus_sizes.concat(size_block.tall_sizes)));
+    var clothing_sizes = size_block.regular_sizes.concat(size_block.petite_sizes.concat(size_block.tall_sizes));
     var shoe_sizes = size_block.regular_shoes.concat(size_block.narrow_shoes.concat(size_block.wide_shoes));
     var allume_sizes = [];
     /**
@@ -856,9 +856,6 @@ var search_page = {
         '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Tall Sizes)</a>' +
         '<div class="size-facet-sub-group">' + 
         sizeSubsection(size_block.tall_sizes, size_block.clothing_members, 'clothing') + '</div>' +        
-        '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Plus Sizes)</a>' +
-        '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.plus_sizes, size_block.clothing_members, 'clothing') + '</div>' +
         '<span class="size-breaker"></span>' +        
         '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Regular Sizes)</a>' +
         '<div class="size-facet-sub-group">' + 
@@ -898,10 +895,7 @@ var search_page = {
         sizeSubsection(size_block.petite_sizes, size_block.clothing_members, 'clothing') + '</div>' +
         '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Tall Sizes)</a>' +
         '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.tall_sizes, size_block.clothing_members, 'clothing') + '</div>' +        
-        '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Plus Sizes)</a>' +
-        '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.plus_sizes, size_block.clothing_members, 'clothing') + '</div>'
+        sizeSubsection(size_block.tall_sizes, size_block.clothing_members, 'clothing') + '</div>'
       );  
     }else{
       /* things with no size */
