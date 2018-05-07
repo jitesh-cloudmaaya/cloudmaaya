@@ -16,7 +16,7 @@ var search_page = {
   init: function(){
     /* cache the session id */
     search_page.session_id = $('body').data('stylesession');
-
+    /* get allume sizes and cache for use in searches */
     $.ajax({
       contentType: 'application/json',
       crossDomain: true,
@@ -28,14 +28,14 @@ var search_page = {
       success: function(response){
         var obj = JSON.parse(response);
         console.log(obj);
+        if(obj.data != undefined){
+          search_page.cached_sizes = obj.data;
+        }
       },
       error: function(response){
         console.log(response)
       }
     });
-
-
-
     /* search functionality */
     $('#search-btn').click(function(e){
       e.preventDefault();
@@ -363,9 +363,13 @@ var search_page = {
   * @returns {array} Array of allume sizes
   */
   getAllumSizes: function(sizes, category){
+    var size_block = facet_sizing;
+    if(search_page.cached_sizes != null){
+      size_block = search_page.cached_sizes.mapped;
+    }
     /* get all the various sizes for each type */
-    var clothing_sizes = facet_sizing.regular_sizes.concat(facet_sizing.petite_sizes.concat(facet_sizing.plus_sizes.concat(facet_sizing.tall_sizes)));
-    var shoe_sizes = facet_sizing.regular_shoes.concat(facet_sizing.narrow_shoes.concat(facet_sizing.wide_shoes));
+    var clothing_sizes = size_block.regular_sizes.concat(size_block.petite_sizes.concat(size_block.plus_sizes.concat(size_block.tall_sizes)));
+    var shoe_sizes = size_block.regular_shoes.concat(size_block.narrow_shoes.concat(size_block.wide_shoes));
     var allume_sizes = [];
     /**
     * @description private helper function to generate array of allume sizes
@@ -403,18 +407,18 @@ var search_page = {
       return [...new Set(matched_size)];
     }
     if (category == '') {
-      var all_sizes = sizeMatching(shoe_sizes, facet_sizing.shoe_members, sizes).concat(
-        sizeMatching(shoe_sizes, facet_sizing.shoe_members, sizes).concat(
-          sizeMatching(facet_sizing.no_sizes, facet_sizing.clothing_members, sizes)
+      var all_sizes = sizeMatching(shoe_sizes, size_block.shoe_members, sizes).concat(
+        sizeMatching(shoe_sizes, size_block.shoe_members, sizes).concat(
+          sizeMatching(size_block.no_sizes, size_block.clothing_members, sizes)
         )
       );
       return all_sizes;
     } else if (category == 'Shoes') {
-      return sizeMatching(shoe_sizes, facet_sizing.shoe_members, sizes);
+      return sizeMatching(shoe_sizes, size_block.shoe_members, sizes);
     } else if (["Shoes","Accessories","Other","Beauty","Unsure"].indexOf(category) == -1) {
-      return sizeMatching(clothing_sizes, facet_sizing.clothing_members, sizes);
+      return sizeMatching(clothing_sizes, size_block.clothing_members, sizes);
     } else {
-      return sizeMatching(facet_sizing.no_sizes, facet_sizing.clothing_members, sizes);
+      return sizeMatching(size_block.no_sizes, size_block.clothing_members, sizes);
     }
   },
   /**
