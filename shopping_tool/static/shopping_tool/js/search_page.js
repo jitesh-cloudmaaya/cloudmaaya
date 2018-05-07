@@ -409,7 +409,7 @@ var search_page = {
     if (category == '') {
       var all_sizes = sizeMatching(shoe_sizes, size_block.shoe_members, sizes).concat(
         sizeMatching(shoe_sizes, size_block.shoe_members, sizes).concat(
-          sizeMatching(size_block.no_sizes, size_block.clothing_members, sizes)
+          sizeMatching(size_block.one_size, size_block.clothing_members, sizes)
         )
       );
       return all_sizes;
@@ -418,7 +418,7 @@ var search_page = {
     } else if (["Shoes","Accessories","Other","Beauty","Unsure"].indexOf(category) == -1) {
       return sizeMatching(clothing_sizes, size_block.clothing_members, sizes);
     } else {
-      return sizeMatching(size_block.no_sizes, size_block.clothing_members, sizes);
+      return sizeMatching(size_block.one_size, size_block.clothing_members, sizes);
     }
   },
   /**
@@ -867,9 +867,9 @@ var search_page = {
         '<div class="size-facet-sub-group">' + 
         sizeSubsection(size_block.wide_shoes, size_block.shoe_members, 'shoe') + '</div>' +
         '<span class="size-breaker"></span>' + 
-        '<a href="#" class="size-facet-sub"><span>+</span>No Size</a>' +
+        '<a href="#" class="size-facet-sub"><span>+</span>One Size</a>' +
         '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.no_sizes, size_block.clothing_members, 'nosize') + '</div>'
+        sizeSubsection(size_block.one_size, size_block.clothing_members, 'nosize') + '</div>'
       );
     }else if (category == 'Shoes'){
       /* shoe sizes */
@@ -900,9 +900,9 @@ var search_page = {
     }else{
       /* things with no size */
       markup.push(
-        '<a href="#" class="size-facet-sub"><span>+</span>No Size</a>' +
+        '<a href="#" class="size-facet-sub"><span>+</span>One Size</a>' +
         '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.no_sizes, size_block.clothing_members, 'nosize') + '</div>'
+        sizeSubsection(size_block.one_size, size_block.clothing_members, 'nosize') + '</div>'
       );
     }
     return markup.join('') + '</div>';

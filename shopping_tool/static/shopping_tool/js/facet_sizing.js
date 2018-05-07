@@ -21,7 +21,7 @@ var facet_sizing = {
   /**
   * @description no sizes - accessories and the like
   */  
-  no_sizes: ['ONE SIZE'],
+  one_size: ['ONE SIZE'],
   /**
   * @description regular shoe sizes
   */
