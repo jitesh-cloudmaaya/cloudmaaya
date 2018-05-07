@@ -12,6 +12,26 @@ var search_page = {
   init: function(){
     /* cache the session id */
     search_page.session_id = $('body').data('stylesession');
+
+    $.ajax({
+      contentType: 'application/json',
+      crossDomain: true,
+      type: 'POST',
+      url: 'https://styling-service-' + local_environment + '.allume.co/get_allume_sizes/',
+      xhrFields: {
+        withCredentials: true
+      },
+      success: function(response){
+        var obj = JSON.parse(response);
+        console.log(obj);
+      },
+      error: function(response){
+        console.log(response)
+      }
+    });
+
+
+
     /* search functionality */
     $('#search-btn').click(function(e){
       e.preventDefault();
