@@ -12,8 +12,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='categorymap',
-            unique_together=set([('external_cat1', 'external_cat2')]),
-        ),
+        #migrations.AlterUniqueTogether(
+        #    name='categorymap',
+        #    unique_together=set([('external_cat1', 'external_cat2')]),
+        #),
     ]
