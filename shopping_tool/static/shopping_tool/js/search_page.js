@@ -28,7 +28,7 @@ var search_page = {
       success: function(response){
         var obj = JSON.parse(response);
         console.log(obj);
-        if(obj.data != undefined){
+        if(obj.status == 'success' && obj.data != undefined){
           search_page.cached_sizes = obj.data;
         }
       },
