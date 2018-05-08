@@ -912,7 +912,7 @@ var search_page = {
 
         markup.push(
           '<span class="size-breaker"></span>' +
-          '<a href="#" class="size-facet-sub"><span>+</span>One Size</a>' +
+          '<a href="#" class="size-facet-sub"><span>+</span>Unmapped Sizes</a>' +
           '<div class="size-facet-sub-group">' + 
           '<div class="size-grouping-wrapper">' + 
           '<a href="#sizegroupunmapped" class="size-group-toggle"><span>+</span></a>' +
