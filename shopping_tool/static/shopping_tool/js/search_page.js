@@ -408,7 +408,7 @@ var search_page = {
     }
     if (category == '') {
       var all_sizes = sizeMatching(shoe_sizes, size_block.shoe_members, sizes).concat(
-        sizeMatching(shoe_sizes, size_block.shoe_members, sizes).concat(
+        sizeMatching(clothing_sizes, size_block.shoe_members, sizes).concat(
           sizeMatching(size_block.one_size, size_block.clothing_members, sizes)
         )
       );
