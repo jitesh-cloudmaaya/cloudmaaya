@@ -598,7 +598,7 @@ var search_page = {
           /* get unique list of szie params */
           var clean_size_params = [...new Set(size_params)];
           if(clean_size_params.length > 0){
-            //console.log(clean_size_params.join('|'))
+            console.log(clean_size_params.join('|'))
             facets.push(
               '&size=' + encodeURIComponent(clean_size_params.join('|'))
             )
@@ -917,8 +917,8 @@ var search_page = {
           '<div class="size-grouping-wrapper">' + 
           '<a href="#sizegroupunmapped" class="size-group-toggle"><span>+</span></a>' +
           '<label class="size-grouping">' +
-          '<input class="allume-size unmap" type="checkbox" value="" data-sizegroup="unmapped" ' +
-          'data-groupdiv="#sizegroupunmapped"/><span><i class="fa fa-square-o"></i>' +
+          '<input class="allume-size unmap" type="checkbox" value="Unmapped ' + category + 
+          '" data-sizegroup="unmapped"data-groupdiv="#sizegroupunmapped"/><span><i class="fa fa-square-o"></i>' +
           '<i class="fa fa-check-square"></i>' +
           '</span><em class="key">Unmapped ' + category + ' sizes</em></label>' +
           '<div class="sizegroup-list" id="sizegroupunmapped">'
