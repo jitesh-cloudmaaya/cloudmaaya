@@ -30,3 +30,4 @@ pysftp==0.2.9
 paramiko==2.4.0
 cryptography==2.1.4
 sqlparse==0.2.4
+newrelic==3.2.0.91
