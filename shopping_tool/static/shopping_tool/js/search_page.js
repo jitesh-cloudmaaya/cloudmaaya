@@ -382,6 +382,8 @@ var search_page = {
       var matched_size = [];
       for(var i = 0, l = all_sizes.length; i<l; i++){
         var size_grouping = all_sizes[i];
+        console.log(size_grouping)
+        console.log(member_hash)
         var subset_sizes = member_hash[size_grouping].sizes;
         var matched = 0;
         for(var ix = 0, lx = sizes_to_check.length; ix<lx; ix++){
