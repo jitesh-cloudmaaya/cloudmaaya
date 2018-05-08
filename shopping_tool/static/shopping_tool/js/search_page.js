@@ -905,6 +905,36 @@ var search_page = {
         sizeSubsection(size_block.one_size, size_block.clothing_members, 'nosize') + '</div>'
       );
     }
+    /* add in the unmapped sizes */
+    if(search_page.cached_sizes != null){
+      var matching_unmapped_category = search_page.cached_sizes.unmapped[category];
+      if(matching_unmapped_category != undefined){
+
+        markup.push(
+          '<span class="size-breaker"></span>' +
+          '<div class="size-grouping-wrapper">' + 
+          '<a href="#sizegroupunmapped" class="size-group-toggle"><span>+</span></a>' +
+          '<label class="size-grouping">' +
+          '<input class="allume-size unmap" type="checkbox" value="" data-sizegroup="unmapped" ' +
+          'data-groupdiv="#sizegroupunmapped"/><span><i class="fa fa-square-o"></i>' +
+          '<i class="fa fa-check-square"></i>' +
+          '</span><em class="key">Unmapped ' + category + ' sizes</em></label>' +
+          '<div class="sizegroup-list" id="sizegroupunmapped">'
+        );
+
+        for(var i = 0, l = matching_unmapped_category.length; i<l; i++){
+          var unmap_size = matching_unmapped_category[i];
+          var unmap_check = allume_sizes.indexOf(unmap_size) > -1 ? 'checked' : '' ;
+          markup.push(
+            '<label class="size-facet"><input class="size-member" type="checkbox" value="' + 
+            unmap_size + '" ' + unmap_check + '/><span><i class="fa fa-circle-thin"></i>' +
+            '<i class="fa fa-check-circle"></i></span><em class="key">' + unmap_size + '</em></label>'
+          );
+        }
+        markup.push('</div>');
+      }
+      
+    }
     return markup.join('') + '</div>';
   }
 }
