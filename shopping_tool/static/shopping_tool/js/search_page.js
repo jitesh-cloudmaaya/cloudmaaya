@@ -382,24 +382,24 @@ var search_page = {
       var matched_size = [];
       for(var i = 0, l = all_sizes.length; i<l; i++){
         var size_grouping = all_sizes[i];
-        console.log(size_grouping)
-        console.log(member_hash)
-        var subset_sizes = member_hash[size_grouping].sizes;
-        var matched = 0;
-        for(var ix = 0, lx = sizes_to_check.length; ix<lx; ix++){
-          if(size_grouping == String(sizes_to_check[ix])){
-            matched = 1;
-            matched_size.push(size_grouping);
+        if(member_hash[size_grouping] != undefined){
+          var subset_sizes = member_hash[size_grouping].sizes;
+          var matched = 0;
+          for(var ix = 0, lx = sizes_to_check.length; ix<lx; ix++){
+            if(size_grouping == String(sizes_to_check[ix])){
+              matched = 1;
+              matched_size.push(size_grouping);
+            }
           }
-        }
-        if(matched == 0){
-          for(var ix = 0, lx = subset_sizes.length; ix<lx; ix++){
-            var size = subset_sizes[ix];
-            var sub_match = 0;
-            for(var j = 0, n = sizes_to_check.length; j<n; j++){
-              if(size == String(sizes_to_check[j])){
-                sub_match = 1;
-                matched_size.push(size_grouping);
+          if(matched == 0){
+            for(var ix = 0, lx = subset_sizes.length; ix<lx; ix++){
+              var size = subset_sizes[ix];
+              var sub_match = 0;
+              for(var j = 0, n = sizes_to_check.length; j<n; j++){
+                if(size == String(sizes_to_check[j])){
+                  sub_match = 1;
+                  matched_size.push(size_grouping);
+                }
               }
             }
           }
