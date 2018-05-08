@@ -912,6 +912,8 @@ var search_page = {
 
         markup.push(
           '<span class="size-breaker"></span>' +
+          '<a href="#" class="size-facet-sub"><span>+</span>One Size</a>' +
+          '<div class="size-facet-sub-group">' + 
           '<div class="size-grouping-wrapper">' + 
           '<a href="#sizegroupunmapped" class="size-group-toggle"><span>+</span></a>' +
           '<label class="size-grouping">' +
@@ -931,7 +933,7 @@ var search_page = {
             '<i class="fa fa-check-circle"></i></span><em class="key">' + unmap_size + '</em></label>'
           );
         }
-        markup.push('</div>');
+        markup.push('</div></div></div>');
       }
       
     }
