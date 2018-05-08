@@ -137,7 +137,7 @@ def deploy_web_container():
     run('docker rm $(docker stop $(docker ps -a -q --filter name=web))')
     env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v ~/static:/srv/catalogue_service/static -p 8000:8000 --name %s_shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service:%s" % (env.environment, env.docker_tag))
+    run("docker run --restart=on-failure -d -e NEW_RELIC_ENVIRONMENT='%s' -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v ~/static:/srv/catalogue_service/static -p 8000:8000 --name %s_shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service:%s" % (env.environment, env.environment, env.docker_tag))
 
 @roles('worker')
 def deploy_celery_container():
@@ -149,14 +149,14 @@ def deploy_celery_container():
     run('docker rm $(docker stop $(docker ps -a -q --filter name=celery))')
     env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v /var/run/docker.sock:/var/run/docker.sock --name=%s_shopping_tool_celery --entrypoint=\"/docker-entrypoint-celery.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery.log 2>&1" % (env.environment, env.docker_tag))
+    run("docker run --restart=on-failure -d -e NEW_RELIC_ENVIRONMENT='%s' -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v /var/run/docker.sock:/var/run/docker.sock --name=%s_shopping_tool_celery --entrypoint=\"/docker-entrypoint-celery.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery.log 2>&1" % (env.environment, env.environment, env.docker_tag))
 
     #Restart Celery Beat
     env.warn_only = True#Allows process to proceed if there is no current container
     run('docker rm $(docker stop $(docker ps -a -q --filter name=celery_beat))')
     env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py --name=%s_shopping_tool_celery_beat --entrypoint=\"/docker-entrypoint-celery-beat.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery_beat.log 2>&1" % (env.environment, env.docker_tag))
+    run("docker run --restart=on-failure -d -e NEW_RELIC_ENVIRONMENT='%s' -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py --name=%s_shopping_tool_celery_beat --entrypoint=\"/docker-entrypoint-celery-beat.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery_beat.log 2>&1" % (env.environment, env.environment, env.docker_tag))
     
 
 @roles(['web', 'worker'])
