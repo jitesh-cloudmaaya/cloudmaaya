@@ -819,9 +819,9 @@ var search_page = {
       var sectional = [];
       for(var i = 0, l = section_sizes.length; i<l; i++){
         var size_grouping = section_sizes[i];
-        var sizes = member_hash[size_grouping].sizes;
         var checked = '';
         if(member_hash[size_grouping] != undefined){
+          var sizes = member_hash[size_grouping].sizes;
           var size_members = member_hash[size_grouping].members;
           for(var ix = 0, lx = allume_sizes.length; ix<lx; ix++){
             var allume_size = allume_sizes[ix];
