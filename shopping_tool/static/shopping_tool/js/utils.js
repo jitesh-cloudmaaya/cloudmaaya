@@ -184,6 +184,7 @@ var utils = {
             '<div class="social"></div></div>'
           )
           var goals_height = $('#test-quiz-goals').outerHeight();
+          console.log(goals_height)
           $('#test-quiz-goals').remove();
           /* quiz sections */
           var tabs = $('#client-tabs');
@@ -247,7 +248,7 @@ var utils = {
             tabs.html(tab_markup.join('') + '<a href="#client-weather">Weather</a>');
             sections.append(tab_content_markup.join(''));   
 
-            var h = 591 - goals_height;
+            var h = 586 - goals_height;
             $('#client-sizing').css('maxHeight', h + 'px')
 
           }    
