@@ -179,7 +179,7 @@ class CategoryMap(models.Model):
     class Meta:
         ordering = ['id']
 
-        unique_together = (('external_cat1', 'external_cat2'))
+        # unique_together = (('external_cat1', 'external_cat2'))
 
         indexes = [
             models.Index(fields=['external_cat1']),

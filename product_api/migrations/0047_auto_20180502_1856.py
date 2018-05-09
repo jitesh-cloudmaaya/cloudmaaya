@@ -3,13 +3,18 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-
+import sys
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('product_api', '0046_auto_20180501_2006'),
     ]
+
+    if 'test' in sys.argv:
+        create_table = True
+    else:
+        create_table = False
 
     operations = [
         migrations.CreateModel(
@@ -22,6 +27,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'allume_retailer_allume_size_mapping',
+                'managed': create_table,
             },
         ),
     ]

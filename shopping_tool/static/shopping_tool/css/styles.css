@@ -4117,5 +4117,27 @@ div.sizegroup-list {padding:0 0 0 40px;}
   font-weight:300;
   padding:5px 15px;
 }
+#test-quiz-goals {
+  position:absolute;
+  left:-9999px;
+  width:500px;
+  max-height:325px; 
+  overflow:auto;
+}
+#test-quiz-goals div.goal,
+#test-quiz-goals div.next-session {
+  border-bottom: 1px solid #ddd;
+  display: block;
+  font-size: 18px;
+  font-weight: 100;
+  line-height: 24px;
+  padding: 5px 10px 10px;
+}
+#test-quiz-goals div.goal {border:0;}
+#test-quiz-goals div.goal div.qa {padding:0 0 5px;}
+#test-quiz-goals div.goal em.goal-header {display:block;}
+#test-quiz-goals div.next-session em,
+#test-quiz-goals div.goal em {display:inline-block;}
+#test-quiz-goals div.social { border-bottom: 1px solid #ddd; }
 
 
