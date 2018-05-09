@@ -3,28 +3,31 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-
+import sys
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('product_api', '0046_auto_20180501_2006'),
     ]
+
     if 'test' in sys.argv:
-        operations = [
-            migrations.CreateModel(
-                name='AllumeRetailerSizeMapping',
-                fields=[
-                    ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                    ('retailer_size', models.CharField(default=None, max_length=100, null=True)),
-                    ('allume_size', models.CharField(default=None, max_length=100, null=True)),
-                    ('is_text', models.BooleanField()),
-                ],
-                options={
-                    'db_table': 'allume_retailer_allume_size_mapping',
-                },
-            ),
-        ]
+        create_table = True
     else:
-        operations = [
-        ]
+        create_table = False
+
+    operations = [
+        migrations.CreateModel(
+            name='AllumeRetailerSizeMapping',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('retailer_size', models.CharField(default=None, max_length=100, null=True)),
+                ('allume_size', models.CharField(default=None, max_length=100, null=True)),
+                ('is_text', models.BooleanField()),
+            ],
+            options={
+                'db_table': 'allume_retailer_allume_size_mapping',
+                'managed': create_table,
+            },
+        ),
+    ]
