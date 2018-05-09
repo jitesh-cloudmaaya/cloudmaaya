@@ -690,7 +690,7 @@ def clean_up_data(val, product_name, is_shoe_size, known_text_sizes, eu_can_obj_
 
     if re.compile(r"[0-9]+\s+1/2\s*").match(val):
         val = re.sub(r'\s*1/2', '.5', val)
-    val = val.replace('Â½', '.5')
+    # val = val.replace('Â½', '.5')
     if "(" in val:
         val = re.sub(r"\(+", '(', val)
         val = re.sub(r"\)+", ')', val)
