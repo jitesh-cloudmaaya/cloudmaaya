@@ -4137,5 +4137,8 @@ div.sizegroup-list {padding:0 0 0 40px;}
 #test-quiz-goals div.goal em.goal-header {display:block;}
 #test-quiz-goals div.next-session em,
 #test-quiz-goals div.goal em {display:inline-block;}
+#test-quiz-goals div.social {
+  border-bottom: 1px solid #ddd;
+}
 
 
