@@ -819,21 +819,25 @@ var search_page = {
       var sectional = [];
       for(var i = 0, l = section_sizes.length; i<l; i++){
         var size_grouping = section_sizes[i];
-        var sizes = member_hash[size_grouping].sizes;
-        var size_members = member_hash[size_grouping].members;
         var checked = '';
-        for(var ix = 0, lx = allume_sizes.length; ix<lx; ix++){
-          var allume_size = allume_sizes[ix];
-          for(var j = 0, n = sizes.length; j<n; j++){
-            if( sizes[j] == allume_size ){
-              checked = 'CHECKED'
+        if(member_hash[size_grouping] != undefined){
+          var sizes = member_hash[size_grouping].sizes;
+          var size_members = member_hash[size_grouping].members;
+          for(var ix = 0, lx = allume_sizes.length; ix<lx; ix++){
+            var allume_size = allume_sizes[ix];
+            for(var j = 0, n = sizes.length; j<n; j++){
+              if( sizes[j] == allume_size ){
+                checked = 'CHECKED'
+              }
             }
           }
         }
         sectional.push(sizeGroup(size_grouping, checked));
-        for(var ix = 0, lx = size_members.length; ix<lx; ix++){
-          var member = size_members[ix];
-          sectional.push(sizeGroupMember(member, checked, id_modifier));
+        if(member_hash[size_grouping] != undefined){
+          for(var ix = 0, lx = size_members.length; ix<lx; ix++){
+            var member = size_members[ix];
+            sectional.push(sizeGroupMember(member, checked, id_modifier));
+          }
         }
         /* close the sizegroup, and wrapper div */
         sectional.push('</div></div>');

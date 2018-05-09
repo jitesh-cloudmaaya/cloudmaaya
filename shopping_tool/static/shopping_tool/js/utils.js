@@ -166,12 +166,25 @@ var utils = {
             }
             var session_string = session_type + '' + cadence;
             var next_session_div = $('#client-next-session');
+            var test_session_string = '';
             if(session_string == ''){
               next_session_div.html('');
             }else{
               next_session_div.html('<em>next session:</em> ' + session_string);
+              test_session_string = '<em>next session:</em> ' + session_string
             }                        
           } 
+          /* get the initial height of goals and 
+          * next session section to make initial load the correct height
+          */
+          $('body').append(
+            '<div id="test-quiz-goals">' +
+            '<div class="goal">' + goals.join('') + '</div>' + 
+            '<div class="next-session">' + test_session_string + '</div>' +
+            '<div class="social"></div></div>'
+          )
+          var goals_height = $('#test-quiz-goals').outerHeight();
+          $('#test-quiz-goals').remove();
           /* quiz sections */
           var tabs = $('#client-tabs');
           var sections = $('#client-section-wrapper');
@@ -233,6 +246,10 @@ var utils = {
             }
             tabs.html(tab_markup.join('') + '<a href="#client-weather">Weather</a>');
             sections.append(tab_content_markup.join(''));   
+
+            var h = 591 - goals_height;
+            $('#client-sizing').css('maxHeight', h + 'px')
+
           }    
         }
       },
