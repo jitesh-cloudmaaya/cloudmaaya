@@ -23,6 +23,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
     size_term_mapping = mappings.create_size_term_mapping()
     synonym_category_mapping = mappings.create_synonym_category_mapping()
     synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+    known_text_sizes, known_number_sizes = mappings.create_retailer_size_mappings()
 
     # for use when adding a mapping
     exclusion_terms = mappings.create_exclusion_term_mapping()
@@ -211,7 +212,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             merchant_color = attribute_5_color.split(',')[0].lower()
                             try:
                                 allume_color = color_mapping[merchant_color]
-                            except:
+                            except KeyError:
                                 allume_color = u'other'
                             record['color'] = allume_color
 
@@ -223,7 +224,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             record['size'] = attribute_3_size
 
 
-                            record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
+                            # record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, attribute_3_size, size_mapping, shoe_size_mapping, size_term_mapping)
 
                             record['material'] = attribute_4_material
 
@@ -233,9 +234,9 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             record['currency'] = currency
 
                             if availability == '' or availability == 'no':
-                                availability = 'out-of-stock'
+                                availability = u'out-of-stock'
                             elif availability == 'yes':
-                                availability = 'in-stock'
+                                availability = u'in-stock'
                             record['availability'] = availability
 
                             record['keywords'] = keywords
@@ -245,7 +246,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             record['allume_category'] = allume_category
                             record['brand'] = brand
 
-                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            record['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S').decode('UTF-8')
                             record['merchant_name'] = merchant_name
 
                             # set defaults
@@ -260,7 +261,7 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                                     record['current_price'] = sale_price
                                 else:
                                     record['current_price'] = retail_price
-                            except:
+                            except (TypeError, ValueError):
                                 record['current_price'] = retail_price
 
                             # is_deleted logic
@@ -269,33 +270,74 @@ def clean_ran(local_temp_dir, file_ending, cleaned_fields, is_delta=False):
                             else:
                                 record['is_deleted'] = u'0'
 
-                            # for key, value in record.iteritems():
-                            #     print (type(key), type(value))
-                            #     print (key, value)
-                            # return
-
-                            # unicode sandwich finish
-                            for key, value in record.iteritems():
-                                record[key] = value.encode('UTF-8')
-
-                            # check size here to see if we should write additional 'child' records?
+                            # size parsing and splitting, very likely a prime refactoring candidate
                             parent_attributes = copy(record)
                             sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
-                            if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+                            if len(sizes) > 1:
                                 for size in sizes:
-                                    parent_attributes['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
-                                    # use the size mapping here also
+                                    child_record = copy(parent_attributes)
+                                    allume_size_arr = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)
+                                    if len(allume_size_arr) > 1:
+                                        grandchild_record = copy(child_record)
+                                        child_record['size'] = size
+                                        for size in allume_size_arr:
+                                            grandchild_record['size'] = size
+                                            grandchild_record['allume_size'] = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)[0]
+                                            grandchild_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, grandchild_record['allume_size'])
+                                            for key, value in grandchild_record.iteritems():
+                                                grandchild_record[key] = product_feed_helpers.unicode_encode(value)
+                                            writer.writerow(grandchild_record)
+                                            writtenCount += 1
+                                        child_record['allume_size'] = u''
+                                        child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['size'])
+                                        child_record['is_deleted'] = u'1'
+                                        for key, value in child_record.iteritems():
+                                            child_record[key] = product_feed_helpers.unicode_encode(value)
+                                        writer.writerow(child_record)
+                                        writtenCount += 1
+                                    else:
+                                        child_record['size'] = size
+                                        child_record['allume_size'] = allume_size_arr[0]
+                                        child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['allume_size'])
+                                        for key, value in child_record.iteritems():
+                                            child_record[key] = product_feed_helpers.unicode_encode(value)
+                                        writer.writerow(child_record)
+                                        writtenCount += 1
+                                parent_attributes['allume_size'] = u''
+                                parent_attributes['is_deleted'] = u'1'
+                                for key, value in parent_attributes.iteritems():
+                                    parent_attributes[key] = product_feed_helpers.unicode_encode(value)
+                                writer.writerow(parent_attributes)
+                                writtenCount += 1
+                            else:
+                                size = sizes[0]
+                                allume_size_arr = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)
+                                if len(allume_size_arr) > 1:
+                                    child_record = copy(parent_attributes)
                                     parent_attributes['size'] = size
-                                    parent_attributes['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
+                                    for size in allume_size_arr:
+                                        child_record['size'] = size
+                                        child_record['allume_size'] = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)[0]
+                                        child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['allume_size'])
+                                        for key, value in child_record.iteritems():
+                                            child_record[key] = product_feed_helpers.unicode_encode(value)
+                                        writer.writerow(child_record)
+                                        writtenCount += 1
+                                    parent_attributes['allume_size'] = u''
+                                    parent_attributes['is_deleted'] = u'1'
+                                    for key, value in parent_attributes.iteritems():
+                                        parent_attributes[key] = product_feed_helpers.unicode_encode(value)
                                     writer.writerow(parent_attributes)
                                     writtenCount += 1
-                                # set the parent record to is_deleted
-                                record['is_deleted'] = 1
+                                else:
+                                    parent_attributes['size'] = size
+                                    parent_attributes['allume_size'] = allume_size_arr[0]
+                                    for key, value in parent_attributes.iteritems():
+                                        parent_attributes[key] = product_feed_helpers.unicode_encode(value)
+                                    writer.writerow(parent_attributes)
+                                    writtenCount += 1
 
-                            # write the reconstructed line to the cleaned file using the csvwriter
-                            writer.writerow(record)
-                            writtenCount += 1
                         else:
                             categoriesSkipped += 1
 

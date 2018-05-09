@@ -236,7 +236,7 @@ class ProductFeedHelpersTestCase(TestCase):
         synonym_terms = SynonymCategoryMap.objects.values_list('category', flat=True)
         ac = AllumeCategory.objects.first()
         add_category_map('Clothing', 'Food', 'Raybeam', exclusion_terms, synonym_other_terms, synonym_terms, allume_category = ac)
-        cm = CategoryMap.objects.get(external_cat1 = 'Clothing', external_cat2 = 'Food', merchant_name = 'Raybeam')
+        cm = CategoryMap.objects.get(external_cat1 = 'clothing', external_cat2 = 'food', merchant_name = 'Raybeam')
         exclude = AllumeCategory.objects.get(name__iexact='exclude')
 
         self.assertEqual(exclude, cm.allume_category)

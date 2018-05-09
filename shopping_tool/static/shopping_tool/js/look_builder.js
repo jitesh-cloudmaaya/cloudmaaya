@@ -529,11 +529,12 @@ var look_builder = {
     }).end().find('a.restart').click(function(e){
       e.preventDefault();
       var data = $(this).data();
-      collage.cropper.clear();
+      collage.cropper.dispose();
       collage.setUpCropperImage(data.path, data.prodid, 'restart');
     }).end().find('a.cancel').click(function(e){
       e.preventDefault();
       $('#crop-look-image').fadeOut();
+      collage.cropper.dispose();
       collage.cropper = null;
     });
     $('#pg-cropper-btns').find('a.save').click(function(e){
@@ -559,6 +560,7 @@ var look_builder = {
     $('#close-crop-image').click(function(e){
       e.preventDefault();
       $('#crop-look-image').fadeOut();
+      collage.cropper.dispose();
       collage.cropper = null;
     });
     $('#close-pg-crop-image').click(function(e){

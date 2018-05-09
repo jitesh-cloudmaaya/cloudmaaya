@@ -30,7 +30,7 @@ var rack_builder = {
       rack_builder.favorites_product_ids.splice(index, 1);
       rack_builder.favorites.splice(index, 1);
       if(fave != ''){
-        link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+        link.attr('title','Favorite look').data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
         $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
         $.ajax({
           contentType : 'application/json',
@@ -49,7 +49,7 @@ var rack_builder = {
         "stylist": parseInt($('#stylist').data('stylistid')) ,
         "product": parseInt(link.data('productid'))     
       }
-      link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+      link.attr('title','Unfavorite look').addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(fave),
@@ -271,7 +271,9 @@ var rack_builder = {
             '"><img class="collage" src="' + comp.collage + '"/></a>';
           }
           markup.push(
-            '<div class="rack-look"><a href="/look_builder/' + rack_builder.session_id + 
+            '<div class="rack-look"><a href="#" class="clone-look" ' +
+            'data-lookid="' + comp.id + '"><i class="fa fa-clone"></i>' +
+            'copy look</a><a href="/look_builder/' + rack_builder.session_id + 
             '/?look=' + comp.id  + '" class="look-link">edit look</a><h3>' + comp.name + '</h3>' + 
             collage_img + '<span class="layout desc"><em>description: </em>' + 
             comp.description + '</span></div>'
@@ -431,6 +433,33 @@ var rack_builder = {
       e.preventDefault();
       var link = $(this);
       look_builder.lookDetails(link);
+    });
+    $('#fave-looks').on('click','a.clone-look',function(e){
+      e.preventDefault();
+      var link = $(this);
+      $('#cloning-look').fadeIn();
+      var session = $('body').data('stylesession');
+      $.ajax({
+        error: function(response){
+          console.log(response);
+          $('#cloning-look').hide();
+          alert('There was a problem copying the look...');
+        },
+        success: function(response){
+          if(response != undefined && response.new_look_id != undefined){
+            $('#cloning-look div.stage').html('<span class="cloned">Redirecting to your new look...</span>')
+            window.setTimeout(function(){
+              window.location = '/look_builder/' + session + '/?look=' + response.new_look_id
+            },
+            500);
+          }else{
+            $('#cloning-look').hide();
+            alert('There was a problem copying the look...');
+          }
+        },
+        type: 'PUT',
+        url: '/shopping_tool_api/add_look_to_session/' + link.data('lookid') + '/' + session + '/'
+      });
     });
     $('#looks-list').on('click','a.view-look-details', function(e){
       e.preventDefault();

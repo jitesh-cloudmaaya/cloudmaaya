@@ -42,13 +42,12 @@
       <span><em>shoe:</em>{{ client.client_360.size_shoe }}</span>
     </p>
     <div class="bio">
-      <img class="client" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/>
+      <img class="client" id="view-details-client-picture" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/>
       <h3>{{ client.first_name }} {{ client.last_name }}</h3>
       <span id="prev-client-locale"></span>
       <span id="prev-client-birthday"></span>  
       <span><em>occupation:</em>{{ client.client_360.occupation }}</span>
-      <span><em>look goals:</em>{{ client.client_360.looks_goal }}</span>
-      <span><em>other goals:</em>{{ client.client_360.other_goals }}</span>
+      <div id="view-details-client-goals"></div>
     </div>
     <p class="style first"><em>colors:</em>{{ client.client_360.colors_preference }}</p>
     <p class="style"><em>celebrity style:</em>{{ client.client_360.style_celebs }}</p>

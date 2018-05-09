@@ -21,6 +21,10 @@ var utils = {
     });
   },
   /**
+  * @description category settinsg used in search page
+  */
+  category_settings: null,
+  /**
   * @description client details and presentation checks
   */  
   client: function(){
@@ -47,33 +51,15 @@ var utils = {
       e.preventDefault();
       $('#user-card').addClass('show').addClass('looker');
     }).html('View ' + clip.data('username'));
-    /* get next session info with subscription_id
-      $.ajax({
-        contentType: 'application/x-www-form-urlencoded',
-        crossDomain: true,
-        data: $.param({subscription_id: id here),
-        type: 'POST',
-        url: '$https://styling-service-' + local_environment + '.allume.co/repeat/get_next_styling_session_info',
-        xhrFields: {
-          withCredentials: true
-        },
-        success: function(response){
-          console.log(response)
-        },
-        error: function(response){
-          console.log(response)
-        }
-      });
-    */
     /* correctly display bra size */
     var bra = $('#bra-size');
     var bra_size = bra.data('sizes');
     if((bra_size != undefined)&&(typeof bra_size == 'object')){
       bra.html('<em>bra:</em>' + bra_size.band + '' + bra_size.cup);
       $('#prev-bra-size').html('<em>bra:</em>' + bra_size.band + '' + bra_size.cup);
-    }
+    }     
     /* correctly display birthday */
-    var bd = $('#client-birthday');
+    var bd = $('#client-age');
     var bday = bd.data('bd');
     if((bday != undefined)&&(typeof bday == 'object')){
       var proc_bday = moment(bday.month +'/' + bday.day +'/' + bday.year, 'M/D/YYYY');
@@ -83,36 +69,203 @@ var utils = {
       bd.html(bd_display);
       $('#prev-client-birthday').html(bd_display);
     }
-    /* check to see if the social links are valid, if not hide, if they are valid up the link index count */
-    var social = $('#client-social');
-    var social_link_index = 0;
-    $.each(social.find('a'), function(idx){
-      var link = $(this);
-      if(link.attr('href') == 'None'){
-        link.hide();
-      }else{
-        social_link_index++;
-      }
-    });
     /** correctly display where the client lives */
-    var locale = $('#client-locale');
+    var locale = $('#client-location');
     var city_state = locale.data('cs');
     if((city_state != undefined)&&(typeof city_state == 'object')){
       var cs_display = city_state.city + ', ' + city_state.state;
       locale.html('<em>location:</em>' + cs_display + ' &nbsp;&nbsp;(' + locale.data('tz') + ' timezone)');
       $('#prev-client-locale').html('<em>location:</em>' + cs_display)
       $('#client-weather-locale').html('Seasonal norms for ' + cs_display + ':');
-    }    
-    /* if link idex is 0, no social links are valid thus hide the whole social div */
-    if(social_link_index == 0){ social.hide(); }
+    }
+    /**
+    * @description get the quiz info
+    */
+    $.ajax({
+      contentType: 'application/json',
+      crossDomain: true,
+      data: JSON.stringify({"styling_session_id": $('body').data('stylesession')}),
+      type: 'POST',
+      url: 'https://styling-service-' + local_environment + '.allume.co/quiz/get_formatted_quiz_info/',
+      xhrFields: {
+        withCredentials: true
+      },
+      success: function(response){
+        var obj = JSON.parse(response);
+        console.log(obj);
+        if(obj.data != undefined){
+          /* category settings */
+          if(obj.data.search_client_preferences != undefined){
+            utils.category_settings = obj.data.search_client_preferences;
+            var test = $('#search-categories');
+            if(test.length > 0){
+              utils.setHelp(test.val());
+            }
+          }
+          /* client bio fields */
+          if(obj.data.user_info != undefined){
+            for(var i = 0, l = obj.data.user_info.length; i<l; i++){
+              var bio_field = obj.data.user_info[i]
+              var bio_field_id = 'client-' + bio_field.q.replace(/[\s:]/g, '').toLowerCase();
+              var bio_label = bio_field_id == 'client-name' ? '<em>now styling: </em>' : '<em>' + bio_field.q.toLowerCase() + '</em>' ;
+              $('#' + bio_field_id).html(bio_label + '' + bio_field.a);
+            }
+          }
+          /* goals */
+          var goals = [];
+          var view_items_goals = [];
+          if(obj.data.session_goals != undefined && 
+             obj.data.session_goals[0] != undefined && 
+             obj.data.session_goals[0].a != undefined){
+            for(key in obj.data.session_goals[0].a){
+              if(obj.data.session_goals[0].a.hasOwnProperty(key)){
+                goals.push(
+                  '<div class="qa"><em>' + obj.data.session_goals[0].a[key].q +
+                  '</em> ' + obj.data.session_goals[0].a[key].a + '</div>'
+                );
+                view_items_goals.push(
+                  '<span><em>' + obj.data.session_goals[0].a[key].q + '</em>' + 
+                  obj.data.session_goals[0].a[key].a + '</span>'
+                );
+              }
+            }
+          }
+          if(goals.length > 0){ 
+            $('#client-session-goal').html(goals.join('')); 
+            $('#view-details-client-goals').html(view_items_goals.join(''))
+          }
+          /* next session */
+          if(obj.data.next_session_info != undefined && obj.data.next_session_info[0] != undefined){
+            var cadence = '';
+            var session_type = '';
+            if(obj.data.next_session_info[0].a != null){
+              if(obj.data.next_session_info[0].a.next_styling_session_type == null){
+                session_type = 'None';
+              }else{
+                if(obj.data.next_session_info[0].a.slotted == false){
+                  session_type = 'Week of ' + moment(obj.data.next_session_info[0].a.next_styling_session_start_date, 'X').format('MMMM D');
+                }else{
+                  session_type = moment(obj.data.next_session_info[0].a.next_styling_session_start_date, 'X').format('MMMM D');
+                }
+              }
+              if(obj.data.next_session_info[0].a.styling_session_cadence_in_weeks == 0){
+                cadence = ', no cadence';
+              }else{
+                switch(obj.data.next_session_info[0].a.styling_session_cadence_in_weeks){
+                  case 2:
+                    cadence = ', every 2 weeks';
+                  break;
+                  case 4:
+                    cadence = ', every month';
+                  break;
+                  case 8:
+                    cadence = ', every 2 months';
+                  break;
+                }
+              }
+            }
+            var session_string = session_type + '' + cadence;
+            var next_session_div = $('#client-next-session');
+            var test_session_string = '';
+            if(session_string == ''){
+              next_session_div.html('');
+            }else{
+              next_session_div.html('<em>next session:</em> ' + session_string);
+              test_session_string = '<em>next session:</em> ' + session_string
+            }                        
+          } 
+          /* get the initial height of goals and 
+          * next session section to make initial load the correct height
+          */
+          $('body').append(
+            '<div id="test-quiz-goals">' +
+            '<div class="goal">' + goals.join('') + '</div>' + 
+            '<div class="next-session">' + test_session_string + '</div>' +
+            '<div class="social"></div></div>'
+          )
+          var goals_height = $('#test-quiz-goals').outerHeight();
+          console.log(goals_height)
+          $('#test-quiz-goals').remove();
+          /* quiz sections */
+          var tabs = $('#client-tabs');
+          var sections = $('#client-section-wrapper');
+          /* remove old quiz content tabs */
+          tabs.html('');
+          /* remove old quiz content except weather & notes */
+          $.each(sections.find('div.client-section'), function(idx){
+            var div = $(this);
+            if(['client-notes','client-weather'].indexOf(div.attr('id')) == -1 ){ 
+              div.remove();
+            }
+          });
+          var tab_markup = [];
+          var tab_content_markup = [];
+          if(obj.data.tabs != undefined){
+            for(var i = 0, l = obj.data.tabs.length; i<l; i++){
+              var tab = obj.data.tabs[i]
+              var tab_div_id = 'client-' + tab.tab_name.toLowerCase();
+              var tab_class = i == 0 ? 'on' : '' ;
+              var tab_div_class = i == 0 ? 'show' : '' ; 
+              tab_markup.push(
+                '<a href="#' + tab_div_id + '" class="' + 
+                tab_class + '">' + tab.tab_name + '</a>'
+              );
+              if(tab.content != undefined){
+                tab_content_markup.push(
+                  '<div id="' + tab_div_id + '" class="client-section ' + 
+                  tab_div_class + '">'
+                );
+                for(var ix = 0, lx = tab.content.length; ix<lx; ix++){
+                  var detail = tab.content[ix];
+                  if(tab.tab_name != 'Picture'){
+                    var txt = detail.a == null ? '' : detail.a ;
+                    tab_content_markup.push(
+                      '<span class="client-details"><em>' + detail.q + 
+                      '</em>' + txt + '</span>'
+                    );
+                  }else{
+                    if(detail.a != null){
+                      tab_content_markup.push(
+                        '<img src="https://s3-us-west-2.amazonaws.com/images.allume.co' +
+                        detail.a + '"/>'
+                      );
+                      /* use this image for the quiz toggle */
+                      $('#user-clip-img').attr(
+                        'src', 
+                        'https://s3-us-west-2.amazonaws.com/images.allume.co' + detail.a
+                      );
+                      /* use this image in the details overlay */
+                      $('#view-details-client-picture').attr(
+                        'src', 
+                        'https://s3-us-west-2.amazonaws.com/images.allume.co' + detail.a
+                      );
+                    }
+                  }
+                }
+                tab_content_markup.push('</div>');
+              }
+            }
+            tabs.html(tab_markup.join('') + '<a href="#client-weather">Weather</a>');
+            sections.append(tab_content_markup.join(''));   
+
+            var h = 586 - goals_height;
+            $('#client-sizing').css('maxHeight', h + 'px')
+
+          }    
+        }
+      },
+      error: function(response){
+        console.log(response)
+      }
+    });
     /* client card tabs */
-    $('#client-tabs a').click(function(e){
+    $('#client-tabs').on('click', 'a', function(e){
       e.preventDefault();
       var link = $(this);
       var href = link.attr('href')
       var div = $(href);
       /* calculate the correct max height of tab sections */
-      var h = 625 - ($('#client-tabs').outerHeight() + $('#user-card div.social').outerHeight() + $('#user-card span.goal').outerHeight());
+      var h = 625 - ($('#client-tabs').outerHeight() + $('#client-dynamic-section').outerHeight());
       div.css('maxHeight', h + 'px')
       if(link.hasClass('on') == false){
         link.addClass('on').siblings('a').removeClass('on');
@@ -239,7 +392,6 @@ var utils = {
         rack_builder.addToRack(link, 'inspect', from_compare);
       }
     });
-
     /* add possesives to rack tabs */
     var rack_tabs = $('#rack-tabs');
     var rack_tab = rack_tabs.find('a.rack-tab');
@@ -531,5 +683,43 @@ var utils = {
   readURLParams: function(param){
     var match = RegExp('[?&]' + param + '=([^&]*)').exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+  },
+  /**
+  * @description helper function to set the search help based upon API results
+  * @param {string} val - the selected category
+  */
+  setHelp: function(val){
+    var div = $('#client-defaults');
+    var header = '<h5>Client preferences and sizes for <strong>' + val + '</strong>:</h5>';
+    var client_settings = [];
+    for(key in utils.category_settings){
+      if(utils.category_settings.hasOwnProperty(key)){
+        if(key == val){
+          if(utils.category_settings[key] != undefined){
+            for(var i = 0, l = utils.category_settings[key].length; i<l; i++){
+              var row = utils.category_settings[key][i];
+              var answer = row.a == null ? '' : row.a ;
+              client_settings.push(
+                '<span><em>' + row.q + '</em>' + answer + '</span>'
+              );
+            }
+          }
+        }
+      }
+    }
+    if(utils.category_settings['no_category'] != undefined){
+      for(var i = 0, l = utils.category_settings['no_category'].length; i<l; i++){
+        var row = utils.category_settings['no_category'][i];
+        var answer = row.a == null ? '' : row.a ;
+        var color = row.color != undefined ? 'style="color:' + row.color + '"' : ''; 
+        client_settings.push(
+          '<span ' + color + '><em>' + row.q + '</em>' + answer + '</span>'
+        );
+      }
+    }
+    div.html(
+      '<div class="client-settings">' + header +
+      client_settings.join('') + '</div>'
+    ); 
   }
 }

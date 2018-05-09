@@ -177,6 +177,10 @@ class CategoryMap(models.Model):
             return self.merchant_name
 
     class Meta:
+        ordering = ['id']
+
+        # unique_together = (('external_cat1', 'external_cat2'))
+
         indexes = [
             models.Index(fields=['external_cat1']),
             models.Index(fields=['external_cat2']),
@@ -200,6 +204,14 @@ class ExclusionTerm(models.Model):
 
     def __str__(self):
         return self.term
+
+class AllumeRetailerSizeMapping(models.Model):
+    retailer_size = models.CharField(max_length=100, null=True, default=None)
+    allume_size = models.CharField(max_length=100, null=True, default=None)
+    is_text = models.BooleanField()
+
+    class Meta:
+        db_table =  'allume_retailer_allume_size_mapping'
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
