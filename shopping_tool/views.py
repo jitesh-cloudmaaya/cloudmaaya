@@ -64,12 +64,12 @@ def index(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session).prefetch_related('product')
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     categories = AllumeCategory.objects.filter(active = True).order_by('position')
-    favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related('product')
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
@@ -97,12 +97,12 @@ def look_builder(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session).prefetch_related('product')
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     categories = AllumeCategory.objects.filter(active = True)
-    favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related('product')
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()
     product_image_proxy = PRODUCT_IMAGE_PROXY
@@ -165,7 +165,7 @@ def explore(request, styling_session_id=None):
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     stylists = WpUsers.objects.stylists()
-    favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related('product')
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
