@@ -10,18 +10,21 @@ class Migration(migrations.Migration):
     dependencies = [
         ('product_api', '0046_auto_20180501_2006'),
     ]
-
-    operations = [
-        migrations.CreateModel(
-            name='AllumeRetailerSizeMapping',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('retailer_size', models.CharField(default=None, max_length=100, null=True)),
-                ('allume_size', models.CharField(default=None, max_length=100, null=True)),
-                ('is_text', models.BooleanField()),
-            ],
-            options={
-                'db_table': 'allume_retailer_allume_size_mapping',
-            },
-        ),
-    ]
+    if 'test' in sys.argv:
+        operations = [
+            migrations.CreateModel(
+                name='AllumeRetailerSizeMapping',
+                fields=[
+                    ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                    ('retailer_size', models.CharField(default=None, max_length=100, null=True)),
+                    ('allume_size', models.CharField(default=None, max_length=100, null=True)),
+                    ('is_text', models.BooleanField()),
+                ],
+                options={
+                    'db_table': 'allume_retailer_allume_size_mapping',
+                },
+            ),
+        ]
+    else:
+        operations = [
+        ]
