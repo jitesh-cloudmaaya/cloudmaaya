@@ -523,7 +523,7 @@ def parse_single_size(v, product_name, allume_category, known_text_sizes, known_
     eu_can_obj_sizes = {'EU': 'EU', 'DE': 'DE', 'IT': 'IT', 'FR': 'FR', 'CAN': 'CAN', 'US': 'US'}
     non_eu_us_sizes = ['UK', 'AUS']
     non_eu_us_sizes_obj = {'UK': 'UK', 'AUS': 'AUS'}
-
+    allume_category = allume_category.upper()
     if allume_category not in ('DRESSES', 'SHOES', 'TOPS', 'JACKETS', 'BOTTOMS'):
         return [v]
     is_shoe_size = allume_category == 'SHOES'
