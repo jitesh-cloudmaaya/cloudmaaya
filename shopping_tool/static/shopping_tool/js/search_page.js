@@ -850,8 +850,33 @@ var search_page = {
       '<div class="facet-list size" data-qparam="size">'
     ];    
     /* create correct size facets HTML based upon category */
-    if (category == ''){
+    if (category == 'Shoes'){
       /* shoe sizes */
+      markup.push(
+        '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Regular Sizes)</a>' +
+        '<div class="size-facet-sub-group">' + 
+        sizeSubsection(size_block.regular_shoes, size_block.shoe_members, 'shoe') + '</div>' +
+        '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Narrow Sizes)</a>' +
+        '<div class="size-facet-sub-group">' + 
+        sizeSubsection(size_block.narrow_shoes, size_block.shoe_members, 'shoe') + '</div>' +      
+        '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Wide Sizes)</a>' +
+        '<div class="size-facet-sub-group">' + 
+        sizeSubsection(size_block.wide_shoes, size_block.shoe_members, 'shoe') + '</div>'
+      ); 
+    }else if(["Shoes","Accessories","Other","Beauty","Unsure",""].indexOf(category) == -1){
+      /* clothing sizes */
+      markup.push(
+        '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Regular Sizes)</a>' +
+        '<div class="size-facet-sub-group">' + 
+        sizeSubsection(size_block.regular_sizes, size_block.clothing_members, 'clothing') + '</div>' +
+        '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Petite Sizes)</a>' +
+        '<div class="size-facet-sub-group">' + 
+        sizeSubsection(size_block.petite_sizes, size_block.clothing_members, 'clothing') + '</div>' +
+        '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Tall Sizes)</a>' +
+        '<div class="size-facet-sub-group">' + 
+        sizeSubsection(size_block.tall_sizes, size_block.clothing_members, 'clothing') + '</div>'
+      );  
+    }else{
       markup.push(
         '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Regular Sizes)</a>' +
         '<div class="size-facet-sub-group">' + 
@@ -873,39 +898,6 @@ var search_page = {
         '<div class="size-facet-sub-group">' + 
         sizeSubsection(size_block.wide_shoes, size_block.shoe_members, 'shoe') + '</div>' +
         '<span class="size-breaker"></span>' + 
-        '<a href="#" class="size-facet-sub"><span>+</span>One Size</a>' +
-        '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.one_size, size_block.clothing_members, 'nosize') + '</div>'
-      );
-    }else if (category == 'Shoes'){
-      /* shoe sizes */
-      markup.push(
-        '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Regular Sizes)</a>' +
-        '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.regular_shoes, size_block.shoe_members, 'shoe') + '</div>' +
-        '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Narrow Sizes)</a>' +
-        '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.narrow_shoes, size_block.shoe_members, 'shoe') + '</div>' +      
-        '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Wide Sizes)</a>' +
-        '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.wide_shoes, size_block.shoe_members, 'shoe') + '</div>'
-      ); 
-    }else if(["Shoes","Accessories","Other","Beauty","Unsure"].indexOf(category) == -1){
-      /* clothing sizes */
-      markup.push(
-        '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Regular Sizes)</a>' +
-        '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.regular_sizes, size_block.clothing_members, 'clothing') + '</div>' +
-        '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Petite Sizes)</a>' +
-        '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.petite_sizes, size_block.clothing_members, 'clothing') + '</div>' +
-        '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Tall Sizes)</a>' +
-        '<div class="size-facet-sub-group">' + 
-        sizeSubsection(size_block.tall_sizes, size_block.clothing_members, 'clothing') + '</div>'
-      );  
-    }else{
-      /* things with no size */
-      markup.push(
         '<a href="#" class="size-facet-sub"><span>+</span>One Size</a>' +
         '<div class="size-facet-sub-group">' + 
         sizeSubsection(size_block.one_size, size_block.clothing_members, 'nosize') + '</div>'
