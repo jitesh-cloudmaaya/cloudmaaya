@@ -524,7 +524,7 @@ def parse_single_size(v, product_name, allume_category, known_text_sizes, known_
     non_eu_us_sizes = ['UK', 'AUS']
     non_eu_us_sizes_obj = {'UK': 'UK', 'AUS': 'AUS'}
     allume_category = allume_category.upper() if allume_category else None
-    if not allume_category or allume_category not in ('DRESSES', 'SHOES', 'TOPS', 'JACKETS', 'BOTTOMS'):
+    if not allume_category or allume_category not in ('DRESSES', 'SHOES', 'TOPS', 'JACKETS', 'BOTTOMS', 'OTHER', 'UNSURE'):
         return [v]
     is_shoe_size = allume_category == 'SHOES'
     name_in_caps = product_name.upper()
