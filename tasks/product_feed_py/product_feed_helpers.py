@@ -523,8 +523,8 @@ def parse_single_size(v, product_name, allume_category, known_text_sizes, known_
     eu_can_obj_sizes = {'EU': 'EU', 'DE': 'DE', 'IT': 'IT', 'FR': 'FR', 'CAN': 'CAN', 'US': 'US'}
     non_eu_us_sizes = ['UK', 'AUS']
     non_eu_us_sizes_obj = {'UK': 'UK', 'AUS': 'AUS'}
-
-    if allume_category not in ('DRESSES', 'SHOES', 'TOPS', 'JACKETS', 'BOTTOMS'):
+    allume_category = allume_category.upper() if allume_category else None
+    if not allume_category or allume_category not in ('DRESSES', 'SHOES', 'TOPS', 'JACKETS', 'BOTTOMS'):
         return [v]
     is_shoe_size = allume_category == 'SHOES'
     name_in_caps = product_name.upper()
@@ -690,7 +690,7 @@ def clean_up_data(val, product_name, is_shoe_size, known_text_sizes, eu_can_obj_
 
     if re.compile(r"[0-9]+\s+1/2\s*").match(val):
         val = re.sub(r'\s*1/2', '.5', val)
-    val = val.replace('Â½', '.5')
+    # val = val.replace('Â½', '.5')
     if "(" in val:
         val = re.sub(r"\(+", '(', val)
         val = re.sub(r"\)+", ')', val)
