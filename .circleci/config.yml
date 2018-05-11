@@ -43,11 +43,11 @@ jobs:
      steps:
        - checkout
        - run:
-           name: Install Fabric
+           name: Install Fabric==1.14.0
            command: |
               virtualenv venv
               . venv/bin/activate
-              pip install Fabric
+              pip install Fabric==1.14.0
        - run:
            name: Deploy if tests pass and branch is Develop
            command: |
@@ -61,11 +61,11 @@ jobs:
      steps:
        - checkout
        - run:
-           name: Install Fabric
+           name: Install Fabric==1.14.0
            command: |
               virtualenv venv
               . venv/bin/activate
-              pip install Fabric
+              pip install Fabric==1.14.0
        - run:
            name: Deploy if tests pass and branch is Develop
            command: |
