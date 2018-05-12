@@ -60,7 +60,8 @@ var collage = {
           payload.sites[merchant_node].add_to_cart[product_node].description = matching_object.long_product_description;
           payload.sites[merchant_node].add_to_cart[product_node].categories = [matching_object.primary_category, matching_object.secondary_category, matching_object.allume_category];
           payload.sites[merchant_node].add_to_cart[product_node].material = matching_object.material;
-          var avail = matching_object.availability == 'in-stock' ? true : false;
+          payload.sites[merchant_node].add_to_cart[product_node].is_deleted = matching_object.is_deleted;
+          var avail = (matching_object.availability == 'in-stock' || matching_object.availability == 'yes') ? true : false;
           payload.sites[merchant_node].add_to_cart[product_node].available = avail;
           payload.sites[merchant_node].add_to_cart[product_node].required_field_names = ["color", "size", "quantity"];
           payload.sites[merchant_node].add_to_cart[product_node].required_field_values = {};
