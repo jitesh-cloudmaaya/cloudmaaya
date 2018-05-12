@@ -414,7 +414,7 @@ class AllumeWpUserStylingRoles(models.Model):
 
 class Rack(models.Model):
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, db_constraint=False, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     stylist = models.ForeignKey(WpUsers, db_constraint=False, null=True, to_field='id', on_delete=models.DO_NOTHING)
@@ -516,7 +516,7 @@ class LookProduct(models.Model):
     product_clipped_stylist_id = models.BigIntegerField(blank=True, null=True, default=-1)
     cropped_dimensions = models.CharField(max_length=2000, blank=True, null=True)
     layout_position = models.IntegerField(db_column='sequence')
-    product = models.ForeignKey(Product, db_column='raw_product_id')
+    product = models.ForeignKey(Product, db_constraint=False, db_column='raw_product_id')
     in_collage = models.BooleanField(default=True)
     cropped_image_code = models.TextField(blank=True, null=True)
 
@@ -526,7 +526,7 @@ class LookProduct(models.Model):
 
 class UserProductFavorite(models.Model):
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, db_constraint=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     
