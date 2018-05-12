@@ -64,7 +64,7 @@ def prod(docker_tag=''):
   env.gateway = 'ec2-52-53-136-112.us-west-1.compute.amazonaws.com'
 
   env.roledefs = {
-      'web': ['ec2-54-177-92-201.us-west-1.compute.amazonaws.com'],
+      'web': ['ec2-54-177-92-201.us-west-1.compute.amazonaws.com', 'ec2-54-241-147-6.us-west-1.compute.amazonaws.com'],
       'worker': ['ec2-54-176-139-176.us-west-1.compute.amazonaws.com'],
       #'web': ['127.0.0.1:8022'],
       #'worker': ['127.0.0.1:8023'],

@@ -52,7 +52,7 @@ class ProductFeed(object):
         """
         print self._network
         network_id = Network.objects.get(name=self._network)
-        merchants = Merchant.objects.filter(active=True, network_id=network_id)
+        merchants = Merchant.objects.filter(network_id=network_id)
         merchant_ids = merchants.values_list('external_merchant_id')
         products = Product.objects.filter(merchant_id__in = merchant_ids)
         datetime_threshold = datetime.now() - timedelta(hours = threshold)
