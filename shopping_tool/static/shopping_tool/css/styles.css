@@ -4099,6 +4099,7 @@ div.sizegroup-list {padding:0 0 0 40px;}
   padding:0;
   text-decoration:none;  
 }
+#facets div.facet-list label.size-facet.flat {margin-left:25px;}
 #facets div.facet-list label.size-facet input {display:none;}
 #facets div.facet-list label.size-facet span,
 #facets div.facet-list label.size-facet:hover { color: #42A5F5 }
