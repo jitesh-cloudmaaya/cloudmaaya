@@ -236,7 +236,19 @@ var search_page = {
       if(last_search.favs != undefined){
         $('#facet-show-faves').prop('checked', true);
       }
-      search_page.performSearch(last_search.page, true, last_search);
+
+      function runSearch(){
+        if(search_page.cached_sizes != null){
+          search_page.performSearch(last_search.page, true, last_search);
+        }else{
+          setTimeout(function(){
+            console.log('waiting...')
+            runSearch()
+          }, 200)
+        }  
+      }
+      runSearch();
+      
     }
   },
   /**
@@ -363,10 +375,7 @@ var search_page = {
   * @returns {array} Array of allume sizes
   */
   getAllumSizes: function(sizes, category){
-    var size_block = facet_sizing;
-    if(search_page.cached_sizes != null){
-      size_block = search_page.cached_sizes.mapped;
-    }
+    var size_block = search_page.cached_sizes.mapped;
     /* get all the various sizes for each type */
     var clothing_sizes = size_block.regular_sizes.concat(size_block.petite_sizes.concat(size_block.tall_sizes));
     var shoe_sizes = size_block.regular_shoes.concat(size_block.narrow_shoes.concat(size_block.wide_shoes));
@@ -767,10 +776,7 @@ var search_page = {
   * @returns {string} HTML - size facet markup
   */
   sizeFacetTemplate: function(category){
-    var size_block = facet_sizing;
-    if(search_page.cached_sizes != null){
-      size_block = search_page.cached_sizes.mapped;
-    }
+    var size_block = search_page.cached_sizes.mapped;
     /* data for the user size selections and preference */
     var cs = $('#search-field').data();
     /* process the sizes for facet display */
