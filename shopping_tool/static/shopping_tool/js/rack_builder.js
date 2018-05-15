@@ -65,7 +65,7 @@ var rack_builder = {
           var favorite_object = rack_builder.favorites[fave_idx];
           var sold_out = '';
           if(obj.is_deleted == 1 || (obj.availability != 'in-stock' && obj.availability != 'yes')){
-            sold_out = '<span class="sold-out">sold out</span>' : 
+            sold_out = '<span class="sold-out">sold out</span>';
           }          
           var fave_item = '<div class="item" data-productid="' + obj.id + 
             '" data-productname="' + obj.product_name + 
