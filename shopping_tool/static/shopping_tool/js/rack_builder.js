@@ -321,7 +321,7 @@ var rack_builder = {
       var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
       var sold_out = '';
       if(data.is_deleted == 1 || (data.availability != 'in-stock' && data.availability != 'yes')){
-        sold_out = '<span class="sold-out">sold out</span>' : 
+        sold_out = '<span class="sold-out">sold out</span>';
       }
       rack_items.push(
         '<div class="item" data-productid="' + data.id + 
@@ -358,7 +358,7 @@ var rack_builder = {
         var favorite_object = rack_builder.favorites[fave_idx];
         var sold_out = '';
         if(obj.is_deleted == 1 || (obj.availability != 'in-stock' && obj.availability != 'yes')){
-          sold_out = '<span class="sold-out">sold out</span>' : 
+          sold_out = '<span class="sold-out">sold out</span>';
         }  
         fave_items.push(
           '<div class="item" data-productid="' + obj.id + 
