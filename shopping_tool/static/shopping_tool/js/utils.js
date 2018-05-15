@@ -184,7 +184,6 @@ var utils = {
             '<div class="social"></div></div>'
           )
           var goals_height = $('#test-quiz-goals').outerHeight();
-          console.log(goals_height)
           $('#test-quiz-goals').remove();
           /* quiz sections */
           var tabs = $('#client-tabs');

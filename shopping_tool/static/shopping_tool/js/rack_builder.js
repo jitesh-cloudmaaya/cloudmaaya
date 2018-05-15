@@ -63,7 +63,10 @@ var rack_builder = {
           var obj = link.data('details')
           var fave_idx = rack_builder.favorites_product_ids.indexOf(obj.id);
           var favorite_object = rack_builder.favorites[fave_idx];
-          var sold_out = obj.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';  
+          var sold_out = '';
+          if(obj.is_deleted == 1 || (obj.availability != 'in-stock' && obj.availability != 'yes')){
+            sold_out = '<span class="sold-out">sold out</span>' : 
+          }          
           var fave_item = '<div class="item" data-productid="' + obj.id + 
             '" data-productname="' + obj.product_name + 
             '" data-url="' + obj.product_image_url + 
@@ -150,7 +153,10 @@ var rack_builder = {
           }
           initial_rack.push(new_rack_obj);
           var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
-          var sold_out = details.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
+          var sold_out = '';
+          if(details.is_deleted == 1 || (details.availability != 'in-stock' && details.availability != 'yes')){
+            solde_out = '<span class="sold-out">sold out</span>';
+          } 
           $('#rack-list').prepend(
             '<div class="item" data-productid="' + details.id + 
             '" data-url="' + details.product_image_url + 
@@ -313,7 +319,10 @@ var rack_builder = {
       var data = initial_rack[i];
       var src = data.product_image_url;
       var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
-      var sold_out = data.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
+      var sold_out = '';
+      if(data.is_deleted == 1 || (data.availability != 'in-stock' && data.availability != 'yes')){
+        sold_out = '<span class="sold-out">sold out</span>' : 
+      }
       rack_items.push(
         '<div class="item" data-productid="' + data.id + 
         '" data-productname="' + data.product_name + '" data-url="' + 
@@ -347,7 +356,10 @@ var rack_builder = {
         var obj = stylist_favorites[i];
         var fave_idx = rack_builder.favorites_product_ids.indexOf(obj.id);
         var favorite_object = rack_builder.favorites[fave_idx];
-        var sold_out = obj.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';        
+        var sold_out = '';
+        if(obj.is_deleted == 1 || (obj.availability != 'in-stock' && obj.availability != 'yes')){
+          sold_out = '<span class="sold-out">sold out</span>' : 
+        }  
         fave_items.push(
           '<div class="item" data-productid="' + obj.id + 
           '" data-productname="' + obj.product_name + 
