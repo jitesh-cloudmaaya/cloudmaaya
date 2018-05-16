@@ -112,8 +112,8 @@ var utils = {
             }
           }
           /* social links */
+          var links = [];
           if(obj.data.social_media != undefined){
-            var links = [];
             for(var i = 0, l = obj.data.social_media.length; i<l; i++){
               var social = obj.data.social_media[i];
               if(social.a != ''){
@@ -207,7 +207,7 @@ var utils = {
             '<div id="test-quiz-goals">' +
             '<div class="goal">' + goals.join('') + '</div>' + 
             '<div class="next-session">' + test_session_string + '</div>' +
-            '<div class="social"></div></div>'
+            '<div class="social">' + links.join('') + '</div></div>'
           )
           var goals_height = $('#test-quiz-goals').outerHeight();
           $('#test-quiz-goals').remove();
