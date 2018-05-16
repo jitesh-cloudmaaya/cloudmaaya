@@ -4141,5 +4141,20 @@ div.sizegroup-list {padding:0 0 0 40px;}
 #test-quiz-goals div.next-session em,
 #test-quiz-goals div.goal em {display:inline-block;}
 #test-quiz-goals div.social { border-bottom: 1px solid #ddd; }
+#test-quiz-goals div.social a,
+#test-quiz-goals div.social span {
+  color:#000;
+  display:inline-block;
+  font-size:20px;
+  margin:10px 5px;
+  text-decoration:none;
+  vertical-align: top;
+}
+#test-quiz-goals div.social span {
+  font-size:14px;
+  font-weight:100;
+  padding-top:13px;
+  margin:0 5px 0 10px;
+}
 
 
