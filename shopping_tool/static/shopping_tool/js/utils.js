@@ -747,7 +747,6 @@ var utils = {
           if(utils.category_settings[key] != undefined){
             for(var i = 0, l = utils.category_settings[key].length; i<l; i++){
               var detail = utils.category_settings[key][i];
-              console.log(detail)
               var txt = detail.a == null ? '' : detail.a.split(',') ;
               var supplied_img = [];
               var supplied_txt = []
@@ -782,7 +781,6 @@ var utils = {
     if(utils.category_settings['no_category'] != undefined){
       for(var i = 0, l = utils.category_settings['no_category'].length; i<l; i++){
         var detail = utils.category_settings['no_category'][i];
-        console.log(detail)
         var txt = detail.a == null ? '' : detail.a.split(',') ;
         var color = detail.color != undefined ? 'style="color:' + detail.color + '"' : ''; 
         var supplied_img = [];
