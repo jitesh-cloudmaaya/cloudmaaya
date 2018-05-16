@@ -1265,6 +1265,7 @@ body.explore-page #user-card{position:absolute;}
 #user-card div.social a.pinterest{color:#BD081C}
 #user-card div.social a.instagram{color:#A82BB5}
 #user-card div.social a.linkedin{color:#006699}
+#user-card div.social a.facebook{color:#3B5998;}
 
 #client-tabs {border-bottom:1px solid #eee; padding:5px 10px 0; }
 #client-tabs a {

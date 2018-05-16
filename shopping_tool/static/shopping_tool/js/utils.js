@@ -111,6 +111,30 @@ var utils = {
               $('#' + bio_field_id).html(bio_label + '' + bio_field.a);
             }
           }
+          /* social links */
+          if(obj.data.social_media != undefined){
+            var links = [];
+            for(var i = 0, l = obj.data.social_media.length; i<l; i++){
+              var social = obj.data.social_media[i];
+              switch(social.q){
+                case 'instagram: ':
+                  links.push('<a href="' + social.a + '" class="instagram" target="_blank"><i class="fa fa-instagram"></i></a>');
+                break;
+                case 'pinterest: ':
+                  links.push('<a href="' + social.a + '" class="pinterest" target="_blank"><i class="fa fa-pinterest"></i></a>');
+                break;
+                case 'linkedin: ':
+                  links.push('<a href="' + social.a + '" class="linkedin" target="_blank"><i class="fa fa-linkedin"></i></a>');
+                break;
+                case 'facebook: ':
+                  links.push('<a href="' + social.a + '" class="facebook" target="_blank"><i class="fa fa-facebook-square"></i></a>');
+                break;
+              }
+            }
+            if(links.length > 0){
+              $('#client-social').html('<span>social media:</span>' + links.join(''));
+            }
+          }
           /* goals */
           var goals = [];
           var view_items_goals = [];
