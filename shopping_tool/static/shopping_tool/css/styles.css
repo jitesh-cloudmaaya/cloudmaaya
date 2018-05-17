@@ -1137,7 +1137,7 @@ body.explore-page #user-card{position:absolute;}
 #user-card div.details span.next-session em,
 #user-card div.details span.goal em {display:inline-block;}
 #user-card div.details span.goal div.qa {padding:0 0 5px;}
-#client-dynamic-section {max-height:325px; overflow:auto;}
+#client-dynamic-section {max-height:325px;}
 
 #user-card.show #user-clip.ready {
   background:#000;
@@ -1175,6 +1175,7 @@ body.explore-page #user-card{position:absolute;}
   -webkit-transition: border-radius 1s ease-in-out,width 1s ease-in-out,top 1s ease-in-out,box-shadow 1s ease-in-out,height 0.5s ease-in-out 0.75s;
   transition: border-radius 1s ease-in-out,width 1s ease-in-out,top 1s ease-in-out,box-shadow 1s ease-in-out,height 0.5s ease-in-out 0.75s; 
   width:500px;
+  overflow: auto;
 }
 #user-card div.social {
   border-bottom:1px solid #ddd;
@@ -1283,7 +1284,7 @@ body.explore-page #user-card{position:absolute;}
 #client-tabs a.on {border-color:#ed8365;}
 #user-card div.client-sections {border-bottom:1px solid #ddd;}
 #user-card div.client-sections.notes {border:0;}
-#user-card div.client-section {display:none;max-height:300px; overflow: auto}
+#user-card div.client-section {display:none;max-height:300px;}
 #user-card div.client-section.show {display:block;padding:5px 0 0;}
 
 #user-card div.client-section span.client-breaker,
