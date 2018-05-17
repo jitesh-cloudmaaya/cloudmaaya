@@ -1265,6 +1265,7 @@ body.explore-page #user-card{position:absolute;}
 #user-card div.social a.pinterest{color:#BD081C}
 #user-card div.social a.instagram{color:#A82BB5}
 #user-card div.social a.linkedin{color:#006699}
+#user-card div.social a.facebook{color:#3B5998;}
 
 #client-tabs {border-bottom:1px solid #eee; padding:5px 10px 0; }
 #client-tabs a {
@@ -1310,13 +1311,15 @@ body.explore-page #user-card{position:absolute;}
   padding:5px 9px;
 }
 #user-card div.client-section span.client-details.non {border:0;}
-#user-card div.client-section span.client-details:nth-child(even) {background:#fafafa;}
+/*#user-card div.client-section span.client-details:nth-child(even) {background:#fafafa;}*/
 #user-card div.client-section span.client-details:nth-of-type(1) {border:0;}
 #user-card div.client-section span.client-breaker.one {border: 0; padding-top:5px; } 
 #user-card div.client-section  span.client-details em { 
+  display:inline-block;
   font-weight:500; 
   padding-right:8px; 
   text-align:left;
+  vertical-align: top;
 }
 
 #facet-bar {
@@ -4140,5 +4143,47 @@ div.sizegroup-list {padding:0 0 0 40px;}
 #test-quiz-goals div.next-session em,
 #test-quiz-goals div.goal em {display:inline-block;}
 #test-quiz-goals div.social { border-bottom: 1px solid #ddd; }
-
+#test-quiz-goals div.social a,
+#test-quiz-goals div.social span {
+  color:#000;
+  display:inline-block;
+  font-size:20px;
+  margin:10px 5px;
+  text-decoration:none;
+  vertical-align: top;
+}
+#test-quiz-goals div.social span {
+  font-size:14px;
+  font-weight:100;
+  padding-top:13px;
+  margin:0 5px 0 10px;
+}
+/* imagesin quiz stuff */
+img.user-supplied-quiz-img {display:inline-block; vertical-align: top;}
+img.user-supplied-quiz-img.bodyshape { height:125px; margin:10px 0; }
+img.user-supplied-quiz-img.colors,
+img.user-supplied-quiz-img.colorstoavoid { height:75px; margin:5px 10px 0 0}
+img.user-supplied-quiz-img.nocat.colors,
+img.user-supplied-quiz-img.nocat.colorstoavoid { height:40px}
+img.user-supplied-quiz-img.storesbrands {border:1px solid #ccc; border-radius:5px; height:75px; margin:5px 10px 5px 0;}
+img.user-supplied-quiz-img.workstyle,
+img.user-supplied-quiz-img.weekend,
+img.user-supplied-quiz-img.nightout,
+img.user-supplied-quiz-img.tops,
+img.user-supplied-quiz-img.jeans,
+img.user-supplied-quiz-img.dress,
+img.user-supplied-quiz-img.shoe,
+img.user-supplied-quiz-img.style,
+img.user-supplied-quiz-img.jeansstyle {
+  border:1px solid #f5f5f5; 
+  border-radius:3px;
+  height:250px; 
+  margin:5px 10px 5px 0;
+}
+img.user-supplied-quiz-img.tops {height:150px;}
+img.user-supplied-quiz-img.shoe {height:100px;}
+img.user-supplied-quiz-img.style,
+img.user-supplied-quiz-img.jeansstyle  {height:125px;}
+#client-defaults div.client-settings span em.withimg,
+#user-card div.client-section  span.client-details em.withimg {display:block; margin-bottom:5px;}
 

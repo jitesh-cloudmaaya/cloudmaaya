@@ -111,6 +111,32 @@ var utils = {
               $('#' + bio_field_id).html(bio_label + '' + bio_field.a);
             }
           }
+          /* social links */
+          var links = [];
+          if(obj.data.social_media != undefined){
+            for(var i = 0, l = obj.data.social_media.length; i<l; i++){
+              var social = obj.data.social_media[i];
+              if(social.a != ''){
+                switch(social.q){
+                  case 'instagram: ':
+                    links.push('<a href="' + social.a + '" class="instagram" target="_blank"><i class="fa fa-instagram"></i></a>');
+                  break;
+                  case 'pinterest: ':
+                    links.push('<a href="' + social.a + '" class="pinterest" target="_blank"><i class="fa fa-pinterest"></i></a>');
+                  break;
+                  case 'linkedin: ':
+                    links.push('<a href="' + social.a + '" class="linkedin" target="_blank"><i class="fa fa-linkedin"></i></a>');
+                  break;
+                  case 'facebook: ':
+                    links.push('<a href="' + social.a + '" class="facebook" target="_blank"><i class="fa fa-facebook-square"></i></a>');
+                  break;
+                }
+              }
+            }
+            if(links.length > 0){
+              $('#client-social').html('<span>social media:</span>' + links.join(''));
+            }
+          }
           /* goals */
           var goals = [];
           var view_items_goals = [];
@@ -181,7 +207,7 @@ var utils = {
             '<div id="test-quiz-goals">' +
             '<div class="goal">' + goals.join('') + '</div>' + 
             '<div class="next-session">' + test_session_string + '</div>' +
-            '<div class="social"></div></div>'
+            '<div class="social">' + links.join('') + '</div></div>'
           )
           var goals_height = $('#test-quiz-goals').outerHeight();
           $('#test-quiz-goals').remove();
@@ -217,10 +243,34 @@ var utils = {
                 for(var ix = 0, lx = tab.content.length; ix<lx; ix++){
                   var detail = tab.content[ix];
                   if(tab.tab_name != 'Picture'){
-                    var txt = detail.a == null ? '' : detail.a ;
+                    var txt = detail.a == null ? '' : detail.a.split(',') ;
+                    var supplied_img = [];
+                    var supplied_txt = []
+                    for(var ixx = 0, lxx = txt.length; ixx<lxx; ixx++){
+                      var x = txt[ixx];
+                      if(x.indexOf('https://s3-us-west-2.amazonaws.com/images.allume.co') > -1){
+                        supplied_img.push(
+                          '<img src="' + x + '" class="user-supplied-quiz-img ' + 
+                          detail.q.replace(/\W+/g, '').toLowerCase() + '"/>'
+                        );
+                      }else{
+                        supplied_txt.push(x)
+                      }
+                    }
+                    var generated_answer = '';
+                    var em_class = '';
+                    if(supplied_img.length > 0){ 
+                      em_class = 'withimg';
+                      generated_answer += supplied_img.join(''); 
+                    }
+                    if(generated_answer != ''){ generated_answer += '<br/>' }
+                    generated_answer += supplied_txt.join(', ');
+                    if(detail.comments != ''){
+                      generated_answer += ' ' + detail.comments;
+                    }
                     tab_content_markup.push(
-                      '<span class="client-details"><em>' + detail.q + 
-                      '</em>' + txt + '</span>'
+                      '<span class="client-details"><em class="' + em_class + 
+                      '">' + detail.q + '</em>' + generated_answer + '</span>'
                     );
                   }else{
                     if(detail.a != null){
@@ -696,10 +746,32 @@ var utils = {
         if(key == val){
           if(utils.category_settings[key] != undefined){
             for(var i = 0, l = utils.category_settings[key].length; i<l; i++){
-              var row = utils.category_settings[key][i];
-              var answer = row.a == null ? '' : row.a ;
+              var detail = utils.category_settings[key][i];
+              var txt = detail.a == null ? '' : detail.a.split(',') ;
+              var supplied_img = [];
+              var supplied_txt = []
+              for(var ixx = 0, lxx = txt.length; ixx<lxx; ixx++){
+                var x = txt[ixx];
+                if(x.indexOf('https://s3-us-west-2.amazonaws.com/images.allume.co') > -1){
+                  supplied_img.push(
+                    '<img src="' + x + '" class="user-supplied-quiz-img ' + 
+                    detail.q.replace(/\W+/g, '').toLowerCase() + '"/>'
+                  );
+                }else{
+                  supplied_txt.push(x)
+                }
+              }
+              var generated_answer = '';
+              var em_class = '';
+              if(supplied_img.length > 0){ 
+                em_class = 'withimg';
+                generated_answer += supplied_img.join(''); 
+              }
+              if(generated_answer != ''){ generated_answer += '<br/>' }
+              generated_answer += supplied_txt.join(', ');
               client_settings.push(
-                '<span><em>' + row.q + '</em>' + answer + '</span>'
+                '<span ><em class="' + em_class + 
+                '">' + detail.q + '</em>' + generated_answer + '</span>'
               );
             }
           }
@@ -708,11 +780,33 @@ var utils = {
     }
     if(utils.category_settings['no_category'] != undefined){
       for(var i = 0, l = utils.category_settings['no_category'].length; i<l; i++){
-        var row = utils.category_settings['no_category'][i];
-        var answer = row.a == null ? '' : row.a ;
-        var color = row.color != undefined ? 'style="color:' + row.color + '"' : ''; 
+        var detail = utils.category_settings['no_category'][i];
+        var txt = detail.a == null ? '' : detail.a.split(',') ;
+        var color = detail.color != undefined ? 'style="color:' + detail.color + '"' : ''; 
+        var supplied_img = [];
+        var supplied_txt = []
+        for(var ixx = 0, lxx = txt.length; ixx<lxx; ixx++){
+          var x = txt[ixx];
+          if(x.indexOf('https://s3-us-west-2.amazonaws.com/images.allume.co') > -1){
+            supplied_img.push(
+              '<img src="' + x + '" class="user-supplied-quiz-img nocat ' + 
+              detail.q.replace(/\W+/g, '').toLowerCase() + '"/>'
+            );
+          }else{
+            supplied_txt.push(x)
+          }
+        }
+        var generated_answer = '';
+        var em_class = '';
+        if(supplied_img.length > 0){ 
+          em_class = 'withimg';
+          generated_answer += supplied_img.join(''); 
+        }
+        if(generated_answer != ''){ generated_answer += '<br/>' }
+        generated_answer += supplied_txt.join(', ');
         client_settings.push(
-          '<span ' + color + '><em>' + row.q + '</em>' + answer + '</span>'
+          '<span ' + color + '><em class="' + em_class + 
+          '">' + detail.q + '</em>' + generated_answer + '</span>'
         );
       }
     }
