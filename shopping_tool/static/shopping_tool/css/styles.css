@@ -1137,7 +1137,6 @@ body.explore-page #user-card{position:absolute;}
 #user-card div.details span.next-session em,
 #user-card div.details span.goal em {display:inline-block;}
 #user-card div.details span.goal div.qa {padding:0 0 5px;}
-#client-dynamic-section {max-height:325px;}
 
 #user-card.show #user-clip.ready {
   background:#000;
