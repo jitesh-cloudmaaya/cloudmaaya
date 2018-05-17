@@ -4159,7 +4159,7 @@ div.sizegroup-list {padding:0 0 0 40px;}
   margin:0 5px 0 10px;
 }
 /* imagesin quiz stuff */
-img.user-supplied-quiz-img {display:inline-block; vertical-align: top;}
+img.user-supplied-quiz-img {display:inline-block; vertical-align: top;max-height:200px}
 img.user-supplied-quiz-img.bodyshape { height:125px; margin:10px 0; }
 img.user-supplied-quiz-img.colors,
 img.user-supplied-quiz-img.colorstoavoid { height:75px; margin:5px 10px 0 0}
