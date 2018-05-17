@@ -1130,7 +1130,7 @@ body.explore-page #user-card{position:absolute;}
   font-size: 14px;
   font-weight: 100;
   line-height: 24px;
-  padding: 5px 10px 10px;
+  padding: 5px 10px 2px;
 }
 #user-card div.details span.goal {border:0;}
 #user-card div.details span.goal em.goal-header {display:block;}
