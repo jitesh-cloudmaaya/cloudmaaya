@@ -932,7 +932,7 @@ def clean_up_data(val, product_name, allume_category, known_text_sizes, eu_can_o
         val = val[:val.index('&')].strip()
     val = re.sub(r"\s+", ' ', val).strip()
     try:
-        if is_bottom_size and re.compile(r"^[0-9.]+$").match(val) and float(val) > 24 and 'jeans' in product_name.lower():
+        if is_bottom_size and re.compile(r"^[0-9.]+$").match(val) and float(val) > 20 and 'jeans' in product_name.lower():
             val = 'WAIST' + val
     except:
         return val
