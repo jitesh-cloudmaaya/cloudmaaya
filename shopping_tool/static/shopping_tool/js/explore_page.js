@@ -310,7 +310,11 @@ var explore_page = {
   */
   searchSetUp: function(){  
     var at_load_stylist = utils.readURLParams('set_stylist');  
-    $('#stylist-select').val(' ').selectize({ create: false, sortField: 'text'}).change(function(e){
+    $('#stylist-select').val(' ').selectize({ create: false, score: function(){
+        return function() {
+            return 1;
+        };
+    }}).change(function(e){
       var dd = $(this);
       if(dd.val() != ''){
         explore_page.generateSearch();

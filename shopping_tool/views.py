@@ -177,7 +177,7 @@ def explore(request, styling_session_id=None):
         add_client_to_360.delay(client.id)
         return render(request, 'shopping_tool/no_client_360_error.html', {})
 
-    stylists = WpUsers.objects.stylists()
+    stylists = WpUsers.objects.stylists().order_by('first_name', 'last_name')
     favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related('product')
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
