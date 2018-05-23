@@ -30,11 +30,9 @@ from catalogue_service.settings_local import ENV_LOCAL
 
 from weather_service.models import Weather
 import imgkit
-<<<<<<< HEAD
 from django.db.models import Prefetch
-=======
 from tasks.tasks import add_client_to_360
->>>>>>> 06f0f614d30ae0ba9b29954540f115d07bb5d63e
+
 
 
 # Create your views here. 
