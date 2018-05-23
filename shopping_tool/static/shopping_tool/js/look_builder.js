@@ -1226,7 +1226,10 @@ var look_builder = {
       var data = initial_rack[i];
       var src = data.product_image_url;
       var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
-      var sold_out = data.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
+      var sold_out = '';
+      if(data.is_deleted == 1 || (data.availability != 'in-stock' && data.availability != 'yes')){
+        sold_out = '<span class="sold-out">sold out</span>';
+      }      
       if(compare_array.indexOf(data.rack_id) > -1){
         rack_items.push(
           '<div class="item" data-productid="' + data.id + 

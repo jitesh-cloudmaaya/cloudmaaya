@@ -30,7 +30,11 @@ from catalogue_service.settings_local import ENV_LOCAL
 
 from weather_service.models import Weather
 import imgkit
+<<<<<<< HEAD
 from django.db.models import Prefetch
+=======
+from tasks.tasks import add_client_to_360
+>>>>>>> 06f0f614d30ae0ba9b29954540f115d07bb5d63e
 
 
 # Create your views here. 
@@ -102,7 +106,13 @@ def look_builder(request, styling_session_id=None):
     rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session).prefetch_related('product')
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
-    weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
+
+    try:
+        weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
+    except AllumeClient360.DoesNotExist:
+        add_client_to_360.delay(client.id)
+        return render(request, 'shopping_tool/no_client_360_error.html', {})
+
     categories = AllumeCategory.objects.filter(active = True)
     favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related(Prefetch('product', queryset=Product.objects.order_by('created_at')))[0:100]
     styles = StyleType.objects.filter(active=True).all()
@@ -165,8 +175,15 @@ def explore(request, styling_session_id=None):
     rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
-    weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
-    stylists = WpUsers.objects.stylists()
+
+    try:
+        weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
+    except AllumeClient360.DoesNotExist:
+        print(client.id)
+        add_client_to_360.delay(client.id)
+        return render(request, 'shopping_tool/no_client_360_error.html', {})
+
+    stylists = WpUsers.objects.stylists().order_by('first_name', 'last_name')
     favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related(Prefetch('product', queryset=Product.objects.order_by('created_at')))[0:100]
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
