@@ -30,6 +30,7 @@ from catalogue_service.settings_local import ENV_LOCAL
 
 from weather_service.models import Weather
 import imgkit
+from django.db.models import Prefetch
 
 
 # Create your views here. 
@@ -69,7 +70,8 @@ def index(request, styling_session_id=None):
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     categories = AllumeCategory.objects.filter(active = True).order_by('position')
-    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related('product')
+    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related(Prefetch('product', queryset=Product.objects.order_by('created_at')))[0:100]
+
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
@@ -102,7 +104,7 @@ def look_builder(request, styling_session_id=None):
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     categories = AllumeCategory.objects.filter(active = True)
-    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related('product')
+    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related(Prefetch('product', queryset=Product.objects.order_by('created_at')))[0:100]
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()
     product_image_proxy = PRODUCT_IMAGE_PROXY
@@ -165,7 +167,7 @@ def explore(request, styling_session_id=None):
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     stylists = WpUsers.objects.stylists()
-    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related('product')
+    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related(Prefetch('product', queryset=Product.objects.order_by('created_at')))[0:100]
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
