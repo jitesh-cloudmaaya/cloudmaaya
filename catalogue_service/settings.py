@@ -30,7 +30,8 @@ SECRET_KEY = '=pygr69-)_vctwqfo-(09@n15h3z&byq9-m-(#+7a5k9jb5ew+'
 ALLOWED_HOSTS = ['shopping-tool-web-dev.allume.co', 
                  'shopping-tool-stage.allume.co', 
                  'localhost', 
-                 '127.0.0.1', 
+                 '127.0.0.1',
+                 'dev.allume.co',
                  'shopping-tool-web-stage.allume.co', 
                  'shopping-tool-web-prod.allume.co']
 
