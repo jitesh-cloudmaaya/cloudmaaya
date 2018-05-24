@@ -10,6 +10,6 @@ export C_FORCE_ROOT=true
 
 NEW_RELIC_CONFIG_FILE=newrelic.ini
 export NEW_RELIC_CONFIG_FILE
-newrelic-admin run-program celery -A catalogue_service worker -l info -c 6
+celery -A catalogue_service worker -l info -c 6
 
 
