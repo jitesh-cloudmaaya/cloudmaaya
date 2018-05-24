@@ -27,8 +27,15 @@
       <div class="empty">building the rack...</div>
     </div>
     <div id="fave-draggable" class="drag-section">
-
+    <div id="fave-draggable-content"></div>
+          {% if favorites|length > 99 %}
+       <div class="empty">
+          Want to see all your favorites?
+          <br>Go to Product Search Page and Select 'Show only favorites'
+        </div>
+    {% endif %}
     </div>
+
   </div>
 
 
