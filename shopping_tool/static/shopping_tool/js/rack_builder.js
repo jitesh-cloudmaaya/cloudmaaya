@@ -78,7 +78,7 @@ var rack_builder = {
             '"><i class="fa fa-align-left"></i></a><a href="#" class="remove-fave" data-productid="' + 
             obj.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
           $('#fave-prods').prepend(fave_item);
-          var fd = $('#fave-draggable');
+          var fd = $('#fave-draggable-content');
           if(fd.length > 0){
             fd.prepend(fave_item);
           }
@@ -376,7 +376,7 @@ var rack_builder = {
              
       }
       $('#fave-prods').html(fave_items.join(''));
-      var fd = $('#fave-draggable');
+      var fd = $('#fave-draggable-content');
       if(fd.length > 0){
         fd.html(fave_items.join(''));
       }
