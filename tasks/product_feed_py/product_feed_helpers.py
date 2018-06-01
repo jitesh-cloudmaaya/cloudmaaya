@@ -546,7 +546,7 @@ def parse_single_size(v, product_name, allume_category, known_text_sizes, known_
     text_number_sizes = known_text_sizes.copy()
     text_number_sizes.update(known_number_sizes)
     while parsed_v:
-        saved_parsed_data = clean_up_data(parsed_v, product_name, is_shoe_size, known_text_sizes, eu_can_obj_sizes, non_eu_us_sizes_obj)
+        saved_parsed_data = clean_up_data(parsed_v, product_name, allume_category, known_text_sizes, known_number_sizes, eu_can_obj_sizes, non_eu_us_sizes_obj)
         parsed_v = re.sub(r"^(US|FR|EU|DE|IT|CAN)\s*", '', saved_parsed_data)
         parsed_v = re.sub(r"\s+(US|FR|EU|DE|IT|CAN)\s*", '', parsed_v)
         if re.compile(r"^(\.|[0-9])+(US|FR|EU|DE|IT|CAN)$").match(parsed_v):
@@ -690,13 +690,15 @@ def clean_up_beauty_data(v):
     return v
 
 
-def clean_up_data(val, product_name, is_shoe_size, known_text_sizes, eu_can_obj_sizes, non_eu_us_sizes_obj):
+def clean_up_data(val, product_name, allume_category, known_text_sizes, known_number_sizes, eu_can_obj_sizes, non_eu_us_sizes_obj):
     val = re.sub(r"\s+", ' ', val)
     val = re.sub(r"[\",]+", '', val).upper().strip()
     val = re.sub(r"\.+", '.', val).upper().strip()
     val = val.replace('EXTRA LARGE', 'XL').strip()
     val = re.sub(r'IN(CH(ES)?)?', '', val).strip()
     val = re.sub(r'(SHORT|LONG|REGULAR|REG|UNISEX|PLUS|EXTRA)', '', val).strip()
+    is_shoe_size = allume_category == 'SHOES'
+    is_bottom_size = allume_category == 'BOTTOMS'
 
     if re.compile(r"[0-9]+\s+1/2\s*").match(val):
         val = re.sub(r'\s*1/2', '.5', val)
@@ -929,6 +931,11 @@ def clean_up_data(val, product_name, is_shoe_size, known_text_sizes, eu_can_obj_
     if re.compile(r"^[0-9]+\s+&\s+").match(val):
         val = val[:val.index('&')].strip()
     val = re.sub(r"\s+", ' ', val).strip()
+    try:
+        if is_bottom_size and re.compile(r"^[0-9.]+$").match(val) and float(val) > 20 and 'jeans' in product_name.lower():
+            val = 'WAIST' + val if known_number_sizes.get('WAIST' + val) else val
+    except:
+        return val
     return val
 
 #####################################################################################################################################
