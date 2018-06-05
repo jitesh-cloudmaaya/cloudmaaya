@@ -28,6 +28,7 @@ from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
 from product_doc import EProductSearch#, EProduct
 
+import calendar
 
 @api_view(['GET'])
 def sort_options(self):
@@ -175,9 +176,22 @@ def get_product(self, product_id):
 
     return Response(context) 
 
+@api_view(['POST'])
+@permission_classes((AllowAny, ))
+def get_allume_products(request):
+    # expect [12,14]
+    products = {}
+    for product_id in request.POST['products']:
+        products[product_id] = get_allume_product_by_id(request, product_id)
+    return Response(products)
+
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
 def get_allume_product(self, product_id):
+    return Response(get_allume_product_by_id(self, product_id))
+
+
+def get_allume_product_by_id(self, product_id):
     """
 
     get:
@@ -186,7 +200,7 @@ def get_allume_product(self, product_id):
     """
     product = Product.objects.get(id = product_id)
     p_name = product.product_name
-
+    updated_at = product.updated_at
     # using the product we are looking for
     product_merchant_id = product.merchant_id
     # retrieve the merchant from the pam table
@@ -272,7 +286,7 @@ def get_allume_product(self, product_id):
     payload['sites'][merchant_node]['add_to_cart'][product_node]['url'] = matching_object['product_url']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['status'] = "done"
     payload['sites'][merchant_node]['add_to_cart'][product_node]['original_url'] = matching_object['raw_product_url']
-    payload['sites'][merchant_node]['add_to_cart'][product_node]['updated_at'] = matching_object['updated_at']
+    payload['sites'][merchant_node]['add_to_cart'][product_node]['updated_at'] = calendar.timegm(updated_at.utctimetuple()) if updated_at else None
 
     # create the colors array object
     for i in range(0, len(tmp['color_names'])):
@@ -285,7 +299,8 @@ def get_allume_product(self, product_id):
             obj['dep']['size'].append(size)
         payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_values']['color'].append(obj)
 
-    return Response(payload)
+    return payload
+
 
 def format_results(results, total_count, page, num_per_page, request, label, text_query, facets_dict):
     response = collections.OrderedDict()
@@ -300,6 +315,7 @@ def format_results(results, total_count, page, num_per_page, request, label, tex
     response['data'] = results['hits']['hits']
     return response
 
+
 def convert_facet_value(facet_name, value):
     if facet_name == 'publish_month':
         return value.strftime('%Y-%m')
@@ -311,6 +327,7 @@ def facet_to_filter(facet_name, value):
         yyyy, mm = map(int, value.split('-'))
         return datetime.datetime(yyyy, mm, 1, 0, 0, 0)
     return value
+
 
 def href_with_removed(key, value, query_params):
     existing = dict(query_params)
