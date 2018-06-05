@@ -272,6 +272,7 @@ def get_allume_product(self, product_id):
     payload['sites'][merchant_node]['add_to_cart'][product_node]['url'] = matching_object['product_url']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['status'] = "done"
     payload['sites'][merchant_node]['add_to_cart'][product_node]['original_url'] = matching_object['raw_product_url']
+    payload['sites'][merchant_node]['add_to_cart'][product_node]['updated_at'] = matching_object['updated_at']
 
     # create the colors array object
     for i in range(0, len(tmp['color_names'])):
