@@ -181,8 +181,11 @@ def get_product(self, product_id):
 def get_allume_products(request):
     # expect [12,14]
     products = {}
-    for product_id in request.POST['products']:
-        products[product_id] = get_allume_product_by_id(request, product_id)
+    for product_id in json.loads(request.body.decode('utf-8'))['products']:
+        try:
+            products[product_id] = get_allume_product_by_id(request, product_id)
+        except:
+            products[product_id] = None
     return Response(products)
 
 @api_view(['GET'])
