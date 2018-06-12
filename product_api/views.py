@@ -231,12 +231,14 @@ def get_allume_product_by_id(self, product_id):
 
     results = context
 
-
     payload = {'sites': {}}
     tmp = {'color_names': [], 'color_objects': {}}
     matching_object = ''
 
     data = results['data']
+    # a mapping of the text field, 'availability', to a boolean flag, 'available'
+    availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False, 'yes': True, 'no': False}
+    # either update above as more or fields are added or mold availability field across feeds to the same form
     # loop through results to set up content for the payload
     for i in range(0, len(data)):
         product = data[i]['_source']
@@ -248,17 +250,25 @@ def get_allume_product_by_id(self, product_id):
             tmp['color_names'].append(clr)
             tmp['color_objects'][clr] = {'sizes': [], 'size_data': {}}
 
-        all_sizes = product['size'].split(',')
-        for i in range(0, len(all_sizes)):
-            size = all_sizes[i]
-            if size not in tmp['color_objects'][clr]['sizes']:
-                tmp['color_objects'][clr]['sizes'].append(size)
-                size_data = {'image': product['product_image_url'], 'price': product['current_price'], 'text': size, 'value': size} # change formatting?
-                tmp['color_objects'][clr]['size_data'][size] = size_data
 
-    # a mapping of the text field, 'availability', to a boolean flag, 'available'
-    availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False, 'yes': True, 'no': False}
-    # either update above as more or fields are added or mold availability field across feeds to the same form
+        # b/c we iterate over every product right here and add it to the payload, can't we just check against the is_deleted and it's personal availablility?
+
+        try:
+            product_availability = availability_mapping[product['availability']]
+        except KeyError as e:
+            print "The 'availability' text field value present in this product does not have a known mapping, it was assumed to 'available' = False"
+            print product['availability']
+            product_availability = False
+
+        if not product['is_deleted'] and product_availability:
+            all_sizes = product['size'].split(',')
+            for i in range(0, len(all_sizes)):
+                size = all_sizes[i]
+                if size not in tmp['color_objects'][clr]['sizes']:
+                    tmp['color_objects'][clr]['sizes'].append(size)
+                    size_data = {'image': product['product_image_url'], 'price': product['current_price'], 'text': size, 'value': size} # change formatting?
+                    tmp['color_objects'][clr]['size_data'][size] = size_data
+
 
     # create payload object
     merchant_node = str(matching_object['product_api_merchant'])
@@ -279,7 +289,7 @@ def get_allume_product_by_id(self, product_id):
     try:
         payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = availability_mapping[matching_object['availability']]
     except KeyError as e:
-        print "The 'availablity' text field value present in this product does not have a known mapping, it was assumed to 'available' = False"
+        print "The 'availability' text field value present in this product does not have a known mapping, it was assumed to 'available' = False"
         print matching_object['availability']
         payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = False
 
