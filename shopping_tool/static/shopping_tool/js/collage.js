@@ -30,16 +30,19 @@ var collage = {
               tmp.color_names.push(clr);
               tmp.color_objects[clr] = { sizes: [], size_data : {}};
             }
-            var all_sizes = product.size.split(',')
-            for(var ix = 0, lx = all_sizes.length; ix < lx; ix++){
-              var size = all_sizes[ix];
-              if(tmp.color_objects[clr].sizes.indexOf(size) == -1){
-                tmp.color_objects[clr].sizes.push(size);
-                tmp.color_objects[clr].size_data[size] = {
-                  image: product.product_image_url,
-                  price: product.current_price,
-                  text: size,
-                  value: size
+            var product_avail = (product.availability == 'in-stock' || product.availability == 'yes') ? true : false;
+            if ((product.is_deleted == false)&&(product_avail == true)){
+              var all_sizes = product.size.split(',')
+              for(var ix = 0, lx = all_sizes.length; ix < lx; ix++){
+                var size = all_sizes[ix];
+                if(tmp.color_objects[clr].sizes.indexOf(size) == -1){
+                  tmp.color_objects[clr].sizes.push(size);
+                  tmp.color_objects[clr].size_data[size] = {
+                    image: product.product_image_url,
+                    price: product.current_price,
+                    text: size,
+                    value: size
+                  }
                 }
               }
             }
