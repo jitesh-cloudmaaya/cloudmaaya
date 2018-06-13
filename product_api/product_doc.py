@@ -16,6 +16,8 @@ from catalogue_service.settings_local import PRODUCT_INDEX
 from six import iteritems, itervalues, string_types
 from datetime import datetime, timedelta
 
+from product_api.models import Merchant
+
 """
 #Commenting out for now I expect to delete soon unless we decide to not use logstash for indexing
 
@@ -183,6 +185,27 @@ class EProductSearch(FacetedSearch):
         collapse_dict = {"field": "raw_product_url.keyword","inner_hits": {"name": "collapsed_by_product_name","from": 1}}
         cardinality_dict = {"unique_count" : {"cardinality" : {"field" : "raw_product_url.keyword"}}}
 
+# example of OR query from kibana
+# GET products/_search
+# {
+#   "query": {
+#     "query_string": {
+#       "default_field": "merchant_name",
+#       "query": "(Madewell) OR (Sole Society) OR (Saks Fifth Avenue)"
+#     }
+#   }
+# }
+        # need to apply query clause in "filter context" to yes or no answer to merchant_name memberbship
+
+        # if merchant filter is not used... include all products from 'sizeless' merchants
+        # will need to build the actual query using a merchant filter
+        sizeless_merchant_names = Merchant.objects.filter(has_size_data=False).values_list('name')
+        q_sizeless_merchants = Q() # does the filter need to be constructed in a different way?
+        for merchant_name in sizeless_merchant_names:
+            q_sizeless_merchants |= Q({"match": {"merchant_name": {"query": merchant_name, "type": "phrase"}}})
+        # add in like so: search.query('bool', filter=[q_sizeless_merchants])
+        # q_sizeless_merchants = Q("query_string": {"default_field": "merchant_name", "query": "(Madewell) OR (Sole Society)"}) # possible on dsl?
+
         #################
         ### #Score Boosting
         ### https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
@@ -206,10 +229,10 @@ class EProductSearch(FacetedSearch):
         
 
         if self._card_count:
-            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
+            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filter=[q_sizeless_merchants]).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
         else:
             #search.aggs.bucket("unique_product_name_count", {"cardinality" : {"field" : "product_name.keyword"}})
-            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
+            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filter=[q_sizeless_merchants]).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
         #.sort('-p')
 
 def remove_deleted_items(self, days_back = 14):
