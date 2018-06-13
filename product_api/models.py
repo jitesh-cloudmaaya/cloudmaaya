@@ -88,7 +88,7 @@ class Merchant(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     search_rank = models.IntegerField(default=0)
-
+    has_size_data = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
