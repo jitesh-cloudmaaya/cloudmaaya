@@ -18,7 +18,7 @@ var collage = {
           var payload = {sites: { } };
           var tmp = {color_names: [], color_objects: {}};
           var matching_object = '';
-          var has_available_siblings = true;
+          var has_available_siblings = false;
           /* loop through results to set up content for payload */
           for(var i = 0, l = results.data.length; i<l; i++){
             var product = results.data[i]._source;
@@ -33,7 +33,7 @@ var collage = {
             }
             var product_avail = (product.availability == 'in-stock' || product.availability == 'yes') ? true : false;
             if ((product.is_deleted == false)&&(product_avail == true)){
-              has_available_siblings = false;
+              has_available_siblings = true;
               var all_sizes = product.size.split(',')
               for(var ix = 0, lx = all_sizes.length; ix < lx; ix++){
                 var size = all_sizes[ix];
