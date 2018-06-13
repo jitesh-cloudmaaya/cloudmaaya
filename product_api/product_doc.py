@@ -209,6 +209,8 @@ class EProductSearch(FacetedSearch):
 
         print q_sizeless_merchants
 
+        main_q |= q_sizeless_merchants
+
         # alternatively may want to build the query using this construct in order to have max control
 
 
@@ -244,10 +246,10 @@ class EProductSearch(FacetedSearch):
         
 
         if self._card_count:
-            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filter=[q_sizeless_merchants]).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
+            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
         else:
             #search.aggs.bucket("unique_product_name_count", {"cardinality" : {"field" : "product_name.keyword"}})
-            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filter=[q_sizeless_merchants]).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
+            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
         #.sort('-p')
 
 def remove_deleted_items(self, days_back = 14):
