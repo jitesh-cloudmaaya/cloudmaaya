@@ -96,6 +96,8 @@ def facets(self):
     context = format_results(results, total_count, page, num_per_page, self, 'products', text_query, results['aggregations'])
 
 
+    # print context
+
     return Response(context) 
 
 

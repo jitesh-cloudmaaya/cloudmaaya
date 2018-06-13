@@ -199,12 +199,27 @@ class EProductSearch(FacetedSearch):
 
         # if merchant filter is not used... include all products from 'sizeless' merchants
         # will need to build the actual query using a merchant filter
-        sizeless_merchant_names = Merchant.objects.filter(has_size_data=False).values_list('name')
-        q_sizeless_merchants = Q() # does the filter need to be constructed in a different way?
-        for merchant_name in sizeless_merchant_names:
-            q_sizeless_merchants |= Q({"match": {"merchant_name": {"query": merchant_name, "type": "phrase"}}})
+        sizeless_merchant_names = Merchant.objects.filter(has_size_data=False).values_list('name', flat=True)
+        if sizeless_merchant_names.count():
+            q_sizeless_merchants = Q({"match": {"merchant_name": {"query": sizeless_merchant_names.first(), "type": "phrase"}}})
+            sizeless_merchant_names = sizeless_merchant_names[1:]
+            for merchant_name in sizeless_merchant_names:
+                q_sizeless_merchants |= Q({"match": {"merchant_name": {"query": merchant_name, "type": "phrase"}}})
         # add in like so: search.query('bool', filter=[q_sizeless_merchants])
-        # q_sizeless_merchants = Q("query_string": {"default_field": "merchant_name", "query": "(Madewell) OR (Sole Society)"}) # possible on dsl?
+
+        print q_sizeless_merchants
+
+        # alternatively may want to build the query using this construct in order to have max control
+
+
+        # q = Q('bool',
+        #     must=[Q('match', title='python')],
+        #     should=[Q(...), Q(...)],
+        #     minimum_should_match=1
+        # )
+        # s = Search().query(q)
+
+
 
         #################
         ### #Score Boosting
