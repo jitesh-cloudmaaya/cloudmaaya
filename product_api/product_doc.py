@@ -243,7 +243,10 @@ class EProductSearch(FacetedSearch):
         #custom_score_dict = Q('function_score', script =  "_score * (10 - doc.allume_score.doubleValue)")
 
         #################
-        
+        # check for presence of the size filter AND the absence of the merchant filter
+        if self._filters['size'] and not self._filters['merchant_name']:
+            print 'hey this happens' #?
+            return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[q_sizeless_merchants])
 
         if self._card_count:
             return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
