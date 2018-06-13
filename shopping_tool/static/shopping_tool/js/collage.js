@@ -18,6 +18,7 @@ var collage = {
           var payload = {sites: { } };
           var tmp = {color_names: [], color_objects: {}};
           var matching_object = '';
+          var has_available_siblings = true;
           /* loop through results to set up content for payload */
           for(var i = 0, l = results.data.length; i<l; i++){
             var product = results.data[i]._source;
@@ -32,6 +33,7 @@ var collage = {
             }
             var product_avail = (product.availability == 'in-stock' || product.availability == 'yes') ? true : false;
             if ((product.is_deleted == false)&&(product_avail == true)){
+              has_available_siblings = false;
               var all_sizes = product.size.split(',')
               for(var ix = 0, lx = all_sizes.length; ix < lx; ix++){
                 var size = all_sizes[ix];
@@ -66,6 +68,7 @@ var collage = {
           payload.sites[merchant_node].add_to_cart[product_node].is_deleted = matching_object.is_deleted;
           var avail = (matching_object.availability == 'in-stock' || matching_object.availability == 'yes') ? true : false;
           payload.sites[merchant_node].add_to_cart[product_node].available = avail;
+          payload.sites[merchant_node].add_to_cart[product_node].has_available_siblings = has_available_siblings;
           payload.sites[merchant_node].add_to_cart[product_node].required_field_names = ["color", "size", "quantity"];
           payload.sites[merchant_node].add_to_cart[product_node].required_field_values = {};
           payload.sites[merchant_node].add_to_cart[product_node].required_field_values.color = [];

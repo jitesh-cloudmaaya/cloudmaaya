@@ -238,6 +238,7 @@ def get_allume_product_by_id(self, product_id):
     data = results['data']
     # a mapping of the text field, 'availability', to a boolean flag, 'available'
     availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False, 'yes': True, 'no': False}
+    has_available_siblings = False
     # either update above as more or fields are added or mold availability field across feeds to the same form
     # loop through results to set up content for the payload
     for i in range(0, len(data)):
@@ -261,6 +262,7 @@ def get_allume_product_by_id(self, product_id):
             product_availability = False
 
         if not product['is_deleted'] and product_availability:
+            has_available_siblings = True
             all_sizes = product['size'].split(',')
             for i in range(0, len(all_sizes)):
                 size = all_sizes[i]
@@ -285,14 +287,13 @@ def get_allume_product_by_id(self, product_id):
     payload['sites'][merchant_node]['add_to_cart'][product_node]['categories'] = [matching_object['primary_category'], matching_object['secondary_category'], matching_object['allume_category']]
     payload['sites'][merchant_node]['add_to_cart'][product_node]['material'] = matching_object['material']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['is_deleted'] = matching_object['is_deleted']
-
     try:
         payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = availability_mapping[matching_object['availability']]
     except KeyError as e:
         print "The 'availability' text field value present in this product does not have a known mapping, it was assumed to 'available' = False"
         print matching_object['availability']
         payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = False
-
+    payload['sites'][merchant_node]['add_to_cart'][product_node]['has_available_siblings'] = has_available_siblings
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_names'] = ["color", "size", "quantity"]
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_values'] = {}
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_values']['color'] = []
