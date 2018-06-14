@@ -252,7 +252,7 @@ class EProductSearch(FacetedSearch):
             if self._card_count:
                 return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[q_sizeless_merchants]).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
             else:
-                return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[q_sizeless_merchants])
+                return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[q_sizeless_merchants]).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
 
         if self._card_count:
             return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
