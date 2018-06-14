@@ -212,8 +212,24 @@ class EProductSearch(FacetedSearch):
         # add in like so: search.query('bool', filter=[q_sizeless_merchants])
 
         # construct the supplemental query to match main_q
-        supplemental_q = main_q & q_sizeless_merchants
+        if query == "*":
+            supplemental_q = Q({"match_all": {}})
+        else:
+            supplemental_q = Q('multi_match',
+                    fields=self.fields,
+                    query=query,
+                    type='cross_fields',
+                    #type='cross_fields',
+                    operator='and',
+                    #custom_score={"query" : {"match_all" : {}},"script" : "_score * (10 - doc.allume_score.doubleValue)"},
+                   # fuzziness="Auto",
+                   # prefix_length=2,
+                    #analyzer="my_synonyms"
+                   # auto_generate_synonyms_phrase_query="true"
+                )
 
+
+        supplemental_q = q_sizeless_merchants
 
         # we've built the search for products with no size data merchants clause
         # we and this with the main query used, except we should remove any size information (there can be no merchant information)
@@ -253,10 +269,10 @@ class EProductSearch(FacetedSearch):
         if 'size' in self._filters and 'merchant_name' not in self._filters:
             print 'hey this happens' #?
             main_q = main_q | supplemental_q
-            if self._card_count:
-                return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
-            else:
-                return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
+            # if self._card_count:
+            #     return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
+            # else:
+            #     return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
 
         if self._card_count:
             return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
