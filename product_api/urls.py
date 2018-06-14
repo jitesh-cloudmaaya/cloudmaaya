@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^facets$', views.facets, name='facets'),
     url(r'^get_product/(?P<product_id>[0-9]+)/$', views.get_product, name='get_product'),
     url(r'^get_allume_product/(?P<product_id>[0-9]+)/$', views.get_allume_product, name='get_allume_product'),
+    url(r'^get_allume_products/$', views.get_allume_products, name='get_allume_products'),
     url(r'^sort_options$', views.sort_options, name='sort_options'),
 
 ]
