@@ -228,8 +228,11 @@ class EProductSearch(FacetedSearch):
                    # auto_generate_synonyms_phrase_query="true"
                 )
 
-
-        supplemental_q = q_sizeless_merchants
+        supplemental_q = Q('bool',
+            must=[q_sizeless_merchants],
+            should=[Q('match', product_name=query)],
+            minimum_should_match=1
+        )
 
         # we've built the search for products with no size data merchants clause
         # we and this with the main query used, except we should remove any size information (there can be no merchant information)
@@ -268,11 +271,10 @@ class EProductSearch(FacetedSearch):
         # check for presence of the size filter AND the absence of the merchant filter
         if 'size' in self._filters and 'merchant_name' not in self._filters:
             print 'hey this happens' #?
-            main_q = main_q | supplemental_q
-            # if self._card_count:
-            #     return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
-            # else:
-            #     return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
+            if self._card_count:
+                return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[supplemental_q]).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
+            else:
+                return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[supplemental_q]).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
 
         if self._card_count:
             return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
