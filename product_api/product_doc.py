@@ -20,7 +20,6 @@ from product_api.models import Merchant
 
 """
 #Commenting out for now I expect to delete soon unless we decide to not use logstash for indexing
-
 class Logs(DocType):
     product_id = String(analyzer='snowball')
     merchant_id = String(analyzer='snowball')
@@ -52,13 +51,10 @@ class Logs(DocType):
     merchant_name = String(analyzer='snowball')
     created_at = ESDate()
     updated_at = ESDate()
-
     class Meta:
         index = "logstash-*"
-
     def save(self, **kwargs):
         return super(Email, self).save(** kwargs)
-
     @classmethod
     def properties(cls):
         return [
@@ -211,31 +207,9 @@ class EProductSearch(FacetedSearch):
                 q_sizeless_merchants |= Q({"match": {"merchant_name": {"query": merchant_name, "type": "phrase"}}})
         # add in like so: search.query('bool', filter=[q_sizeless_merchants])
 
-        # construct the supplemental query to match main_q
-        if query == "*":
-            supplemental_q = Q({"match_all": {}})
-        else:
-            supplemental_q = Q('multi_match',
-                    fields=self.fields,
-                    query=query,
-                    type='cross_fields',
-                    #type='cross_fields',
-                    operator='and',
-                    #custom_score={"query" : {"match_all" : {}},"script" : "_score * (10 - doc.allume_score.doubleValue)"},
-                   # fuzziness="Auto",
-                   # prefix_length=2,
-                    #analyzer="my_synonyms"
-                   # auto_generate_synonyms_phrase_query="true"
-                )
+        print q_sizeless_merchants
 
-        supplemental_q = Q('bool',
-            must=[q_sizeless_merchants],
-            should=[Q('match', product_name=query)],
-            minimum_should_match=1
-        )
-
-        # we've built the search for products with no size data merchants clause
-        # we and this with the main query used, except we should remove any size information (there can be no merchant information)
+        main_q |= q_sizeless_merchants
 
         # alternatively may want to build the query using this construct in order to have max control
 
@@ -272,9 +246,9 @@ class EProductSearch(FacetedSearch):
         if 'size' in self._filters and 'merchant_name' not in self._filters:
             print 'hey this happens' #?
             if self._card_count:
-                return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[supplemental_q]).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
+                return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[q_sizeless_merchants]).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
             else:
-                return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[supplemental_q]).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
+                return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[q_sizeless_merchants]).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
 
         if self._card_count:
             return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
@@ -287,4 +261,3 @@ def remove_deleted_items(self, days_back = 14):
 
     last_updated_date = (datetime.now() - timedelta(days=days_back)).strftime("%Y-%m-%d")
     print last_updated_date
-
