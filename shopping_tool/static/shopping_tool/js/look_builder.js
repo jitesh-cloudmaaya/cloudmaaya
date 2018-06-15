@@ -758,10 +758,11 @@ var look_builder = {
         }
       }
       markup.push('</table>');
+      var status = result.status != 'published' ? '<span class="unpublished"><em>unpublished look</em></span>' : '';
       var indepth = $('#look-indepth');
       indepth.html(
         '<div class="stage"><a href="#" class="close-indepth"><i class="fa fa-times"></i></a>' +
-        '<h2>' + result.name + '</h2><div class="products">' + markup.join('') + '</div></div>'
+        '<h2>' + status + '' + result.name + '</h2><div class="products">' + markup.join('') + '</div></div>'
       );
       if(merchants.length > 0){
         merchants = [...new Set(merchants)];
@@ -794,7 +795,7 @@ var look_builder = {
     }
     var desc = look.description != '' ? '<span class="layout desc"><em>description: </em>' + look.description + '</span>' :  '';
     var display_class = check == look.id ? 'editing' : '';
-    var status = look.status != 'piblished' ? '<span class="unpublished"><em>unpublished</em></span>' : '';
+    var status = look.status != 'published' ? '<span class="unpublished"><em>unpublished</em></span>' : '';
     return '<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
       '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
       look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="view-look-btn" data-look="' + 
