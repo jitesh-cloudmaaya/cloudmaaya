@@ -516,9 +516,3 @@ class Weather(models.Model):
 
     def __str__(self):
         return self.city + ', ' + self.state
-
-
-
-
-
-
