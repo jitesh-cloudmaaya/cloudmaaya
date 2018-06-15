@@ -27,6 +27,7 @@ class GenerateProductIdTestCase(TestCase):
         # sku + merchant id is very long
         self.assertEqual(u'6592220150063020212', generate_product_id_pepperjam(u'65IVTO006-TUVMQU5HRSBHUkVZ0', u'38014'))
 
+
 class ProductFeedHelpersTestCase(TestCase):
     """
     Tests the behavior of the methods used in product_feed_helpers.py. Useful for determining the behavior
@@ -387,10 +388,8 @@ class SizeTestCase(TestCase):
 
         # return # problem cases occuring with lingerie?
         self.assertEqual('32DDD', determine_allume_size(allume_category, '32DDD', size_mapping, shoe_size_mapping, size_term_mapping))
-        # return
-        # future support?
-        # self.assertEqual('M Petite', determine_allume_size(allume_category, 'P/M', size_mapping, shoe_size_mapping, size_term_mapping))
- 
+
+
 class ParserTestCase(TestCase):
     """
     Tests the behavior and ability of seperating sizes based on a pre-decided list of 
@@ -502,91 +501,3 @@ class CategoryHandlingTestCase(TestCase):
         add_category_map('', secondary_category, merchant_name, exclusion_terms, synonym_other_terms, synonym_terms)
         cm  = CategoryMap.objects.first()
         self.assertEqual(OTHER, cm.allume_category)
-
-
-
-
-# class MappingsTestCase(TestCase):
-#     """
-#     Some simple tests to confirm that mappings return a structure like we expect.
-#     Changes like changes to the database table names should not break the mappings helpers,
-#     these tests should quickly confirm basic sanity.
-#     """
-
-#     fixtures = ['MappingsTestCase']
-
-#     def test_merchant_mapping(self):
-#         """
-#         Tests that a call to create_merchant_mapping creates a dictionary with the
-#         expected structure: {long merchant_id: int active}
-#         """
-#         merchant_mapping = create_merchant_mapping()
-#         self.assertIsNotNone(merchant_mapping)
-#         # print merchant_mapping
-
-#         # general structure
-#         self.assertTrue(isinstance(merchant_mapping.keys()[0], long))
-#         self.assertTrue(isinstance(merchant_mapping.values()[0], int))
-
-#         # fixture specific
-#         # self.assertEqual(1, merchant_mapping.keys()[0])
-
-#     def test_color_mapping(self):
-#         """
-#         Tests that a call to create_color_mapping creates a dictionary with the
-#         expected structure: {str external_color: str allume_color}
-#         """
-#         color_mapping = create_color_mapping()
-#         self.assertIsNotNone(color_mapping)
-
-#         # general structure
-#         self.assertTrue(isinstance(color_mapping.keys()[0], unicode))
-#         self.assertTrue(isinstance(color_mapping.values()[0], unicode))
-
-#         # fixture specific
-#         self.assertEqual(u'brown', color_mapping[color_mapping.keys()[0]])
-
-#     def test_category_mapping(self):
-#         """
-#         Tests that a call to create_category_mapping create a dictionary with the
-#         expected structure: {(str primary_category, str secondary_category):
-#         (int allume_category_id, int active)}
-#         """
-#         category_mapping = create_category_mapping()
-#         self.assertIsNotNone(category_mapping)
-
-#         # general structure
-#         k = category_mapping.keys()[0]
-#         v = category_mapping.values()[0]
-#         self.assertTrue(isinstance(k, tuple))
-#         self.assertTrue(isinstance(k[0], unicode))
-#         self.assertTrue(isinstance(k[1], unicode))
-#         self.assertTrue(isinstance(v, tuple))
-#         self.assertTrue(isinstance(v[0], long))
-#         self.assertTrue(isinstance(v[1], int))
-
-#         # fixture specific
-#         info = category_mapping[k]
-#         self.assertEqual(1, info[0])
-#         self.assertEqual(1, info[1])
-
-#     def test_allume_category_mapping(self):
-#         """
-#         Tests that a call to create_category_mapping creates a dictionary with the
-#         expected structure: {long id: (unicode name, int active)}
-#         """
-#         allume_category_mapping = create_allume_category_mapping()
-#         self.assertIsNotNone(allume_category_mapping)
-
-#         # general structure
-#         self.assertTrue(isinstance(allume_category_mapping.keys()[0], long))
-#         v = allume_category_mapping.values()[0]
-#         self.assertTrue(isinstance(v, tuple))
-#         self.assertTrue(isinstance(v[0], unicode))
-#         self.assertTrue(isinstance(v[1], int))
-
-#         # fixture specific
-#         info = allume_category_mapping[allume_category_mapping.keys()[0]]
-#         self.assertEqual(u'Test Allume Category', info[0])
-#         self.assertEqual(1, info[1])
-#  

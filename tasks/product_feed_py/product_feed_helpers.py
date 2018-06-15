@@ -23,7 +23,6 @@ def parse_raw_product_url(product_url, raw_product_attribute):
     """
     # pass one
     raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)[raw_product_attribute][0]
-
     # pass two
     # split the url into parts
     split = urlparse.urlsplit(raw_product_url)
@@ -41,14 +40,12 @@ def parse_raw_product_url(product_url, raw_product_attribute):
     split = split._replace(query = query)
     # rejoin the split raw_product_url
     joined = urlparse.urlunsplit(split)
-
     return joined
 
 # some notes on generate_product_id usage
 # be very careful about which fields are used when generating the product id
 # for example, to preserve the final count of products, use the merchant_color instead of the allume
 # color and probably the merchant_size instead of the allume size (even if the products are then functionally identical)
-
 def generate_product_id(product_name, merchant_size, merchant_color, SKU):
     """
     In the event that a product_id cannot be found, deterministically generate a product_id
@@ -85,12 +82,10 @@ def assign_product_id_size(product_id, size):
     Returns:
       str: The product_id to use in the associated child record.
     """
-
     converted = int(hashlib.sha256(size.encode('UTF-8')).hexdigest(), 16) % (10 ** 15)
     product_id = int(product_id) + converted
     product_id = product_id % (2 ** 60) # keep id under bigint max signed value
     product_id = str(product_id).decode('UTF-8')
-
     return product_id
 
 def seperate_sizes(sizes):
@@ -417,7 +412,6 @@ def parse_category_from_product_name(product_name, synonym_category_mapping, exc
     Returns:
       str: The category that was parsed from a synonym appearing in the product name.
     """
-
     matched_synonym = None
     currIndex = -1
     synonyms_list = synonym_category_mapping.keys()
