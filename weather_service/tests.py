@@ -64,9 +64,6 @@ class SingleWeatherRetrievalTests(TestCase):
         self.assertEqual(NULL_WEATHER_STRING_REPLACEMENT, Weather.objects.retrieve_weather_object(city='', state='CA').autumn_sun)
         self.assertEqual(self.EXPECTED_WEATHER_COUNT+3, Weather.objects.count())
 
-
-# test city and state with whitespace on one side or the other
-# 
     def test_retrieve_w_white_space(self):
         """
         Test that whitespace on either side of the string in either case will be intrepreted correctly.
@@ -84,7 +81,6 @@ class SingleWeatherRetrievalTests(TestCase):
         # affirm that none of these strings are treated as new locations
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
 
-
     def test_retrieve_state_by_full_name(self):
         """
         Test that we can retrieve a Weather by using its full state name.
@@ -99,10 +95,8 @@ class SingleWeatherRetrievalTests(TestCase):
         # affirm that using a state's full name is not interpreted as a new location
         self.assertEqual(self.EXPECTED_WEATHER_COUNT, Weather.objects.count())
 
+
 class BulkWeatherRetrievalTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        pass
 
     fixtures = ['BulkWeatherRetrievalTests']
 
@@ -193,7 +187,6 @@ class UpdateOnStaleDataTests(TestCase):
         for weather in weathers:
             self.assertEqual(self.CURRENT_YEAR, weather.last_modified.year)
 
-    # tests fail because of how recent weather object is created (defined in fixture, not created dynamically)
     def test_no_update_fresh_data_single(self):
         """
         Test that a Weather object that has fresh data is not updated.
@@ -255,16 +248,14 @@ class UpdateOnStaleDataTests(TestCase):
         self.assertEqual(w2.last_modified, weathers[2].last_modified)
         self.assertEqual(w3.last_modified, weathers[3].last_modified)
 
+
 class WeatherIconPropertyTests(TestCase):
     """
     Testing strategy:
 
     Create 4 to 5 Weather objects of differing values and test that they give the expected icons.
     """
-    @classmethod
-    def setUpTestData(cls):
-        pass
-        
+
     fixtures = ["WeatherIconPropertyTests"]
 
     # single case tests
@@ -274,7 +265,6 @@ class WeatherIconPropertyTests(TestCase):
         """
         w = Weather.objects.get(pk=1)
         self.assertEqual('wi-day-cloudy', w.summer_icon)
-        # self.assertEqual('wi-day-cloudy', w.winter_icon)
 
     def test_sunny_icon(self):
         """
@@ -378,7 +368,3 @@ class WeatherIconPropertyTests(TestCase):
         self.assertEqual('wi-day-rain-wind', w.summer_icon)
         self.assertEqual('wi-day-cloudy-gusts', w.autumn_icon)
         self.assertEqual('wi-day-snow', w.winter_icon)
-
-
-
-
