@@ -178,8 +178,8 @@ var explore_page = {
       lookup.total_look_price_maximum = total_maximum;
     }
     if((avg_minimum != 0)||(avg_maximum != 2000)){
-      lookup.avgerage_item_price_minimum = avg_minimum;
-      lookup.avgerage_item_price_maximum = avg_maximum; 
+      lookup.average_item_price_minimum = avg_minimum;
+      lookup.average_item_price_maximum = avg_maximum; 
     }
     console.log(lookup);
     $('#loader').data('filter',lookup);
