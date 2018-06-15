@@ -17,71 +17,68 @@ class WeatherManager(models.Manager):
         city - a string representing a city name
         state - a string representing the state abbreviation
         """
-        # trim potential whitespace
+        # map abbrevations to full state names, where possible
+        us_state_abbrev = {
+        'alabama': 'AL',
+        'alaska': 'AK',
+        'arizona': 'AZ',
+        'arkansas': 'AR',
+        'california': 'CA',
+        'colorado': 'CO',
+        'connecticut': 'CT',
+        'delaware': 'DE',
+        'florida': 'FL',
+        'georgia': 'GA',
+        'hawaii': 'HI',
+        'idaho': 'ID',
+        'illinois': 'IL',
+        'indiana': 'IN',
+        'iowa': 'IA',
+        'kansas': 'KS',
+        'kentucky': 'KY',
+        'louisiana': 'LA',
+        'maine': 'ME',
+        'maryland': 'MD',
+        'massachusetts': 'MA',
+        'michigan': 'MI',
+        'minnesota': 'MN',
+        'mississippi': 'MS',
+        'missouri': 'MO',
+        'montana': 'MT',
+        'nebraska': 'NE',
+        'nevada': 'NV',
+        'new hampshire': 'NH',
+        'new jersey': 'NJ',
+        'new mexico': 'NM',
+        'new york': 'NY',
+        'north carolina': 'NC',
+        'north dakota': 'ND',
+        'ohio': 'OH',
+        'oklahoma': 'OK',
+        'oregon': 'OR',
+        'pennsylvania': 'PA',
+        'rhode island': 'RI',
+        'south carolina': 'SC',
+        'south dakota': 'SD',
+        'tennessee': 'TN',
+        'texas': 'TX',
+        'utah': 'UT',
+        'vermont': 'VT',
+        'virginia': 'VA',
+        'washington': 'WA',
+        'west virginia': 'WV',
+        'wisconsin': 'WI',
+        'wyoming': 'WY',
+        'district of columbia': 'DC',
+        }
         try:
+            # trim potential whitespace
             city = city.strip()
             state = state.strip()
-
-            # map abbrevations to full state names, where possible
-            us_state_abbrev = {
-            'alabama': 'AL',
-            'alaska': 'AK',
-            'arizona': 'AZ',
-            'arkansas': 'AR',
-            'california': 'CA',
-            'colorado': 'CO',
-            'connecticut': 'CT',
-            'delaware': 'DE',
-            'florida': 'FL',
-            'georgia': 'GA',
-            'hawaii': 'HI',
-            'idaho': 'ID',
-            'illinois': 'IL',
-            'indiana': 'IN',
-            'iowa': 'IA',
-            'kansas': 'KS',
-            'kentucky': 'KY',
-            'louisiana': 'LA',
-            'maine': 'ME',
-            'maryland': 'MD',
-            'massachusetts': 'MA',
-            'michigan': 'MI',
-            'minnesota': 'MN',
-            'mississippi': 'MS',
-            'missouri': 'MO',
-            'montana': 'MT',
-            'nebraska': 'NE',
-            'nevada': 'NV',
-            'new hampshire': 'NH',
-            'new jersey': 'NJ',
-            'new mexico': 'NM',
-            'new york': 'NY',
-            'north carolina': 'NC',
-            'north dakota': 'ND',
-            'ohio': 'OH',
-            'oklahoma': 'OK',
-            'oregon': 'OR',
-            'pennsylvania': 'PA',
-            'rhode island': 'RI',
-            'south carolina': 'SC',
-            'south dakota': 'SD',
-            'tennessee': 'TN',
-            'texas': 'TX',
-            'utah': 'UT',
-            'vermont': 'VT',
-            'virginia': 'VA',
-            'washington': 'WA',
-            'west virginia': 'WV',
-            'wisconsin': 'WI',
-            'wyoming': 'WY',
-            'district of columbia': 'DC',
-            }
-
-            state = us_state_abbrev.pop(state.lower(), state) # convert name to abbrev if in dict, else use what should be 2 letter state abbr
-        except:
+        except AttributeError as e: # non-string city or state is passed in
             city = ''
             state = ''
-
+        state = us_state_abbrev.pop(state.lower(), state) # convert name to abbrev if in dict, else use what should be 2 letter state abb
         weather = self.get_or_create(city=city, state=state)[0] # get_or_create returns an obj, created_bool tuple
         if weather.id:
             # check if the year prior the current year has 12 monthly summaries and is more recent than the last modified
