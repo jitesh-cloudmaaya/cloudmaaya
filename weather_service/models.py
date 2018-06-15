@@ -84,7 +84,6 @@ class WeatherManager(models.Manager):
             # check if the year prior the current year has 12 monthly summaries and is more recent than the last modified
             if (datetime.datetime.now().year - 1) > weather.last_modified.year:
                 weather.save()
-
             return weather
 
     def retrieve_weather_objects(self, cities_states):
