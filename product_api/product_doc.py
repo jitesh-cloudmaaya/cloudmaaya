@@ -16,8 +16,6 @@ from catalogue_service.settings_local import PRODUCT_INDEX
 from six import iteritems, itervalues, string_types
 from datetime import datetime, timedelta
 
-from product_api.models import Merchant
-
 """
 #Commenting out for now I expect to delete soon unless we decide to not use logstash for indexing
 class Logs(DocType):
@@ -151,10 +149,6 @@ class EProductSearch(FacetedSearch):
 
     def query(self, search, query):
         """Overriden to use bool AND by default"""
-        print '==============================================================='
-        print self._filters
-        print '==============================================================='
-
 
         if query == "*":
             main_q = Q({"match_all" : {}})
@@ -185,45 +179,6 @@ class EProductSearch(FacetedSearch):
         collapse_dict = {"field": "raw_product_url.keyword","inner_hits": {"name": "collapsed_by_product_name","from": 1}}
         cardinality_dict = {"unique_count" : {"cardinality" : {"field" : "raw_product_url.keyword"}}}
 
-# example of OR query from kibana
-# GET products/_search
-# {
-#   "query": {
-#     "query_string": {
-#       "default_field": "merchant_name",
-#       "query": "(Madewell) OR (Sole Society) OR (Saks Fifth Avenue)"
-#     }
-#   }
-# }
-        # need to apply query clause in "filter context" to yes or no answer to merchant_name memberbship
-
-        # if merchant filter is not used... include all products from 'sizeless' merchants
-        # will need to build the actual query using a merchant filter
-        sizeless_merchant_names = Merchant.objects.filter(has_size_data=False).values_list('name', flat=True)
-        if sizeless_merchant_names.count():
-            q_sizeless_merchants = Q({"match": {"merchant_name": {"query": sizeless_merchant_names.first(), "type": "phrase"}}})
-            sizeless_merchant_names = sizeless_merchant_names[1:]
-            for merchant_name in sizeless_merchant_names:
-                q_sizeless_merchants |= Q({"match": {"merchant_name": {"query": merchant_name, "type": "phrase"}}})
-        # add in like so: search.query('bool', filter=[q_sizeless_merchants])
-
-        print q_sizeless_merchants
-
-        supplemental_q = main_q & q_sizeless_merchants
-        main_q |= supplemental_q
-
-        # alternatively may want to build the query using this construct in order to have max control
-
-
-        # q = Q('bool',
-        #     must=[Q('match', title='python')],
-        #     should=[Q(...), Q(...)],
-        #     minimum_should_match=1
-        # )
-        # s = Search().query(q)
-
-
-
         #################
         ### #Score Boosting
         ### https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html
@@ -242,16 +197,9 @@ class EProductSearch(FacetedSearch):
         custom_score_dict = Q({'function_score': {"field_value_factor" : {"field": "allume_score", "factor": 1.5, "missing": 0}}})
         #custom_score_dict = Q('function_score', {"query" : {"match_all" : {}},"script" : "_score * (10 - doc.allume_score.doubleValue)"})
         #custom_score_dict = Q('function_score', script =  "_score * (10 - doc.allume_score.doubleValue)")
-        #################
-        # check for presence of the size filter AND the absence of the merchant filter
 
-        # keep away for now
-        # if 'size' in self._filters and 'merchant_name' not in self._filters:
-        #     print 'hey this happens' #?
-        #     if self._card_count:
-        #         return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[q_sizeless_merchants]).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)
-        #     else:
-        #         return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).query('bool', filters=[q_sizeless_merchants]).query(custom_score_dict).extra(collapse=collapse_dict).sort(self._sort)
+        #################
+        
 
         if self._card_count:
             return search.query(main_q).query(q_faves).query(q_available).query(q_not_deleted).extra(collapse=collapse_dict).extra(aggs=cardinality_dict)

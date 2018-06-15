@@ -10,7 +10,6 @@ def check_login(function):
         if request.COOKIES.get(AUTH_EMAIL_KEY, False):
             user_email = request.COOKIES[AUTH_EMAIL_KEY]
             user = WpUsers.objects.get(user_email = user_email)
-            # user = WpUsers.objects.first()
             request.user = user
             return function(request, *args, **kwargs)
         else:

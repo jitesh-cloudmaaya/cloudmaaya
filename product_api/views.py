@@ -86,21 +86,9 @@ def facets(self):
         whitelisted_facet_args['size'] = ''
     else:
         whitelisted_facet_args['size'].append('')
-    # this secondary search should NOT apply IF there's a merchant filter being used
-    # the filters for the second conducted search should include everything EXCEPT for the size filter
-    # this secondary search should add its own size filter that searches for where size is the empty string or null...
 
     es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, sort=sort_order)
     es_count = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, card_count=True)
-
-    # could we do the additional search from here? and then combine the results for format results....
-    # es_sizeless = EProductSearch(query=text_query, filters=alternative_filters, favs=user_favs, sort=sort_order)
-    # es_count = EProductSearch(query=text_query, filters=alternative_filters, favs=user_favs, card_count=True)
-
-    # check the whitelisted_facet_args.keys() for the presence of 'merchant_name' or equiv
-    # if that's there, the secondary search should be conducted with the merchant_name filter of the original query...
-
-    # essentially, we just need the base filter for the search to always include empty string/null sizes...
 
     es = es[start_record:end_record]
     results = es.execute().to_dict()
