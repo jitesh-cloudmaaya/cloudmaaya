@@ -89,7 +89,6 @@ class Merchant(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True)
     search_rank = models.IntegerField(default=0)
 
-
     def __str__(self):
         return self.name
 

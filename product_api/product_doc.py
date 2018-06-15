@@ -18,7 +18,6 @@ from datetime import datetime, timedelta
 
 """
 #Commenting out for now I expect to delete soon unless we decide to not use logstash for indexing
-
 class Logs(DocType):
     product_id = String(analyzer='snowball')
     merchant_id = String(analyzer='snowball')
@@ -50,13 +49,10 @@ class Logs(DocType):
     merchant_name = String(analyzer='snowball')
     created_at = ESDate()
     updated_at = ESDate()
-
     class Meta:
         index = "logstash-*"
-
     def save(self, **kwargs):
         return super(Email, self).save(** kwargs)
-
     @classmethod
     def properties(cls):
         return [
@@ -216,4 +212,3 @@ def remove_deleted_items(self, days_back = 14):
 
     last_updated_date = (datetime.now() - timedelta(days=days_back)).strftime("%Y-%m-%d")
     print last_updated_date
-
