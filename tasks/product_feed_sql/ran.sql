@@ -1,11 +1,10 @@
-
 -- Delete Non Applicable Categories
 DELETE p FROM tasks_ranproducts p 
 LEFT JOIN product_api_merchantcategory c ON c.name = p.primary_category 
 WHERE c.active = false;
 
 -- Insert New Products
-INSERT INTO product_api_product         
+INSERT INTO product_api_product
 ( 
   product_id, 
   merchant_id,
@@ -95,7 +94,6 @@ AND m.active = 1
 AND ap.id IS NULL
 AND rp.modification IS NULL ) x;
 
-
 -- Update Existing Products
 UPDATE product_api_product ap
 INNER JOIN tasks_ranproducts rp ON ap.merchant_id = rp.merchant_id AND ap.product_id = rp.product_id
@@ -137,4 +135,3 @@ SET
   ap.is_deleted = CASE WHEN rp.modification = 'D' THEN 1 ELSE 0 END,
   ap.current_price = CASE WHEN rp.sale_price > 0 OR NOT NULL THEN rp.sale_price ELSE rp.retail_price END;
   WHERE m.active = 1
-

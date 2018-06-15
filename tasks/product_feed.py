@@ -15,10 +15,7 @@ from catalogue_service.settings import BASE_DIR, CJ_HOST_KEY
 from product_api.models import Product, Merchant, Network
 
 class ProductFeed(object):
-
-
     def __init__(self, config_file):
-        
         config_file = open(config_file, "r")
         config_dict = yaml.load(config_file)
         self._table = config_dict['table']
