@@ -691,9 +691,11 @@ var rack_builder = {
       if(color_options.length > 4){
         options_class = 'with-header'
         options_header = '<h6>' + (color_options.length - 1) + ' other color options</h6>';
-      } 
+      }
+      is_merchant_with_soldout_issue = $.inArray(product.merchant_id, [8579678, 6172, 40480]) >= 0;
+      soldout_missing_size = (is_merchant_with_soldout_issue || !product.size) ? '<span class="soldout_missing_size"><em>' + (is_merchant_with_soldout_issue?'Check sold out':'Check Size') + '</em></span>' : '';
       markup.push(
-        '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
+        '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' + soldout_missing_size +
         '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
         '<tr><td class="img" rowspan="2"><img id="inspected-item-img" src="' + product.product_image_url + '"/>' + 
         fave_link + '' + rack_link + '<a href="' + product.product_url + '" target="_blank" class="link-to-store">' + 
