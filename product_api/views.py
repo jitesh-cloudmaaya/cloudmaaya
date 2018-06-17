@@ -70,7 +70,7 @@ def facets(self):
             user_favs = [-99]
     else:
         user_favs = []
-    
+
 
     start_record = (num_per_page * (page - 1))
     #print start_record
@@ -82,9 +82,14 @@ def facets(self):
         if key in EProductSearch.facets:
             whitelisted_facet_args[key] = urllib.unquote(value).split("|")
 
+    if 'size' not in whitelisted_facet_args.keys():
+        whitelisted_facet_args['size'] = ''
+    else:
+        whitelisted_facet_args['size'].append('')
 
     es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, sort=sort_order)
     es_count = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, card_count=True)
+
     es = es[start_record:end_record]
     results = es.execute().to_dict()
     results_count = es_count.execute().to_dict()
@@ -95,6 +100,8 @@ def facets(self):
     total_count = results_count['aggregations']['unique_count']['value']
     context = format_results(results, total_count, page, num_per_page, self, 'products', text_query, results['aggregations'])
 
+
+    # print context
 
     return Response(context) 
 

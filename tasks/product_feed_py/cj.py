@@ -339,4 +339,3 @@ def cj(local_temp_dir, file_ending, cleaned_fields):
 
     # print('Updating non-upserted CJ products')
     # product_feed_helpers.set_deleted_network_products('CJ')
-

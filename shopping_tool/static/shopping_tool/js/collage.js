@@ -248,7 +248,7 @@ var collage = {
     /* add in the watermark */
     var img = new Image(); 
     /* watermark path */
-    img.src = '/static/shopping_tool/image/allume_logo_darker.png';
+    img.src = '/static/shopping_tool/image/allume_logo_darker2.png';
     img.onload = function() {
       /* scale: 0.1, left: 690, and top: 400 based upon 1365 x 284 watermark dimensions */
       var scale = 0.1;

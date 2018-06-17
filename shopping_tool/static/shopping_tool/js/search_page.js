@@ -537,6 +537,7 @@ var search_page = {
   * @param {object} additionalCriteria - other search settings if from cookie
   */
   performSearch: function(page, lastSearch, additionalCriteria){
+    console.log(lastSearch)
     $('#facet-bar').removeClass('show');
     /* generate the query string */
     var selection_markup = [];
@@ -740,6 +741,8 @@ var search_page = {
     var saved_search = q;
     utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
     /* async call to get search results */
+    console.log(new_search)
+    console.log(q)
     $.ajax({
       beforeSend: function(){
         $('#results').html(

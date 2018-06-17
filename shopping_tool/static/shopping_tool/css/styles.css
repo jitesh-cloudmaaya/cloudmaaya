@@ -1898,6 +1898,44 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   font-weight:100;
   padding:10px 5px;
 }
+
+#compare-looks div.comp-look span.unpublished {
+  height:73px;
+  left:0px;
+  overflow:hidden;
+  opacity:1;
+  position: absolute;
+  top: 0;
+  -webkit-transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
+  width:73px;
+  z-index:3;
+}
+#compare-looks div.comp-look span.unpublished:hover {opacity:0.2;}
+#compare-looks div.comp-look span.unpublished em{
+  background: #C62828;
+  color: #fff;
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  left: 0;
+  line-height: 11px;
+  padding:2px;
+  text-align: center;
+  text-transform: uppercase;
+  -webkit-transform-origin: center;
+  transform-origin: center;
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  width: 100px;
+  position: absolute;
+  top: 22px;
+  left: -20px;
+
+}
+
+
+
 #compare-looks div.comp-look span.layout.desc,
 #looks-list div.rack-look span.layout.desc,
 #fave-looks div.rack-look span.layout.desc {white-space: pre-wrap;}
@@ -2075,6 +2113,17 @@ a.next-tab:active,
   padding:0 15px;
   height:49px;
   line-height:49px;  
+}
+#look-indepth div.stage h2 span.unpublished {
+  background:#D50000;
+  border-radius:5px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.4);
+  color:#fff;
+  float:right;
+  line-height:39px;
+  margin:5px 29px 5px 10px;
+  padding:0 15px;
+  text-transform: uppercase;
 }
 #look-indepth div.stage p.layout {
   border-bottom:1px solid #ddd;

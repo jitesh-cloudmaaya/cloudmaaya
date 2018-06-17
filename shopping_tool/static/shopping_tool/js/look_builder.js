@@ -384,7 +384,29 @@ var look_builder = {
         url: 'https://styling-service-' + local_environment + '.allume.co/publish_looks/',
         xhrFields: {
           withCredentials: true
-        }
+        },
+        success: function(response){
+          var res = JSON.parse(response)
+          if(res.status == "success"){
+            $.ajax({
+              beforeSend: function(xhr){
+                $('#look-builder-session-looks').html('<div class="empty">reloading looks...</div>')
+              },
+              contentType : 'application/json',
+              data: JSON.stringify({
+                "client": parseInt($('#user-clip').data('userid')),
+                "allume_styling_session": $('body').data('stylesession'),
+                "page": 1        
+              }),
+              success:function(response){
+                look_builder.editableLooksMarkup(response.looks);
+              },
+              type: 'POST',
+              url: '/shopping_tool_api/look_list/'
+            });
+            alert('YOU HAVE SUCCESSFULLY PUBLISHED THE LOOKBOOK!');
+          }
+        },
       });
       $('#publish-lookbook-overlay').fadeOut();
     });
@@ -736,10 +758,11 @@ var look_builder = {
         }
       }
       markup.push('</table>');
+      var status = result.status != 'published' ? '<span class="unpublished"><em>unpublished look</em></span>' : '';
       var indepth = $('#look-indepth');
       indepth.html(
         '<div class="stage"><a href="#" class="close-indepth"><i class="fa fa-times"></i></a>' +
-        '<h2>' + result.name + '</h2><div class="products">' + markup.join('') + '</div></div>'
+        '<h2>' + status + '' + result.name + '</h2><div class="products">' + markup.join('') + '</div></div>'
       );
       if(merchants.length > 0){
         merchants = [...new Set(merchants)];
@@ -764,6 +787,7 @@ var look_builder = {
   * @returns {string} HTML
   */
   lookMarkupGenerator: function(look, mod, check){
+    console.log(look)
     var collage_img = '<div class="collage-placeholder">collage not yet created</div>';
     if(look.collage != null){
       collage_img = '<a href="#" class="look-editor-link" data-lookid="' + look.id + '">' +
@@ -771,13 +795,14 @@ var look_builder = {
     }
     var desc = look.description != '' ? '<span class="layout desc"><em>description: </em>' + look.description + '</span>' :  '';
     var display_class = check == look.id ? 'editing' : '';
+    var status = look.status != 'published' ? '<span class="unpublished"><em>unpublished</em></span>' : '';
     return '<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
       '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
       look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="view-look-btn" data-look="' + 
       look.id + '"><i class="fa fa-search"></i></a><a href="#" class="delete-look-btn" data-lookid="' + 
       look.id + '"><i class="fa fa-times"></i></a><h3 class="look-name-header">' + look.name + '</h3>' +
       '<span class="layout"><em>stylist: </em>' + look.stylist.first_name + ' ' + look.stylist.last_name + '</span>' +
-      '<div class="comp-look-display">' + collage_img + '</div>' + desc + 
+      '<div class="comp-look-display">' + collage_img + '</div>' + desc + '' + status +
       '<div class="editing">editing look...</div></div>';
   },
   /**
