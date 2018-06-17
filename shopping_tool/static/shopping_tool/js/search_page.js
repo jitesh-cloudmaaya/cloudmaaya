@@ -520,7 +520,9 @@ var search_page = {
       fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
       details.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
     }
-    return '<div class="item"><div class="image">' + fave_link + 
+    is_merchant_with_soldout_issue = $.inArray(details.merchant_id, [8579678, 6172, 40480]) >= 0;
+    soldout_missing_size = (is_merchant_with_soldout_issue || !details.size) ? '<span class="soldout_missing_size"><em>' + (is_merchant_with_soldout_issue?'Check sold out':'Check Size') + '</em></span>' : '';
+    return '<div class="item"><div class="image">' + soldout_missing_size + fave_link +
       '<a href="#" class="item-detail" data-name="' + details.product_name + 
       '" data-brand="' + details.manufacturer_name + 
       '" data-productid="' + details.id + '" data-merchantid="' + details.merchant_id + 
