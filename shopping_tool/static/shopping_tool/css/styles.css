@@ -1899,7 +1899,7 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   padding:10px 5px;
 }
 
-#compare-looks div.comp-look span.unpublished {
+#compare-looks div.comp-look span.publish-status, .soldout_missing_size {
   height:73px;
   left:0px;
   overflow:hidden;
@@ -1911,12 +1911,17 @@ label.layout-check div.grid-display-wrapper div.grid-skew span {
   width:73px;
   z-index:3;
 }
-#compare-looks div.comp-look span.unpublished:hover {opacity:0.2;}
-#compare-looks div.comp-look span.unpublished em{
+#compare-looks div.comp-look span.publish-status:hover {opacity:0.2;}
+#compare-looks div.comp-look span.unpublished em, .soldout_missing_size em {
   background: #C62828;
+}
+#compare-looks div.comp-look span.published em{
+  background: green;
+}
+#compare-looks div.comp-look span.publish-status em, .soldout_missing_size em {
   color: #fff;
   display: block;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   left: 0;
   line-height: 11px;
@@ -2114,8 +2119,7 @@ a.next-tab:active,
   height:49px;
   line-height:49px;  
 }
-#look-indepth div.stage h2 span.unpublished {
-  background:#D50000;
+#look-indepth div.stage h2 span.publish-status {
   border-radius:5px;
   box-shadow:0 1px 2px rgba(0,0,0,0.4);
   color:#fff;
@@ -2124,6 +2128,12 @@ a.next-tab:active,
   margin:5px 29px 5px 10px;
   padding:0 15px;
   text-transform: uppercase;
+}
+#look-indepth div.stage h2 span.unpublished {
+  background:#D50000;
+}
+#look-indepth div.stage h2 span.published {
+  background:green;
 }
 #look-indepth div.stage p.layout {
   border-bottom:1px solid #ddd;

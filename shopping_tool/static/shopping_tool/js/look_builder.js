@@ -758,7 +758,7 @@ var look_builder = {
         }
       }
       markup.push('</table>');
-      var status = result.status != 'published' ? '<span class="unpublished"><em>unpublished look</em></span>' : '';
+      var status = result.status != 'published' ? '<span class="publish-status unpublished"><em>unpublished look</em></span>' : '<span class="publish-status published"><em>unpublished look</em></span>';
       var indepth = $('#look-indepth');
       indepth.html(
         '<div class="stage"><a href="#" class="close-indepth"><i class="fa fa-times"></i></a>' +
@@ -795,7 +795,7 @@ var look_builder = {
     }
     var desc = look.description != '' ? '<span class="layout desc"><em>description: </em>' + look.description + '</span>' :  '';
     var display_class = check == look.id ? 'editing' : '';
-    var status = look.status != 'published' ? '<span class="unpublished"><em>unpublished</em></span>' : '';
+    var status = look.status != 'published' ? '<span class="publish-status unpublished"><em>unpublished</em></span>' : '<span class="publish-status published"><em>unpublished look</em></span>';
     return '<div class="comp-look ' + display_class + '" data-lookid="' + look.id + 
       '" id="client-look-id-' + look.id + '"><a href="#" class="edit-look-btn" data-lookid="' + 
       look.id + '"><i class="fa fa-pencil"></i></a><a href="#" class="view-look-btn" data-look="' + 
