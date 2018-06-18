@@ -20,7 +20,6 @@ class ProductFeed(object):
         config_dict = yaml.load(config_file)
         self._table = config_dict['table']
         self._fields = ",".join(config_dict['fields'])
-        # self._fields = " (%s) " % (self._fields)
         self._file_pattern = config_dict['file_pattern']
         self._ftp_host = config_dict['ftp_config']['host']
         self._ftp_user = config_dict['ftp_config']['user']
@@ -47,7 +46,6 @@ class ProductFeed(object):
           threshold (int): The time threshold in hours. If the updated-at value of a record is threshold
           or more hours old, conclude that it was not updated in the current upsert and set to deleted.
         """
-        print self._network
         network_id = Network.objects.get(name=self._network)
         merchants = Merchant.objects.filter(network_id=network_id)
         merchant_ids = merchants.values_list('external_merchant_id')

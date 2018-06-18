@@ -1,15 +1,4 @@
-remote_dir: /outgoing/productcatalog/207812/
-file_pattern: '.*\.txt\.gz$'
-leave_temp_files: false
-local_temp_dir: pd_temp/cj/
-ftp_config:
-  host: datatransfer.cj.com
-  user: '4894108'
-  password: '#Gs264in'
-  host_key: 'AAAAB3NzaC1kc3MAAACBALaM0N9YqDxytsVkO+On3Ob7fnAM4H0cfxWAxco6dGeOimO7VhC7t9NK++EADh1ZOtm4zXQx9AFlER30vNgtH/Ev4RV6laq0fQQvRnb4B3g5FcVgD4TWm0GC6pGAoT6VRfl2vK6h8pYaS+P/5tnzavwckGoIwqUu6lXbHsC1ZWdzAAAAFQCUKVTBm/+erra+yXAeR3rOvqTrewAAAIEAsaqasLBjcUPoKM0xX2BiFOsezxOJUBDWSmILmZLgqiHU4SK10kiTRd8D7DUD+26xN1Ml/99KMl2OT3VsBb9zyLrvRL8nCx8OKyNjQUdtd4tac7ZDxdeJZSEC8NVFDtFf8R5AQYIj9s6YafzfFPqMhTMj4sJ2T6/vh9sajDsTS30AAACBAJ7k3TaeUP3xpa96DJ5j0kllCSOmjZjxxafpQdoGLZJynlPP0hteK3hGWLFZEtjV48EOPZaEiMaS3w/DGKupMpAeIazLVr0zqFKXoZDKTuj7RSQp7upCE3CjnEjJGs35O0N5P6bG2fbYV/oJSGFdJTAKMKPo+nV5lTKnSptN0ky3'
-  algorithm: 'ssh-dss'
-file_ending: '[Cc]atalog[^a-zA-Z]*.txt$'
-clean_data_method: cj.cj(self._local_temp_dir, self._file_ending, self._fields)
+etl_file_name: deprecated
 fields:
 - product_id
 - merchant_id
@@ -51,6 +40,17 @@ fields:
 - allume_score
 - current_price
 - is_deleted
+file_pattern: '.*\.txt\.gz$'
+ftp_config:
+  host: datatransfer.cj.com
+  user: '4894108'
+  password: '#Gs264in'
+  host_key: 'AAAAB3NzaC1kc3MAAACBALaM0N9YqDxytsVkO+On3Ob7fnAM4H0cfxWAxco6dGeOimO7VhC7t9NK++EADh1ZOtm4zXQx9AFlER30vNgtH/Ev4RV6laq0fQQvRnb4B3g5FcVgD4TWm0GC6pGAoT6VRfl2vK6h8pYaS+P/5tnzavwckGoIwqUu6lXbHsC1ZWdzAAAAFQCUKVTBm/+erra+yXAeR3rOvqTrewAAAIEAsaqasLBjcUPoKM0xX2BiFOsezxOJUBDWSmILmZLgqiHU4SK10kiTRd8D7DUD+26xN1Ml/99KMl2OT3VsBb9zyLrvRL8nCx8OKyNjQUdtd4tac7ZDxdeJZSEC8NVFDtFf8R5AQYIj9s6YafzfFPqMhTMj4sJ2T6/vh9sajDsTS30AAACBAJ7k3TaeUP3xpa96DJ5j0kllCSOmjZjxxafpQdoGLZJynlPP0hteK3hGWLFZEtjV48EOPZaEiMaS3w/DGKupMpAeIazLVr0zqFKXoZDKTuj7RSQp7upCE3CjnEjJGs35O0N5P6bG2fbYV/oJSGFdJTAKMKPo+nV5lTKnSptN0ky3'
+  algorithm: 'ssh-dss'
+leave_temp_files: false
+local_temp_dir: pd_temp/cj/
+remote_dir: /outgoing/productcatalog/207812/
 table: product_api_product_temp_cj
-etl_file_name: deprecated
+clean_data_method: cj.cj(self._local_temp_dir, self._file_ending, self._fields)
+file_ending: '[Cc]atalog[^a-zA-Z]*.txt$'
 network: CJ

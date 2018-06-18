@@ -1,15 +1,4 @@
-remote_dir: /Designer-Shoe-Warehouse/
-file_pattern: .*\.txt\.gz
-leave_temp_files: false
-local_temp_dir: pd_temp/impact_radius
-ftp_config:
-  host: products.impactradius.com
-  user: ps-ftp_380198
-  password: 4JC:)nto7P
-  host_key: N/A
-  algorithm: N/A
-file_ending: .txt
-clean_data_method: impact_radius.impact_radius(self._local_temp_dir, self._file_ending, self._fields)
+etl_file_name: deprecated
 fields:
 - product_id
 - merchant_id
@@ -51,6 +40,17 @@ fields:
 - allume_score
 - current_price
 - is_deleted
+file_pattern: .*\.txt\.gz
+ftp_config:
+  host: products.impactradius.com
+  user: ps-ftp_380198
+  password: 4JC:)nto7P
+  host_key: N/A
+  algorithm: N/A
+leave_temp_files: false
+local_temp_dir: pd_temp/impact_radius
+remote_dir: /Designer-Shoe-Warehouse/
 table: product_api_product_temp_ir
-etl_file_name: deprecated
+clean_data_method: impact_radius.impact_radius(self._local_temp_dir, self._file_ending, self._fields)
+file_ending: .txt
 network: Impact Radius
