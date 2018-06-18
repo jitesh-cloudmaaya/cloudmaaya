@@ -1,4 +1,3 @@
-etl_file_name: deprecated
 fields:
 - product_id
 - merchant_id
