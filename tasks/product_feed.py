@@ -59,12 +59,10 @@ class ProductFeed(object):
         exec self._clean_data_method
         print "Process takes %s seconds" % (time.time() - start)
 
-    # how to get filename of flat_file.csv
-    def load_cleaned_data(self): # eventually rename
+    def load_cleaned_data(self):
         start = time.time()
         cursor = connection.cursor()
 
-        # change the way file list is generated temporarily for pepperjam
         file_list = os.listdir(self._local_temp_dir_cleaned)
         f = file_list[0]
         f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
@@ -80,7 +78,6 @@ class ProductFeed(object):
         for i in range(0, len(statements)):
             full_script.append(statements[i])
 
-        # need to escape the backslash for python and then also for mySQL
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\n' %s" % (f, table, fields)
         full_script.append(statement)
 
