@@ -29,7 +29,6 @@ class ProductFeed(object):
         self._local_temp_dir = config_dict['local_temp_dir'] if config_dict['local_temp_dir'] else settings_local.PRODUCT_FEED_TEMP
         self._remote_dir = config_dict['remote_dir']
         self._remote_files = []
-        self._leave_temp_files = config_dict['leave_temp_files']
         self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
         self._clean_data_method = config_dict['clean_data_method']
         self._file_ending = config_dict['file_ending']

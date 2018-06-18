@@ -46,7 +46,6 @@ ftp_config:
   password: 4JC:)nto7P
   host_key: N/A
   algorithm: N/A
-leave_temp_files: false
 local_temp_dir: pd_temp/impact_radius
 remote_dir: /Designer-Shoe-Warehouse/
 table: product_api_product_temp_ir
