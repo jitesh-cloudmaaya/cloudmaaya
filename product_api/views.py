@@ -150,7 +150,7 @@ def get_product(self, product_id):
     product = Product.objects.get(id = product_id)
     p_name = product.product_name
 
-    print product.brand
+    #print product.brand
 
     # using the product we are looking for
     product_merchant_id = product.merchant_id
