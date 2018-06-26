@@ -89,7 +89,7 @@ def index(request, styling_session_id=None):
     return render(request, 'shopping_tool/index.html', context)
 
 
-# @check_login
+@check_login
 def look_builder(request, styling_session_id=None):
 
     user = request.user
