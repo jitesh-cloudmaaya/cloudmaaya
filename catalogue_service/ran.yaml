@@ -1,4 +1,3 @@
-etl_file_name: tasks/product_feed_sql/ran.sql
 fields:
 - product_id
 - merchant_id
@@ -47,7 +46,6 @@ ftp_config:
   user: allumestye
   host_key: N/A
   algorithm: N/A
-leave_temp_files: false
 local_temp_dir: pd_temp/ran
 remote_dir: /
 table: product_api_product_temp_ran
