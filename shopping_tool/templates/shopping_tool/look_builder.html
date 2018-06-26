@@ -118,11 +118,22 @@
         </div>
         <h5>Client text:</h5>
         <textarea id="publish-email" data-urllink="https://www.allume.co/looks/{{ styling_session.token }}#intro">
-Hi {{ client.first_name }}, your new Looks are ready! You can buy right from your Lookbook & prices are never marked up.  I would really appreciate if you purchase the items you love through Allume :-).  If you find additional items at one of the retailers I picked for you, please send them to me so I can easily add them to your Lookbook.  
-
-You can leave me feedback by 'hearting' and commenting on each Look or texting back! Items do sell out fast, so be sure to purchase quickly. Don't hesitate to reach out, I'm here to help! I'm excited to hear what you think!
-</textarea>
-<em class="help">The following link will be appended to your message: <strong>https://www.allume.co/looks/{{ styling_session.token }}#intro</strong></em>
+          {% if publishing_text_template == 'revision' %}
+Hi {{ client.first_name }}, I went ahead and made a few edits to your lookbook based on the feedback that you gave me.
+What do you think?
+          {% elif publishing_text_template == 'repeat' %}
+Hi {{ client.first_name }}, your new Lookbook is ready!
+As always, when you purchase from your Lookbook your $20 styling fee is refunded!
+And remember, the best pieces sell out quickly ;)
+Are you available to review your Lookbook together now?
+		  {% else %}
+Hi {{ client.first_name }}, your Allume Lookbook is ready!
+Check it out above! Don’t forget, prices are never marked up and when you purchase from your Lookbook your $20 styling fee is refunded!
+Items can sell out fast, so don’t wait too long to order what you love.
+Are you available to review your Lookbook together now?
+		  {% endif %}
+        </textarea>
+        <em class="help">The following link will be appended to your message: <strong>https://www.allume.co/looks/{{ styling_session.token }}#intro</strong></em>
       </div>
       <div class="publish-section" id="pub-section3"></div>
     </div>

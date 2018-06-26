@@ -89,7 +89,7 @@ def index(request, styling_session_id=None):
     return render(request, 'shopping_tool/index.html', context)
 
 
-@check_login
+# @check_login
 def look_builder(request, styling_session_id=None):
 
     user = request.user
@@ -117,13 +117,12 @@ def look_builder(request, styling_session_id=None):
     occasions = StyleOccasion.objects.filter(active=True).all()
     product_image_proxy = PRODUCT_IMAGE_PROXY
     env = ENV_LOCAL
-
+    published_look = AllumeLooks.objects.filter(allume_styling_session_id = styling_session_id, status = 'published').first()
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
                'looks': looks, 'weather_info': weather_info, 'styles': styles,
-               'occasions': occasions, 'env': env}
-               
+               'occasions': occasions, 'env': env, 'publishing_text_template': 'revision' if published_look is not None else ('repeat' if styling_session.stylist_assignment.stylist_assignment_type.id == 7 else 'h2t')}
     return render(request, 'shopping_tool/look_builder.html', context)
 
 
