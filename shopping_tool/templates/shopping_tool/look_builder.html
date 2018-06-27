@@ -120,16 +120,22 @@
         <textarea id="publish-email" data-urllink="https://www.allume.co/looks/{{ styling_session.token }}#intro">
           {% if publishing_text_template == 'revision' %}
 Hi {{ client.first_name }}, I went ahead and made a few edits to your lookbook based on the feedback that you gave me.
+
 What do you think?
           {% elif publishing_text_template == 'repeat' %}
 Hi {{ client.first_name }}, your new Lookbook is ready!
+          
 As always, when you purchase from your Lookbook your $20 styling fee is refunded!
+
 And remember, the best pieces sell out quickly ;)
+
 Are you available to review your Lookbook together now?
 		  {% else %}
 Hi {{ client.first_name }}, your Allume Lookbook is ready!
+
 Check it out above! Don’t forget, prices are never marked up and when you purchase from your Lookbook your $20 styling fee is refunded!
 Items can sell out fast, so don’t wait too long to order what you love.
+
 Are you available to review your Lookbook together now?
 		  {% endif %}
         </textarea>
