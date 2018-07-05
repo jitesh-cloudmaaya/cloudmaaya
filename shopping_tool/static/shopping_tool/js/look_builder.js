@@ -254,13 +254,13 @@ var look_builder = {
               '<a href="#" class="next-tab">next<i class="fa fa-chevron-right"></i></a>' +
               markup.join('')
             );
-            if(show_do_not_send == true){
+//            if(show_do_not_send == true){
               $('#do-not-send-toggle').closest('label').show();
               $('#send-later-wrapper').removeClass('higher');
-            }else{
-              $('#do-not-send-toggle').closest('label').hide();
-              $('#send-later-wrapper').addClass('higher');
-            }            
+//            }else{
+//              $('#do-not-send-toggle').closest('label').hide();
+//              $('#send-later-wrapper').addClass('higher');
+//            }
             /* settings the styles/occasions if they exist */
             for(var i = 0, l = response.looks.length; i<l; i++){
               var look = response.looks[i];
@@ -1208,7 +1208,7 @@ var look_builder = {
           ' ' + $('#send-later').data('tz') + '</strong> time zone</span>';
         }
         if($('#do-not-send-toggle').prop('checked') == true){
-          email_at = '<span class="summary-sent">A text will <strong>NOT</strong> be sent.</span>';
+          email_at = '<span class="summary-sent">A text/Email will <strong>NOT</strong> be sent.</span>';
         }
         var email_text = $('#publish-email').val();
         step_div.html(
