@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 from celery import task, shared_task
-from django.db import connection, transaction
+from django.db import connection, transaction, connections
 import os
 import time
 from catalogue_service.settings import BASE_DIR
@@ -95,50 +95,45 @@ def cj_pull():
 
 @task(base=QueueOnce)
 def build_client_360():
-    cursor = connection.cursor()
-    etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360.sql'))
-    statement = etl_file.read()
-    statements = statement.split(';')
-    try:
-        with transaction.atomic():
-            for i in range(0, len(statements)):
-                statement = statements[i]
-                if statement.strip(): # avoid 'query was empty' operational error
-                    cursor.execute(statement)
-    finally:
-        cursor.close()
+    add_client_to_360_raw('tasks/client_360_sql/client_360.sql', ';')
 
-@task(base=QueueOnce)
-def update_client_360():
-    cursor = connection.cursor()
-    etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/update_client_360.sql'))
-    statement = etl_file.read()
-    statements = statement.split(';')
+#
+# @task(base=QueueOnce)
+# def update_client_360():
+#     add_client_to_360_raw('tasks/client_360_sql/update_client_360.sql',
+#                           'WHERE wu.id IN (SELECT u0.ID FROM wp_users u0 WHERE u0.last_modified > (SELECT MAX(a0.last_updated) FROM allume_client_360 a0));')
 
-    try:
-        with transaction.atomic():
-            for i in range(0, len(statements)):
-                statement = statements[i]
-                if statement.strip(): # avoid 'query was empty' operational error
-                    cursor.execute(statement)
-    finally:
-        cursor.close()
 
 @shared_task
 def add_client_to_360(wp_user_id):
-    cursor = connection.cursor()
-    etl_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360_one.sql'))
-    statement = etl_file.read()
-    print "Adding User to Client 360"
-    statement = statement.replace('$WPUSERID', str(wp_user_id))
-    statements = statement.split(';')
+    add_client_to_360_raw('tasks/client_360_sql/client_360_one.sql', 'where wu.id = ' + str(wp_user_id) + ';')
 
+
+def add_client_to_360_raw(task_sql, user_filter):
+    cursor = connection.cursor()
+    etl_read_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360_read.sql'))
+    etl_file = open(os.path.join(BASE_DIR, task_sql))
+    read_statement = etl_read_file.read()
+    read_statement = read_statement.replace('$USER_FILTER', user_filter)
+    quiz_orders_data = []
     try:
+        read_statements = read_statement.split(';')
+        for i in range(0, len(read_statements)):
+            read_statement = read_statements[i]
+            if read_statement.strip():  # avoid 'query was empty' operational error
+                with connections['allume_read_only'].cursor() as read_cursor:
+                    read_cursor.execute(read_statement)
+                    quiz_orders_data = read_cursor.fetchall()
+        statement = etl_file.read()
+        statements = statement.split(';')
         with transaction.atomic():
             for i in range(0, len(statements)):
                 statement = statements[i]
-                if statement.strip(): # avoid 'query was empty' operational error
-                    cursor.execute(statement)
+                if statement.strip():  # avoid 'query was empty' operational error
+                    if 'insert into' in statement.lower():
+                        cursor.executemany(statement, quiz_orders_data)
+                    else:
+                        cursor.execute(statement)
     finally:
         cursor.close()
 
