@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 from celery import task, shared_task
-from django.db import connection, transaction, connections
+from django.db import connection, transaction
 import os
 import time
 from catalogue_service.settings import BASE_DIR
@@ -110,6 +110,7 @@ def add_client_to_360(wp_user_id):
 
 
 def add_client_to_360_raw(task_sql, user_filter):
+    from django.db import connections
     cursor = connection.cursor()
     etl_read_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360_read.sql'))
     etl_file = open(os.path.join(BASE_DIR, task_sql))
