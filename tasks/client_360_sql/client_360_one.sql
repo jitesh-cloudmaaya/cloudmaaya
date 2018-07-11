@@ -1,4 +1,3 @@
-DELETE from allume_client_360 WHERE wp_user_id = $WPUSERID;
 
 INSERT INTO allume_client_360 (
 

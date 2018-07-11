@@ -106,6 +106,10 @@ def build_client_360():
 
 @shared_task
 def add_client_to_360(wp_user_id):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            DELETE from allume_client_360 WHERE wp_user_id = %s
+        """, [wp_user_id])
     add_client_to_360_raw('tasks/client_360_sql/client_360_one.sql', 'where wu.id = ' + str(wp_user_id) + ';')
 
 
