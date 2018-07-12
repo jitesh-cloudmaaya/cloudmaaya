@@ -152,15 +152,17 @@ SELECT
           FIND_IN_SET(qai.ID, qua.quiz_answer_item_ids) AND
           qai.type <> 'free_form' AND
           qai.label <> ''
+          $QUIZ_ANSWER_USER_FILTER_AND_CLAUSE
         UNION
         SELECT
-          user_email,
-          quiz_question_answer_id,
-          quiz_free_form_answer
+          qua2.user_email,
+          qua2.quiz_question_answer_id,
+          qua2.quiz_free_form_answer
         FROM
-          allume_quiz_user_answers
+          allume_quiz_user_answers qua2
         WHERE
-          quiz_free_form_answer IS NOT NULL) user_answers
+          qua2.quiz_free_form_answer IS NOT NULL
+          $QUIZ_ANSWER2_USER_FILTER_AND_CLAUSE) user_answers
      GROUP BY user_email) quiz
       ON wu.user_email = quiz.user_email
 

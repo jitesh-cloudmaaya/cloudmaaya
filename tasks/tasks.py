@@ -95,7 +95,7 @@ def cj_pull():
 
 @task(base=QueueOnce)
 def build_client_360():
-    add_client_to_360_raw('tasks/client_360_sql/client_360.sql', ';')
+    add_client_to_360_raw('tasks/client_360_sql/client_360.sql', {'user_filter': ';', 'quiz_answer_user_filter_and_clause': ';', 'quiz_answer2_user_filter_and_clause': ';'})
 
 #
 # @task(base=QueueOnce)
@@ -110,16 +110,31 @@ def add_client_to_360(wp_user_id):
         cursor.execute("""
             DELETE from allume_client_360 WHERE wp_user_id = %s
         """, [wp_user_id])
-    add_client_to_360_raw('tasks/client_360_sql/client_360_one.sql', 'where wu.id = ' + str(wp_user_id) + ';')
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            select user_email from wp_users WHERE ID = %s
+        """, [wp_user_id])
+        email = cursor.fetchone()[0]
+    add_client_to_360_raw(
+        'tasks/client_360_sql/client_360_one.sql'
+        , {
+            'user_filter': 'where wu.id = ' + str(wp_user_id) + ';'
+            , 'quiz_answer_user_filter_and_clause': ' and qua.user_email = "' + email + '" '
+            , 'quiz_answer2_user_filter_and_clause': ' and qua2.user_email = "' + email + '" '
+        }
+    )
 
 
-def add_client_to_360_raw(task_sql, user_filter):
+def add_client_to_360_raw(task_sql, user_filters):
     from django.db import connections
+    user_filters = user_filters if user_filters else {}
     cursor = connection.cursor()
     etl_read_file = open(os.path.join(BASE_DIR, 'tasks/client_360_sql/client_360_read.sql'))
     etl_file = open(os.path.join(BASE_DIR, task_sql))
     read_statement = etl_read_file.read()
-    read_statement = read_statement.replace('$USER_FILTER', user_filter)
+    read_statement = read_statement.replace('$USER_FILTER', user_filters.get('user_filter') if user_filters.get('user_filter') else ';')
+    read_statement = read_statement.replace('$QUIZ_ANSWER_USER_FILTER_AND_CLAUSE', user_filters.get('quiz_answer_user_filter_and_clause') if user_filters.get('quiz_answer_user_filter_and_clause') else '')
+    read_statement = read_statement.replace('$QUIZ_ANSWER2_USER_FILTER_AND_CLAUSE', user_filters.get('quiz_answer2_user_filter_and_clause') if user_filters.get('quiz_answer2_user_filter_and_clause') else '')
     quiz_orders_data = []
     try:
         read_statements = read_statement.split(';')
