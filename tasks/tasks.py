@@ -95,7 +95,7 @@ def cj_pull():
 
 @task(base=QueueOnce)
 def build_client_360():
-    add_client_to_360_raw('tasks/client_360_sql/client_360.sql', {'user_filter': ';', 'quiz_answer_user_filter_and_clause': ';', 'quiz_answer2_user_filter_and_clause': ';'})
+    add_client_to_360_raw('tasks/client_360_sql/client_360.sql', {'user_filter': ';', 'quiz_answer_user_filter_and_clause': '', 'quiz_answer2_user_filter_and_clause': ''})
 
 #
 # @task(base=QueueOnce)
