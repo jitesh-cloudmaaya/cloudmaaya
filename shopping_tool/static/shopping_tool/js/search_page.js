@@ -798,11 +798,20 @@ var search_page = {
       }
     });
   },
+  shuffleArray: function (array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+  },
   /**
   * @description processing and template for product results
   * @param {array} results - the product result array
   */  
   resultTemplate: function(results){
+    search_page.shuffleArray(results)
     var markup = [];
     if(results != undefined && results.length > 0){
       for(var i = 0, l = results.length; i<l; i++){
