@@ -743,8 +743,8 @@ var search_page = {
     var saved_search = q;
     utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
     /* async call to get search results */
-    console.log(new_search)
-    console.log(q)
+//    console.log(new_search)
+//    console.log(q)
     $.ajax({
       beforeSend: function(){
         $('#results').html(
@@ -798,11 +798,20 @@ var search_page = {
       }
     });
   },
+  shuffleArray: function (array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+  },
   /**
   * @description processing and template for product results
   * @param {array} results - the product result array
   */  
   resultTemplate: function(results){
+    search_page.shuffleArray(results)
     var markup = [];
     if(results != undefined && results.length > 0){
       for(var i = 0, l = results.length; i<l; i++){
