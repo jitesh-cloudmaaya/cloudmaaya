@@ -8,6 +8,31 @@ from datetime import datetime, timedelta
 from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
 from string import capwords
 
+def encode_obj(in_obj):
+
+    def encode_list(in_list):
+        out_list = []
+        for el in in_list:
+            out_list.append(encode_obj(el))
+        return out_list
+
+    def encode_dict(in_dict):
+        out_dict = {}
+        for k, v in in_dict.iteritems():
+            out_dict[k] = encode_obj(v)
+        return out_dict
+
+    if isinstance(in_obj, unicode):
+        return in_obj.encode('utf-8')
+    elif isinstance(in_obj, list):
+        return encode_list(in_obj)
+    elif isinstance(in_obj, tuple):
+        return tuple(encode_list(in_obj))
+    elif isinstance(in_obj, dict):
+        return encode_dict(in_obj)
+
+    return in_obj
+
 def parse_raw_product_url(product_url, raw_product_attribute):
     """
     Takes in the product_url of a product record and parses the raw_product_url to use for the record.
@@ -35,7 +60,7 @@ def parse_raw_product_url(product_url, raw_product_attribute):
     params.pop('utm_content', None)
     params.pop('siteID', None)
     # reconstruct the params into useful query string
-    query = urllib.urlencode(params, doseq=True)
+    query = urllib.urlencode(encode_obj(params), doseq=True)
     # replace the initial query value
     split = split._replace(query = query)
     # rejoin the split raw_product_url
