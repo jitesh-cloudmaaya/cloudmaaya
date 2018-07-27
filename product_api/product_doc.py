@@ -69,7 +69,7 @@ class EProductSearch(FacetedSearch):
     # fields that should be searched
     index = PRODUCT_INDEX
 
-    fields = ['product_name^3', 'long_product_description', 'short_product_description', 'keywords', 'primary_category^2', 'secondary_category^2', 'color^2', 'allume_category^10', 'merchant_color']
+    fields = ['product_name^1.5', 'long_product_description', 'short_product_description', 'keywords', 'primary_category^2', 'secondary_category', 'color', 'allume_category^10', 'merchant_color']
     price_ranges=[("$0 - $50", (0, 50)), ("$50 - $100", (50, 100)), ("$100 - $150", (100, 150)), ("$150 - $250", (150, 250)), ("$250 - $400", (250, 400)),("$400+", (400, None))]
     
     facets = collections.OrderedDict((
@@ -194,7 +194,7 @@ class EProductSearch(FacetedSearch):
         #         }
         #     }
         # }
-        custom_score_dict = Q({'function_score': {"field_value_factor" : {"field": "allume_score", "factor": 1.1, "missing": 0}}})
+        custom_score_dict = Q({'function_score': {"field_value_factor" : {"field": "allume_score", "factor": 3, "missing": 0}}})
         #custom_score_dict = Q('function_score', {"query" : {"match_all" : {}},"script" : "_score * (10 - doc.allume_score.doubleValue)"})
         #custom_score_dict = Q('function_score', script =  "_score * (10 - doc.allume_score.doubleValue)")
 
