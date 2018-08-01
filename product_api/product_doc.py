@@ -134,7 +134,7 @@ class EProductSearch(FacetedSearch):
         Add aggregations representing the facets selected, including potential
         filters.
         """
-        search.aggs.bucket('unbiased_retailer_agg', 'diversified_sampler', field='merchant_name', shard_size=10)
+        res = search.aggs.bucket('unbiased_retailer_agg', 'diversified_sampler', field='merchant_name', shard_size=10)
         for f, facet in iteritems(self.facets):
             agg = facet.get_aggregation()
             agg_filter = Q('match_all')
@@ -142,7 +142,7 @@ class EProductSearch(FacetedSearch):
                 if f == field:
                     continue
                 agg_filter &= filter
-            search.aggs.bucket(
+            res.bucket(
                 '_filter_' + f,
                 'filter',
                 filter=agg_filter
