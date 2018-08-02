@@ -18,7 +18,6 @@ ENV DOCKYARD_SRVHOME=/srv
 ENV DOCKYARD_SRVPROJ=/srv/catalogue_service
 
 # Update the default application repository sources list
-RUN apt-get update && apt-get -y upgrade
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 RUN apt-get install -y python python-pip
 RUN apt-get install -y libpq-dev python-dev
