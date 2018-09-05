@@ -17,7 +17,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
-from product_api.models import Product
+from product_api.models import Product, Merchant # changed
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, AllumeUserStylistNotes
 from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUsers
 from serializers import *
@@ -50,26 +50,33 @@ def add_look_to_session(request, look_id, session_id):
 
     original_look_products = LookProduct.objects.filter(look = look)
 
-    # copy all products in the look to the rack
-    # get all the look's products
-    for look_product in original_look_products:
-        # add it to the rack
-        Rack.objects.create(allume_styling_session = session, product = look_product.product, stylist = user)
+    # out of stock flag
+    flag_out_of_stock = False
 
     # copy the look to the session
     look.pk = None
     look.allume_styling_session = session
     look.token = uuid.uuid4()
     look.stylist = user
+    look.status = 'draft'
     look.save() # django way of cloning an object
 
     # potentially might need to perform the original_look_products call here
-
-    # copy look products to the new look
+    # copy look products to the rack and the new look
     for look_product in original_look_products:
-        look_product.pk = None
-        look_product.look = look
-        look_product.save()
+        merchant = Merchant.objects.get(external_merchant_id=look_product.product.merchant_id)
+        if merchant.active:
+            Rack.objects.create(allume_styling_session = session, product = look_product.product, stylist = user)
+            look_product.pk = None
+            look_product.look = look
+            look_product.save()
+        else:
+            flag_out_of_stock = True
+
+    # clear collage if out of stock
+    if flag_out_of_stock: 
+        look.collage = None
+        look.save() # django way of cloning an object
 
     # change this maybe
     return JsonResponse({"status": "success", "new_look_id": look.id}, safe=False)

@@ -240,7 +240,7 @@ var explore_page = {
       }
       markup.push(
         '<div class="look"><div class="display">' + look_fave_link  +
-        '<a href="#" class="clone-look" title="Copy look" data-lookid="' + look.id + 
+        '<a href="#" class="clone-look" title="Copy look, products from turned-off merchants will NOT be copied" data-lookid="' + look.id + 
         '"><i class="fa fa-clone"></i></a><h3><em data-lookid="' + 
         look.id + '">' + look.name + '</em><span>by ' + look.stylist.first_name + 
         ' ' + look.stylist.last_name + '</span></h3>' + collage_img
