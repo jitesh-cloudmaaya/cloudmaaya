@@ -520,6 +520,10 @@ span.cloned {
   padding-top:50px;
   text-align:center;
 }
+span.redirect_message {
+  line-height:30px;
+  padding-bottom:50px;
+}
 /* :not(:required) hides this rule from IE9 and below */
 .pulse_loader:not(:required) {
   -webkit-animation: heartbeat 1300ms ease 0s infinite normal;
