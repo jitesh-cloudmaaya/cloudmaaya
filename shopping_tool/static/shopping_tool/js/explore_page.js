@@ -101,11 +101,20 @@ var explore_page = {
         },
         success: function(response){
           if(response != undefined && response.new_look_id != undefined){
-            $('#cloning-look div.stage').html('<span class="cloned">Redirecting to your new look...</span>')
-            window.setTimeout(function(){
-              window.location = '/look_builder/' + explore_page.session_id + '/?look=' + response.new_look_id
-            },
-            500);
+            if (response.turnoff_store_flag){
+              $('#cloning-look div.stage').html('<span class="cloned redirect_message">Removing products from turned off merchants...</span>')
+              window.setTimeout(function(){
+                window.location = '/look_builder/' + explore_page.session_id + '/?look=' + response.new_look_id
+              },
+              2000);
+            }
+            else{
+              $('#cloning-look div.stage').html('<span class="cloned">Redirecting to your new look...</span>')
+              window.setTimeout(function(){
+                window.location = '/look_builder/' + explore_page.session_id + '/?look=' + response.new_look_id
+              },
+              500);
+            }
           }else{
             $('#cloning-look').hide();
             alert('There was a problem copying the look...');
