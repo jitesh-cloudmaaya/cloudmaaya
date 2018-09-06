@@ -17,7 +17,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
-from product_api.models import Product, Merchant # changed
+from product_api.models import Product, Merchant
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, AllumeUserStylistNotes
 from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUsers
 from serializers import *
@@ -51,7 +51,7 @@ def add_look_to_session(request, look_id, session_id):
     original_look_products = LookProduct.objects.filter(look = look)
 
     # out of stock flag
-    flag_out_of_stock = False
+    flag_turned_off_store = False
 
     # copy the look to the session
     look.pk = None
@@ -71,10 +71,10 @@ def add_look_to_session(request, look_id, session_id):
             look_product.look = look
             look_product.save()
         else:
-            flag_out_of_stock = True
+            flag_turned_off_store = True
 
     # clear collage if out of stock
-    if flag_out_of_stock: 
+    if flag_turned_off_store: 
         look.collage = None
         look.save() # django way of cloning an object
 
