@@ -64,6 +64,7 @@ def add_look_to_session(request, look_id, session_id):
     # potentially might need to perform the original_look_products call here
     # copy look products to the rack and the new look
     for look_product in original_look_products:
+        # for each product, check if the associated merchant is turned off
         merchant = Merchant.objects.get(external_merchant_id=look_product.product.merchant_id)
         if merchant.active:
             Rack.objects.create(allume_styling_session = session, product = look_product.product, stylist = user)
@@ -73,13 +74,13 @@ def add_look_to_session(request, look_id, session_id):
         else:
             flag_turned_off_store = True
 
-    # clear collage if out of stock
+    # clear collage if merchant is turned off
     if flag_turned_off_store: 
         look.collage = None
         look.save() # django way of cloning an object
 
     # change this maybe
-    return JsonResponse({"status": "success", "new_look_id": look.id}, safe=False)
+    return JsonResponse({"status": "success", "new_look_id": look.id, 'turnoff_store_flag': flag_turned_off_store}, safe=False)
 
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
