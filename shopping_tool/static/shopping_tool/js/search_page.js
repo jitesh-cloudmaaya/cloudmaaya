@@ -310,7 +310,7 @@ var search_page = {
                 group_markup.markup[display_name].push('<span class="facet-clear"></span>')
               }else{
                 if((facet.key != '')&&(facet.key != 'sort')){
-                    if(display_name != 'merchant_name' || facet.key!='UNIQLO USA'){
+                    if(display_name != 'merchant_name' || facet.key!='Lulus.com'){
                           group_markup.markup[display_name].push(
                             '<label class="facet">' +
                             '<input class="facet-box" type="checkbox" value="' +
