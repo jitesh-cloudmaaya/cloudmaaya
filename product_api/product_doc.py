@@ -134,7 +134,6 @@ class EProductSearch(FacetedSearch):
         Add aggregations representing the facets selected, including potential
         filters.
         """
-        res = search.aggs.bucket('unbiased_retailer_agg', 'diversified_sampler', field='merchant_id', max_docs_per_value=10)
         for f, facet in iteritems(self.facets):
             agg = facet.get_aggregation()
             agg_filter = Q('match_all')
@@ -142,7 +141,7 @@ class EProductSearch(FacetedSearch):
                 if f == field:
                     continue
                 agg_filter &= filter
-            res.bucket(
+            search.aggs.bucket(
                 '_filter_' + f,
                 'filter',
                 filter=agg_filter
@@ -195,7 +194,7 @@ class EProductSearch(FacetedSearch):
         #         }
         #     }
         # }
-        custom_score_dict = Q({'function_score': {"field_value_factor" : {"field": "allume_score", "factor": 3, "missing": 0}}})
+        custom_score_dict = Q({'function_score': {"field_value_factor" : {"field": "allume_score", "factor": 1.5, "missing": 0}}})
         #custom_score_dict = Q('function_score', {"query" : {"match_all" : {}},"script" : "_score * (10 - doc.allume_score.doubleValue)"})
         #custom_score_dict = Q('function_score', script =  "_score * (10 - doc.allume_score.doubleValue)")
 
