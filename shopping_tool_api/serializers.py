@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from product_api.models import Product, ProductSerializer
+from product_api.models import Product, ProductSerializer, Merchant
 from shopping_tool.models import *
 
 
@@ -144,5 +144,23 @@ class AllumeUserStylistNotesCreateSerializer(serializers.ModelSerializer):
         model = AllumeUserStylistNotes
         fields = '__all__'#
 
+
+######################################
+#   Serializer for reporting
+######################################
+class ReportSerializer(serializers.Serializer):
+    product_id = serializers.CharField(max_length=50)
+    merchant_id = serializers.CharField(max_length=50)
+    reason = serializers.CharField(max_length=50)
+    source = serializers.CharField(max_length=50)
+    def create(self, validated_data, request):
+        # merchant_name = Merchant.objects.get(external_merchant_id=validated_data['merchant_id']).name
+        product = Product.objects.get(product_id = validated_data['product_id'])
+        # product_url = product.product_url
+        anna_availability = product.availability
+        stylist_id = request.user.id
+        # stylist_first_name = request.user.first_name
+        # stylist_last_name = request.user.last_name
+        Report.objects.create(stylist_id=stylist_id, anna_availability = anna_availability, **validated_data)
 
 

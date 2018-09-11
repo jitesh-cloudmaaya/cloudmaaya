@@ -520,6 +520,10 @@ span.cloned {
   padding-top:50px;
   text-align:center;
 }
+span.redirect_message {
+  line-height:30px;
+  padding-bottom:50px;
+}
 /* :not(:required) hides this rule from IE9 and below */
 .pulse_loader:not(:required) {
   -webkit-animation: heartbeat 1300ms ease 0s infinite normal;
@@ -2753,6 +2757,11 @@ div.publish-section label.toggle input:checked + span > small,
   width:140px;
 }
 
+#inspect-item a.report {
+  top:173px;
+  color: rgb(82, 22, 22);
+}
+
 
 #inspect-item a.favorite:hover,
 #look-indepth a.favorite:hover { background:#EC407A; border-color:#EC407A; color:#fff; }
@@ -4246,3 +4255,54 @@ img.user-supplied-quiz-img.jeansstyle  {height:125px;}
 #client-defaults div.client-settings span em.withimg,
 #user-card div.client-section  span.client-details em.withimg {display:block; margin-bottom:5px;}
 
+
+/* report modal style */
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 999; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-button{
+  width: 15%; 
+  height: 20%;
+  font-size: 20px;
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  font-size: 15px;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.report_button_disable{
+  pointer-events: none;
+}

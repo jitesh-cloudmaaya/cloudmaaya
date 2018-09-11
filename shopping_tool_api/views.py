@@ -17,7 +17,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
-from product_api.models import Product
+from product_api.models import Product, Merchant
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, AllumeUserStylistNotes
 from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUsers
 from serializers import *
@@ -50,29 +50,37 @@ def add_look_to_session(request, look_id, session_id):
 
     original_look_products = LookProduct.objects.filter(look = look)
 
-    # copy all products in the look to the rack
-    # get all the look's products
-    for look_product in original_look_products:
-        # add it to the rack
-        Rack.objects.create(allume_styling_session = session, product = look_product.product, stylist = user)
+    # out of stock flag
+    flag_turned_off_store = False
 
     # copy the look to the session
     look.pk = None
     look.allume_styling_session = session
     look.token = uuid.uuid4()
     look.stylist = user
+    look.status = 'draft'
     look.save() # django way of cloning an object
 
     # potentially might need to perform the original_look_products call here
-
-    # copy look products to the new look
+    # copy look products to the rack and the new look
     for look_product in original_look_products:
-        look_product.pk = None
-        look_product.look = look
-        look_product.save()
+        # for each product, check if the associated merchant is turned off
+        merchant = Merchant.objects.get(external_merchant_id=look_product.product.merchant_id)
+        if merchant.active:
+            Rack.objects.create(allume_styling_session = session, product = look_product.product, stylist = user)
+            look_product.pk = None
+            look_product.look = look
+            look_product.save()
+        else:
+            flag_turned_off_store = True
+
+    # clear collage if merchant is turned off
+    if flag_turned_off_store: 
+        look.collage = None
+        look.save() # django way of cloning an object
 
     # change this maybe
-    return JsonResponse({"status": "success", "new_look_id": look.id}, safe=False)
+    return JsonResponse({"status": "success", "new_look_id": look.id, 'turnoff_store_flag': flag_turned_off_store}, safe=False)
 
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
@@ -847,3 +855,16 @@ def layouts(request):
 
     serializer = LookLayoutSerializer(layouts, many=True)
     return JsonResponse(serializer.data, safe=False)
+
+
+########################################################
+# Report function to collect soldout information
+# Should be moved to the api part for next update
+########################################################
+@api_view(['POST'])
+@check_login
+def report(requests):
+    serializer = ReportSerializer(data=requests.data)
+    serializer.is_valid()
+    serializer.create(serializer.validated_data, requests)
+    return HttpResponse(status=200)

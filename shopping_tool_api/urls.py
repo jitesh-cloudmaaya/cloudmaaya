@@ -25,4 +25,6 @@ urlpatterns = [
     url(r'^get_allume_size/$', views.get_allume_size, name='get_allume_size'),
     url(r'^add_client_to_360/(?P<wp_user_id>[0-9]+)/$', views.add_client_to_360_api, name='add_client_to_360_api'),
     url(r'^add_look_to_session/(?P<look_id>[0-9]+)/(?P<session_id>[0-9]+)/$', views.add_look_to_session, name='add_look_to_session'),
+    # sold out reporting
+    url(r'^report/$', views.report, name='report'),
 ]
