@@ -855,3 +855,16 @@ def layouts(request):
 
     serializer = LookLayoutSerializer(layouts, many=True)
     return JsonResponse(serializer.data, safe=False)
+
+
+########################################################
+# Report function to collect soldout information
+# Should be moved to the api part for next update
+########################################################
+@api_view(['POST'])
+@check_login
+def report(requests):
+    serializer = ReportSerializer(data=requests.data)
+    serializer.is_valid()
+    serializer.create(serializer.validated_data, requests)
+    return HttpResponse(status=200)

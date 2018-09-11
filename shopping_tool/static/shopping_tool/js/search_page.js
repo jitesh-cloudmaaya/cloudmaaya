@@ -310,16 +310,18 @@ var search_page = {
                 group_markup.markup[display_name].push('<span class="facet-clear"></span>')
               }else{
                 if((facet.key != '')&&(facet.key != 'sort')){
-                  group_markup.markup[display_name].push(
-                    '<label class="facet">' +
-                    '<input class="facet-box" type="checkbox" value="' + 
-                    facet.key + '" ' + checked + ' data-facetgroup="' + 
-                    display_name + '"/><span>' + '<i class="fa fa-circle-thin"></i>' +
-                    '<i class="fa fa-check-circle"></i>' +
-                    '</span><em class="number">' + 
-                    numeral(facet.doc_count).format('0,0') +
-                    '</em><em class="key">' + facet.key + '</em></label>'
-                  );
+                    if(display_name != 'merchant_name' || facet.key!='Lulus.com'){
+                          group_markup.markup[display_name].push(
+                            '<label class="facet">' +
+                            '<input class="facet-box" type="checkbox" value="' +
+                            facet.key + '" ' + checked + ' data-facetgroup="' +
+                            display_name + '"/><span>' + '<i class="fa fa-circle-thin"></i>' +
+                            '<i class="fa fa-check-circle"></i>' +
+                            '</span><em class="number">' +
+                            numeral(facet.doc_count).format('0,0') +
+                            '</em><em class="key">' + facet.key + '</em></label>'
+                          );
+                    }
                 }
               }
             }
