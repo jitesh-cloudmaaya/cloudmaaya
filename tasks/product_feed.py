@@ -95,10 +95,6 @@ class ProductFeed(object):
                     if statement.strip(): # avoid 'query was empty' operational error
                         cursor.execute(statement)
         except Exception as e:
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                 update allume_clients set descrip = %s where wp_client_id = 118
-                 """, [statement])
             raise e
         finally:
             cursor.close()

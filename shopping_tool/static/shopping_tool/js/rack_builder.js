@@ -699,7 +699,8 @@ var rack_builder = {
         '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
         '<tr><td class="img" rowspan="2"><img id="inspected-item-img" src="' + product.product_image_url + '"/>' + 
         fave_link + '' + rack_link + '<a href="' + product.product_url + '" target="_blank" class="link-to-store">' + 
-        '<i class="fa fa-tag"></i>view at store</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
+        '<i class="fa fa-tag"></i>view at store</a><a href="#/" onclick=javascripts:report(' + product.product_id + ',' + product.merchant_id + "," + "'Rack'" +') class="link-to-store report report-' + product.product_id+ '">' + 
+        '<i class="fa fa-flag"></i>report</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
         merch + '' + manu + '<p class="item-desc"> '+ 
         product.short_product_description + '</p>' + price_display +
         '<span class="general" id="inspected-item-sku"><em>sku:</em>' + product.sku + '</span>' +
@@ -810,4 +811,112 @@ var rack_builder = {
     $('#rack-toggle').html('<span>' + items + '</span> item' + s + ' in your rack');
     $('#rack-number').html(items + ' item' + s)
   }
+}
+
+/**
+* @description report incorrect items
+*/
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+      }
+  }
+  return "";
+}
+
+/* check if the report comes from and rack or look
+  and cross check with the current url to decide the real source
+*/
+function getPageSource(source){
+  var current_path = window.location.pathname;
+  current_path = current_path.split("/");
+  current_path = current_path[1];
+  if (current_path === 'look_builder'){
+    if (source == 'Rack') {return 'Rack in Look Builder'}
+    else if (source == 'Look') {return 'Look Preview in Look Builder'}
+
+  }
+  else if(current_path === 'explore_looks'){
+    return 'Look Preview in Explore Looks'
+  }
+  else{
+    return 'Rack in Product Search'
+  }
+}
+
+function report(product_id, merchant_id, source){
+  // append the html modal to the end of <body>
+  reportWindow();
+  // show the modal
+  $('#myModal').css('display', 'block');
+  // get the <span> element that closes the modal
+  var span  = $('.close').eq(0);
+  // when the user clicks on <span> (x), close the modal
+  span.on('click', function() {$('#myModal').css('display', 'none');})
+  // save the information as gloabl values
+  send_product_id = product_id;
+  send_merchant_id = merchant_id;
+  send_source = getPageSource(source);
+}
+
+function sendReport(){
+
+  // get reason
+  var reason = $('input[name="reason"]:checked').val();
+
+  // construct data
+  var data = {
+    'product_id': send_product_id,
+    'merchant_id': send_merchant_id,
+    'source': send_source,
+    'reason': reason,
+  }
+
+  $.ajax({
+    contentType : 'application/json',
+    data: JSON.stringify(data),
+    success:function(response){
+        var product_report_button_name = 'report-' + send_product_id;
+        // disable all report button for this product
+        $('.'+product_report_button_name).addClass('report_button_disable');
+        $('.'+product_report_button_name).text('reported');
+        // close modal
+        $('#myModal').css('display', 'none');
+    },
+    type: 'POST',
+    url: '/shopping_tool_api/report/'
+  });
+}
+
+function reportWindow(){
+  $('body').append(
+    `
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>What are you reporting? </h3>
+        <br>
+        <form>
+          <label><input type="radio" name="reason" value="ANNA says TOTALLY sold out, but store has"> ANNA says TOTALLY sold out, but store has </label><br>
+          <label><input type="radio" name="reason" value="ANNA says available, but store is TOTALLY sold out "> ANNA says available, but store is TOTALLY sold out </label><br>
+          <label><input type="radio" name="reason" value="ANNA only displays partial sizes"> ANNA only displays partial sizes </label><br>  
+        </form>
+        <br>
+        <button class="modal-button" onclick=javascripts:sendReport()>Send</button>
+      </div>
+
+    </div>
+    `
+  );
 }

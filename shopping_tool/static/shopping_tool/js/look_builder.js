@@ -753,7 +753,10 @@ var look_builder = {
             '</span><span class="general"><em>availability:</em>' + prod.product.availability + 
             '</span>' + fave_link + '' + rack_link + '<a href="' + prod.product.product_url + 
             '" target="_blank" class="link-to-store"><i class="fa fa-tag"></i>' +
-            'view at store</a></td>' + other_details.join('') + '</tr>'
+            'view at store</a>' + 
+            '<a href="#/" onclick=javascripts:report(' + prod.product.product_id + ',' + prod.product.merchant_id + ',' + "'Look'" + ') class="link-to-store report-look-review report-' + prod.product.product_id +'">' + 
+            '<i class="fa fa-flag"></i>report</a></td>'
+            + other_details.join('') + '</tr>'
           );
         }
       }
