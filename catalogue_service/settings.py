@@ -39,6 +39,10 @@ ALLOWED_HOSTS = ['shopping-tool-web-dev.allume.co',
 # Application definition
 
 INSTALLED_APPS = [
+    # autocomplete
+    'dal',
+    'dal_select2',
+    # -- end autocomplete
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,7 +61,10 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'django_extensions',
-    'massadmin'
+    'massadmin',
+    # stylist management
+    'stylist_management',
+    'auditlog', # detail logging
 ]
 
 MIDDLEWARE = [
@@ -68,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auditlog.middleware.AuditlogMiddleware', # detail logging
 ]
 
 ROOT_URLCONF = 'catalogue_service.urls'
@@ -183,3 +191,6 @@ NOSE_ARGS = [
     '--nocapture',
     '--nologcapture',
 ]
+
+# Customized user table to WpUser
+# AUTH_USER_MODEL = 'shopping_tool.WpUsers'
