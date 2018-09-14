@@ -148,19 +148,27 @@ class AllumeUserStylistNotesCreateSerializer(serializers.ModelSerializer):
 ######################################
 #   Serializer for reporting
 ######################################
-class ReportSerializer(serializers.Serializer):
+class AnnaReportSerializer(serializers.Serializer):
     product_id = serializers.CharField(max_length=50)
     merchant_id = serializers.CharField(max_length=50)
     reason = serializers.CharField(max_length=50)
     source = serializers.CharField(max_length=50)
     def create(self, validated_data, request):
-        # merchant_name = Merchant.objects.get(external_merchant_id=validated_data['merchant_id']).name
-        product = Product.objects.get(product_id = validated_data['product_id'])
-        # product_url = product.product_url
+        product = Product.objects.get(product_id = validated_data['product_id'], merchant_id = validated_data['merchant_id'])
+        validated_data['product_id'] = product.id # override the product_id from merchant to our internal product id
         anna_availability = product.availability
         stylist_id = request.user.id
-        # stylist_first_name = request.user.first_name
-        # stylist_last_name = request.user.last_name
         Report.objects.create(stylist_id=stylist_id, anna_availability = anna_availability, **validated_data)
+
+class ReportSerializer(serializers.Serializer):
+    product_id = serializers.CharField(max_length=50)
+    reason = serializers.CharField(max_length=50)
+    source = serializers.CharField(max_length=50)
+    def create(self, validated_data, request):
+        product = Product.objects.get(id = validated_data['product_id'])
+        merchant_id = product.merchant_id
+        anna_availability = product.availability
+        stylist_id = request.user.id
+        Report.objects.create(merchant_id=merchant_id, stylist_id=stylist_id, anna_availability = anna_availability, **validated_data)
 
 

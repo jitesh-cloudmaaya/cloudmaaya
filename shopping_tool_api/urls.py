@@ -26,5 +26,6 @@ urlpatterns = [
     url(r'^add_client_to_360/(?P<wp_user_id>[0-9]+)/$', views.add_client_to_360_api, name='add_client_to_360_api'),
     url(r'^add_look_to_session/(?P<look_id>[0-9]+)/(?P<session_id>[0-9]+)/$', views.add_look_to_session, name='add_look_to_session'),
     # sold out reporting
-    url(r'^report/$', views.report, name='report'),
+    url(r'^report_product_inventory_mismatch_from_anna/$', views.report_product_inventory_mismatch_from_anna, name='report_product_inventory_mismatch_from_anna'),
+    url(r'^report_product_inventory_mismatch/$', views.report_product_inventory_mismatch, name='report_product_inventory_mismatch'),
 ]

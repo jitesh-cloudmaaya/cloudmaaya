@@ -684,11 +684,7 @@ def set_look_client_id(sender, instance, *args, **kwargs):
 class Report(models.Model):
     product_id = models.BigIntegerField()
     merchant_id = models.BigIntegerField()
-    # product_url = models.CharField(max_length=200)
-    # merchant_name = models.CharField(max_length=50)
     stylist_id = models.CharField(max_length=50)
-    # stylist_first_name = models.CharField(max_length=50)
-    # stylist_last_name = models.CharField(max_length=50)
     datetime = models.DateTimeField(default=timezone.now)
     source = models.CharField(max_length=50)
     anna_availability = models.CharField(max_length=20)

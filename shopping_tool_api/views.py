@@ -861,10 +861,27 @@ def layouts(request):
 # Report function to collect soldout information
 # Should be moved to the api part for next update
 ########################################################
+
+# General API for reporting product_inventory_mismatch
 @api_view(['POST'])
 @check_login
-def report(requests):
-    serializer = ReportSerializer(data=requests.data)
-    serializer.is_valid()
-    serializer.create(serializer.validated_data, requests)
-    return HttpResponse(status=200)
+def report_product_inventory_mismatch(requests):
+    try:
+        serializer = ReportSerializer(data=requests.data)
+        serializer.is_valid()
+        serializer.create(serializer.validated_data, requests)
+        return JsonResponse({'status':'success', 'data':[]}, status=200)
+    except:
+        return JsonResponse({'status': 'failed', 'data':[]}, status=400)
+
+# ANNA specific reporting due to the way anna front-end was built
+@api_view(['POST'])
+@check_login
+def report_product_inventory_mismatch_from_anna(requests):
+    try:
+        serializer = AnnaReportSerializer(data=requests.data)
+        serializer.is_valid()
+        serializer.create(serializer.validated_data, requests)
+        return JsonResponse({'status':'success', 'data':[]}, status=200)
+    except:
+        return JsonResponse({'status': 'failed', 'data':[]}, status=400)
