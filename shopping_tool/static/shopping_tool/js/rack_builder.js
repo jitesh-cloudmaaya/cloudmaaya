@@ -892,7 +892,7 @@ function sendReport(){
         $('#myModal').css('display', 'none');
     },
     type: 'POST',
-    url: '/shopping_tool_api/report/'
+    url: '/shopping_tool_api/report_product_inventory_mismatch_from_anna/'
   });
 }
 
@@ -908,8 +908,8 @@ function reportWindow(){
         <h3>What are you reporting? </h3>
         <br>
         <form>
-          <label><input type="radio" name="reason" value="ANNA says TOTALLY sold out, but store has"> ANNA says TOTALLY sold out, but store has </label><br>
           <label><input type="radio" name="reason" value="ANNA says available, but store is TOTALLY sold out "> ANNA says available, but store is TOTALLY sold out </label><br>
+          <br>
           <label><input type="radio" name="reason" value="ANNA only displays partial sizes"> ANNA only displays partial sizes </label><br>  
         </form>
         <br>

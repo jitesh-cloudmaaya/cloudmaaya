@@ -2,8 +2,9 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
-from .models import LookLayout, StyleOccasion, StyleType
+from .models import LookLayout, StyleOccasion, StyleType, WpUsers
 
 # Register your models here.
 
@@ -17,6 +18,9 @@ class StyleOccasionAdmin(admin.ModelAdmin):
 
 admin.site.register(StyleType, StyleTypeAdmin)
 admin.site.register(StyleOccasion, StyleOccasionAdmin)
+
+# Add WpUsers as user admin
+# admin.site.register(WpUsers, UserAdmin)
 
 
 
