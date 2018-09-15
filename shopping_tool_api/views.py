@@ -19,7 +19,7 @@ from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
 from product_api.models import Product, Merchant
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, AllumeUserStylistNotes
-from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUsers
+from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUser
 from serializers import *
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger

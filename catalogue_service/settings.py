@@ -193,4 +193,4 @@ NOSE_ARGS = [
 ]
 
 # Customized user table to WpUser
-# AUTH_USER_MODEL = 'shopping_tool.WpUsers'
+AUTH_USER_MODEL = 'shopping_tool.WpUser'

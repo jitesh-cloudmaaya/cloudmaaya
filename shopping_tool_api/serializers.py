@@ -9,7 +9,7 @@ from shopping_tool.models import *
 
 class WpUsersNoteUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WpUsers
+        model = WpUser
         fields = ['id', 'first_name', 'last_name']
         # fields = '__all__'
 

@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from decorators import check_login
 from django.core.exceptions import PermissionDenied
-from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUsers, UserProductFavorite
+from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUser, UserProductFavorite
 from product_api.models import Product, MerchantCategory, AllumeCategory, Merchant
 
 from shopping_tool_api.serializers import *
@@ -180,7 +180,7 @@ def explore(request, styling_session_id=None):
         add_client_to_360.delay(client.id)
         return render(request, 'shopping_tool/no_client_360_error.html', {})
 
-    stylists = WpUsers.objects.stylists().order_by('first_name', 'last_name')
+    stylists = WpUser.objects.stylists().order_by('first_name', 'last_name')
     favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related(Prefetch('product', queryset=Product.objects.order_by('created_at'))).order_by('-updated_at')[0:100]
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    

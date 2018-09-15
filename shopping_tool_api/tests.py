@@ -20,7 +20,7 @@ class LookMetricsTestCase(APITestCase):
     fixtures = ['LookMetricsTestCase']
 
     def setUp(self):
-        client = WpUsers.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+        client = WpUser.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
         self.client.cookies = SimpleCookie({AUTH_EMAIL_KEY: 'client@allume.co'})
 
     def test_lookmetrics_serializer(self):
@@ -182,13 +182,13 @@ class LookMetricsTestCase(APITestCase):
 
 class ShoppingToolAPITestCase(APITestCase):
     
-    fixtures = ['wpusers', 'allumestylingsessions', 'styling_session_notes', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite', 'lookmetrics', 'look_products']
+    fixtures = ['wpuser', 'allumestylingsessions', 'styling_session_notes', 'looklayout', 'look', 'product', 'user_product_favorite', 'allume_client_360_test', 'user_look_favorite', 'lookmetrics', 'look_products']
 
     shopper = ''
     client = ''
 
     def setUp(self):
-        client = WpUsers.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+        client = WpUser.objects.create(user_email= "client@allume.co", user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
         self.client.cookies = SimpleCookie({AUTH_EMAIL_KEY: 'client@allume.co'})
 
     def test_create_look(self):
@@ -197,7 +197,7 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         url = reverse("shopping_tool_api:look", kwargs={'pk':0})
         
-        shopper = WpUsers.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+        shopper = WpUser.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
         data = {"name": "Api Test Look", "allume_styling_session": 1, "stylist": shopper.id}
 
         response = self.client.put(url, data)
@@ -215,7 +215,7 @@ class ShoppingToolAPITestCase(APITestCase):
         """
         url = reverse("shopping_tool_api:styling_session_note", kwargs={'pk':0})
         
-        stylist = WpUsers.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+        stylist = WpUser.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
         data = {"notes": "Api Test Note", "styling_session": 1, "client": 5, "user_id": 6, "stylist": 6, "visible": 1}
 
         response = self.client.put(url, data)
@@ -308,7 +308,7 @@ class ShoppingToolAPITestCase(APITestCase):
         url = reverse("shopping_tool_api:look", kwargs={'pk':2})
 
         look_layout_instance = LookLayout.objects.get(id=1)
-        shopper = WpUsers.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+        shopper = WpUser.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
         
         data = {"id": 2, "name": "Api Test Update Look", "look_layout": look_layout_instance, "allume_styling_session": 1, "stylist": shopper.id}
 
@@ -515,7 +515,7 @@ class ShoppingToolAPITestCase(APITestCase):
         look_instance1 = Look.objects.get(id=1)
         look_instance2 = Look.objects.get(id=2)
 
-        client = WpUsers.objects.filter(user_email= "client@allume.co").get()
+        client = WpUser.objects.filter(user_email= "client@allume.co").get()
 
         ulf1 = UserLookFavorite.objects.get(id=1)
         ulf2 = UserLookFavorite.objects.get(id=2)
@@ -701,7 +701,7 @@ class ShoppingToolAPITestCase(APITestCase):
 #     user = None
 
 #     def setUp(self):
-#         client = WpUsers.objects.create(first_name = 'Bow', last_name = 'Wow', user_email= 'testemail@gmail.com', user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+#         client = WpUser.objects.create(first_name = 'Bow', last_name = 'Wow', user_email= 'testemail@gmail.com', user_phone=2, user_login='test2', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
 #         self.user = client
 #         self.client.cookies = SimpleCookie({AUTH_EMAIL_KEY: 'testemail@gmail.com'})
 

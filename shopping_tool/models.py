@@ -16,110 +16,69 @@ from catalogue_service.settings_local import COLLAGE_IMAGE_ROOT
 
 from django.utils import timezone
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 # Create your models here.
-class StylistManager(models.Manager):
+# class StylistManager(models.Manager):
+class StylistManager(BaseUserManager):
     def stylists(self):
         return self.filter(allumewpuserstylingroles__styling_role__in = ['stylist', 'coordinator']).filter(is_active = 1)
-    # # # using wp_user table for Django admin
-    # def get_by_natural_key(self, username):
-    #     return self.get(username=username)
-    # def create_user(self, username, email, password=None):
-    #     """
-    #     Creates and saves a User with the given email, date of
-    #     birth and password.
-    #     """
-    #     if not email:
-    #         raise ValueError('Users must have an email address')
+    # # using wp_user table for Django admin
+    def get_by_natural_key(self, username):
+        return self.get(username=username)
+    def create_user(self, username, email, password=None):
+        """
+        Creates and saves a User with the given email, date of
+        birth and password.
+        """
+        if not email:
+            raise ValueError('Users must have an email address')
 
-    #     user = self.model(
-    #         username=username,
-    #         email=self.normalize_email(email),
-    #     )
+        user = self.model(
+            username=username,
+            email=self.normalize_email(email),
+        )
 
-    #     user.set_password(password)
-    #     user.save(using=self._db)
-    #     return user
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-    # def create_superuser(self, username, email, password):
-    #     """
-    #     Creates and saves a superuser with the given email, date of
-    #     birth and password.
-    #     """
-    #     user = self.create_user(
-    #         username = username,
-    #         email=email,
-    #         password=password,
-    #     )
-    #     user.is_admin = True
-    #     user.save(using=self._db)
-    #     return user
+    def create_superuser(self, username, email, password):
+        """
+        Creates and saves a superuser with the given email, date of
+        birth and password.
+        """
+        user = self.create_user(
+            username = username,
+            email=email,
+            password=password,
+        )
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
 
-class WpUsers(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
-    user_login = models.CharField(unique=True, max_length=60)
-    user_pass = models.CharField(max_length=255)
-    user_nicename = models.CharField(max_length=50, blank=True, null=True)
-    user_email = models.CharField(unique=True, max_length=100)
-    user_url = models.CharField(max_length=100, blank=True, null=True)
-    user_registered = models.DateTimeField(blank=True, null=True)
-    user_activation_key = models.CharField(max_length=255, blank=True, null=True)
-    user_status = models.IntegerField(blank=True, null=True)
-    display_name = models.CharField(max_length=250, blank=True, null=True)
-    first_name = models.CharField(max_length=255, blank=True, null=True)
-    last_name = models.CharField(max_length=255, blank=True, null=True)
-    user_phone = models.CharField(unique=True, max_length=100, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
-    timezone = models.CharField(max_length=50, blank=True, null=True)
-    last_modified = models.DateTimeField(blank=True, null=True)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.IntegerField()
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
-    system_generated = models.TextField()  # This field type is a guess.
-
-    class Meta:
-        managed = False
-        db_table = 'wp_users'
-
-    # added for stylist management system to show the stylist name in admin
-    def __unicode__(self):
-        return self.first_name + ' ' + self.last_name + ' (' + str(self.id) + ')'
-
-    objects = StylistManager()
-
-    def clean_client_360(self):
-        clean_client = self.client_360.__dict__
-
-        for k, v in clean_client.items():
-            clean_client[k] = escape(v).replace("\n", "").replace("\r", "")
-
-        return clean_client
-
-#############################################
-# Works in Progress (using WpUser as User)
-#############################################
-
-# class WpUsers(AbstractUser):
-#     id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID', db_column='ID')
-#     password = models.CharField(max_length=128, verbose_name='password', db_column='user_pass')
-#     last_login = models.DateTimeField(blank=True, null=True, verbose_name='last login')
-#     is_superuser = models.BooleanField(default=False,verbose_name='superuser status')
-#     username = models.CharField(error_messages={'unique': 'A user with that username already exists.'},
-#                                     max_length=150, unique=True,
-#                                     verbose_name='username', db_column= 'user_login')
-#     first_name = models.CharField(blank=True, max_length=30, verbose_name='first name')
-#     last_name = models.CharField(blank=True, max_length=30, verbose_name='last name')
-#     email = models.EmailField(blank=True, max_length=254, verbose_name='email address', db_column='user_email')
-#     phone = models.CharField(blank=True, null=True, max_length=254, verbose_name='user phone', db_column='user_phone')
-#     is_staff = models.BooleanField(default=False, verbose_name='staff status')
-#     is_active = models.BooleanField(default=True, verbose_name='active')
-#     date_joined = models.DateTimeField(verbose_name='date joined', db_column='user_registered')
-#     # groups = models.ManyToManyField(blank=True,
-#     #                                     related_name='user_set', related_query_name='user', to='auth.Group',
-#     #                                     verbose_name='groups')
-#     # user_permissions = models.ManyToManyField(blank=True, related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')
+# class WpUser(models.Model):
+#     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+#     user_login = models.CharField(unique=True, max_length=60)
+#     user_pass = models.CharField(max_length=255)
+#     user_nicename = models.CharField(max_length=50, blank=True, null=True)
+#     user_email = models.CharField(unique=True, max_length=100)
+#     user_url = models.CharField(max_length=100, blank=True, null=True)
+#     user_registered = models.DateTimeField(blank=True, null=True)
+#     user_activation_key = models.CharField(max_length=255, blank=True, null=True)
+#     user_status = models.IntegerField(blank=True, null=True)
+#     display_name = models.CharField(max_length=250, blank=True, null=True)
+#     first_name = models.CharField(max_length=255, blank=True, null=True)
+#     last_name = models.CharField(max_length=255, blank=True, null=True)
+#     user_phone = models.CharField(unique=True, max_length=100, blank=True, null=True)
+#     notes = models.TextField(blank=True, null=True)
+#     timezone = models.CharField(max_length=50, blank=True, null=True)
+#     last_modified = models.DateTimeField(blank=True, null=True)
+#     last_login = models.DateTimeField(blank=True, null=True)
+#     is_superuser = models.IntegerField()
+#     is_staff = models.IntegerField()
+#     is_active = models.IntegerField()
+#     system_generated = models.TextField()  # This field type is a guess.
 
 #     class Meta:
 #         managed = False
@@ -138,6 +97,48 @@ class WpUsers(models.Model):
 #             clean_client[k] = escape(v).replace("\n", "").replace("\r", "")
 
 #         return clean_client
+
+#############################################
+# Works in Progress (using WpUser as User)
+#############################################
+
+class WpUser(AbstractUser):
+    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID', db_column='ID')
+    password = models.CharField(max_length=128, verbose_name='password', db_column='user_pass')
+    last_login = models.DateTimeField(blank=True, null=True, verbose_name='last login')
+    is_superuser = models.BooleanField(default=False,verbose_name='superuser status')
+    username = models.CharField(error_messages={'unique': 'A user with that username already exists.'},
+                                    max_length=150, unique=True,
+                                    verbose_name='username', db_column= 'user_login')
+    first_name = models.CharField(blank=True, max_length=30, verbose_name='first name')
+    last_name = models.CharField(blank=True, max_length=30, verbose_name='last name')
+    email = models.EmailField(blank=True, max_length=254, verbose_name='email address', db_column='user_email')
+    phone = models.CharField(blank=True, null=True, max_length=254, verbose_name='user phone', db_column='user_phone')
+    is_staff = models.BooleanField(default=False, verbose_name='staff status')
+    is_active = models.BooleanField(default=True, verbose_name='active')
+    date_joined = models.DateTimeField(verbose_name='date joined', db_column='user_registered')
+    groups = models.ManyToManyField(blank=True,
+                                        related_name='user_set', related_query_name='user', to='auth.Group',
+                                        verbose_name='groups')
+    user_permissions = models.ManyToManyField(blank=True, related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')
+
+    class Meta:
+        managed = False
+        db_table = 'wp_users'
+
+    # added for stylist management system to show the stylist name in admin
+    def __unicode__(self):
+        return self.first_name + ' ' + self.last_name + ' (' + str(self.id) + ')'
+
+    objects = StylistManager()
+
+    def clean_client_360(self):
+        clean_client = self.client_360.__dict__
+
+        for k, v in clean_client.items():
+            clean_client[k] = escape(v).replace("\n", "").replace("\r", "")
+
+        return clean_client
 
 
 class AllumeClients(models.Model):
@@ -179,7 +180,7 @@ class AllumeClients(models.Model):
 
 class AllumeClient360(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
-    client = models.OneToOneField(WpUsers, related_name='client_360', db_constraint=False, db_column='wp_user_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Shopper
+    client = models.OneToOneField(WpUser, related_name='client_360', db_constraint=False, db_column='wp_user_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Shopper
     first_name = models.TextField(blank=True, null=True)
     last_name = models.TextField(blank=True, null=True)
     address_1 = models.TextField(blank=True, null=True)
@@ -433,8 +434,8 @@ class AllumeStylingSessions(models.Model):
     id = models.BigAutoField(primary_key=True)
     token = models.CharField(max_length=50)
     name = models.CharField(max_length=100)
-    client = models.ForeignKey(WpUsers, related_name='client_user', db_constraint=False, db_column='wp_initiator_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Client
-    shopper = models.ForeignKey(WpUsers, related_name='shopper_user', db_constraint=False, db_column='wp_target_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Shopper
+    client = models.ForeignKey(WpUser, related_name='client_user', db_constraint=False, db_column='wp_initiator_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Client
+    shopper = models.ForeignKey(WpUser, related_name='shopper_user', db_constraint=False, db_column='wp_target_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Shopper
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     date_created = models.DateTimeField()
@@ -467,7 +468,7 @@ class AllumeStylistAssignmentTypes(models.Model):
 class AllumeStylistAssignments(models.Model):
     id = models.BigAutoField(primary_key=True)
     assignment_author_id = models.BigIntegerField()
-    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
+    stylist = models.ForeignKey(WpUser, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     client = models.ForeignKey(AllumeClients, db_constraint=False, db_column='user_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField(blank=True, null=True)
     stylist_assignment_type = models.ForeignKey(AllumeStylistAssignmentTypes, models.DO_NOTHING)
     status = models.CharField(max_length=11)
@@ -484,7 +485,7 @@ class AllumeStylistAssignments(models.Model):
 
 class AllumeWpUserStylingRoles(models.Model):
     id = models.BigAutoField(primary_key=True)
-    wp_stylist_id =  models.ForeignKey(WpUsers, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField(unique=True)
+    wp_stylist_id =  models.ForeignKey(WpUser, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField(unique=True)
     styling_role = models.CharField(max_length=20)
     date_created = models.DateTimeField()
     last_modified = models.DateTimeField()
@@ -499,7 +500,7 @@ class Rack(models.Model):
     product = models.ForeignKey(Product, db_constraint=False, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
-    stylist = models.ForeignKey(WpUsers, db_constraint=False, null=True, to_field='id', on_delete=models.DO_NOTHING)
+    stylist = models.ForeignKey(WpUser, db_constraint=False, null=True, to_field='id', on_delete=models.DO_NOTHING)
 
 class AllumeLooks(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -569,7 +570,7 @@ class Look(models.Model):
     token = models.CharField(unique=True, max_length=50, default=uuid.uuid4)
     allume_styling_session = models.ForeignKey(AllumeStylingSessions, db_constraint=False, null=True, on_delete=models.DO_NOTHING)
     wp_client_id = models.BigIntegerField(blank=True, null=True, default =1 )
-    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
+    stylist = models.ForeignKey(WpUser, db_constraint=False, db_column='wp_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=1000, blank=True, null=True, db_column='descrip')
     collage = models.TextField(blank=True, null=True, db_column='collage')
@@ -607,14 +608,14 @@ class LookProduct(models.Model):
         db_table = 'allume_look_products'
 
 class UserProductFavorite(models.Model):
-    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
+    stylist = models.ForeignKey(WpUser, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     product = models.ForeignKey(Product, db_constraint=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     
 
 class UserLookFavorite(models.Model):
-    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
+    stylist = models.ForeignKey(WpUser, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     look = models.ForeignKey(Look, db_constraint=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
@@ -629,8 +630,8 @@ class LookMetrics(models.Model):
 
 class AllumeUserStylistNotes(models.Model):
     id = models.BigAutoField(primary_key=True)
-    stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='last_author_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
-    client = models.ForeignKey(WpUsers, related_name='client_id', db_constraint=False, db_column='user_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Client
+    stylist = models.ForeignKey(WpUser, db_constraint=False, db_column='last_author_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
+    client = models.ForeignKey(WpUser, related_name='client_id', db_constraint=False, db_column='user_id', null=True, to_field='id', on_delete=models.DO_NOTHING) #models.BigIntegerField() #Client
     notes = models.TextField()
     styling_session = models.ForeignKey(AllumeStylingSessions, db_column='styling_session_id', db_constraint=False, null=True, on_delete=models.DO_NOTHING)
     visible = models.IntegerField()

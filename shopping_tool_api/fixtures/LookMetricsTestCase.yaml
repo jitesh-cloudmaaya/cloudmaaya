@@ -1,5 +1,5 @@
-# wpusers
--   model: shopping_tool.wpusers
+# wpuser
+-   model: shopping_tool.wpuser
     pk: 1
     fields: {user_login: e151734d09af3d8d7afee65c2fd43052, user_pass: c566c6b09c9d1990ed1448f02ed6347f,
         user_nicename: d007c42c81cbfb0131f3a6cf4c5b6853, user_email: 38f08b89deb5e3ed3f33dd6ca9c97907er96@yahoo.com,

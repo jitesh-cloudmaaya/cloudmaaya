@@ -10,7 +10,7 @@ from shopping_tool.models import *
 
 class ShoppingToolAPITestCase(TestCase):
     
-    fixtures = ['wpusers', 'allumestylingsessions', 'looklayout', 'look', 'product', 'look_products']
+    fixtures = ['wpuser', 'allumestylingsessions', 'looklayout', 'look', 'product', 'look_products']
 
     def test_get_look(self):
         """

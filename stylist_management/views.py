@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from shopping_tool.models import WpUsers
+from shopping_tool.models import WpUser
 
 from django.db.models.functions import Concat
 from django.db.models import Value
@@ -24,10 +24,10 @@ class UserAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         # Don't forget to filter out results depending on the visitor !
         if not self.request.user.is_authenticated():
-            return WpUsers.objects.none()
+            return WpUser.objects.none()
 
-        # qs = WpUsers.objects.all() # for first_name search only
-        qs = WpUsers.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+        # qs = WpUser.objects.all() # for first_name search only
+        qs = WpUser.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
 
         if self.q:
             # qs = qs.filter(first_name__istartswith=self.q) # for first_name search only

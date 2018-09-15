@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import json
 from django.db import models
-from shopping_tool.models import WpUsers
+from shopping_tool.models import WpUser
 
 from auditlog.registry import auditlog # detail logging
 
@@ -30,10 +30,10 @@ class ClientTier(models.Model):
 
 class StylistProfile(models.Model):
 
-    stylist = models.ForeignKey(WpUsers, on_delete=models.CASCADE, unique=True)
-    director = models.ForeignKey(WpUsers, on_delete=models.SET_NULL, null=True, blank=True, related_name = 'director_r')
-    manager = models.ForeignKey(WpUsers, on_delete=models.SET_NULL, null=True, blank=True, related_name = 'manager_r')
-    asm = models.ForeignKey(WpUsers, on_delete=models.SET_NULL, null=True, blank=True, related_name = 'asm_r')
+    stylist = models.ForeignKey(WpUser, on_delete=models.CASCADE, unique=True)
+    director = models.ForeignKey(WpUser, on_delete=models.SET_NULL, null=True, blank=True, related_name = 'director_r')
+    manager = models.ForeignKey(WpUser, on_delete=models.SET_NULL, null=True, blank=True, related_name = 'manager_r')
+    asm = models.ForeignKey(WpUser, on_delete=models.SET_NULL, null=True, blank=True, related_name = 'asm_r')
     role = models.ForeignKey(StylistRole, default='Stylist', on_delete=models.SET_NULL, null=True)
     on_duty = models.BooleanField(default=False)
     on_board = models.BooleanField(default=True)

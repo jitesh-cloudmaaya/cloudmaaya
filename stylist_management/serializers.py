@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import StylistProfile, ClientTier
-from shopping_tool.models import WpUsers
+from shopping_tool.models import WpUser
 
 ######################################
 #   Serializer for add stylist API

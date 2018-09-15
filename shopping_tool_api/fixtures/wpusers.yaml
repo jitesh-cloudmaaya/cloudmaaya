@@ -1,4 +1,4 @@
--   model: shopping_tool.wpusers
+-   model: shopping_tool.wpuser
     pk: 5
     fields: {user_login: e151734d09af3d8d7afee65c2fd43052, user_pass: c566c6b09c9d1990ed1448f02ed6347f,
         user_nicename: d007c42c81cbfb0131f3a6cf4c5b6853, user_email: 38f08b89deb5e3ed3f33dd6ca9c97907er96@yahoo.com,
@@ -7,7 +7,7 @@
         last_name: Baker, user_phone: 7f3bddec9f7f532cf05a51a18bc51d2c, notes: null,
         timezone: null, last_modified: null, last_login: !!timestamp '2017-11-13 21:52:03+00:00',
         is_superuser: 0, is_staff: 0, is_active: 1, system_generated: "\0"}
--   model: shopping_tool.wpusers
+-   model: shopping_tool.wpuser
     pk: 6
     fields: {user_login: 01d5eab2db796e457cf8d3cab2162a90, user_pass: 0f954c9b7cf0368caa58ace736607e07,
         user_nicename: 2fab46de67d3fad94dbfca60f6d9b5c2, user_email: 2f5619dfadbf7ed844f478f0c45d178ara@healthiq.com,
@@ -16,7 +16,7 @@
         last_name: Marshall, user_phone: 6e36bd27dd12c668721a92556f2a39e5, notes: null,
         timezone: null, last_modified: null, last_login: null, is_superuser: 0, is_staff: 0,
         is_active: 1, system_generated: "\x01"}
--   model: shopping_tool.wpusers
+-   model: shopping_tool.wpuser
     pk: 7
     fields: {user_login: b0e130fbf2c42aec07991d68ba490408, user_pass: 7090bcc87addde4419c49f3513d9484e,
         user_nicename: 414d5243cdaec888443bf7c6047500dd, user_email: 207e3683a2862919b26a0e44eb58af5c.pandya@gmail.com,
@@ -25,7 +25,7 @@
         last_name: Pandya, user_phone: d41ac38839e27e0061a182c845dec963, notes: null,
         timezone: null, last_modified: null, last_login: null, is_superuser: 0, is_staff: 0,
         is_active: 1, system_generated: "\x01"}
--   model: shopping_tool.wpusers
+-   model: shopping_tool.wpuser
     pk: 8
     fields: {user_login: ce91cd85e22e4e858b7e01d8affb9a5b, user_pass: 5fa9dae21afa7968b1e7c9828182df87,
         user_nicename: 9163c173cd50f6cc611e02fee502b772, user_email: 1b24e84c595467c917ba48cb0b3b81fcwelch@gmail.com,
@@ -34,7 +34,7 @@
         last_name: Welch, user_phone: 022a3b77684584e2fd8d029e5ae80bdc, notes: null,
         timezone: null, last_modified: null, last_login: null, is_superuser: 0, is_staff: 0,
         is_active: 1, system_generated: "\x01"}
--   model: shopping_tool.wpusers
+-   model: shopping_tool.wpuser
     pk: 9
     fields: {user_login: 6b27e9e2305d89b145894614436bd387, user_pass: f57d943e4058c319a35cfa195c8d28d7,
         user_nicename: 362358ff76a57f73d34a3e61b2e8bb3a, user_email: 481a0144a1737716021030eebcbed175ley1@gmail.com,
@@ -43,7 +43,7 @@
         last_name: Teilley, user_phone: 45f8d9deb1daa7879e4edb60116a4616, notes: null,
         timezone: null, last_modified: null, last_login: null, is_superuser: 0, is_staff: 0,
         is_active: 1, system_generated: "\x01"}
--   model: shopping_tool.wpusers
+-   model: shopping_tool.wpuser
     pk: 10
     fields: {user_login: 933a44b196d12fd48b4a83d00c7e2f52, user_pass: e4c62bf6061e58c5dbd0304e71c0f97d,
         user_nicename: ac2ef197d7c98c845ac439a6dcb8be0e, user_email: fe5eff1ffc6e8213ccf1a224dd7aba68ey11@gmail.com,
