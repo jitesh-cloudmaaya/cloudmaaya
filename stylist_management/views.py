@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import (api_view, renderer_classes, permission_classes)
 from rest_framework.views import APIView
 from shopping_tool.decorators import check_login
+from django.views.decorators.csrf import csrf_exempt
 
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 
