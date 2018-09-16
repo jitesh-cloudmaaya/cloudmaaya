@@ -39,6 +39,7 @@ class UserAutocomplete(autocomplete.Select2QuerySetView):
 ########################################################
 @api_view(['POST'])
 @check_login
+@csrf_exempt
 def create_new_stylist(requests):
     try:
         serializer = StylistProfileSerializer(data=requests.data)
