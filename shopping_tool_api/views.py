@@ -877,6 +877,7 @@ def report_product_inventory_mismatch(requests):
     except:
         return JsonResponse({'status': 'failed', 'data':[]}, status=400)
 
+
 # ANNA specific reporting due to the way anna front-end was built
 @api_view(['POST'])
 @check_login
