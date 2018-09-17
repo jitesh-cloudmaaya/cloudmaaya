@@ -66,10 +66,7 @@ INSTALLED_APPS = [
     # stylist management
     'stylist_management',
     'auditlog', # detail logging
-<<<<<<< HEAD
-=======
     'corsheaders'
->>>>>>> 09909669f33c3392509e59c85d3972a6afeeaeeb
 ]
 
 MIDDLEWARE = [
@@ -199,10 +196,7 @@ NOSE_ARGS = [
 ]
 
 # Customized user table to WpUser
-<<<<<<< HEAD
-AUTH_USER_MODEL = 'shopping_tool.WpUser'
-=======
-# AUTH_USER_MODEL = 'shopping_tool.WpUsers'
+AUTH_USER_MODEL = 'shopping_tool.WpUsers'
 
 #Cors config
 CORS_ORIGIN_ALLOW_ALL = False
@@ -220,4 +214,3 @@ CORS_ORIGIN_WHITELIST = [
     'stage.allume.co',
     'www.allume.co'
 ]
->>>>>>> 09909669f33c3392509e59c85d3972a6afeeaeeb
