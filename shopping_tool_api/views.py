@@ -27,6 +27,8 @@ from django.db.models import Q
 from tasks.product_feed_py.product_feed_helpers import determine_allume_size
 from tasks.product_feed_py import mappings
 from tasks.tasks import add_client_to_360
+from django.views.decorators.csrf import csrf_exempt
+
 
 # change the stylist of the cloned look
 # add the rack of the current user session
@@ -865,6 +867,7 @@ def layouts(request):
 # General API for reporting product_inventory_mismatch
 @api_view(['POST'])
 @check_login
+@csrf_exempt
 def report_product_inventory_mismatch(requests):
     try:
         serializer = ReportSerializer(data=requests.data)
