@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+<<<<<<< HEAD
 from shopping_tool.models import WpUser
+=======
+from shopping_tool.models import WpUsers
+>>>>>>> 09909669f33c3392509e59c85d3972a6afeeaeeb
 
 from django.db.models.functions import Concat
 from django.db.models import Value
@@ -11,6 +15,10 @@ from rest_framework.response import Response
 from rest_framework.decorators import (api_view, renderer_classes, permission_classes)
 from rest_framework.views import APIView
 from shopping_tool.decorators import check_login
+<<<<<<< HEAD
+=======
+from django.views.decorators.csrf import csrf_exempt
+>>>>>>> 09909669f33c3392509e59c85d3972a6afeeaeeb
 
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 
@@ -24,10 +32,17 @@ class UserAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         # Don't forget to filter out results depending on the visitor !
         if not self.request.user.is_authenticated():
+<<<<<<< HEAD
             return WpUser.objects.none()
 
         # qs = WpUser.objects.all() # for first_name search only
         qs = WpUser.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+=======
+            return WpUsers.objects.none()
+
+        # qs = WpUsers.objects.all() # for first_name search only
+        qs = WpUsers.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+>>>>>>> 09909669f33c3392509e59c85d3972a6afeeaeeb
 
         if self.q:
             # qs = qs.filter(first_name__istartswith=self.q) # for first_name search only
@@ -39,6 +54,10 @@ class UserAutocomplete(autocomplete.Select2QuerySetView):
 ########################################################
 @api_view(['POST'])
 @check_login
+<<<<<<< HEAD
+=======
+@csrf_exempt
+>>>>>>> 09909669f33c3392509e59c85d3972a6afeeaeeb
 def create_new_stylist(requests):
     try:
         serializer = StylistProfileSerializer(data=requests.data)

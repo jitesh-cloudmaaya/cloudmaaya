@@ -33,7 +33,8 @@ ALLOWED_HOSTS = ['shopping-tool-web-dev.allume.co',
                  '127.0.0.1',
                  'dev.allume.co',
                  'shopping-tool-web-stage.allume.co', 
-                 'shopping-tool-web-prod.allume.co']
+                 'shopping-tool-web-prod.allume.co'
+                 ]
 
 
 # Application definition
@@ -65,9 +66,14 @@ INSTALLED_APPS = [
     # stylist management
     'stylist_management',
     'auditlog', # detail logging
+<<<<<<< HEAD
+=======
+    'corsheaders'
+>>>>>>> 09909669f33c3392509e59c85d3972a6afeeaeeb
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -193,4 +199,25 @@ NOSE_ARGS = [
 ]
 
 # Customized user table to WpUser
+<<<<<<< HEAD
 AUTH_USER_MODEL = 'shopping_tool.WpUser'
+=======
+# AUTH_USER_MODEL = 'shopping_tool.WpUsers'
+
+#Cors config
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = [
+    'shopping-tool-web-dev.allume.co',
+    'shopping-tool-stage.allume.co',
+    'localhost',
+    '127.0.0.1',
+    'dev.allume.co',
+    'shopping-tool-web-stage.allume.co',
+    'shopping-tool-web-prod.allume.co',
+    'stage.allume.co',
+    'www.allume.co'
+]
+>>>>>>> 09909669f33c3392509e59c85d3972a6afeeaeeb

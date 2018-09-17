@@ -27,6 +27,8 @@ from django.db.models import Q
 from tasks.product_feed_py.product_feed_helpers import determine_allume_size
 from tasks.product_feed_py import mappings
 from tasks.tasks import add_client_to_360
+from django.views.decorators.csrf import csrf_exempt
+
 
 # change the stylist of the cloned look
 # add the rack of the current user session
@@ -863,6 +865,7 @@ def layouts(request):
 ########################################################
 
 # General API for reporting product_inventory_mismatch
+<<<<<<< HEAD
 @api_view(['POST'])
 @check_login
 def report_product_inventory_mismatch(requests):
@@ -877,6 +880,24 @@ def report_product_inventory_mismatch(requests):
 # ANNA specific reporting due to the way anna front-end was built
 @api_view(['POST'])
 @check_login
+=======
+@api_view(['POST'])
+@check_login
+@csrf_exempt
+def report_product_inventory_mismatch(requests):
+    try:
+        serializer = ReportSerializer(data=requests.data)
+        serializer.is_valid()
+        serializer.create(serializer.validated_data, requests)
+        return JsonResponse({'status':'success', 'data':[]}, status=200)
+    except:
+        return JsonResponse({'status': 'failed', 'data':[]}, status=400)
+
+
+# ANNA specific reporting due to the way anna front-end was built
+@api_view(['POST'])
+@check_login
+>>>>>>> 09909669f33c3392509e59c85d3972a6afeeaeeb
 def report_product_inventory_mismatch_from_anna(requests):
     try:
         serializer = AnnaReportSerializer(data=requests.data)

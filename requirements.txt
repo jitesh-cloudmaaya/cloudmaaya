@@ -32,4 +32,9 @@ cryptography==2.1.4
 sqlparse==0.2.4
 newrelic==3.2.0.91
 django-autocomplete-light==3.2.10 # must ues this version
+<<<<<<< HEAD
 django-auditlog==0.4.3
+=======
+django-auditlog==0.4.3
+django-cors-headers==2.4.0
+>>>>>>> 09909669f33c3392509e59c85d3972a6afeeaeeb
