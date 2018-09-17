@@ -210,5 +210,7 @@ CORS_ORIGIN_WHITELIST = [
     '127.0.0.1',
     'dev.allume.co',
     'shopping-tool-web-stage.allume.co',
-    'shopping-tool-web-prod.allume.co'
+    'shopping-tool-web-prod.allume.co',
+    'stage.allume.co',
+    'www.allume.co'
 ]
