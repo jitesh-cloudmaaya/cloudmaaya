@@ -23,104 +23,67 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 class StylistManager(BaseUserManager):
     def stylists(self):
         return self.filter(allumewpuserstylingroles__styling_role__in = ['stylist', 'coordinator']).filter(is_active = 1)
-    # # # using wp_user table for Django admin
-    # def get_by_natural_key(self, username):
-    #     return self.get(username=username)
-    # def create_user(self, username, email, password=None):
-    #     """
-    #     Creates and saves a User with the given email, date of
-    #     birth and password.
-    #     """
-    #     if not email:
-    #         raise ValueError('Users must have an email address')
+    # # using wp_user table for Django admin
+    def get_by_natural_key(self, username):
+        return self.get(username=username)
+    def create_user(self, username, email, password=None):
+        """
+        Creates and saves a User with the given email, date of
+        birth and password.
+        """
+        if not email:
+            raise ValueError('Users must have an email address')
 
-    #     user = self.model(
-    #         username=username,
-    #         email=self.normalize_email(email),
-    #     )
+        user = self.model(
+            username=username,
+            email=self.normalize_email(email),
+        )
 
-    #     user.set_password(password)
-    #     user.save(using=self._db)
-    #     return user
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-    # def create_superuser(self, username, email, password):
-    #     """
-    #     Creates and saves a superuser with the given email, date of
-    #     birth and password.
-    #     """
-    #     user = self.create_user(
-    #         username = username,
-    #         email=email,
-    #         password=password,
-    #     )
-    #     user.is_admin = True
-    #     user.save(using=self._db)
-    #     return user
+    def create_superuser(self, username, email, password):
+        """
+        Creates and saves a superuser with the given email, date of
+        birth and password.
+        """
+        user = self.create_user(
+            username = username,
+            email=email,
+            password=password,
+        )
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
 
-class WpUsers(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
-    user_login = models.CharField(unique=True, max_length=60)
-    user_pass = models.CharField(max_length=255)
-    user_nicename = models.CharField(max_length=50, blank=True, null=True)
-    user_email = models.CharField(unique=True, max_length=100)
-    user_url = models.CharField(max_length=100, blank=True, null=True)
-    user_registered = models.DateTimeField(blank=True, null=True)
-    user_activation_key = models.CharField(max_length=255, blank=True, null=True)
-    user_status = models.IntegerField(blank=True, null=True)
-    display_name = models.CharField(max_length=250, blank=True, null=True)
-    first_name = models.CharField(max_length=255, blank=True, null=True)
-    last_name = models.CharField(max_length=255, blank=True, null=True)
-    user_phone = models.CharField(unique=True, max_length=100, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
-    timezone = models.CharField(max_length=50, blank=True, null=True)
-    last_modified = models.DateTimeField(blank=True, null=True)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.IntegerField()
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
-    system_generated = models.TextField()  # This field type is a guess.
+# class WpUser(AbstractUser):
 
-    class Meta:
-        managed = False
-        db_table = 'wp_users'
+#     # REQUIRED_FIELDS = ('username', 'password', 'email',)
 
-    # added for stylist management system to show the stylist name in admin
-    def __unicode__(self):
-        return self.first_name + ' ' + self.last_name + ' (' + str(self.id) + ')'
-
-    objects = StylistManager()
-
-    def clean_client_360(self):
-        clean_client = self.client_360.__dict__
-
-        for k, v in clean_client.items():
-            clean_client[k] = escape(v).replace("\n", "").replace("\r", "")
-
-        return clean_client
-
-#############################################
-# Works in Progress (using WpUser as User)
-#############################################
-
-# class WpUsers(AbstractUser):
-#     id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID', db_column='ID')
-#     password = models.CharField(max_length=128, verbose_name='password', db_column='user_pass')
-#     last_login = models.DateTimeField(blank=True, null=True, verbose_name='last login')
-#     is_superuser = models.BooleanField(default=False,verbose_name='superuser status')
+#     id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID', db_column='ID')  # Field name made lowercase.
 #     username = models.CharField(error_messages={'unique': 'A user with that username already exists.'},
 #                                     max_length=150, unique=True,
 #                                     verbose_name='username', db_column= 'user_login')
+#     password = models.CharField(max_length=128, verbose_name='password', db_column='user_pass')
+#     user_nicename = models.CharField(max_length=50, blank=True, null=True)
+#     email = models.CharField(blank=True, max_length=254, verbose_name='email address', db_column='user_email')
+#     user_url = models.CharField(max_length=100, blank=True, null=True)
+#     date_joined = models.DateTimeField(blank=True, null=True, verbose_name='date joined', db_column='user_registered')
+#     user_activation_key = models.CharField(max_length=255, blank=True, null=True)
+#     user_status = models.IntegerField(blank=True, null=True)
+#     display_name = models.CharField(max_length=250, blank=True, null=True)
 #     first_name = models.CharField(blank=True, max_length=30, verbose_name='first name')
 #     last_name = models.CharField(blank=True, max_length=30, verbose_name='last name')
-#     email = models.EmailField(blank=True, max_length=254, verbose_name='email address', db_column='user_email')
 #     phone = models.CharField(blank=True, null=True, max_length=254, verbose_name='user phone', db_column='user_phone')
-#     is_staff = models.BooleanField(default=False, verbose_name='staff status')
-#     is_active = models.BooleanField(default=True, verbose_name='active')
-#     date_joined = models.DateTimeField(verbose_name='date joined', db_column='user_registered')
-#     # groups = models.ManyToManyField(blank=True,
-#     #                                     related_name='user_set', related_query_name='user', to='auth.Group',
-#     #                                     verbose_name='groups')
-#     # user_permissions = models.ManyToManyField(blank=True, related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')
+#     notes = models.TextField(blank=True, null=True)
+#     timezone = models.CharField(max_length=50, blank=True, null=True)
+#     last_modified = models.DateTimeField(blank=True, null=True)
+#     last_login = models.DateTimeField(blank=True, null=True)
+#     is_superuser = models.IntegerField()
+#     is_staff = models.IntegerField()
+#     is_active = models.IntegerField()
+#     system_generated = models.TextField()  # This field type is a guess.
 
 #     class Meta:
 #         managed = False
@@ -139,6 +102,60 @@ class WpUsers(models.Model):
 #             clean_client[k] = escape(v).replace("\n", "").replace("\r", "")
 
 #         return clean_client
+
+############################################
+# Works in Progress (using WpUser as User)
+############################################
+
+class WpUser(AbstractUser):
+    # USERNAME_FIELD = 'username'
+    # REQUIRED_FIELDS = ['password', 'email']
+    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID', db_column='ID')
+    password = models.CharField(max_length=128, verbose_name='password', db_column='user_pass')
+    last_login = models.DateTimeField(blank=True, null=True, verbose_name='last login')
+    is_superuser = models.BooleanField(default=False,verbose_name='superuser status')
+    username = models.CharField(error_messages={'unique': 'A user with that username already exists.'},
+                                    max_length=150, unique=True,
+                                    verbose_name='username', db_column= 'user_login')
+    first_name = models.CharField(blank=True, max_length=30, verbose_name='first name')
+    last_name = models.CharField(blank=True, max_length=30, verbose_name='last name')
+    email = models.EmailField(blank=True, max_length=254, verbose_name='email address', db_column='user_email')
+    phone = models.CharField(blank=True, null=True, max_length=254, verbose_name='user phone', db_column='user_phone')
+    is_staff = models.BooleanField(default=False, verbose_name='staff status')
+    is_active = models.BooleanField(default=True, verbose_name='active')
+    date_joined = models.DateTimeField(blank=True, verbose_name='date joined', db_column='user_registered')
+    groups = models.ManyToManyField(blank=True,
+                                        related_name='user_set', related_query_name='user', to='auth.Group',
+                                        verbose_name='groups')
+    user_permissions = models.ManyToManyField(blank=True, related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')
+
+    # additional fields
+    # is_anonymous = models.BooleanField(default=False, verbose_name='is_anonymous', db_column='is_anonymous')
+    # is_authenticated = models.BooleanField(default=False, verbose_name='is_authenticated', db_column='is_authenticated')
+
+    # def has_perm(self, perm, obj=None):
+    #     return self.is_superuser
+
+    # def has_module_perms(self, app_label):
+    #     return self.is_superuser
+
+    class Meta:
+        managed = False
+        db_table = 'wp_users'
+
+    # added for stylist management system to show the stylist name in admin
+    def __unicode__(self):
+        return self.first_name + ' ' + self.last_name + ' (' + str(self.id) + ')'
+
+    objects = StylistManager()
+
+    def clean_client_360(self):
+        clean_client = self.client_360.__dict__
+
+        for k, v in clean_client.items():
+            clean_client[k] = escape(v).replace("\n", "").replace("\r", "")
+
+        return clean_client
 
 
 class AllumeClients(models.Model):

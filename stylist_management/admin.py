@@ -28,9 +28,9 @@ class StylistProfileAdmin(admin.ModelAdmin):
     list_filter = ('on_duty', 'on_board', 'client_tier')
     readonly_fields = ['stylist_id', 'stylist', 'email', 'phone'] # not allow editing of stylist info
     def email(self, obj):
-        return obj.stylist.user_email
+        return obj.stylist.email
     def phone(self, obj):
-        return obj.stylist.user_phone # changed it was user_phone
+        return obj.stylist.phone # changed it was user_phone
     form = PersonForm
 
 admin.site.register(StylistProfile, StylistProfileAdmin)
@@ -51,9 +51,9 @@ class StylistManagementAdmin(admin.ModelAdmin):
     list_filter = ('role',)
     readonly_fields = ['stylist_id', 'stylist', 'email', 'phone'] # not allow editing of stylist info
     def email(self, obj):
-        return obj.stylist.user_email # changed
+        return obj.stylist.email # changed
     def phone(self, obj):
-        return obj.stylist.user_phone # changed
+        return obj.stylist.phone # changed
     form = PersonForm
 
 admin.site.register(StylistManagement, StylistManagementAdmin)

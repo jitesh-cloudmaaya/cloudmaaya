@@ -26,4 +26,6 @@ class Migration(migrations.Migration):
                 ('reason', models.CharField(max_length=50)),
             ],
         ),
+        migrations.RenameModel('WpUsers', 'WpUser'),
+
     ]

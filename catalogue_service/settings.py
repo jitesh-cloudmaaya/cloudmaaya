@@ -196,7 +196,7 @@ NOSE_ARGS = [
 ]
 
 # Customized user table to WpUser
-AUTH_USER_MODEL = 'shopping_tool.WpUsers'
+AUTH_USER_MODEL = 'shopping_tool.WpUser'
 
 #Cors config
 CORS_ORIGIN_ALLOW_ALL = False
