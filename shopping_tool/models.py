@@ -85,7 +85,7 @@ class WpUsers(models.Model):
 
     # added for stylist management system to show the stylist name in admin
     def __unicode__(self):
-        return self.first_name + ' ' + self.last_name + ' (' + str(self.id) + ')'
+        return self.first_name + ' ' + self.last_name + ' (' + str(self.user_email) + ')'
 
     objects = StylistManager()
 

@@ -44,6 +44,8 @@ class StylistProfile(models.Model):
     off_board_date = models.DateTimeField(null=True, blank=True)
     pay_rate = models.FloatField(null=True, blank=True)
     birthday = models.DateTimeField(null=True, blank=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
 
     # added for stylist management system to show the stylist name in admin
     def __unicode__(self):
