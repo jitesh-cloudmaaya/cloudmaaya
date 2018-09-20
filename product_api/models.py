@@ -67,7 +67,6 @@ class Product(models.Model):
             # models.Index(fields=['primary_category']),
             # models.Index(fields=['secondary_category']),
             models.Index(fields=['allume_category']),
-            models.Index(fields=['merchant_id']),
             models.Index(fields=['primary_category', 'secondary_category'])
         ]
 

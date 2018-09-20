@@ -103,7 +103,7 @@ BH.add('LookProduct', function() {
 	        
             this._data = data;
 
-            if (data.collage_url) {
+            if (data.collage) {
                 // Collage
 
                 this._isCollage = true;
@@ -111,8 +111,8 @@ BH.add('LookProduct', function() {
                 this._node.removeClass('col-md-3').addClass('col-md-6 look');
                 this._node.removeClass('col-xs-6').addClass('col-xs-12');
 
-                if (data.collage_url) {
-                    imageUrl = data.collage_url;
+                if (data.collage) {
+                    imageUrl = data.collage;
                 }
 
             } else {
