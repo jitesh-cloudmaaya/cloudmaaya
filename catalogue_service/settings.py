@@ -203,14 +203,4 @@ CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ORIGIN_WHITELIST = [
-    'shopping-tool-web-dev.allume.co',
-    'shopping-tool-stage.allume.co',
-    'localhost',
-    '127.0.0.1',
-    'dev.allume.co',
-    'shopping-tool-web-stage.allume.co',
-    'shopping-tool-web-prod.allume.co',
-    'stage.allume.co',
-    'www.allume.co'
-]
+CORS_ORIGIN_REGEX_WHITELIST = [r'.*\.allume\.co']
