@@ -27,6 +27,9 @@ from django.db.models import Q
 from tasks.product_feed_py.product_feed_helpers import determine_allume_size
 from tasks.product_feed_py import mappings
 from tasks.tasks import add_client_to_360
+from django.views.decorators.csrf import csrf_exempt
+import boto3
+from catalogue_service.settings_local import AWS_ACCESS_KEY, AWS_SECRET_KEY, COLLAGE_BUCKET_NAME, COLLAGE_BUCKET_KEY
 
 # change the stylist of the cloned look
 # add the rack of the current user session
@@ -489,7 +492,7 @@ def update_look_position(request, pk=None):
 @api_view(['PUT'])
 @check_login
 @permission_classes((AllowAny, ))
-def update_look_collage_image_data(request, pk=None):
+def update_look_collage_image_data_old(request, pk=None):
     """
     put:
         Edit the collage_image_data field of an AllumeLooks.
@@ -510,6 +513,33 @@ def update_look_collage_image_data(request, pk=None):
     look.save()
 
     return JsonResponse(request.data, safe=False)
+
+
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
+def update_look_collage_image_data(request, pk=None):
+    """
+    put:
+        Edit the collage_image_data field of an AllumeLooks.
+
+        /shopping_tool_api/update_look_collage_image_data/{allumelooks_id}/
+
+        Sample JSON object
+        {
+          "collage_image_data": "payload",
+        }
+    """
+    try:
+        look = Look.objects.get(id=pk)
+    except Look.DoesNotExist:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+#    look.collage = request.data['collage_image_data']
+    look.save()
+
+    return JsonResponse(request.data, safe=False)
+
 
 @api_view(['PUT'])
 @check_login
@@ -633,6 +663,19 @@ def look(request, pk):
             serializer = LookSerializer(look, data=request.data)
         except Look.DoesNotExist:
             serializer = LookCreateSerializer(data=request.data)
+
+
+        #Save the Collage Image to S3
+        if 'collage' in request.data:
+            if request.data['collage'] != None:
+                collage_image_name = "%s/collage_%s.png" % (COLLAGE_BUCKET_KEY, pk)
+                collage_image_data = request.data['collage'][request.data['collage'].find(",")+1:]
+                collage_image_data = collage_image_data.decode('base64')
+
+                client = boto3.client('s3',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
+                client.put_object(Body=collage_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name)
+                client.put_object_acl(Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name, ACL='public-read')
+
         
         if serializer.is_valid():
             serializer.save()
@@ -865,6 +908,7 @@ def layouts(request):
 # General API for reporting product_inventory_mismatch
 @api_view(['POST'])
 @check_login
+@csrf_exempt
 def report_product_inventory_mismatch(requests):
     try:
         serializer = ReportSerializer(data=requests.data)
@@ -873,6 +917,7 @@ def report_product_inventory_mismatch(requests):
         return JsonResponse({'status':'success', 'data':[]}, status=200)
     except:
         return JsonResponse({'status': 'failed', 'data':[]}, status=400)
+
 
 # ANNA specific reporting due to the way anna front-end was built
 @api_view(['POST'])

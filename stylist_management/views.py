@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from shopping_tool.models import WpUsers
+from shopping_tool.models import WpUsers, AllumeWpUserStylingRoles
 
 from django.db.models.functions import Concat
 from django.db.models import Value
@@ -28,10 +28,12 @@ class UserAutocomplete(autocomplete.Select2QuerySetView):
             return WpUsers.objects.none()
 
         # qs = WpUsers.objects.all() # for first_name search only
-        qs = WpUsers.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+        # qs = WpUsers.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name')) # for search for all wpuser
+
+        # temporaryly search for the persons in the allume_wp_user_styling_roles table        
+        qs = WpUsers.objects.filter(allumewpuserstylingroles__id__gte=0).annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
 
         if self.q:
-            # qs = qs.filter(first_name__istartswith=self.q) # for first_name search only
             qs = qs.filter(fullname__istartswith=self.q)
         return qs
 

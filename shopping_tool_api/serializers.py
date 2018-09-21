@@ -80,7 +80,7 @@ class LookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Look
-        fields = '__all__'#
+        fields = ['id', 'token', 'allume_styling_session', 'wp_client_id', 'stylist', 'name', 'description', 'collage', 'status', 'created_at', 'updated_at', 'is_legacy', 'position', 'look_style_types', 'look_style_occasions', 'look_layout', 'look_metrics', 'look_products']
 
 class LookSerializerNoLookProducts(serializers.ModelSerializer):
     look_layout = LookLayoutSerializer(many=False, read_only=True)

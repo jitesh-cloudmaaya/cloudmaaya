@@ -609,37 +609,6 @@ class ShoppingToolAPITestCase(APITestCase):
 
         self.assertEqual(4, Look.objects.get(pk=1).position)
 
-    def test_update_look_collage_image_data(self):
-        """
-        Test to verify updating the collage_image_data field of a look
-        """
-        url = reverse("shopping_tool_api:update_look_collage_image_data", kwargs={'pk':1})
-
-        self.assertEqual(None, Look.objects.get(pk=1).collage)
-
-        data = {"collage_image_data": "new info"}
-        response = self.client.put(url, data)
-        response_data = json.loads(response.content)
-
-        self.assertEqual("new info", Look.objects.get(pk=1).collage)
-
-    def test_update_cropped_image_code(self):
-        """
-        Test to verify updating the cropped_image_code field of a LookProduct
-        """
-        url = reverse("shopping_tool_api:update_cropped_image_code", kwargs={'pk': 4})
-
-        lp = LookProduct.objects.get(pk=4)
-
-        self.assertEqual(None, lp.cropped_image_code)
-
-        data = {"cropped_image_code": "payload"}
-        response = self.client.put(url, data)
-
-        lp = LookProduct.objects.get(pk=4)
-
-        self.assertEqual("payload", lp.cropped_image_code)
-
 ### Look Favs
 
     def test_get_user_look_favorite(self):

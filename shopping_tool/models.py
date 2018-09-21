@@ -18,6 +18,8 @@ from django.utils import timezone
 
 from django.contrib.auth.models import AbstractUser
 
+from catalogue_service.settings_local import COLLAGE_BUCKET_NAME, COLLAGE_BUCKET_KEY
+
 # Create your models here.
 class StylistManager(models.Manager):
     def stylists(self):
@@ -85,7 +87,7 @@ class WpUsers(models.Model):
 
     # added for stylist management system to show the stylist name in admin
     def __unicode__(self):
-        return self.first_name + ' ' + self.last_name + ' (' + str(self.id) + ')'
+        return self.first_name + ' ' + self.last_name + ' (' + str(self.user_email) + ')'
 
     objects = StylistManager()
 
@@ -525,6 +527,13 @@ class AllumeLooks(models.Model):
         #     models.Index(fields=['layout_id'])
         # ]
 
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.collage = None
+        else:
+            self.collage = "https://%s.s3.amazonaws.com/%s/collage_%s.png" % (
+            COLLAGE_BUCKET_NAME, COLLAGE_BUCKET_KEY, self.id)
+        super(AllumeLooks, self).save(*args, **kwargs)
 
 
 class AllumeLookProducts(models.Model):
@@ -589,6 +598,14 @@ class Look(models.Model):
         
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.collage = None
+        else:
+            self.collage = "https://%s.s3.amazonaws.com/%s/collage_%s.png" % (COLLAGE_BUCKET_NAME, COLLAGE_BUCKET_KEY, self.id)
+        super(Look, self).save(*args, **kwargs)
+
 
 class LookProduct(models.Model):
     look = models.ForeignKey(Look, related_name='product_set', db_constraint=False, db_column='allume_look_id')
