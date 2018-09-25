@@ -47,11 +47,11 @@ def create_new_stylist(requests):
     try:
         serializer = StylistProfileSerializer(data=requests.data)
         if serializer.is_valid():
-            serializer.create(serializer.validated_data, requests)
+            serializer.create(serializer.validated_data)
             return JsonResponse({'status':'success', 'data':[]}, status=200)
         else:
             return JsonResponse({'status': 'missing required attributes', 'data':[]}, status=400)
     except IntegrityError as exception:
-        return JsonResponse({'status': 'failed, stylist already in system', 'data':[]}, status=400)
+        return JsonResponse({'status': 'failed, data integrity error (stylist already in system or wrong role_id / client_tier / director_manager_asm_id)', 'data':[]}, status=400)
     except:
         return JsonResponse({'status': 'failed with unknown reason', 'data':[]}, status=500)

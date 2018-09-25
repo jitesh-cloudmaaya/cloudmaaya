@@ -9,5 +9,11 @@ class StylistProfileSerializer(serializers.Serializer):
     stylist_id = serializers.IntegerField()
     client_tier_id = serializers.IntegerField(required=False)
     pay_rate = serializers.FloatField(required=False)
-    def create(self, validated_data, request,):
+    role_id = serializers.CharField(required=False)
+    director_id = serializers.IntegerField(required=False)
+    manager_id = serializers.IntegerField(required=False)
+    asm_id = serializers.IntegerField(required=False)
+    birthday = serializers.DateTimeField(required=False)
+
+    def create(self, validated_data):
         StylistProfile.objects.create(**validated_data)
