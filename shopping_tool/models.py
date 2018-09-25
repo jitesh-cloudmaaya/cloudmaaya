@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import datetime
 import json
 import yaml
 import re
@@ -599,12 +599,9 @@ class Look(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.collage = None
-        else:
-            self.collage = "https://%s.s3.amazonaws.com/%s/collage_%s.png" % (COLLAGE_BUCKET_NAME, COLLAGE_BUCKET_KEY, self.id)
-        super(Look, self).save(*args, **kwargs)
+    def generate_collage_s3_path(self):
+        time_string = datetime.datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S')
+        return "%s/collage_%s_%s_.png" % (COLLAGE_BUCKET_KEY, self.id, time_string)
 
 
 class LookProduct(models.Model):
