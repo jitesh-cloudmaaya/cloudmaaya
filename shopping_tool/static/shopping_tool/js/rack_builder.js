@@ -267,7 +267,6 @@ var rack_builder = {
       contentType : 'application/json',
       data: JSON.stringify(lookup),
       success:function(response){
-        console.log(response)
         var markup = [];
         var cropped_images = [];
         for(var i = 0, l = response.looks.length; i<l; i++){
