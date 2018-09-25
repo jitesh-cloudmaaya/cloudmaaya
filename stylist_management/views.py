@@ -31,7 +31,7 @@ class UserAutocomplete(autocomplete.Select2QuerySetView):
         # qs = WpUsers.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name')) # for search for all wpuser
 
         # temporaryly search for the persons in the allume_wp_user_styling_roles table        
-        qs = WpUsers.objects.filter(allumewpuserstylingroles__id__gte=0).annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+        qs = WpUsers.objects.filter(allumewpuserstylingroles__isnull=False).annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
 
         if self.q:
             qs = qs.filter(fullname__istartswith=self.q)
