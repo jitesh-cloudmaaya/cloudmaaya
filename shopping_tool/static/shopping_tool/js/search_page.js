@@ -813,7 +813,7 @@ var search_page = {
   * @param {array} results - the product result array
   */  
   resultTemplate: function(results){
-    search_page.shuffleArray(results)
+    // search_page.shuffleArray(results) # disable shuffle within same page
     var markup = [];
     if(results != undefined && results.length > 0){
       for(var i = 0, l = results.length; i<l; i++){

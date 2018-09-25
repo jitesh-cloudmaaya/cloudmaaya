@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import json
 from django.db import models
 from shopping_tool.models import WpUsers
+from django.utils import timezone
 
 from auditlog.registry import auditlog # detail logging
 
@@ -40,7 +41,7 @@ class StylistProfile(models.Model):
     on_duty = models.BooleanField(default=False)
     on_board = models.BooleanField(default=True)
     client_tier = models.ForeignKey(ClientTier, default=2, on_delete=models.SET_NULL, null=True, blank=True)
-    start_date = models.DateTimeField(null=True, blank=True)
+    start_date = models.DateTimeField(null=True, blank=True, default=timezone.now)
     off_board_date = models.DateTimeField(null=True, blank=True)
     pay_rate = models.FloatField(null=True, blank=True)
     birthday = models.DateTimeField(null=True, blank=True)
