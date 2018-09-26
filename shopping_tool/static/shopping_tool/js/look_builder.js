@@ -1302,7 +1302,7 @@ var look_builder = {
       "description": look_desc,
       "allume_styling_session": look_builder.session_id,
       "stylist": look_builder.stylist_id,
-      "collage": src
+      "collage_data": src
     }
     /* update the look with the new values */
     $.ajax({

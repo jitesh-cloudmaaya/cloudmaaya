@@ -663,14 +663,15 @@ def look(request, pk):
             serializer = LookSerializer(look, data=request.data)
         except Look.DoesNotExist:
             serializer = LookCreateSerializer(data=request.data)
+            collage_image_url = ''
 
 
         #Save the Collage Image to S3
-        if 'collage' in request.data:
-            if request.data['collage'] != None:
+        if 'collage_data' in request.data:
+            if request.data['collage_data'] != None:
                 collage_image_name = look.generate_collage_s3_path()
                 collage_image_url = "https://%s.s3.amazonaws.com/%s" % (COLLAGE_BUCKET_NAME, collage_image_name)
-                collage_image_data = request.data['collage'][request.data['collage'].find(",")+1:]
+                collage_image_data = request.data['collage_data'][request.data['collage_data'].find(",")+1:]
                 collage_image_data = collage_image_data.decode('base64')
 
                 client = boto3.client('s3',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
@@ -687,12 +688,11 @@ def look(request, pk):
                 client.put_object(Body=collage_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name)
                 client.put_object_acl(Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name, ACL='public-read')
 
-                #Update Collage path in Serializer
-                if serializer.is_valid():
-                    updated_serializer = serializer.data
-                    updated_serializer['collage'] = collage_image_url
-                    updated_serializer.pop('stylist', None)
-                    serializer = LookCreateSerializer(look, data=updated_serializer)
+                #Update Collage path in a really shiity double save!
+                look.collage = collage_image_url
+                look.save
+
+                
 
         
         if serializer.is_valid():
