@@ -26,7 +26,7 @@ var look_builder = {
   * @param {integer} at_load - id of currently being edited look or null
   */  
   editableLooksMarkup: function(looks){
-    console.log(looks)
+    //console.log(looks)
     var at_load = utils.readURLParams('look');
     var comp_looks = $('#compare-looks div.other-looks');
     var markup = [];
