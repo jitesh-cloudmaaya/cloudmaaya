@@ -928,9 +928,13 @@ def layouts(request):
 def report_product_inventory_mismatch(requests):
     try:
         serializer = ReportSerializer(data=requests.data)
-        serializer.is_valid()
-        serializer.create(serializer.validated_data, requests)
-        return JsonResponse({'status':'success', 'data':[]}, status=200)
+        if serializer.is_valid():
+            serializer.create(serializer.validated_data, requests)
+            return JsonResponse({'status':'success', 'data':[]}, status=200)
+        else:
+            return JsonResponse({'status':'failed, missing attribute or reason too long', 'data':[]}, status=400)
+    except Product.DoesNotExist:
+        return JsonResponse({'status': 'failed, product_id not exist', 'data':[]}, status=400)
     except:
         return JsonResponse({'status': 'failed', 'data':[]}, status=400)
 
