@@ -151,7 +151,7 @@ class AllumeUserStylistNotesCreateSerializer(serializers.ModelSerializer):
 class AnnaReportSerializer(serializers.Serializer):
     product_id = serializers.CharField(max_length=50)
     merchant_id = serializers.CharField(max_length=50)
-    reason = serializers.CharField(max_length=50)
+    reason = serializers.CharField(max_length=100)
     source = serializers.CharField(max_length=50)
     def create(self, validated_data, request):
         product = Product.objects.get(product_id = validated_data['product_id'], merchant_id = validated_data['merchant_id'])
@@ -162,7 +162,7 @@ class AnnaReportSerializer(serializers.Serializer):
 
 class ReportSerializer(serializers.Serializer):
     product_id = serializers.CharField(max_length=50)
-    reason = serializers.CharField(max_length=50)
+    reason = serializers.CharField(max_length=100)
     source = serializers.CharField(max_length=50)
     def create(self, validated_data, request):
         product = Product.objects.get(id = validated_data['product_id'])

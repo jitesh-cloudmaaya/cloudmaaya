@@ -702,4 +702,4 @@ class Report(models.Model):
     datetime = models.DateTimeField(default=timezone.now)
     source = models.CharField(max_length=50)
     anna_availability = models.CharField(max_length=20)
-    reason = models.CharField(max_length=50)
+    reason = models.CharField(max_length=100)
