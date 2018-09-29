@@ -63,9 +63,10 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_extensions',
     'massadmin',
-    # stylist management
-    'stylist_management',
+    'stylist_management', # stylist management
     'auditlog', # detail logging
+    'merchant_management', # merchant_management
+    'admin_reorder', # reoder admin window for better usability
     'corsheaders'
 ]
 
@@ -79,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'auditlog.middleware.AuditlogMiddleware', # detail logging
+    'admin_reorder.middleware.ModelAdminReorder', # reoder admin window for better usability
 ]
 
 ROOT_URLCONF = 'catalogue_service.urls'
@@ -204,3 +206,28 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_REGEX_WHITELIST = [r'.*\.allume\.co']
+
+# reorder admin windows
+ADMIN_REORDER = (
+    # Keep original label and models
+    'stylist_management',
+    # # Cross-linked models
+    {'app': 'merchant_management', 'models': 
+    (
+    'merchant_management.ShippingPrice',
+    'merchant_management.MerchantEditing',
+    )},
+    'django_celery_beat',
+    {'app': 'product_api', 'models': 
+    (
+    'product_api.AllumeCategory',
+    'product_api.AllumeRetailerSizeMapping',
+    'product_api.CategoryMap',
+    'product_api.ColorMap',
+    'product_api.ExclusionTerm',
+    'product_api.Network',
+    'product_api.SynonymCategoryMap'
+    )},
+    'shopping_tool',
+    'auditlog',
+)

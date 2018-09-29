@@ -45,6 +45,10 @@ class ColorMapAdmin(admin.ModelAdmin):
 
 
 class MerchantAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request, obj=None): # disable the add button for merchant admin
+        return False
+    def has_delete_permission(self, request, obj=None): # disable the delete button merchant admin
+        return False
     list_display = ('name', 'active', 'network', 'search_rank')
     list_filter = ('network',)
 
