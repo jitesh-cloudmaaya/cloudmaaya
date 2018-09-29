@@ -5,7 +5,7 @@ from django.db import models
 from product_api.models import Merchant
 
 class ShippingPrice(models.Model):
-    merchant_id = models.ForeignKey(Merchant, on_delete=models.CASCADE)
+    merchant = models.ForeignKey(Merchant, on_delete=models.CASCADE)
     min_threshold = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     threshold = models.DecimalField(max_digits=15, decimal_places=2, default=1000000.00)
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
