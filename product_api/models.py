@@ -96,14 +96,22 @@ class Merchant(models.Model):
     coupon_update_notes = models.TextField(null=True, blank=True, default=None)
     show_generic_coupon_message = models.BooleanField(default=False)
 
-    # policy
+    #two tap
     url_host = models.CharField(max_length=50,null=True, blank=True, default=None)
     twotap_id = models.CharField(max_length=100, null=True, blank=True, default=None)
     two_tap_supported = models.BooleanField(default=False)
+    twotap_feed_enable = models.BooleanField(default=False)
+    never_used_feed = models.BooleanField(default=False)
+    final_sale = models.BooleanField(default=False)
     order_via_twotap = models.BooleanField(default=False)
     order_via_twotap_use_client_email = models.BooleanField(default=False)
+    twotap_usage_timeout_in_hours = models.IntegerField(null=False, default=1000000)
+
+    # policy
     return_policy = models.TextField(null=True, blank=True, default=None)
     shipping_policy = models.TextField(null=True, blank=True, default=None)
+
+    tips = models.CharField(max_length=255, null=True, blank=True, default=None)
 
     def __str__(self):
         return self.name
