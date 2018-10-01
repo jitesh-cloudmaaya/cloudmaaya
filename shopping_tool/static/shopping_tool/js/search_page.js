@@ -7,11 +7,35 @@ var search_page = {
   */
   session_id: '',
   /**
+  * @description variable to cache the allume sizing API call
+  */
+  cached_sizes: null,
+  /**
   * @description init function applying the functionality to the page elements
   */
   init: function(){
     /* cache the session id */
     search_page.session_id = $('body').data('stylesession');
+    /* get allume sizes and cache for use in searches */
+    $.ajax({
+      contentType: 'application/json',
+      crossDomain: true,
+      type: 'POST',
+      url: 'https://styling-service-' + local_environment + '.allume.co/get_allume_sizes/',
+      xhrFields: {
+        withCredentials: true
+      },
+      success: function(response){
+        var obj = JSON.parse(response);
+        console.log(obj);
+        if(obj.status == 'success' && obj.data != undefined){
+          search_page.cached_sizes = obj.data;
+        }
+      },
+      error: function(response){
+        console.log(response)
+      }
+    });
     /* search functionality */
     $('#search-btn').click(function(e){
       e.preventDefault();
@@ -41,34 +65,38 @@ var search_page = {
       var header = '<h5>Client preferences and sizes for <strong>' + val + '</strong>:</h5>';
       var general = '<span><em>colors:</em>' + client_360.colors + '</span>' +
         '<span><em>styles to avoid:</em>' + client_360.avoid + '</span>';
-      if(["Dresses", "Jackets"].indexOf(val) > -1){
-        def_div.html(
-          '<div class="client-settings">' + header +
-          '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
-          '<span><em>style:</em>' + client_360.categories[val].style + '</span>' +
-          general + '</div>'
-        );        
-      }else if(["Jeans", "Shoes", "Tops"].indexOf(val) > -1){
-        def_div.html(
-          '<div class="client-settings">' + header +
-          '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
-          '<span><em>style:</em>' + client_360.categories[val].style + '</span>' +
-          '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
-          general + '</div>'
-        );  
-      }else if(val == "Bottoms"){
-        def_div.html(
-          '<div class="client-settings">' + header +
-          '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
-          '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
-          general + '</div>'
-        );          
+      if(utils.category_settings == null){
+        if(["Dresses", "Jackets"].indexOf(val) > -1){
+          def_div.html(
+            '<div class="client-settings">' + header +
+            '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
+            '<span><em>style:</em>' + client_360.categories[val].style + '</span>' +
+            general + '</div>'
+          );        
+        }else if(["Jeans", "Shoes", "Tops"].indexOf(val) > -1){
+          def_div.html(
+            '<div class="client-settings">' + header +
+            '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
+            '<span><em>style:</em>' + client_360.categories[val].style + '</span>' +
+            '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
+            general + '</div>'
+          );  
+        }else if(val == "Bottoms"){
+          def_div.html(
+            '<div class="client-settings">' + header +
+            '<span><em>spend:</em>' + client_360.categories[val].spend + '</span>' +
+            '<span><em>size:</em>' + client_360.categories[val].size + '</span>' +
+            general + '</div>'
+          );          
+        }else{
+          def_div.html(
+            '<div class="client-settings"><h5>Client preferences:</h5>' +
+            '<span><em>colors:</em>' + client_360.colors + '</span>' +
+            '<span><em>styles to avoid:</em>' + client_360.avoid + '</span></div>'
+          );
+        }
       }else{
-        def_div.html(
-          '<div class="client-settings"><h5>Client preferences:</h5>' +
-          '<span><em>colors:</em>' + client_360.colors + '</span>' +
-          '<span><em>styles to avoid:</em>' + client_360.avoid + '</span></div>'
-        );
+        utils.setHelp(val);    
       }
     });
     /* facets functionality */
@@ -82,20 +110,63 @@ var search_page = {
       }
       link.next('div').slideToggle();
     }).on('change','input.facet-box',function(e){
-      e.preventDefault();
       var box = $(this);
       var facet_links = $('#search-form-selections');
-       search_page.performSearch(1, false, null);
-    });
+      search_page.performSearch(1, false, null);
+    }).on('click', 'a.size-facet-sub', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var div = link.next('div');
+      if(link.hasClass('open')){
+        link.removeClass('open').find('span').html('+');
+        div.slideUp();
+      }else{
+        link.addClass('open').find('span').html('-');
+        div.slideDown();
+      }
+    }).on('click', 'a.size-group-toggle', function(e){
+      e.preventDefault();
+      var link = $(this);
+      var div = $(link.attr('href'));
+      if(link.hasClass('open')){
+        link.removeClass('open').find('span').html('+');
+        div.slideUp();
+      }else{
+        link.addClass('open').find('span').html('-');
+        div.slideDown();
+      }
+    }).on('change','input.allume-size',function(e){
+      var box = $(this);
+      var div = $(box.data('groupdiv'));
+      if(box.prop('checked')){
+        div.find('input').prop('checked', true);
+      }else{
+        div.find('input').prop('checked', false);
+      }
+      search_page.performSearch(1, false, null);
+    }).on('change','input.size-member',function(e){
+      var box = $(this);
+      var div = box.closest('div.sizegroup-list');
+      var checked = div.find('input:checked');
+      if(checked.length == 0){
+        div.prev('label').find('input').prop('checked',false);
+      }
+      if(box.prop('checked')){
+        div.prev('label').find('input').prop('checked',true);
+      }
+      search_page.performSearch(1, false. null);
+    })
     $('#search-form-selections').on('click', 'a', function(e){
       e.preventDefault();
       var link = $(this);
       if(link.hasClass('remove-search')){
         $('#search-field').val('');
-        search_page.performSearch(1, false. null);
       }else if(link.hasClass('remove-category')){
         $('#search-categories')[0].selectize.setValue('',true);
-        search_page.performSearch(1, false, null);
+      }else if(link.hasClass('size')){
+        var div = $(link.data('sizegroup'));
+        div.find('input').prop('checked', false);
+        div.prev('label').find('input').prop('checked', false);
       }else{
         var facets = $('#facets');
         var facet = link.data('facet');
@@ -103,8 +174,8 @@ var search_page = {
         var group_div = facets.find('div[data-qparam="' + group + '"]');
         var facet_link = group_div.find('input[value="' + facet + '"]');
         facet_link.prop('checked', false);
-        search_page.performSearch(1, false, null);
       }
+      search_page.performSearch(1, false. null);
     });
     $('#facet-show-faves').prop('checked', false).click(function(e){
       search_page.performSearch(1, false, null);
@@ -131,7 +202,24 @@ var search_page = {
       e.preventDefault();
       var link = $(this);
       rack_builder.inspectItem(link, 'search');
-    });       
+    });   
+    /* clear search filters */
+    $('#clear-search-filters').click(function(e){
+      e.preventDefault()
+      var link = $(this);
+      $.each($('#facets input:checked'), function(idx){
+        $(this).prop('checked', false);
+      });
+    });
+    /* ANNA store list funcs */
+    $('#view-stores').click(function(e){
+      e.preventDefault();
+      $('#anna-store-list').fadeIn();
+    });
+    $('#close-store-list').click(function(e){
+      e.preventDefault();
+      $('#anna-store-list').fadeOut();
+    });
     /* check last search cookie and load if exists */
     var search_cookie = utils.readCookie('lastShoppingToolSearch' + search_page.session_id);
     if(search_cookie != null){
@@ -140,30 +228,42 @@ var search_page = {
       var category = $('#search-categories');
       var sanitized_primary ='';
       if(last_search.primary_category != undefined){
-        sanitized_primary = last_search.primary_category.replace('|Unsure','')
+        sanitized_primary = last_search.primary_category;
       }
-
       category[0].selectize.setValue(sanitized_primary, false);
       search_box.val(last_search.text);
       if(last_search.favs != undefined){
         $('#facet-show-faves').prop('checked', true);
       }
-      search_page.performSearch(last_search.page, true, last_search);
+      function runSearch(){
+        if(search_page.cached_sizes != null){
+          search_page.performSearch(last_search.page, true, last_search);
+        }else{
+          setTimeout(function(){
+            console.log('waiting...')
+            runSearch()
+          }, 200)
+        }  
+      }
+      runSearch();
     }
   },
   /**
   * @description processing and template for facets
   * @param {object} facets - the facets object
+  * @param {string} category - category string
   */
-  facetTemplate: function(facets){
+  facetTemplate: function(facets, category){
     var markup = [];
     var cs = $('#search-field').data();
     if(facets != undefined){
       var social_facets = [];
       var group_markup = {names: [], markup: {}}
       /* build initial list of facet buckets */
-      var display_order = ['_filter_size','_filter_price_range','_filter_brand',
+      var display_order = ['_filter_price_range','_filter_brand',
                            '_filter_merchant_name','_filter_color','_filter_material'];
+
+      markup.push(search_page.sizeFacetTemplate(category));
       for(var i = 0, l = display_order.length; i<l; i++){
         var bucket = display_order[i];
         var facet_list = facets[bucket];
@@ -187,82 +287,6 @@ var search_page = {
                 if(a.from < b.from){ return -1}
                 return 0;
               })
-            }else if(display_name == 'size'){
-              /* size type array holders */
-              var nums = [];
-              var letters = [];
-              var petites = [];
-              /* name size sorting weight */
-              var size_name_weight = {
-                "L":10,"LARGE":11,"M":8,"MEDIUM":9,
-                "NO SIZE":18,"S":6,"SMALL":7,"X LARGE":13,
-                "X SMALL":3,"X-LARGE":14,"X-SMALL":5,
-                "XL":12,"XS":4,"XX-SMALL":2,"XXS":1,
-                "XXL": 15,"XX LARGE": 16,"XX-LARGE": 17,
-                "XXS P":20,"P/XS":21,"XS P":22,"P/S":23,
-                "S P":24,"P/M":25,"P/L":26,"P/XL":27
-              }
-              /* push facets into correct subcategories */
-              for(var j = 0, num = facet_list[display_name].buckets.length; j<num; j++){
-                var facet = facet_list[display_name].buckets[j];
-                if(facet.key != ''){
-                  if(Number.isInteger(parseInt(facet.key.charAt(0)))){
-                    nums.push(facet)
-                  }else{
-                    if (facet.key.match(/[p]/i)){
-                      petites.push(facet)
-                    }else{
-                      letters.push(facet)
-                    }
-                  }
-                }
-              }
-              /* sort the numbered sizes */
-              nums.sort(function(a,b){
-                var num_a, num_b;
-                if(!Number.isInteger(parseInt(a.key.charAt(1)))){
-                  num_a = parseInt(a.key.slice(0,1));
-                }else{
-                  num_a = parseInt(a.key.slice(0,2));
-                }
-                if(!Number.isInteger(parseInt(b.key.charAt(1)))){
-                  num_b = parseInt(b.key.slice(0,1));
-                }else{
-                  num_b = parseInt(b.key.slice(0,2));
-                }
-                return num_a - num_b
-              });
-              /* sort name sizes by weight */
-              letters.sort(function(a,b){
-                var num_a = size_name_weight[a.key] == undefined ? 0 : size_name_weight[a.key];
-                var num_b = size_name_weight[b.key] == undefined ? 0 : size_name_weight[b.key];
-                return num_a - num_b
-              });
-              /* sort petite sizes by weight */
-              petites.sort(function(a,b){
-                var num_a = size_name_weight[a.key] == undefined ? 0 : size_name_weight[a.key];
-                var num_b = size_name_weight[b.key] == undefined ? 0 : size_name_weight[b.key];
-                return num_a - num_b
-              }); 
-              /* new facets array */
-              var new_facets = [];
-              if(nums.length > 0){ new_facets = new_facets.concat(nums) };
-              if(letters.length > 0){
-                if(new_facets.length > 0){
-                  new_facets = new_facets.concat([{key:'special-breaker'}],letters)
-                }else{
-                  new_facets = new_facets.concat(letters)
-                }
-              }
-              if(petites.length > 0){
-                if(new_facets.length > 0){
-                  new_facets = new_facets.concat([{key:'special-breaker'}],petites)
-                }else{
-                  new_facets = new_facets.concat(petites)
-                }                
-              }
-              facet_list[display_name].buckets = new_facets;
-              facet_list[display_name].buckets.push({key: 'facet-clear'})
             }else{
               facet_list[display_name].buckets.sort(function(a,b){
                 if(a.key.toLowerCase() > b.key.toLowerCase()){ return 1}
@@ -286,16 +310,18 @@ var search_page = {
                 group_markup.markup[display_name].push('<span class="facet-clear"></span>')
               }else{
                 if((facet.key != '')&&(facet.key != 'sort')){
-                  group_markup.markup[display_name].push(
-                    '<label class="facet">' +
-                    '<input class="facet-box" type="checkbox" value="' + 
-                    facet.key + '" ' + checked + ' data-facetgroup="' + 
-                    display_name + '"/><span>' + '<i class="fa fa-circle-thin"></i>' +
-                    '<i class="fa fa-check-circle"></i>' +
-                    '</span><em class="number">' + 
-                    numeral(facet.doc_count).format('0,0') +
-                    '</em><em class="key">' + facet.key + '</em></label>'
-                  );
+                    if(display_name != 'merchant_name' || facet.key!='Lulus.com'){
+                          group_markup.markup[display_name].push(
+                            '<label class="facet">' +
+                            '<input class="facet-box" type="checkbox" value="' +
+                            facet.key + '" ' + checked + ' data-facetgroup="' +
+                            display_name + '"/><span>' + '<i class="fa fa-circle-thin"></i>' +
+                            '<i class="fa fa-check-circle"></i>' +
+                            '</span><em class="number">' +
+                            numeral(facet.doc_count).format('0,0') +
+                            '</em><em class="key">' + facet.key + '</em></label>'
+                          );
+                    }
                 }
               }
             }
@@ -342,6 +368,128 @@ var search_page = {
     }    
   },
   /**
+  * @description from facet values return array of "allume" sizes
+  * @param {array} sizes - list of sizes to process
+  * @param {string} category - search category
+  * @returns {array} Array of allume sizes
+  */
+  getAllumSizes: function(sizes, category){
+    var size_block = search_page.cached_sizes.mapped;
+    /* get all the various sizes for each type */
+    var clothing_sizes = size_block.regular_sizes.concat(size_block.petite_sizes.concat(size_block.tall_sizes));
+    var shoe_sizes = size_block.regular_shoes.concat(size_block.narrow_shoes.concat(size_block.wide_shoes));
+    var allume_sizes = [];
+    /**
+    * @description private helper function to generate array of allume sizes
+    * @param {array} all_sizes - array of sizes to process
+    * @param {object} member_hash - member hash to get member lists  
+    * @param {array} sizes_to_check - array of sizes to match with allume sizes      
+    * @returns {array} - array of allume sizes
+    */
+    function sizeMatching(all_sizes, member_hash, sizes_to_check){
+      var matched_size = [];
+      for(var i = 0, l = all_sizes.length; i<l; i++){
+        var size_grouping = all_sizes[i];
+        if(member_hash[size_grouping] != undefined){
+          var subset_sizes = member_hash[size_grouping].sizes;
+          var matched = 0;
+          for(var ix = 0, lx = sizes_to_check.length; ix<lx; ix++){
+            if(size_grouping == String(sizes_to_check[ix])){
+              matched = 1;
+              matched_size.push(size_grouping);
+            }
+          }
+          if(matched == 0){
+            for(var ix = 0, lx = subset_sizes.length; ix<lx; ix++){
+              var size = subset_sizes[ix];
+              var sub_match = 0;
+              for(var j = 0, n = sizes_to_check.length; j<n; j++){
+                if(size == String(sizes_to_check[j])){
+                  sub_match = 1;
+                  matched_size.push(size_grouping);
+                }
+              }
+            }
+          }
+        }
+      }
+      /* unique the matched sizes */
+      return [...new Set(matched_size)];
+    }
+    /**
+    * @description private function to handle the flatter size maps
+    * @param {array} all_sizes - array of sizes to process
+    * @param {array} sizes_to_check - array of sizes to match with allume sizes      
+    * @returns {array} - array of allume sizes
+    */
+    function singleSizeMatch(all_sizes, sizes_to_check){
+      var matched_size = [];
+      for(var i = 0, l = all_sizes.length; i<l; i++){
+        var size = all_sizes[i];
+        for(var ix = 0, lx = sizes_to_check.length; ix<lx; ix++){
+          if(size == String(sizes_to_check[ix])){
+            matched_size.push(size);
+          }
+        }
+      }
+      /* unique the matched sizes */
+      return [...new Set(matched_size)];      
+    }
+
+    if (category == '') {
+      var all_sizes = sizeMatching(shoe_sizes, size_block.shoe_members, sizes).concat(
+        sizeMatching(clothing_sizes, size_block.shoe_members, sizes).concat(
+          sizeMatching(size_block.one_size, size_block.clothing_members, sizes)
+        )
+      );
+      return all_sizes;
+    } else if (category == 'Shoes') {
+      var tmp = sizeMatching(shoe_sizes, size_block.shoe_members, sizes);
+      var tmp2 = sizeMatching(size_block.one_size, size_block.clothing_members, sizes);
+      var tmp3 = [];
+      if(search_page.cached_sizes.unmapped[category] != undefined){
+        tmp3 = singleSizeMatch(search_page.cached_sizes.unmapped[category], sizes);
+      }
+      return tmp.concat(tmp2.concat(tmp3));   
+    } else if (["Shoes","Accessories","Other","Beauty","Unsure"].indexOf(category) == -1) {
+      var tmp = sizeMatching(clothing_sizes, size_block.clothing_members, sizes);
+      var tmp2 = sizeMatching(size_block.one_size, size_block.clothing_members, sizes);
+      var tmp3 = [];
+      if(search_page.cached_sizes.unmapped[category] != undefined){
+        tmp3 = singleSizeMatch(search_page.cached_sizes.unmapped[category], sizes);
+      }
+      return tmp.concat(tmp2.concat(tmp3));   
+    } else if (["Accessories","Other","Beauty"].indexOf(category) > -1){
+      if(category == 'Accessories'){
+        var tmp = singleSizeMatch(size_block.accessories_sizes, sizes);
+        var tmp2 = sizeMatching(size_block.one_size, size_block.clothing_members, sizes);
+        var tmp3 = [];
+        if(search_page.cached_sizes.unmapped[category] != undefined){
+          tmp3 = singleSizeMatch(search_page.cached_sizes.unmapped[category], sizes);
+        }
+        return tmp.concat(tmp2.concat(tmp3));
+      }else if (category == 'Other'){
+        var tmp = singleSizeMatch(size_block.other_sizes, sizes);
+        var tmp2 = sizeMatching(size_block.one_size, size_block.clothing_members, sizes);        
+        var tmp3 = [];
+        if(search_page.cached_sizes.unmapped[category] != undefined){
+          tmp3 = singleSizeMatch(search_page.cached_sizes.unmapped[category], sizes);
+        }
+        return tmp.concat(tmp2.concat(tmp3));        
+      }else if (category == 'Beauty'){
+        var tmp = singleSizeMatch(size_block.beauty_sizes, sizes);
+        var tmp2 = sizeMatching(size_block.one_size, size_block.clothing_members, sizes);
+        var tmp3 = [];
+        if(search_page.cached_sizes.unmapped[category] != undefined){
+          tmp3 = singleSizeMatch(search_page.cached_sizes.unmapped[category], sizes);
+        }
+        return tmp.concat(tmp2.concat(tmp3));       
+      }
+    } else {
+      return sizeMatching(size_block.one_size, size_block.clothing_members, sizes);
+    }
+  },
+  /**
   * @description item template for results and rack
   * @param {object} details - item details JSON
   * @param {string} view - which display 
@@ -374,7 +522,9 @@ var search_page = {
       fave_link = '<a href="#" class="favorite favorited" data-productid="' + 
       details.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-heart"></i></a>';
     }
-    return '<div class="item"><div class="image">' + fave_link + 
+    is_merchant_with_soldout_issue = $.inArray(details.merchant_id, [8579678, 6172, 40480]) >= 0;
+    soldout_missing_size = (is_merchant_with_soldout_issue || !details.size) ? '<span class="soldout_missing_size"><em>' + (is_merchant_with_soldout_issue?'Check sold out':'Check Size') + '</em></span>' : '';
+    return '<div class="item"><div class="image">' + soldout_missing_size + fave_link +
       '<a href="#" class="item-detail" data-name="' + details.product_name + 
       '" data-brand="' + details.manufacturer_name + 
       '" data-productid="' + details.id + '" data-merchantid="' + details.merchant_id + 
@@ -391,6 +541,7 @@ var search_page = {
   * @param {object} additionalCriteria - other search settings if from cookie
   */
   performSearch: function(page, lastSearch, additionalCriteria){
+    console.log(lastSearch)
     $('#facet-bar').removeClass('show');
     /* generate the query string */
     var selection_markup = [];
@@ -407,7 +558,9 @@ var search_page = {
     }
     if(text != search_box.data('lookup')){
       search_box.data('lookup', text);
-      new_search = true;
+      /* no longer is a search text change a new search 4/25
+      /* new_search = true;
+      */
     }
     if(category != search_box.data('cat')){
       new_search = true;
@@ -420,7 +573,7 @@ var search_page = {
     */
     if(lastSearch == true){ new_search = false; }
     if(category != ''){
-      facets.push('&primary_category=' + category + '|Unsure');
+      facets.push('&primary_category=' + category);
       selection_markup.push(
         '<a href="#" class="remove-category" data-qparam="primary_category" ' +
         'data-facet="' + category + '">' + category + 
@@ -433,19 +586,50 @@ var search_page = {
       if(new_search == true){
         var sizes = [];
         var cleaned_sizes = [];
-        if(["Jeans", "Shoes", "Tops", "Pants", "Bottoms"].indexOf(category) > -1){
-          sizes = client_360.categories[category].size.split(',');   
+        if(["Jeans", "Shoes", "Tops", "Pants", "Bottoms", "Dresses"].indexOf(category) > -1){
+          if(utils.category_settings == null){
+            sizes = client_360.categories[category].size.split(','); 
+          }else{
+            var key_match = category == "Jeans" ? 'Bottoms' : category ;
+            for(key in utils.category_settings){
+              if(utils.category_settings.hasOwnProperty(key)){
+                if(key == key_match){
+                  if(utils.category_settings[key] != undefined){
+                    for(var i = 0, l = utils.category_settings[key].length; i<l; i++){
+                      var row = utils.category_settings[key][i];
+                      if(['size: ','Bottoms size: '].indexOf(row.q) > -1){
+                        if(row.a != null){
+                          sizes = row.a.split(',');
+                        }
+                      } 
+                    }
+                  }
+                }
+              }
+            }
+          }  
         }
         for(i = 0, l = sizes.length; i<l; i++){
           var size = sizes[i];
           size = size.replace(/\s/g, "");
           cleaned_sizes.push(size);
+        }
+        var allume_sizes = search_page.getAllumSizes(cleaned_sizes, category);
+        var id_mod = 'nosize';
+        if(category == 'Shoes'){
+          id_mod = 'shoe';
+        }else if(["Shoes","Accessories","Other","Beauty","Unsure"].indexOf(category) == -1){
+          id_mod = 'clothing';
+        }
+        for(i = 0, l = allume_sizes.length; i<l; i++){
+          var size = allume_sizes[i];
+          var size_group = '#sizegroup' + id_mod + '' + size.replace('.','');
           selection_markup.push(
-            '<a href="#" class="remove-facet" data-qparam="size" data-facet="' + 
-            size + '">' + size + '<i class="fa fa-times-circle"></i></a>'
+            '<a href="#" class="remove-facet size" data-sizegroup="' + size_group + 
+            '">' + size + '<i class="fa fa-times-circle"></i></a>'
           );
         }
-        search_box.data('clientsize', cleaned_sizes.join('|')).data('clientsettings', true);
+        search_box.data('clientsize', allume_sizes.join('|')).data('clientsettings', true);
       }
     }else{
       
@@ -453,20 +637,47 @@ var search_page = {
     if(new_search == false){
       $.each($('#facets div.facet-list'), function(idx){
         var list = $(this);
-        var qparam = list.data('qparam');
-        var selected = list.find('input:checked');
-        if(selected.length > 0){
-          var values = selected.map(function (i, facet){ 
-            selection_markup.push(
-              '<a href="#" class="remove-facet" data-qparam="' + qparam + 
-              '" data-facet="' + facet.value + '">' + facet.value + 
-              '<i class="fa fa-times-circle"></i></a>'
+        if(list.hasClass('size') == false){
+          var qparam = list.data('qparam');
+          var selected = list.find('input:checked');
+          if(selected.length > 0){
+            var values = selected.map(function (i, facet){ 
+              selection_markup.push(
+                '<a href="#" class="remove-facet" data-qparam="' + qparam + 
+                '" data-facet="' + facet.value + '">' + facet.value + 
+                '<i class="fa fa-times-circle"></i></a>'
+              );
+              return facet.value 
+            }).get();
+            facets.push(
+              '&' + qparam + '=' + encodeURIComponent(values.join('|'))
             );
-            return facet.value 
-          }).get();
-          facets.push(
-            '&' + qparam + '=' + encodeURIComponent(values.join('|'))
-          );
+          }
+        }else{
+          /* special processing for size facets */
+          var size_params = [];
+          $.each(list.find('input.allume-size:checked'), function(ix){
+            var size = $(this);
+            selection_markup.push(
+              '<a href="#" class="remove-facet size" data-sizegroup="' + size.data('groupdiv') + 
+              '">' + size.val() + '<i class="fa fa-times-circle"></i></a>'
+            );
+            if(size.hasClass('single')){
+              size_params.push(size.val())
+            }else{
+              $.each($(size.data('groupdiv')).find('input.size-member:checked'), function(j){
+                size_params.push($(this).val())
+              });
+            }
+          });
+          /* get unique list of szie params */
+          var clean_size_params = [...new Set(size_params)];
+          if(clean_size_params.length > 0){
+            console.log(clean_size_params.join('|'))
+            facets.push(
+              '&size=' + encodeURIComponent(clean_size_params.join('|'))
+            )
+          }
         }
       });
     }
@@ -480,9 +691,27 @@ var search_page = {
       var keys = Object.keys(additionalCriteria);
       for(var i = 0, l = keys.length; i<l; i++){
         var key = keys[i];
-        if(key == 'sort'){
+        if (key == 'sort') {
           $('#sort-dd')[0].selectize.setValue(additionalCriteria[key], true);
-        }else if(['page', 'text', 'primary_category'].indexOf(key) == -1){
+        } else if (key == 'size') {
+          var terms = additionalCriteria[key].split('|');
+          var allume_sizes = search_page.getAllumSizes(terms, category);
+          var id_mod = 'nosize';
+          if(category == 'Shoes'){
+            id_mod = 'shoe';
+          }else if(["Shoes","Accessories","Other","Beauty","Unsure"].indexOf(category) == -1){
+            id_mod = 'clothing';
+          }
+          for(ix = 0, lx = allume_sizes.length; ix<lx; ix++){
+            var size = allume_sizes[ix];
+            var size_group = '#sizegroup' + id_mod + '' + size.replace('.','');
+            selection_markup.push(
+              '<a href="#" class="remove-facet size" data-sizegroup="' + size_group + 
+              '">' + size + '<i class="fa fa-times-circle"></i></a>'
+            );
+          }
+          search_box.data('clientsize', allume_sizes.join('|')).data('clientsettings', true);
+        } else if (['page', 'text', 'primary_category','size'].indexOf(key) == -1) {
           var terms = additionalCriteria[key].split('|');
           for(var ix = 0, lx = terms.length; ix < lx; ix++){
             var term = terms[ix];
@@ -515,6 +744,9 @@ var search_page = {
     }
     var saved_search = q;
     utils.createCookie('lastShoppingToolSearch' + search_page.session_id, saved_search, 1);
+    /* async call to get search results */
+//    console.log(new_search)
+//    console.log(q)
     $.ajax({
       beforeSend: function(){
         $('#results').html(
@@ -541,7 +773,7 @@ var search_page = {
           search_page.resultTemplate(results.data);
         }
         if(new_search == true){
-          search_page.facetTemplate(results.facets);
+          search_page.facetTemplate(results.facets, category);
           /**
           * if search from cookie we need to correctly 'check'
           * the facet values to mirror those in the cookie
@@ -550,13 +782,15 @@ var search_page = {
             var keys = Object.keys(additionalCriteria);
             for(var i = 0, l = keys.length; i<l; i++){
               var key = keys[i];
-              if(['page', 'text', 'primary_category', 'sort'].indexOf(key) == -1){
+              if(['page', 'text', 'primary_category', 'sort', 'size'].indexOf(key) == -1){
                 var facet_block = $('#facets div.facet-list[data-qparam="' + key + '"]');
                 var terms = additionalCriteria[key].split('|');
                 for(var ix = 0, lx = terms.length; ix < lx; ix++){
                   var term = terms[ix];
                   facet_block.find('input[value="' + term + '"]').prop('checked', true);
                 }
+              } else if (key == 'size') {
+
               }
             }
           }
@@ -566,11 +800,20 @@ var search_page = {
       }
     });
   },
+  shuffleArray: function (array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+  },
   /**
   * @description processing and template for product results
   * @param {array} results - the product result array
   */  
   resultTemplate: function(results){
+    // search_page.shuffleArray(results) # disable shuffle within same page
     var markup = [];
     if(results != undefined && results.length > 0){
       for(var i = 0, l = results.length; i<l; i++){
@@ -600,6 +843,288 @@ var search_page = {
       $('#sort-selection').show()
     }else{
       $('#results').html('<div class="no-results">There were no products matching your supplied criteria...</div>');
+    }
+  },
+  /**
+  * @description size facet template function
+  * @param {string} category - the current search category
+  * @returns {string} HTML - size facet markup
+  */
+  sizeFacetTemplate: function(category){
+    var size_block = search_page.cached_sizes.mapped;
+    /* data for the user size selections and preference */
+    var cs = $('#search-field').data();
+    /* process the sizes for facet display */
+    var allume_sizes = cs.clientsettings == true ? cs.clientsize.split('|') : [] ;
+    /* Template private helper functions */
+    /**
+    * @description private helper function to create size group HTML
+    * @param {string} group - group name
+    * @param {string} checked - check box checked value
+    * @param {string} id_modifier - string to modify the size group ids 
+    * @returns {string} HTML
+    */
+    function sizeGroup(group, checked, id_modifier){
+      return '<div class="size-grouping-wrapper">' + 
+        '<a href="#sizegroup' + id_modifier + 
+        '' + group.replace(' ','').replace('.','') + '" class="size-group-toggle"><span>+</span></a>' +
+        '<label class="size-grouping">' +
+        '<input class="allume-size" type="checkbox" value="' + 
+        group + '" ' + checked + ' data-sizegroup="' + 
+        group.replace(' ','').replace('.','') + '" data-groupdiv="#sizegroup' + id_modifier + 
+        '' + group.replace(' ','').replace('.','') + '"/><span><i class="fa fa-square-o"></i>' +
+        '<i class="fa fa-check-square"></i>' +
+        '</span><em class="key">' + group + '</em></label>' +
+        '<div class="sizegroup-list" id="sizegroup' + 
+        id_modifier + '' + group.replace(' ','').replace('.','') + '">';
+    }
+    /**
+    * @description private helper function to create size group memberHTML
+    * @param {object} member - member of size group
+    * @param {string} checked - check box checked value
+    * @returns {string} HTML
+    */
+    function sizeGroupMember(member, checked){
+      return '<label class="size-facet"><input class="size-member" type="checkbox" value="' + 
+        member.size + '" ' + checked + '/><span><i class="fa fa-circle-thin"></i>' +
+        '<i class="fa fa-check-circle"></i></span><em class="key">' + member.name + '</em></label>';
+    } 
+    /**
+    * @description private helper function to generate sub section markup
+    * @param {array} sizes - array of sizes to process
+    * @param {object} member_hash - member hash to get member lists  
+    * @param {string} id_modifier - string to modify the size group ids 
+    * @returns {string} HTML
+    */
+    function sizeSubsection(section_sizes, member_hash, id_modifier){
+      var sectional = [];
+      for(var i = 0, l = section_sizes.length; i<l; i++){
+        var size_grouping = section_sizes[i];
+        var checked = '';
+        if(member_hash[size_grouping] != undefined){
+          var sizes = member_hash[size_grouping].sizes;
+          var size_members = member_hash[size_grouping].members;
+          for(var ix = 0, lx = allume_sizes.length; ix<lx; ix++){
+            var allume_size = allume_sizes[ix];
+            for(var j = 0, n = sizes.length; j<n; j++){
+              if( sizes[j] == allume_size ){
+                checked = 'CHECKED'
+              }
+            }
+          }
+        }
+        sectional.push(sizeGroup(size_grouping, checked));
+        if(member_hash[size_grouping] != undefined){
+          for(var ix = 0, lx = size_members.length; ix<lx; ix++){
+            var member = size_members[ix];
+            sectional.push(sizeGroupMember(member, checked, id_modifier));
+          }
+        }
+        /* close the sizegroup, and wrapper div */
+        sectional.push('</div></div>');
+      }
+      return sectional.join('');
+    }
+    /**
+    * @description private helper function to generate single layer facet markup
+    * @param {array} sizes - array of sizes to process
+    * @returns {string} HTML
+    */
+    function singleSizeLayer(sizes){
+      var facets = [];
+      for(var i = 0, l = sizes.length; i<l; i++){
+        var size = sizes[i];
+        var size_check = allume_sizes.indexOf(size) > -1 ? 'checked' : '' ;
+        if(size !=''){
+          facets.push(
+            '<label class="size-facet flat"><input class="allume-size single" type="checkbox" value="' + 
+            size + '" ' + size_check + '/><span><i class="fa fa-circle-thin"></i>' +
+            '<i class="fa fa-check-circle"></i></span><em class="key">' + size + '</em></label>'
+          );
+        }
+      } 
+      return facets;     
+    }
+    /* size facet markup */
+    var markup = [
+      '<a href="#" class="facet-group"><span>+</span>Size</a>',
+      '<div class="facet-list size" data-qparam="size">'
+    ]; 
+    /* flags to be used on whether to show the size filter at all */
+    var category_present = 0; 
+    var unmapped_present = 0;  
+    /* create correct size facets HTML based upon category */
+    if (category == 'Shoes'){
+      /* shoe sizes */
+      if(size_block.regular_shoes != undefined && size_block.regular_shoes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Regular Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.regular_shoes, size_block.shoe_members, 'shoe') + '</div>'
+        );
+        category_present = 1;
+      }
+      if(size_block.narrow_shoes != undefined && size_block.narrow_shoes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Narrow Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.narrow_shoes, size_block.shoe_members, 'shoe') + '</div>'
+        );
+        category_present = 1;
+      }
+      if(size_block.wide_shoes != undefined && size_block.wide_shoes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Wide Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.wide_shoes, size_block.shoe_members, 'shoe') + '</div>'
+        );
+        category_present = 1;
+      }            
+    }else if(["Shoes","Accessories","Other","Beauty","Unsure",""].indexOf(category) == -1){
+      /* clothing sizes */
+      if(size_block.regular_sizes != undefined && size_block.regular_sizes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Regular Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.regular_sizes, size_block.clothing_members, 'clothing') + '</div>'
+        );
+        category_present = 1;
+      } 
+      if(size_block.petite_sizes != undefined && size_block.petite_sizes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Petite Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.petite_sizes, size_block.clothing_members, 'clothing') + '</div>'
+        );
+        category_present = 1;
+      } 
+      if(size_block.tall_sizes != undefined && size_block.tall_sizes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Tall Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.tall_sizes, size_block.clothing_members, 'clothing') + '</div>'
+        );
+        category_present = 1;
+      }
+    }else if (["Accessories","Other","Beauty"].indexOf(category) > -1){
+      if(category == 'Accessories'){
+        if(size_block.accessories_sizes != undefined && size_block.accessories_sizes.length > 0){
+          var facets = singleSizeLayer(size_block.accessories_sizes)
+          markup.push(
+            '<a href="#" class="size-facet-sub"><span>+</span>Accessories</a>' +
+            '<div class="size-facet-sub-group">' + 
+            '<div class="size-grouping-wrapper">' + facets.join('') +
+            '</div></div>'
+          );
+          category_present = 1;
+        }
+      }else if (category == 'Other'){
+        if(size_block.other_sizes != undefined && size_block.other_sizes.length > 0){
+          var facets = singleSizeLayer(size_block.other_sizes)
+          markup.push(
+            '<a href="#" class="size-facet-sub"><span>+</span>Other</a>' +
+            '<div class="size-facet-sub-group">' + 
+            '<div class="size-grouping-wrapper">' + facets.join('') +
+            '</div></div>'
+          );
+          category_present = 1;
+        }
+      }else if (category == 'Beauty'){
+        if(size_block.beauty_sizes != undefined && size_block.beauty_sizes.length > 0){
+          var facets = singleSizeLayer(size_block.beauty_sizes)
+          markup.push(
+            '<a href="#" class="size-facet-sub"><span>+</span>Beauty</a>' +
+            '<div class="size-facet-sub-group">' + 
+            '<div class="size-grouping-wrapper">' + facets.join('') +
+            '</div></div>'
+          );
+          category_present = 1;
+        }
+      }
+    }else{
+      if(size_block.regular_shoes != undefined && size_block.regular_shoes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Regular Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.regular_shoes, size_block.shoe_members, 'shoe') + '</div>'
+        );
+        category_present = 1;
+      }
+      if(size_block.narrow_shoes != undefined && size_block.narrow_shoes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Narrow Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.narrow_shoes, size_block.shoe_members, 'shoe') + '</div>'
+        );
+        category_present = 1;
+      }
+      if(size_block.wide_shoes != undefined && size_block.wide_shoes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Shoes (Wide Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.wide_shoes, size_block.shoe_members, 'shoe') + '</div>'
+        );
+        category_present = 1;
+      }
+      if(category_present == 1){
+        markup.push('<span class="size-breaker"></span>');
+      }
+      if(size_block.regular_sizes != undefined && size_block.regular_sizes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Regular Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.regular_sizes, size_block.clothing_members, 'clothing') + '</div>'
+        );
+        category_present = 1;
+      } 
+      if(size_block.petite_sizes != undefined && size_block.petite_sizes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Petite Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.petite_sizes, size_block.clothing_members, 'clothing') + '</div>'
+        );
+        category_present = 1;
+      } 
+      if(size_block.tall_sizes != undefined && size_block.tall_sizes.length > 0){
+        markup.push(
+          '<a href="#" class="size-facet-sub"><span>+</span>Clothing (Tall Sizes)</a>' +
+          '<div class="size-facet-sub-group">' + 
+          sizeSubsection(size_block.tall_sizes, size_block.clothing_members, 'clothing') + '</div>'
+        );
+        category_present = 1;
+      }      
+    }
+    /* every thing always gets one size */
+    if(size_block.one_size != undefined && size_block.one_size.length > 0){
+      if(category_present == 1){
+        markup.push('<span class="size-breaker"></span>');
+      }      
+      markup.push(
+        '<a href="#" class="size-facet-sub"><span>+</span>One Size</a>' +
+        '<div class="size-facet-sub-group">' + 
+        sizeSubsection(size_block.one_size, size_block.clothing_members, 'nosize') + '</div>'
+      );
+    }
+    /* add in the unmapped sizes */
+    if(search_page.cached_sizes != null){
+      var matching_unmapped_category = search_page.cached_sizes.unmapped[category];
+      if(matching_unmapped_category != undefined){
+        var facets = singleSizeLayer(matching_unmapped_category);
+        markup.push(
+          '<span class="size-breaker"></span>' +
+          '<a href="#" class="size-facet-sub"><span>+</span>Unmapped Sizes</a>' +
+          '<div class="size-facet-sub-group">' + 
+          '<div class="size-grouping-wrapper">' + facets.join('') + 
+          '</div></div>'
+        );
+        unmapped_present = 1;
+      }
+    }
+    /* test to see if we pass size filters */
+    if(category_present == 0 && unmapped_present == 0){
+      return  '';
+    }else{
+      return markup.join('') + '</div>';
     }
   }
 }

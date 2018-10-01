@@ -22,6 +22,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     size_term_mapping = mappings.create_size_term_mapping()
     synonym_category_mapping = mappings.create_synonym_category_mapping()
     synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+    known_text_sizes, known_number_sizes = mappings.create_retailer_size_mappings()
 
     # for use when adding a mapping
     exclusion_terms = mappings.create_exclusion_term_mapping()
@@ -93,7 +94,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
         # this way we will run ir once for each found pair (altho currently only 1)
         for file_pair in merchant_file_pairs:
             print file_pair
-            merchant_name = file_pair[0]
+            merchant_name = file_pair[0].decode('UTF-8')
             merchant_id = product_feed_helpers.generate_merchant_id(merchant_name)
             product_catalog_IR = file_pair[1]
             product_catalog_GOOGLE = file_pair[2]
@@ -135,9 +136,9 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
                         # unicode sandwich stuff
                         for key, value in datum1.iteritems():
-                            datum1[key] = product_feed_helpers.normalize_data(value)
+                            datum1[key] = value.decode('UTF-8')
                         for key, value in datum2.iteritems():
-                            datum2[key] = product_feed_helpers.normalize_data(value)
+                            datum2[key] = value.decode('UTF-8')
 
                         # gender pigeonholing
                         gender = datum1['Gender']
@@ -164,7 +165,7 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             merchant_color = datum1['Color'].lower()
                             try:
                                 allume_color = color_mapping[merchant_color]
-                            except:
+                            except KeyError:
                                 allume_color = u'other'
                             record['color'] = allume_color
 
@@ -209,7 +210,13 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
 
                             availability = datum2['availability']
                             availability = availability.replace(' ', '-')
+
+                            if availability == '' or availability == 'no':
+                                availability = u'out-of-stock'
+                            elif availability == 'yes':
+                                availability = u'in-stock'
                             record['availability'] = availability
+
                             record['brand'] = datum2['brand']
 
                             # derived
@@ -242,34 +249,80 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
                             record['keywords'] = u''
                             record['secondary_category'] = secondary_category
 
-
-                            # size splitting stuff
+                            # size parsing and splitting, very likely a prime refactoring candidate
                             parent_attributes = copy(record)
                             sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                             product_id = parent_attributes['product_id']
-                            if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+
+                            # skip records that have a non numeric product id from the data
+                            try:
+                                int(product_id)
+                            except ValueError:
+                                continue
+
+                            if len(sizes) > 1:
                                 for size in sizes:
                                     child_record = copy(parent_attributes)
-                                    child_record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
-                                    # use the size mapping here also
-
-                                    child_record['size'] = size
-                                    child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                                    for key, value in child_record.iteritems():
-                                        child_record[key] = value.encode('UTF-8')
-
-                                    writer.writerow(child_record)
+                                    allume_size_arr = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)
+                                    if len(allume_size_arr) > 1:
+                                        grandchild_record = copy(child_record)
+                                        child_record['size'] = size
+                                        for size in allume_size_arr:
+                                            grandchild_record['size'] = size
+                                            grandchild_record['allume_size'] = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)[0]
+                                            grandchild_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, grandchild_record['allume_size'])
+                                            for key, value in grandchild_record.iteritems():
+                                                grandchild_record[key] = product_feed_helpers.unicode_encode(value)
+                                            writer.writerow(grandchild_record)
+                                            writtenCount += 1
+                                        child_record['allume_size'] = u''
+                                        child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['size'])
+                                        child_record['is_deleted'] = u'1'
+                                        for key, value in child_record.iteritems():
+                                            child_record[key] = product_feed_helpers.unicode_encode(value)
+                                        writer.writerow(child_record)
+                                        writtenCount += 1
+                                    else:
+                                        child_record['size'] = size
+                                        child_record['allume_size'] = allume_size_arr[0]
+                                        child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['allume_size'])
+                                        for key, value in child_record.iteritems():
+                                            child_record[key] = product_feed_helpers.unicode_encode(value)
+                                        writer.writerow(child_record)
+                                        writtenCount += 1
+                                parent_attributes['allume_size'] = u''
+                                parent_attributes['is_deleted'] = u'1'
+                                for key, value in parent_attributes.iteritems():
+                                    parent_attributes[key] = product_feed_helpers.unicode_encode(value)
+                                writer.writerow(parent_attributes)
+                                writtenCount += 1
+                            else:
+                                size = sizes[0]
+                                allume_size_arr = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)
+                                if len(allume_size_arr) > 1:
+                                    child_record = copy(parent_attributes)
+                                    parent_attributes['size'] = size
+                                    for size in allume_size_arr:
+                                        child_record['size'] = size
+                                        child_record['allume_size'] = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)[0]
+                                        child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['allume_size'])
+                                        for key, value in child_record.iteritems():
+                                            child_record[key] = product_feed_helpers.unicode_encode(value)
+                                        writer.writerow(child_record)
+                                        writtenCount += 1
+                                    parent_attributes['allume_size'] = u''
+                                    parent_attributes['is_deleted'] = u'1'
+                                    for key, value in parent_attributes.iteritems():
+                                        parent_attributes[key] = product_feed_helpers.unicode_encode(value)
+                                    writer.writerow(parent_attributes)
                                     writtenCount += 1
-                                # set the parent record to is_deleted
-                                record['is_deleted'] = u'1'
-
-                            # finish unicode sandwich
-                            for key, value in record.iteritems():
-                                record[key] = value.encode('UTF-8')
-
-                            # write the record
-                            writer.writerow(record)
-                            writtenCount += 1
+                                else:
+                                    parent_attributes['size'] = size
+                                    parent_attributes['allume_size'] = allume_size_arr[0]
+                                    for key, value in parent_attributes.iteritems():
+                                        parent_attributes[key] = product_feed_helpers.unicode_encode(value)
+                                    writer.writerow(parent_attributes)
+                                    writtenCount += 1
                         else:
                             categoriesSkipped += 1
 
@@ -283,5 +336,3 @@ def impact_radius(local_temp_dir, file_ending, cleaned_fields):
     # infer deleted products
     # print('Updating non-upserted Impact Radius products')
     # product_feed_helpers.set_deleted_network_products('Impact Radius')
-
-

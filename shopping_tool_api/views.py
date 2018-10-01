@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import uuid
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.db import DatabaseError, IntegrityError
@@ -16,9 +17,9 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
-from product_api.models import Product
+from product_api.models import Product, Merchant
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, AllumeUserStylistNotes
-from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360
+from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUsers
 from serializers import *
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -26,6 +27,63 @@ from django.db.models import Q
 from tasks.product_feed_py.product_feed_helpers import determine_allume_size
 from tasks.product_feed_py import mappings
 from tasks.tasks import add_client_to_360
+from django.views.decorators.csrf import csrf_exempt
+import boto3
+from catalogue_service.settings_local import AWS_ACCESS_KEY, AWS_SECRET_KEY, COLLAGE_BUCKET_NAME, COLLAGE_BUCKET_KEY
+
+# change the stylist of the cloned look
+# add the rack of the current user session
+
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
+def add_look_to_session(request, look_id, session_id):
+    """
+    post:
+        Copy all products in look to the rack
+        Copy Look to the session
+        Copy Look Products to the new Look
+
+    """
+
+    # get the look and session by id
+    look = Look.objects.get(id = look_id)
+    session = AllumeStylingSessions.objects.get(id = session_id)
+    user = request.user
+
+    original_look_products = LookProduct.objects.filter(look = look)
+
+    # out of stock flag
+    flag_turned_off_store = False
+
+    # copy the look to the session
+    look.pk = None
+    look.allume_styling_session = session
+    look.token = uuid.uuid4()
+    look.stylist = user
+    look.status = 'draft'
+    look.save() # django way of cloning an object
+
+    # potentially might need to perform the original_look_products call here
+    # copy look products to the rack and the new look
+    for look_product in original_look_products:
+        # for each product, check if the associated merchant is turned off
+        merchant = Merchant.objects.get(external_merchant_id=look_product.product.merchant_id)
+        if merchant.active:
+            Rack.objects.create(allume_styling_session = session, product = look_product.product, stylist = user)
+            look_product.pk = None
+            look_product.look = look
+            look_product.save()
+        else:
+            flag_turned_off_store = True
+
+    # clear collage if merchant is turned off
+    if flag_turned_off_store: 
+        look.collage = None
+        look.save() # django way of cloning an object
+
+    # change this maybe
+    return JsonResponse({"status": "success", "new_look_id": look.id, 'turnoff_store_flag': flag_turned_off_store}, safe=False)
 
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
@@ -434,7 +492,7 @@ def update_look_position(request, pk=None):
 @api_view(['PUT'])
 @check_login
 @permission_classes((AllowAny, ))
-def update_look_collage_image_data(request, pk=None):
+def update_look_collage_image_data_old(request, pk=None):
     """
     put:
         Edit the collage_image_data field of an AllumeLooks.
@@ -455,6 +513,33 @@ def update_look_collage_image_data(request, pk=None):
     look.save()
 
     return JsonResponse(request.data, safe=False)
+
+
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
+def update_look_collage_image_data(request, pk=None):
+    """
+    put:
+        Edit the collage_image_data field of an AllumeLooks.
+
+        /shopping_tool_api/update_look_collage_image_data/{allumelooks_id}/
+
+        Sample JSON object
+        {
+          "collage_image_data": "payload",
+        }
+    """
+    try:
+        look = Look.objects.get(id=pk)
+    except Look.DoesNotExist:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+#    look.collage = request.data['collage_image_data']
+    look.save()
+
+    return JsonResponse(request.data, safe=False)
+
 
 @api_view(['PUT'])
 @check_login
@@ -578,6 +663,35 @@ def look(request, pk):
             serializer = LookSerializer(look, data=request.data)
         except Look.DoesNotExist:
             serializer = LookCreateSerializer(data=request.data)
+            collage_image_url = ''
+
+
+        #Save the Collage Image to S3
+        if 'collage_data' in request.data:
+            if request.data['collage_data'] != None:
+                collage_image_name = look.generate_collage_s3_path()
+                collage_image_url = "https://%s.s3.amazonaws.com/%s" % (COLLAGE_BUCKET_NAME, collage_image_name)
+                collage_image_data = request.data['collage_data'][request.data['collage_data'].find(",")+1:]
+                collage_image_data = collage_image_data.decode('base64')
+
+                client = boto3.client('s3',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
+
+                #Delete Existing Collage
+                try:
+                    old_collage_image_name = look.collage.split("%s/" % (COLLAGE_BUCKET_NAME))[1]
+                    print "Deleting %s" % (old_collage_image_name)
+                    client.delete_object(Bucket=COLLAGE_BUCKET_NAME, Key=old_collage_image_name)
+                except:
+                    print "Invalid S3 Key Name"
+
+                #Save New Collage to S3
+                client.put_object(Body=collage_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name)
+                client.put_object_acl(Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name, ACL='public-read')
+
+                #Update Collage path in a really shiity double save!
+                look.collage = collage_image_url
+                look.save
+
         
         if serializer.is_valid():
             serializer.save()
@@ -800,3 +914,39 @@ def layouts(request):
 
     serializer = LookLayoutSerializer(layouts, many=True)
     return JsonResponse(serializer.data, safe=False)
+
+
+########################################################
+# Report function to collect soldout information
+# Should be moved to the api part for next update
+########################################################
+
+# General API for reporting product_inventory_mismatch
+@api_view(['POST'])
+@check_login
+@csrf_exempt
+def report_product_inventory_mismatch(requests):
+    try:
+        serializer = ReportSerializer(data=requests.data)
+        if serializer.is_valid():
+            serializer.create(serializer.validated_data, requests)
+            return JsonResponse({'status':'success', 'data':[]}, status=200)
+        else:
+            return JsonResponse({'status':'failed, missing attribute or reason too long', 'data':[]}, status=400)
+    except Product.DoesNotExist:
+        return JsonResponse({'status': 'failed, product_id not exist', 'data':[]}, status=400)
+    except:
+        return JsonResponse({'status': 'failed', 'data':[]}, status=400)
+
+
+# ANNA specific reporting due to the way anna front-end was built
+@api_view(['POST'])
+@check_login
+def report_product_inventory_mismatch_from_anna(requests):
+    try:
+        serializer = AnnaReportSerializer(data=requests.data)
+        serializer.is_valid()
+        serializer.create(serializer.validated_data, requests)
+        return JsonResponse({'status':'success', 'data':[]}, status=200)
+    except:
+        return JsonResponse({'status': 'failed', 'data':[]}, status=400)

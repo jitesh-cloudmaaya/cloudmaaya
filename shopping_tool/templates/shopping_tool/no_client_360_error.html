@@ -1,0 +1,31 @@
+{% load staticfiles %}
+{% load sstatic %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ANNA - Shopping Tool</title>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css" rel="stylesheet"/>
+  {% load static %}
+  <link href="{% sstatic 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
+</head>
+<body class="search-page" data-stylesession="{{ styling_session.id }}">
+<div id="header">
+  <a href="/" class="logo"><i class="icon-dress-form"></i>Allume Couture</a>
+  <span id="stylist" data-stylistid="{{ user.id }}"></span>
+</div>
+
+</div>
+<div id="content">
+  <div id="search">
+    <label>We are updating the user information. Please refresh this page in 2 minutes.</label>
+    <div id="facets"></div>
+  </div>
+
+  </div>
+</div>
+
+</body>
+</html>

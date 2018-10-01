@@ -64,7 +64,7 @@ def prod(docker_tag=''):
   env.gateway = 'ec2-52-53-136-112.us-west-1.compute.amazonaws.com'
 
   env.roledefs = {
-      'web': ['ec2-54-177-92-201.us-west-1.compute.amazonaws.com'],
+      'web': ['ec2-54-177-92-201.us-west-1.compute.amazonaws.com', 'ec2-54-241-147-6.us-west-1.compute.amazonaws.com'],
       'worker': ['ec2-54-176-139-176.us-west-1.compute.amazonaws.com'],
       #'web': ['127.0.0.1:8022'],
       #'worker': ['127.0.0.1:8023'],
@@ -137,7 +137,7 @@ def deploy_web_container():
     run('docker rm $(docker stop $(docker ps -a -q --filter name=web))')
     env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v ~/static:/srv/catalogue_service/static -p 8000:8000 --name %s_shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service:%s" % (env.environment, env.docker_tag))
+    run("docker run --restart=on-failure -d -e NEW_RELIC_PROCESS_HOST_DISPLAY_NAME='%s' -e NEW_RELIC_ENVIRONMENT='%s' -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v ~/static:/srv/catalogue_service/static -p 8000:8000 --name %s_shopping_tool_web --entrypoint=\"/docker-entrypoint-web.sh\" allumestyle/catalogue-service:%s" % (env.host, env.environment, env.environment, env.docker_tag))
 
 @roles('worker')
 def deploy_celery_container():
@@ -149,14 +149,14 @@ def deploy_celery_container():
     run('docker rm $(docker stop $(docker ps -a -q --filter name=celery))')
     env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v /var/run/docker.sock:/var/run/docker.sock --name=%s_shopping_tool_celery --entrypoint=\"/docker-entrypoint-celery.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery.log 2>&1" % (env.environment, env.docker_tag))
+    run("docker run --restart=on-failure -d -e NEW_RELIC_PROCESS_HOST_DISPLAY_NAME='%s' -e NEW_RELIC_ENVIRONMENT='%s' -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py -v /var/run/docker.sock:/var/run/docker.sock --name=%s_shopping_tool_celery --entrypoint=\"/docker-entrypoint-celery.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery.log 2>&1" % (env.host, env.environment, env.environment, env.docker_tag))
 
     #Restart Celery Beat
     env.warn_only = True#Allows process to proceed if there is no current container
     run('docker rm $(docker stop $(docker ps -a -q --filter name=celery_beat))')
     env.warn_only = False
 
-    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py --name=%s_shopping_tool_celery_beat --entrypoint=\"/docker-entrypoint-celery-beat.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery_beat.log 2>&1" % (env.environment, env.docker_tag))
+    run("docker run --restart=on-failure -d -e NEW_RELIC_PROCESS_HOST_DISPLAY_NAME='%s' -e NEW_RELIC_ENVIRONMENT='%s' -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py --name=%s_shopping_tool_celery_beat --entrypoint=\"/docker-entrypoint-celery-beat.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery_beat.log 2>&1" % (env.host, env.environment, env.environment, env.docker_tag))
     
 
 @roles(['web', 'worker'])

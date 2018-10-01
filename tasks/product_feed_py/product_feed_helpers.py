@@ -1,3 +1,4 @@
+# coding=utf-8
 import urlparse
 import urllib
 import hashlib
@@ -6,6 +7,31 @@ import unicodedata
 from datetime import datetime, timedelta
 from product_api.models import Merchant, CategoryMap, Network, Product, SynonymCategoryMap
 from string import capwords
+
+def encode_obj(in_obj):
+
+    def encode_list(in_list):
+        out_list = []
+        for el in in_list:
+            out_list.append(encode_obj(el))
+        return out_list
+
+    def encode_dict(in_dict):
+        out_dict = {}
+        for k, v in in_dict.iteritems():
+            out_dict[k] = encode_obj(v)
+        return out_dict
+
+    if isinstance(in_obj, unicode):
+        return in_obj.encode('utf-8')
+    elif isinstance(in_obj, list):
+        return encode_list(in_obj)
+    elif isinstance(in_obj, tuple):
+        return tuple(encode_list(in_obj))
+    elif isinstance(in_obj, dict):
+        return encode_dict(in_obj)
+
+    return in_obj
 
 def parse_raw_product_url(product_url, raw_product_attribute):
     """
@@ -22,7 +48,6 @@ def parse_raw_product_url(product_url, raw_product_attribute):
     """
     # pass one
     raw_product_url = urlparse.parse_qs(urlparse.urlsplit(product_url).query)[raw_product_attribute][0]
-
     # pass two
     # split the url into parts
     split = urlparse.urlsplit(raw_product_url)
@@ -35,19 +60,17 @@ def parse_raw_product_url(product_url, raw_product_attribute):
     params.pop('utm_content', None)
     params.pop('siteID', None)
     # reconstruct the params into useful query string
-    query = urllib.urlencode(params, doseq=True)
+    query = urllib.urlencode(encode_obj(params), doseq=True)
     # replace the initial query value
     split = split._replace(query = query)
     # rejoin the split raw_product_url
     joined = urlparse.urlunsplit(split)
-
     return joined
 
 # some notes on generate_product_id usage
 # be very careful about which fields are used when generating the product id
 # for example, to preserve the final count of products, use the merchant_color instead of the allume
 # color and probably the merchant_size instead of the allume size (even if the products are then functionally identical)
-
 def generate_product_id(product_name, merchant_size, merchant_color, SKU):
     """
     In the event that a product_id cannot be found, deterministically generate a product_id
@@ -75,7 +98,7 @@ def generate_product_id(product_name, merchant_size, merchant_color, SKU):
 
 def assign_product_id_size(product_id, size):
     """
-    This helper function is used for deaggregating product records based on size. It generates
+    This helper function is used in deaggregating product records based on size. It generates
     a product_id to be used based on the size given and the product_id of the parent record.
     Args:
       product_id (str): The product_id of the parent record containing the list of sizes.
@@ -84,12 +107,10 @@ def assign_product_id_size(product_id, size):
     Returns:
       str: The product_id to use in the associated child record.
     """
-
     converted = int(hashlib.sha256(size.encode('UTF-8')).hexdigest(), 16) % (10 ** 15)
     product_id = int(product_id) + converted
     product_id = product_id % (2 ** 60) # keep id under bigint max signed value
     product_id = str(product_id).decode('UTF-8')
-
     return product_id
 
 def seperate_sizes(sizes):
@@ -191,6 +212,10 @@ def _hyphen_seperate_sizes(sizes):
         return splitSizes
     except IndexError as e:
         return [sizes]
+
+#####################################################################################################################################
+#####   BEGIN OLD SIZE PARSING LOGIC
+#####################################################################################################################################
 
 def determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping):
     """
@@ -376,6 +401,10 @@ def _lingerie_match(characters):
         return False
     return not bool(re.compile(r'[^abcedfghABCDEFGH]').search(characters))
 
+#####################################################################################################################################
+#####   END OLD SIZE PARSING LOGIC
+#####################################################################################################################################
+
 def generate_merchant_id(merchant_name):
     """
     In the event of an absent merchant id from data, generate it using the merchant name.
@@ -408,7 +437,6 @@ def parse_category_from_product_name(product_name, synonym_category_mapping, exc
     Returns:
       str: The category that was parsed from a synonym appearing in the product name.
     """
-
     matched_synonym = None
     currIndex = -1
     synonyms_list = synonym_category_mapping.keys()
@@ -498,15 +526,446 @@ def parse_other_terms(product_name, synonym_other_category_mapping):
 
     return u''
 
-def normalize_data(text, form='NFD'):
+#####################################################################################################################################
+#####   BEGIN NEW SIZE PARSING LOGIC
+#####################################################################################################################################
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def parse_single_size(v, product_name, allume_category, known_text_sizes, known_number_sizes):
+    # statics
+    known_separators = ['/']
+    inseam_sizes = ['TALL'] #
+    eu_can_obj_sizes = {'EU': 'EU', 'DE': 'DE', 'IT': 'IT', 'FR': 'FR', 'CAN': 'CAN', 'US': 'US'}
+    non_eu_us_sizes = ['UK', 'AUS']
+    non_eu_us_sizes_obj = {'UK': 'UK', 'AUS': 'AUS'}
+    allume_category = allume_category.upper() if allume_category else None
+    if allume_category == 'BEAUTY':
+        return [clean_up_beauty_data(v)]
+    is_shoe_size = allume_category == 'SHOES'
+    name_in_caps = product_name.upper()
+    v = v.upper()
+    has_short_insize = False
+    has_long_in_size = False
+    if 'SHORT' in v and not is_shoe_size:
+        has_short_insize = True
+    if 'LONG' in v and not is_shoe_size:
+        has_long_in_size = True
+
+    saved_parsed_data = v
+    parsed_v = saved_parsed_data
+    res = []
+    if 'MONTH' in parsed_v or 'AGE' in parsed_v or 'NEWBORN' in parsed_v or 'CHILD' in parsed_v or 'TODDLER' in parsed_v or 'BABY' in parsed_v or 'MTHS' in parsed_v or 'YOUTH' in parsed_v:
+        res.append(parsed_v)
+        print 'this size should not appear in the data ultimately... to-do...'
+        return res
+    text_number_sizes = known_text_sizes.copy()
+    text_number_sizes.update(known_number_sizes)
+    while parsed_v:
+        saved_parsed_data = clean_up_data(parsed_v, product_name, allume_category, known_text_sizes, known_number_sizes, eu_can_obj_sizes, non_eu_us_sizes_obj)
+        parsed_v = re.sub(r"^(US|FR|EU|DE|IT|CAN)\s*", '', saved_parsed_data)
+        parsed_v = re.sub(r"\s+(US|FR|EU|DE|IT|CAN)\s*", '', parsed_v)
+        if re.compile(r"^(\.|[0-9])+(US|FR|EU|DE|IT|CAN)$").match(parsed_v):
+            parsed_v = re.sub(r"(US|FR|EU|DE|IT|CAN)", '', parsed_v)
+        single_size_with_country_indicator_and_inseam_removed = re.sub(r"^(UK|AUS|TALL)\s*", '',
+                                                                       parsed_v)
+        single_size_with_country_indicator_and_inseam_removed = re.sub(r"\s+(UK|AUS|TALL)\s*", '',
+                                                                       single_size_with_country_indicator_and_inseam_removed)
+
+        if text_number_sizes.get(single_size_with_country_indicator_and_inseam_removed):
+            is_non_eu_us = False
+            has_inseam_sizes = False
+            for i in non_eu_us_sizes:
+                if i in parsed_v:
+                    is_non_eu_us = True
+                    for j in inseam_sizes:
+                        if j in parsed_v:
+                            has_inseam_sizes = True
+                            res.append(
+                                # known_number_sizes[
+                                j + ' ' + i + text_number_sizes.get(
+                                    single_size_with_country_indicator_and_inseam_removed)
+                                # ]
+                            )
+                            break
+                    if not has_inseam_sizes:
+                        res.append(
+                            # known_number_sizes[
+                            i + text_number_sizes.get(single_size_with_country_indicator_and_inseam_removed)
+                            # ]
+                        )
+                    break
+            if not is_non_eu_us:
+                for k in inseam_sizes:
+                    if k in parsed_v:
+                        has_inseam_sizes = True
+                        res.append(
+                            # known_number_sizes[
+                            k + ' ' + text_number_sizes.get(single_size_with_country_indicator_and_inseam_removed)
+                            # ]
+                        )
+                        break
+                if not has_inseam_sizes:
+                    res.append(text_number_sizes[single_size_with_country_indicator_and_inseam_removed])
+            parsed_v = None
+        else:
+            size_separator = has_any(parsed_v, known_separators)
+            if size_separator:
+                splitted_sizes_with_known_text_sizes = get_splitted_sizes_with_known_text_number_sizes(parsed_v,size_separator,text_number_sizes)
+                if splitted_sizes_with_known_text_sizes:
+                    res = res + splitted_sizes_with_known_text_sizes
+                    parsed_v = None
+                else:
+                    splitted_sizes_with_US_text = get_splitted_sizes_with_US_text(parsed_v, size_separator, text_number_sizes)
+                    if splitted_sizes_with_US_text:
+                        if parsed_v != splitted_sizes_with_US_text:
+                            parsed_v = splitted_sizes_with_US_text
+                        else:
+                            # preventing infinite loop
+                            parsed_v = None
+                    else:
+                        splitted_sizes_with_INT_text = get_splitted_sizes_with_EU_CAN_text(parsed_v, size_separator, eu_can_obj_sizes, text_number_sizes)
+                        if splitted_sizes_with_INT_text:
+                            if parsed_v != splitted_sizes_with_INT_text:
+                                parsed_v = splitted_sizes_with_INT_text
+                            else:
+                                # preventing infinite loop
+                                parsed_v = None
+                        else:
+                            parsed_v = None
+            else:
+                parsed_v = None
+
+    results = {'error': [saved_parsed_data]} if len(res) == 0 else {'success': res}
+    for k in results:
+        single_raw_res = results[k]
+        for idx, j in enumerate(single_raw_res):
+            if not is_shoe_size:
+                if (re.compile(r".*\s+TALL\s+|^TALL\s+").match(name_in_caps) or has_long_in_size) and not re.compile(
+                        r".*(LONG|TALL|W|E).*").match(j):
+                    single_raw_res[idx] = 'TALL ' + j
+                if (re.compile(r".*\s+PETITE\s+|^PETITE\s+").match(
+                        name_in_caps) or has_short_insize) and not re.compile(r".*(SHORT|P|N|A|PETITE).*").match(j):
+                    single_raw_res[idx] = 'PETITE ' + j if len(re.sub(r"([0-9]|\.)+", '', j)) != 0 else j + 'P'
+    return [saved_parsed_data] if len(res) == 0 else res
+
+
+def get_splitted_sizes_with_known_text_number_sizes(val, separator, known_text_number_sizes):
+    import re
+    res = []
+    allume_petite_sep = 'p-als-'
+    val = re.sub(r'^P/', allume_petite_sep, val)
+    sizes = val.split(separator)
+    for size in sizes:
+        updated_size = size.replace(allume_petite_sep, 'P/').strip()
+        if known_text_number_sizes.get(updated_size):
+            res.append(known_text_number_sizes.get(updated_size))
+    return res
+
+
+def get_splitted_sizes_with_US_text(val, separator, text_number_sizes):
+    res = []
+    allume_petite_sep = 'p-als-'
+    val = re.sub(r'^P/', allume_petite_sep, val)
+    sizes = val.split(separator)
+    for size in sizes:
+        size = size.strip()
+        temp = re.sub(r'^US\s*|\s+US\s*', '', size)
+        if text_number_sizes.get(temp):
+            res.append(temp)
+    return separator.join(res).replace(allume_petite_sep, 'P/') if res else None
+
+
+def get_splitted_sizes_with_EU_CAN_text(val, separator, eu_can_obj_sizes, text_number_sizes):
+    res = []
+    allume_petite_sep = 'p-als-'
+    val = re.sub(r'^P/', allume_petite_sep, val)
+    sizes = val.split(separator)
+    for size in sizes:
+        size = size.strip()
+        for eu_can_obj_size in eu_can_obj_sizes:
+            temp = re.sub(r'^' + eu_can_obj_size + '\s*|\s+' + eu_can_obj_size + '\s*', '', size)
+            if text_number_sizes.get(temp):
+                res.append(temp)
+    return separator.join(res).replace(allume_petite_sep, 'P/') if res else None
+
+
+def has_any(val, entries):
+    for entry in entries:
+        if entry in val:
+            return entry
+    return None
+
+
+def clean_up_beauty_data(v):
+    v = re.sub(r'TUBE|REFILL', '', v).strip()
+    if re.compile(r".*\.").match(v):
+        v = re.sub(r'\.$', '', v)
+    if re.compile(r"[0-9]+\s+OZ").match(v):
+        v = re.sub(r'\s+OZ$', '.0 OZ', v)
+    return v
+
+
+def clean_up_data(val, product_name, allume_category, known_text_sizes, known_number_sizes, eu_can_obj_sizes, non_eu_us_sizes_obj):
+    val = re.sub(r"\s+", ' ', val)
+    val = re.sub(r"[\",]+", '', val).upper().strip()
+    val = re.sub(r"\.+", '.', val).upper().strip()
+    val = val.replace('EXTRA LARGE', 'XL').strip()
+    val = re.sub(r'IN(CH(ES)?)?', '', val).strip()
+    val = re.sub(r'(SHORT|LONG|REGULAR|REG|UNISEX|PLUS|EXTRA)', '', val).strip()
+    is_shoe_size = allume_category == 'SHOES'
+    is_bottom_size = allume_category == 'BOTTOMS'
+
+    if re.compile(r"[0-9]+\s+1/2\s*").match(val):
+        val = re.sub(r'\s*1/2', '.5', val)
+    # val = val.replace('Â½', '.5')
+    if "(" in val:
+        val = re.sub(r"\(+", '(', val)
+        val = re.sub(r"\)+", ')', val)
+        open_idx = val.index('(')
+        if ")" not in val:
+            val = val + ')'
+        close_idx = val.index(')')
+        before_open = val[:open_idx].strip()
+        within_parenthesis = val[open_idx + 1:close_idx].strip()
+        after_close = val[close_idx + 1:].strip()
+        out_of_parenthesis = before_open if before_open else after_close
+        within_parenthesis_chars = re.sub(r'[^zA-Z]+', '', within_parenthesis)
+        within_parenthesis_numbers = re.sub(r'[^0-9]+', '', within_parenthesis)
+        out_of_parenthesis_chars = re.sub(r'[^A-Z]+', '', out_of_parenthesis)
+        out_of_parenthesis_numbers = re.sub(r'[^0-9]+', '', out_of_parenthesis)
+        if within_parenthesis and not out_of_parenthesis:
+            val = within_parenthesis
+        elif out_of_parenthesis and not within_parenthesis:
+            val = out_of_parenthesis
+        elif 'US' in within_parenthesis_chars and 'AUS' not in within_parenthesis_chars:
+            val = within_parenthesis if within_parenthesis_numbers else out_of_parenthesis
+        elif 'US' in out_of_parenthesis_chars and 'AUS' not in out_of_parenthesis_chars:
+            val = out_of_parenthesis if out_of_parenthesis_numbers else within_parenthesis
+        else:
+            if re.compile(r"^[A-Z]+[-A-Z]*$").match(out_of_parenthesis) and within_parenthesis == 'P':  # "X-SMALL (P)"
+                val = 'PETITE ' + out_of_parenthesis
+            elif re.compile(r"^[0-9]+W$").match(out_of_parenthesis) and re.compile(r"^[A-Z-0-9]*$").match(
+                    within_parenthesis):
+                val = out_of_parenthesis
+            elif re.compile(r"^[A-Z]+/[A-Z]+$").match(out_of_parenthesis) and re.compile(
+                    r"^[A-Z0-9]+-[A-Z0-9]+$").match(within_parenthesis):
+                val = out_of_parenthesis
+            elif '-' in within_parenthesis:
+                val = within_parenthesis
+            elif '-' in out_of_parenthesis:
+                val = out_of_parenthesis
+            elif non_eu_us_sizes_obj.get(within_parenthesis):
+                val = within_parenthesis + ' ' + out_of_parenthesis
+            elif non_eu_us_sizes_obj.get(out_of_parenthesis):
+                val = out_of_parenthesis + ' ' + within_parenthesis
+            elif re.compile(r"^[0-9]+X$").match(out_of_parenthesis) and (
+                re.compile(r"^[0-9]+[/|-][0-9]+").match(within_parenthesis) or re.compile(r"^[0-9]+").match(
+                    within_parenthesis)):
+                val = within_parenthesis
+            elif re.compile(r"^[0-9]+P$").match(out_of_parenthesis) and re.compile(r"^[0-9]+").match(
+                    within_parenthesis):
+                val = within_parenthesis
+            elif known_text_sizes.get(within_parenthesis):
+                val = within_parenthesis
+            elif known_text_sizes.get(out_of_parenthesis):
+                val = out_of_parenthesis
+            elif within_parenthesis_chars and out_of_parenthesis_chars:
+                val = out_of_parenthesis if len(out_of_parenthesis_chars) > len(
+                    within_parenthesis_chars) else within_parenthesis
+            elif within_parenthesis_chars:
+                val = within_parenthesis
+            elif out_of_parenthesis_chars:
+                val = out_of_parenthesis
+            else:
+                if len(within_parenthesis_numbers) == len(within_parenthesis) and len(
+                        out_of_parenthesis_numbers) == len(out_of_parenthesis):  # both numbers only
+                    val = within_parenthesis if int(within_parenthesis_numbers) < int(
+                        out_of_parenthesis_numbers) else out_of_parenthesis
+                elif len(within_parenthesis_numbers) == len(within_parenthesis) and len(
+                        out_of_parenthesis_numbers) != len(out_of_parenthesis):
+                    val = out_of_parenthesis
+                else:
+                    val = within_parenthesis
+
+    for c in eu_can_obj_sizes:
+        if re.compile(r'\s+' + c + '|([0-9]|\.)+\s*' + c + '|^([0-9]|\.)+-' + c + '$').match(val):
+            val = re.sub(r'-?' + c, '', val)
+    if is_shoe_size:
+        if 'WIDE' in val and not 'SHOEWIDE' in val:
+            val = 'SHOEWIDE' + val.replace('WIDE', '')
+        if re.compile(r"^MENS\s+(\.|[0-9]|US)+\s*/\s*WOMENS\s+(\.|[0-9]|US)+$").match(val):
+            val = re.sub("WOMENS\s+", '', val[val.index('/') + 1:]).strip()
+        if re.compile(r"^(\.|[0-9])+[B|C]/(\.|[0-9])+[B|C]$").match(val):
+            val = val.replace('B', '').replace('C', '')
+        if re.compile(r"^(\.|[0-9])+\s+WMN\s*/").match(val):
+            val = val[:val.index('WMN')].strip()
+        if re.compile(r"^WOMENS\s+(\.|[0-9]|US)+\s*/").match(val):
+            val = re.sub("WOMENS\s+", '', val[:val.index('/')]).strip()
+        if re.compile(r"^US\s+WOMEN'S\s+(\.|[0-9])+\s+/\s+US\s+MEN'S\s+(\.|[0-9])+").match(val):
+            val = re.sub("US\s+WOMEN'S\s+", '', val[:val.index('/')]).strip()
+        if re.compile(r"^(\.|[0-9])+\s*WOMEN\s*/").match(val):
+            val = re.sub("WOMEN\s*", '', val[:val.index('/')]).strip()
+        if re.compile(r"^(\.|[0-9])+\s+MEN\s+/\s+(\.|[0-9])+\s+WOM$").match(val):
+            val = re.sub("\s+WOM", '', val[val.index('/') + 1:]).strip()
+        if re.compile(r"^[0-9]+(\.|[0-9])*-[0-9]+(\.|[0-9])*$").match(val):
+            val = re.sub(r'-', '/', val)
+        if re.compile(r"(\.|[0-9])*\s*[WE]+$").match(val) or re.compile(r"(\.|[0-9])*\s*[WE]+\s+").match(val):
+            val = 'SHOEWIDE' + re.sub(r'\s*[WE]+\s*', '', val).strip()
+        if re.compile(r"(\.|[0-9])*\s*[WE]+\s*/\s*(\.|[0-9])*\s*[WE]+$").match(val):
+            val = 'SHOEWIDE' + re.sub(r'\s*[WE]+\s*', '', val[:val.index('/')]).strip() + '/' + 'SHOEWIDE' + re.sub(
+                r'\s*[WE]+\s*', '', val[val.index('/') + 1:]).strip()
+        if re.compile(r"(\.|[0-9])*\s*M/?W$").match(val):
+            val = re.sub(r'[^0-9.]+', '', val)
+            val = val + '/SHOEWIDE' + val
+        if re.compile(r"(\.|[0-9])*\s*D+$").match(val):
+            val = re.sub(r'[^0-9.]+', '', val)
+        if re.compile(r"(\.|[0-9])*\s*[NA]+$").match(val) or re.compile(r"(\.|[0-9])*\s*[NA]+\s+").match(val):
+            val = 'SHOENARROW' + re.sub(r'\s*[NA]+\s*', '', val).strip()
+        if re.compile(r"(\.|[0-9])*\s*[NA]+\s*/\s*(\.|[0-9])*\s*[NA]+$").match(val):
+            val = 'SHOENARROW' + re.sub(r'\s*[NA]+\s*', '', val[:val.index('/')]).strip() + '/' + 'SHOENARROW' + re.sub(
+                r'\s*[NA]+\s*', '', val[val.index('/') + 1:]).strip()
+        if re.compile(r"^(\.|[0-9])+\s*S+$").match(val):
+            val = 'SHOENARROW' + val.replace('S', '').strip()
+        if re.compile(r"^M:([0-9]|\.)+B$").match(val):
+            val = re.sub(r'[M:B]', '', val)
+        if re.compile(r"^W:([0-9]|\.)+B$").match(val):
+            val = 'SHOEWIDE' + re.sub(r'[W:B]', '', val)
+    else:
+        if re.compile(r"^W[0-9]{4}$").match(val) or re.compile(r"^[0-9]{4}$").match(val):
+            val = 'WAIST' + re.sub(r'[^0-9]+', '', val)[:2]
+        if re.compile("^[0-9]{1,2}\s*X\s*[0-9]{1,2}").match(val):
+            if ('PLUS' in product_name and int(val[:val.index('X')]) > 14 and int(val[:val.index('X')]) < 30) or int(
+                    val[:val.index('X')]) < 22:
+                val = val[:val.index('X')].strip()
+            else:
+                val = 'WAIST' + re.sub(r'[^0-9]+', '', val)[:2]
+        if re.compile(r"^[0-9]+X/[0-9]+\s*-\s*[0-9]+W?").match(val):
+            val = val[val.index('/') + 1:val.index('-')].strip() + '/' + val[val.index('-') + 1:].strip().replace('W',
+                                                                                                                  '')
+        if re.compile(r"^[0-9]+INCH$").match(val):
+            val = 'WAIST' + val.replace('INCH', '')
+        if re.compile(r"^[0-9]+W[0-9]+$").match(val):
+            val = 'WAIST' + re.sub(r'W.*', '', val)
+        if re.compile(r"^[0-9]+W?[-|/][0-9]+\s*W?$").match(val):
+            val = val.replace('-', '/').replace('W', '').strip()
+        if re.compile(r"^[0-9]+\s*W\s+|^[0-9]+\s*W$").match(val):
+            val = re.sub(r'\s*W\s*', '', val)
+        if re.compile(r"^(PETITE|TALL)[0-9]+\s*W\s+|^(PETITE|TALL)[0-9]+\s*W$").match(val):
+            val = re.sub(r'\s*W\s*', '', val)
+        if re.compile(r"^(\.|[0-9])+L\s*(US)?$").match(val):
+            val = ('TALL' + re.sub(r'[^0-9.]+', '', val)).strip()
+        if re.compile(r"^(\.|[0-9])+\s*S+(\s*US)?$").match(val):
+            val = re.sub(r'S+(\s*US)?$', '', val).strip() + 'P'
+        if re.compile(r"^[0-9]+X-[0-9]+X$").match(val):
+            val = val.replace('-', '/')
+
+    if re.compile(r"^([0-9]|\.)+\s*(B|C|M|R|MED)+$").match(val) or re.compile(r"([0-9]|\.)+\s*(B|C|M|R|MED)+\s+").match(
+            val):
+        val = re.sub(r'(B|C|R|MED)*', '', val).replace('M', '').strip()
+    if re.compile(r"^([0-9]|\.)+M-([0-9]|\.)+M$").match(val):
+        val = val.replace('M-', '/').strip().replace('M', '')
+    if re.compile(r"^[0-9]+/[A-Z]+-*[A-Z]*$").match(val):
+        val = val[val.index('/') + 1:]
+    if re.compile(r"^[a-z-A-Z]+:\s+[0-9]+-*[0-9]*").match(val):
+        temp_val_char = re.sub(r'[^a-zA-Z]+', '', val)
+        if known_text_sizes.get(temp_val_char):
+            val = temp_val_char
+        else:
+            val = val[val.index(':') + 1:]
+
+    if re.compile(r"^([0-9]|\.)+-([0-9]|\.)+/.*$").match(val):
+        val = re.sub(r'/.*', '', val)
+    if re.compile(r"^[0-9A-Z]+\.[0]+(/[0-9A-Z]+\.[0]+)?$").match(val):
+        val = re.sub(r'\.[0]+', '', val)
+
+    if re.compile(r"^[a-zA-Z]+-[a-zA-Z]+$").match(val):
+        temp_val = val.split('-')
+        if known_text_sizes.get(temp_val[0]) and known_text_sizes.get(temp_val[1]):
+            val = val.replace('-', '/')
+    if re.compile(r"^[0-9]+[-|/][0-9]+[p|P]$").match(val):
+        val = re.sub(r'[/|-]', 'P/', val)
+    if re.compile(r"^(\.|[0-9])+\s*-(\.|[0-9])+\s*US$").match(val):
+        val = val.replace('-', '/').replace('US', '').strip()
+    if re.compile(r"^P/[A-Z]+-[A-Z]+$").match(val):
+        val = 'PETITE ' + val[val.index('/') + 1: val.index('-')] + '/PETITE ' + val[val.index('-') + 1:]
+    if re.compile(r"^[A-Z]+/[A-Z]+\s*-\s*P$").match(val):
+        val = 'PETITE ' + val[: val.index('/')] + '/PETITE ' + val[val.index('/') + 1:val.index(' ')]
+    if re.compile(r"^PETITE\s+[A-Z]+\s+/\s+[A-Z]+$").match(val):
+        val = 'PETITE ' + val[val.index(' ') + 1: val.index(' /')] + '/PETITE ' + val[val.index('/ ') + 1:]
+
+    if re.compile(r"^PETITE\s*/\s*[0-9]+\s*-\s*[0-9]+$").match(val):
+        val = (val[val.index('/') + 1: val.index('')] + 'P').strip() + (
+            '/' + val[val.index('-') + 1:] + 'P').strip()
+    if re.compile(r"^PETITE[0-9]+-[0-9]+$").match(val):
+        val = (val[:val.index('-')].replace('PETITE', '') + 'P').strip() + (
+            '/' + val[val.index('-') + 1:] + 'P').strip()
+    if re.compile(r"^PETITE\s+[0-9]+\s+-\s+[0-9]+L$").match(val):
+        val = (val[:val.index('-')]).strip()
+    if re.compile(r"^[A-Z]+-?[A-Z]*\s*[0-9]+([-|/][0-9]+)?$").match(val):
+        temp_val = re.sub(r'[^A-Z]+', '', val)
+        if known_text_sizes.get(temp_val) and 'P' not in temp_val:
+            val = temp_val
+    if re.compile(r"^[A-Z0-9.]+/[0-9.]+-[0-9.]+$").match(val):
+        temp_val = re.sub(r'[^A-Z]+', '', val)
+        if known_text_sizes.get(temp_val) and 'P' not in temp_val:
+            val = temp_val
+        else:
+            val = val[val.index('/') + 1:]
+    if re.compile(r"^[0-9]+\s*[A-Z]+[-A-Z]*$").match(val):
+        temp_val = re.sub(r'[^A-Z]+', '', val)
+        if known_text_sizes.get(temp_val) and 'P' not in temp_val:
+            val = temp_val
+    if re.compile(r"^P[A-Z]\s+[0-9]+P$").match(val):
+        val = (val[val.index(' '):]).strip()
+    if re.compile(r"^SIZE\s*[0-9]+$").match(val):
+        val = re.sub(r'^SIZE\s*', '', val).strip()
+    if re.compile(r"^SZ\s*[0-9]+\s+TALL$").match(val):
+        val = 'TALL' + re.sub(r'[^0-9]+', '', val)
+    if re.compile(r"^[0-9]+UK$").match(val):
+        val = 'UK' + re.sub(r'[^0-9]+', '', val)
+    if re.compile(r"^(\.|[0-9])+-(\.|[0-9])+$").match(val):
+        val = val.replace('-', '/')
+    if re.compile(r"^[0-9]+\s+[0-9]+$").match(val):
+        val = re.sub(r'\s+', '/', val)
+    if 'XSS' == val:
+        val = 'XS/S'
+    if 'SM' == val:
+        val = 'S/M'
+    if 'X-S' == val:
+        val = 'XS'
+    if 'X-L' == val:
+        val = 'XL'
+    if 'ML' == val:
+        val = 'M/L'
+    if 'X-SMALL-SMALL' == val:
+        val = 'X-SMALL/SMALL'
+    if re.compile(r"^[0-9]+/[A-Z]+$").match(val):
+        val = val[:val.index('/')]
+    if re.compile(r"^(\.|[0-9])+-(\.|[0-9])+$").match(val):
+        val = val.replace('-', '/')
+    if re.compile(r"^[0-9]+\s+&\s+").match(val):
+        val = val[:val.index('&')].strip()
+    val = re.sub(r"\s+", ' ', val).strip()
+    try:
+        if is_bottom_size and re.compile(r"^[0-9.]+$").match(val) and float(val) > 20 and 'jeans' in product_name.lower():
+            val = 'WAIST' + val if known_number_sizes.get('WAIST' + val) else val
+    except:
+        return val
+    return val
+
+#####################################################################################################################################
+#####   END NEW SIZE PARSING LOGIC
+#####################################################################################################################################
+
+def unicode_encode(value):
     """
-    Necessary to fit potential unicode data to MySQL tables with latin1 charsets.
+    try to handle unicode errors more smoothly
     """
     try:
-        text = unicode(text, 'utf-8')
-    except (TypeError, NameError):
-        pass
-    text = unicodedata.normalize(form, text)
-    text = text.encode('ascii', 'ignore')
-    text = text.decode('utf-8')
-    return text
+        return value.encode('UTF-8')
+    except UnicodeDecodeError:
+        return value

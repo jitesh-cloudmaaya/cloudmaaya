@@ -30,14 +30,20 @@ SECRET_KEY = '=pygr69-)_vctwqfo-(09@n15h3z&byq9-m-(#+7a5k9jb5ew+'
 ALLOWED_HOSTS = ['shopping-tool-web-dev.allume.co', 
                  'shopping-tool-stage.allume.co', 
                  'localhost', 
-                 '127.0.0.1', 
+                 '127.0.0.1',
+                 'dev.allume.co',
                  'shopping-tool-web-stage.allume.co', 
-                 'shopping-tool-web-prod.allume.co']
+                 'shopping-tool-web-prod.allume.co'
+                 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # autocomplete
+    'dal',
+    'dal_select2',
+    # -- end autocomplete
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,10 +62,16 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'django_extensions',
-    'massadmin'
+    'massadmin',
+    'stylist_management', # stylist management
+    'auditlog', # detail logging
+    'merchant_management', # merchant_management
+    'admin_reorder', # reoder admin window for better usability
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,6 +79,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auditlog.middleware.AuditlogMiddleware', # detail logging
+    'admin_reorder.middleware.ModelAdminReorder', # reoder admin window for better usability
 ]
 
 ROOT_URLCONF = 'catalogue_service.urls'
@@ -171,6 +185,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 CELERY_RESULT_BACKEND = 'django-db'
+CELERY_SEND_TASK_ERROR_EMAILS = True
+ADMINS = (('Anna Task Failures', 'anna-failures-notification@allume.co'))
 
 # Tell nose to measure coverage 
 NOSE_ARGS = [
@@ -180,3 +196,38 @@ NOSE_ARGS = [
     '--nocapture',
     '--nologcapture',
 ]
+
+# Customized user table to WpUser
+# AUTH_USER_MODEL = 'shopping_tool.WpUsers'
+
+#Cors config
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_REGEX_WHITELIST = [r'.*\.allume\.co']
+
+# reorder admin windows
+ADMIN_REORDER = (
+    # Keep original label and models
+    'stylist_management',
+    # # Cross-linked models
+    {'app': 'merchant_management', 'models': 
+    (
+    'merchant_management.ShippingPrice',
+    'merchant_management.MerchantEditing',
+    )},
+    'django_celery_beat',
+    {'app': 'product_api', 'models': 
+    (
+    'product_api.AllumeCategory',
+    'product_api.AllumeRetailerSizeMapping',
+    'product_api.CategoryMap',
+    'product_api.ColorMap',
+    'product_api.ExclusionTerm',
+    'product_api.Network',
+    'product_api.SynonymCategoryMap'
+    )},
+    'shopping_tool',
+    'auditlog',
+)

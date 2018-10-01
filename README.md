@@ -38,13 +38,15 @@ https://gist.github.com/nrollr/3f57fc15ded7dddddcc4e82fe137b58e
 ### Install wkhtmltopdf
 `brew install Caskroom/cask/wkhtmltopdf`
 
-### Create a new Virtual Env for the project, the command below puts it in a folder in your home folder if you have another then use that:
+### Create a new Virtual Env for the project, the command below puts it in a folder in your home folder if you have another then use that :
 `virtualenv ~/VENV/catalogue_service`
 
 ### Activate the Virtual Env:
+Requires Python 2.7
 `source ~/VENV/catalogue_service/bin/activate`
 
 ### From the repo folder install the requirements:
+Requires pip 10.01
 `pip install -r requirements`
 
 ### Once you have mysql installed and have the mysql root password all set run:

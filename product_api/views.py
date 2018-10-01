@@ -22,11 +22,13 @@ import datetime
 import urllib
 from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite
 from models import Product, Merchant
+from elasticsearch_dsl.query import Q
 
 
 from elasticsearch_dsl.connections import connections
 from product_doc import EProductSearch#, EProduct
 
+import calendar
 
 @api_view(['GET'])
 def sort_options(self):
@@ -61,10 +63,14 @@ def facets(self):
 
     filter_favs = self.query_params.get('favs')
     if filter_favs:
-        user_favs = list(UserProductFavorite.objects.filter(stylist=filter_favs).values_list('product_id', flat=True))
+        user_favs_list = list(UserProductFavorite.objects.filter(stylist=filter_favs).values_list('product_id', flat=True))
+        if len(user_favs_list) != 0:
+            user_favs = user_favs_list
+        else: 
+            user_favs = [-99]
     else:
         user_favs = []
-    
+
 
     start_record = (num_per_page * (page - 1))
     #print start_record
@@ -76,9 +82,14 @@ def facets(self):
         if key in EProductSearch.facets:
             whitelisted_facet_args[key] = urllib.unquote(value).split("|")
 
+    if 'size' not in whitelisted_facet_args.keys():
+        whitelisted_facet_args['size'] = ''
+    else:
+        whitelisted_facet_args['size'].append('')
 
     es = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, sort=sort_order)
     es_count = EProductSearch(query=text_query, filters=whitelisted_facet_args, favs=user_favs, card_count=True)
+
     es = es[start_record:end_record]
     results = es.execute().to_dict()
     results_count = es_count.execute().to_dict()
@@ -89,6 +100,8 @@ def facets(self):
     total_count = results_count['aggregations']['unique_count']['value']
     context = format_results(results, total_count, page, num_per_page, self, 'products', text_query, results['aggregations'])
 
+
+    # print context
 
     return Response(context) 
 
@@ -137,7 +150,7 @@ def get_product(self, product_id):
     product = Product.objects.get(id = product_id)
     p_name = product.product_name
 
-    print product.brand
+    #print product.brand
 
     # using the product we are looking for
     product_merchant_id = product.merchant_id
@@ -148,12 +161,10 @@ def get_product(self, product_id):
 
     s = Search(index="products")
 
-    s = s.query("match_phrase", product_name=product.product_name)[0:100]
+    #s = s.query("match_phrase", product_name=product.product_name)[:100]
+    
+    s.query = Q("match_phrase", product_name=product.product_name) | Q({"ids" : {"values" : product_id}})
     s = s.filter("match_phrase", merchant_name=product.merchant_name)
-
-    #Bool(must=[Terms(brand__keyword=[u'Hudson']), Terms(merchant_name__keyword=[u'Bergdorf Goodman (Neiman Marcus)', u'Lord & Taylor'])]) 
-
-
 
     results = s.execute()
 
@@ -172,9 +183,25 @@ def get_product(self, product_id):
 
     return Response(context) 
 
+@api_view(['POST'])
+@permission_classes((AllowAny, ))
+def get_allume_products(request):
+    # expect [12,14]
+    products = {}
+    for product_id in json.loads(request.body.decode('utf-8'))['products']:
+        try:
+            products[product_id] = get_allume_product_by_id(request, product_id)
+        except:
+            products[product_id] = None
+    return Response(products)
+
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
 def get_allume_product(self, product_id):
+    return Response(get_allume_product_by_id(self, product_id))
+
+
+def get_allume_product_by_id(self, product_id):
     """
 
     get:
@@ -183,7 +210,7 @@ def get_allume_product(self, product_id):
     """
     product = Product.objects.get(id = product_id)
     p_name = product.product_name
-
+    updated_at = product.updated_at
     # using the product we are looking for
     product_merchant_id = product.merchant_id
     # retrieve the merchant from the pam table
@@ -211,12 +238,15 @@ def get_allume_product(self, product_id):
 
     results = context
 
-
     payload = {'sites': {}}
     tmp = {'color_names': [], 'color_objects': {}}
     matching_object = ''
 
     data = results['data']
+    # a mapping of the text field, 'availability', to a boolean flag, 'available'
+    availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False, 'yes': True, 'no': False}
+    has_available_siblings = False
+    # either update above as more or fields are added or mold availability field across feeds to the same form
     # loop through results to set up content for the payload
     for i in range(0, len(data)):
         product = data[i]['_source']
@@ -228,17 +258,26 @@ def get_allume_product(self, product_id):
             tmp['color_names'].append(clr)
             tmp['color_objects'][clr] = {'sizes': [], 'size_data': {}}
 
-        all_sizes = product['size'].split(',')
-        for i in range(0, len(all_sizes)):
-            size = all_sizes[i]
-            if size not in tmp['color_objects'][clr]['sizes']:
-                tmp['color_objects'][clr]['sizes'].append(size)
-                size_data = {'image': product['product_image_url'], 'price': product['current_price'], 'text': size, 'value': size} # change formatting?
-                tmp['color_objects'][clr]['size_data'][size] = size_data
 
-    # a mapping of the text field, 'availability', to a boolean flag, 'available'
-    availability_mapping = {'in-stock': True, '': False, 'out-of-stock': False, 'preorder': False, 'yes': True, 'no': False}
-    # either update above as more or fields are added or mold availability field across feeds to the same form
+        # b/c we iterate over every product right here and add it to the payload, can't we just check against the is_deleted and it's personal availablility?
+
+        try:
+            product_availability = availability_mapping[product['availability']]
+        except KeyError as e:
+            print "The 'availability' text field value present in this product does not have a known mapping, it was assumed to 'available' = False"
+            print product['availability']
+            product_availability = False
+
+        if not product['is_deleted'] and product_availability:
+            has_available_siblings = True
+            all_sizes = product['size'].split(',')
+            for i in range(0, len(all_sizes)):
+                size = all_sizes[i]
+                if size not in tmp['color_objects'][clr]['sizes']:
+                    tmp['color_objects'][clr]['sizes'].append(size)
+                    size_data = {'image': product['product_image_url'], 'price': product['current_price'], 'text': size, 'value': size} # change formatting?
+                    tmp['color_objects'][clr]['size_data'][size] = size_data
+
 
     # create payload object
     merchant_node = str(matching_object['product_api_merchant'])
@@ -252,20 +291,23 @@ def get_allume_product(self, product_id):
     payload['sites'][merchant_node]['add_to_cart'][product_node]['original_price'] = matching_object['retail_price']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['image'] = matching_object['product_image_url']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['description'] = matching_object['long_product_description']
-
+    payload['sites'][merchant_node]['add_to_cart'][product_node]['categories'] = [matching_object['primary_category'], matching_object['secondary_category'], matching_object['allume_category']]
+    payload['sites'][merchant_node]['add_to_cart'][product_node]['material'] = matching_object['material']
+    payload['sites'][merchant_node]['add_to_cart'][product_node]['is_deleted'] = matching_object['is_deleted']
     try:
         payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = availability_mapping[matching_object['availability']]
     except KeyError as e:
-        print "The 'availablity' text field value present in this product does not have a known mapping, it was assumed to 'available' = False"
+        print "The 'availability' text field value present in this product does not have a known mapping, it was assumed to 'available' = False"
         print matching_object['availability']
         payload['sites'][merchant_node]['add_to_cart'][product_node]['available'] = False
-
+    payload['sites'][merchant_node]['add_to_cart'][product_node]['has_available_siblings'] = has_available_siblings
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_names'] = ["color", "size", "quantity"]
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_values'] = {}
     payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_values']['color'] = []
     payload['sites'][merchant_node]['add_to_cart'][product_node]['url'] = matching_object['product_url']
     payload['sites'][merchant_node]['add_to_cart'][product_node]['status'] = "done"
     payload['sites'][merchant_node]['add_to_cart'][product_node]['original_url'] = matching_object['raw_product_url']
+    payload['sites'][merchant_node]['add_to_cart'][product_node]['updated_at'] = calendar.timegm(updated_at.utctimetuple()) if updated_at else None
 
     # create the colors array object
     for i in range(0, len(tmp['color_names'])):
@@ -278,7 +320,8 @@ def get_allume_product(self, product_id):
             obj['dep']['size'].append(size)
         payload['sites'][merchant_node]['add_to_cart'][product_node]['required_field_values']['color'].append(obj)
 
-    return Response(payload)
+    return payload
+
 
 def format_results(results, total_count, page, num_per_page, request, label, text_query, facets_dict):
     response = collections.OrderedDict()
@@ -293,6 +336,7 @@ def format_results(results, total_count, page, num_per_page, request, label, tex
     response['data'] = results['hits']['hits']
     return response
 
+
 def convert_facet_value(facet_name, value):
     if facet_name == 'publish_month':
         return value.strftime('%Y-%m')
@@ -304,6 +348,7 @@ def facet_to_filter(facet_name, value):
         yyyy, mm = map(int, value.split('-'))
         return datetime.datetime(yyyy, mm, 1, 0, 0, 0)
     return value
+
 
 def href_with_removed(key, value, query_params):
     existing = dict(query_params)

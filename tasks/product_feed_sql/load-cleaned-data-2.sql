@@ -134,5 +134,4 @@ ON DUPLICATE KEY UPDATE
     allume_size = VALUES(allume_size),
     allume_category = VALUES(allume_category);
 
-
 -- DROP TABLE [STAGING_TABLE];

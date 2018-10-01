@@ -1,30 +1,20 @@
 <div id="user-card">
   <a id="close-user-clip" href="#"><i class="fa fa-times"></i></a>
   <a id="user-clip" href="#" data-userid="{{ client.id }}" data-username="{{ client.first_name }} {{ client.last_name }}">
-  <span class="name"><em>now styling:</em>{{ client.first_name }} {{ client.last_name }}</span>
-  <span class="expanded bday" id="client-birthday" data-bd="{{ client.client_360.birthday }}"></span> 
-  <span class="expanded style"><em>occupation:</em>{{ client.client_360.occupation }}</span> 
-  <span class="expanded style" id="client-locale" data-cs="{{ client.client_360.where_live }}" data-tz="{{client.timezone}}"></span>
-  <span class="expanded weather"><i class="fa fa-thermometer-three-quarters"></i>winter {{ weather_info.winter_temperature_average|floatformat:"0" }}&deg;,  spring {{ weather_info.spring_temperature_average|floatformat:"0" }}&deg;,  summer {{ weather_info.summer_temperature_average|floatformat:"0" }}&deg;,  fall {{ weather_info.autumn_temperature_average|floatformat:"0" }}&deg;</span>
-  <img class="client" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/></a>
+  <span class="name" id="client-name"><em>now styling:</em>{{ client.first_name }} {{ client.last_name }}</span>
+  <span class="expanded bday" id="client-age" data-bd="{{ client.client_360.birthday }}"></span> 
+  <span class="expanded style" id="client-occupation"></span> 
+  <span class="expanded style" id="client-location" data-cs="{{ client.client_360.where_live }}" data-tz="{{client.timezone}}"></span>
+  <span class="expanded weather"><i class="fa fa-thermometer-three-quarters"></i>winter {{ weather_info.winter_temperature_average }}&deg;,  spring {{ weather_info.spring_temperature_average }}&deg;,  summer {{ weather_info.summer_temperature_average }}&deg;,  fall {{ weather_info.autumn_temperature_average }}&deg;</span>
+  <img class="client" id="user-clip-img" src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/></a>
   <div class="details">
-    <span class="goal"><em>goal:</em>{{ client.client_360.looks_goal }}</span>
-    <div class="social" id="client-social">
-    	<span>social media:</span>
-      <a href="https://www.instagram.com/{{ client.client_360.instagram }}" class="instagram" target="_blank"><i class="fa fa-instagram"></i></a>
-      <a href="{{ client.client_360.pinterest }}" class="pinterest" target="_blank"><i class="fa fa-pinterest"></i></a>
-      <a href="{{ client.client_360.linkedin }}" class="linkedin" target="_blank"><i class="fa fa-linkedin"></i></a>
+    <div id="client-dynamic-section">
+      <span class="goal" id="client-session-goal"></span>
+      <span class="next-session" id="client-next-session"></span>
+      <div class="social" id="client-social"></div>
     </div>
-    <div id="client-tabs">
-    	<a href="#client-bio" class="on">Sizing</a>
-    	<a href="#client-spend">Spending</a>
-    	<a href="#client-pref">Style</a>
-      <a href="#client-extras">Extras</a>
-      <a href="#client-notes">Notes</a>
-      <a href="#client-picture">Picture</a>
-      <a href="#client-weather">Weather</a>
-    </div>
-    <div class="client-sections">
+    <div id="client-tabs"></div>
+    <div class="client-sections" id="client-section-wrapper">
       <div id="client-picture" class="client-section">
         <img src="https://s3-us-west-2.amazonaws.com/images.allume.co{{ client.client_360.photo}}"/>
       </div>
@@ -38,77 +28,34 @@
         </div>
         <div id="note-list"></div>
       </div>
-    	<div id="client-bio" class="client-section show">
-    		<span class="client-details"><em>height:</em>{{ client.client_360.height }}</span>
-        <span class="client-details"><em>weight:</em>{{ client.client_360.weight }}</span>
-        <span class="client-details"><em>hair:</em>{{ client.client_360.hair_complex_color }}</span>
-        <span class="client-details"><em>pierced ears:</em>{{ client.client_360.ears_pierced }}</span>
+    	<div id="client-bio" class="client-section">
         <span class="client-details" id="bra-size" data-sizes="{{ client.client_360.bra_size }}"></span>
-        <span class="client-details"><em>tops:</em>{{ client.client_360.size_tops }}</span>
-        <span class="client-details"><em>pants:</em>{{ client.client_360.size_pants }}</span>
-        <span class="client-details"><em>jeans:</em>{{ client.client_360.size_jeans }}</span>
-        <span class="client-details"><em>shoe:</em>{{ client.client_360.size_shoe }}</span>
-    	</div>
-    	<div id="client-pref" class="client-section">
-        <span class="client-details"><em>celebrity style:</em>{{ client.client_360.style_celebs }}</span>
-        <br/>
-        <span class="client-details"><em>brands:</em>{{ client.client_360.brands  }}</span>
-        <span class="client-details"><em>stores:</em>{{ client.client_360.stores }}</span>
-        <span class="client-details"><em>colors:</em>{{ client.client_360.colors_preference }}</span>
-        <span class="client-details"><em>outfits:</em>{{ client.client_360.outfits_preference }} </span>
-        <span class="client-details"><em>tops:</em>{{ client.client_360.style_tops }}</span>
-        <span class="client-details"><em>jeans:</em>{{ client.client_360.style_jeans }}</span>
-        <span class="client-details"><em>jacket:</em>{{ client.client_360.style_jacket }}</span> 
-        <span class="client-details"><em>dress:</em>{{ client.client_360.style_dress }}</span>       
-        <span class="client-details"><em>shoe:</em>{{ client.client_360.style_shoe }}</span>
-        <span class="client-details"><em>jewelry (style):</em>{{ client.client_360.jewelry_style }}</span>
-        <span class="client-details"><em>jewelry (type):</em>{{ client.client_360.jewelry_type }}</span>        
-    	</div>
-    	<div id="client-spend" class="client-section">
-        <span class="client-details"><em>tops:</em>{{ client.client_360.spending_tops }}</span>
-        <span class="client-details"><em>bottoms:</em>{{ client.client_360.spending_bottoms }}</span>
-        <span class="client-details"><em>dresses:</em>{{ client.client_360.spending_dresses }}</span>
-        <span class="client-details"><em>jackets:</em>{{ client.client_360.spending_jackets }}</span>
-        <span class="client-details"><em>shoes:</em>{{ client.client_360.spending_shoes }}</span>
-    	</div>
+      </div>
     	<div id="client-weather" class="client-section">
         <span id="client-weather-locale"></span>
         <div class="weather">
           <span>
             <em class="season">winter</em>
             <i class="wi {{ weather_info.winter_icon }}"></i>
-            <em class="desc">avg temp: {{ weather_info.winter_temperature_average|floatformat:"0" }}&deg; F</em>
+            <em class="desc">avg temp: {{ weather_info.winter_temperature_average }}&deg; F</em>
           </span>
           <span> 
             <em class="season">spring</em>
             <i class="wi {{ weather_info.spring_icon }}"></i>
-            <em class="desc">avg temp: {{ weather_info.spring_temperature_average|floatformat:"0" }}&deg; F</em>
+            <em class="desc">avg temp: {{ weather_info.spring_temperature_average }}&deg; F</em>
           </span>
           <span> 
             <em class="season">summer</em>
             <i class="wi {{ weather_info.summer_icon }}"></i>
-            <em class="desc">avg temp: {{ weather_info.summer_temperature_average|floatformat:"0" }}&deg; F</em>
+            <em class="desc">avg temp: {{ weather_info.summer_temperature_average }}&deg; F</em>
           </span>
           <span> 
             <em class="season">fall</em>
             <i class="wi {{ weather_info.autumn_icon }}"></i>
-            <em class="desc">avg temp: {{ weather_info.autumn_temperature_average|floatformat:"0" }}&deg; F</em>
+            <em class="desc">avg temp: {{ weather_info.autumn_temperature_average }}&deg; F</em>
           </span>     
         </div>
-    	</div>
-      <div id="client-extras" class="client-section">
-        <span class="client-breaker one">Goals:</span>
-        <span class="client-details"><em>Other goals:</em>{{ client.client_360.other_goals }}</span>
-        <span class="client-details"><em>Spends free time:</em>{{ client.client_360.spend_free_time }}</span>
-        <span class="client-breaker">Focus:</span>
-        <span class="client-details"><em>First session focus:</em>{{ client.client_360.first_session_focus }}</span>
-        <span class="client-details"><em>Pieces Focus:</em>{{ client.client_360.pieces_focus }}</span>
-        <span class="client-breaker">Fit details:</span>
-        <span class="client-details"><em>wear to work:</em>{{ client.client_360.wear_to_work }}</span>
-        <span class="client-details"><em>body part attention:</em>{{ client.client_360.body_part_attention }}</span>
-        <span class="client-details"><em>body part conceal:</em>{{ client.client_360.body_part_conceal }}</span>
-        <span class="client-details"><em>fit challenges:</em>{{ client.client_360.fit_challenges }}</span>
-      </div>      
+    	</div>     
     </div>
   </div>
 </div>

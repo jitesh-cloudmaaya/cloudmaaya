@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from product_api.models import Product, ProductSerializer
+from product_api.models import Product, ProductSerializer, Merchant
 from shopping_tool.models import *
 
 
@@ -80,7 +80,7 @@ class LookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Look
-        fields = '__all__'#
+        fields = ['id', 'token', 'allume_styling_session', 'wp_client_id', 'stylist', 'name', 'description', 'collage', 'status', 'created_at', 'updated_at', 'is_legacy', 'position', 'look_style_types', 'look_style_occasions', 'look_layout', 'look_metrics', 'look_products']
 
 class LookSerializerNoLookProducts(serializers.ModelSerializer):
     look_layout = LookLayoutSerializer(many=False, read_only=True)
@@ -144,5 +144,31 @@ class AllumeUserStylistNotesCreateSerializer(serializers.ModelSerializer):
         model = AllumeUserStylistNotes
         fields = '__all__'#
 
+
+######################################
+#   Serializer for reporting
+######################################
+class AnnaReportSerializer(serializers.Serializer):
+    product_id = serializers.CharField(max_length=50)
+    merchant_id = serializers.CharField(max_length=50)
+    reason = serializers.CharField(max_length=100)
+    source = serializers.CharField(max_length=50)
+    def create(self, validated_data, request):
+        product = Product.objects.get(product_id = validated_data['product_id'], merchant_id = validated_data['merchant_id'])
+        validated_data['product_id'] = product.id # override the product_id from merchant to our internal product id
+        anna_availability = product.availability
+        stylist_id = request.user.id
+        Report.objects.create(stylist_id=stylist_id, anna_availability = anna_availability, **validated_data)
+
+class ReportSerializer(serializers.Serializer):
+    product_id = serializers.CharField(max_length=50)
+    reason = serializers.CharField(max_length=100)
+    source = serializers.CharField(max_length=50)
+    def create(self, validated_data, request):
+        product = Product.objects.get(id = validated_data['product_id'])
+        merchant_id = product.merchant_id
+        anna_availability = product.availability
+        stylist_id = request.user.id
+        Report.objects.create(merchant_id=merchant_id, stylist_id=stylist_id, anna_availability = anna_availability, **validated_data)
 
 

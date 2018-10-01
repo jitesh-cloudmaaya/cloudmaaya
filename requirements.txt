@@ -1,12 +1,12 @@
 Django==1.11.6
-mysqlclient==1.3.12
+mysqlclient==1.3.13
 djangorestframework==3.7.1
 djangorestframework-xml==1.3.0
 elasticsearch==5.0.0
 certifi==2017.7.27.1
 elasticsearch-dsl==5.0.0
 Fabric==1.14.0
-celery==4.1.0
+celery==4.1.1
 uWSGI==2.0.15
 Fabric==1.14.0
 coreapi==2.3.3
@@ -30,3 +30,10 @@ pysftp==0.2.9
 paramiko==2.4.0
 cryptography==2.1.4
 sqlparse==0.2.4
+newrelic==3.2.0.91
+django-autocomplete-light==3.2.10 # must ues this version
+django-auditlog==0.4.3
+django-cors-headers==2.4.0
+boto==2.49.0
+boto3==1.9.6
+django-modeladmin-reorder==0.3.1 # reorder admin window for better usability

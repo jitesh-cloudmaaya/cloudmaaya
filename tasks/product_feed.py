@@ -15,15 +15,11 @@ from catalogue_service.settings import BASE_DIR, CJ_HOST_KEY
 from product_api.models import Product, Merchant, Network
 
 class ProductFeed(object):
-
-
     def __init__(self, config_file):
-        
         config_file = open(config_file, "r")
         config_dict = yaml.load(config_file)
         self._table = config_dict['table']
         self._fields = ",".join(config_dict['fields'])
-        # self._fields = " (%s) " % (self._fields)
         self._file_pattern = config_dict['file_pattern']
         self._ftp_host = config_dict['ftp_config']['host']
         self._ftp_user = config_dict['ftp_config']['user']
@@ -33,8 +29,6 @@ class ProductFeed(object):
         self._local_temp_dir = config_dict['local_temp_dir'] if config_dict['local_temp_dir'] else settings_local.PRODUCT_FEED_TEMP
         self._remote_dir = config_dict['remote_dir']
         self._remote_files = []
-        self._leave_temp_files = config_dict['leave_temp_files']
-        self.etl_file_name = config_dict['etl_file_name']
         self._local_temp_dir_cleaned = self._local_temp_dir + '/cleaned'
         self._clean_data_method = config_dict['clean_data_method']
         self._file_ending = config_dict['file_ending']
@@ -50,9 +44,8 @@ class ProductFeed(object):
           threshold (int): The time threshold in hours. If the updated-at value of a record is threshold
           or more hours old, conclude that it was not updated in the current upsert and set to deleted.
         """
-        print self._network
         network_id = Network.objects.get(name=self._network)
-        merchants = Merchant.objects.filter(active=True, network_id=network_id)
+        merchants = Merchant.objects.filter(network_id=network_id)
         merchant_ids = merchants.values_list('external_merchant_id')
         products = Product.objects.filter(merchant_id__in = merchant_ids)
         datetime_threshold = datetime.now() - timedelta(hours = threshold)
@@ -66,12 +59,10 @@ class ProductFeed(object):
         exec self._clean_data_method
         print "Process takes %s seconds" % (time.time() - start)
 
-    # how to get filename of flat_file.csv
-    def load_cleaned_data(self): # eventually rename
+    def load_cleaned_data(self):
         start = time.time()
         cursor = connection.cursor()
 
-        # change the way file list is generated temporarily for pepperjam
         file_list = os.listdir(self._local_temp_dir_cleaned)
         f = file_list[0]
         f = os.path.join(os.getcwd(), self._local_temp_dir_cleaned, f)
@@ -87,7 +78,6 @@ class ProductFeed(object):
         for i in range(0, len(statements)):
             full_script.append(statements[i])
 
-        # need to escape the backslash for python and then also for mySQL
         statement = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' ENCLOSED BY '\"' ESCAPED BY '\\\\' LINES TERMINATED BY '\n' %s" % (f, table, fields)
         full_script.append(statement)
 
@@ -104,6 +94,8 @@ class ProductFeed(object):
                     statement = full_script[i]
                     if statement.strip(): # avoid 'query was empty' operational error
                         cursor.execute(statement)
+        except Exception as e:
+            raise e
         finally:
             cursor.close()
 

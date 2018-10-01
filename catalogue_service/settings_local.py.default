@@ -76,3 +76,9 @@ COLLAGE_IMAGE_ROOT = 'https://shopping-tool-web-stage.allume.co/collage_image'
 ENV_LOCAL = 'dev'
 ALLUME_API_AUTH_USER = 'admin'
 ALLUME_API_AUTH_PASS = 'xxxx'
+
+
+AWS_ACCESS_KEY = ''
+AWS_SECRET_KEY = ''
+COLLAGE_BUCKET_NAME = ''
+COLLAGE_BUCKET_KEY = ''

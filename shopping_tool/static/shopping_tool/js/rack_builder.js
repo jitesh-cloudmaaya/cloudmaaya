@@ -30,7 +30,7 @@ var rack_builder = {
       rack_builder.favorites_product_ids.splice(index, 1);
       rack_builder.favorites.splice(index, 1);
       if(fave != ''){
-        link.data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
+        link.attr('title','Favorite look').data('faveid','').removeClass('favorited').find('i').removeClass('fa-heart').addClass('fa-heart-o');
         $('#fave-prods').find('div.item[data-fave="' + fave + '"]').remove();
         $.ajax({
           contentType : 'application/json',
@@ -49,7 +49,7 @@ var rack_builder = {
         "stylist": parseInt($('#stylist').data('stylistid')) ,
         "product": parseInt(link.data('productid'))     
       }
-      link.addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
+      link.attr('title','Unfavorite look').addClass('favorited').find('i').removeClass('fa-heart-o').addClass('fa-heart');
       $.ajax({
         contentType : 'application/json',
         data: JSON.stringify(fave),
@@ -63,7 +63,10 @@ var rack_builder = {
           var obj = link.data('details')
           var fave_idx = rack_builder.favorites_product_ids.indexOf(obj.id);
           var favorite_object = rack_builder.favorites[fave_idx];
-          var sold_out = obj.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';  
+          var sold_out = '';
+          if(obj.is_deleted == 1 || (obj.availability != 'in-stock' && obj.availability != 'yes')){
+            sold_out = '<span class="sold-out">sold out</span>';
+          }          
           var fave_item = '<div class="item" data-productid="' + obj.id + 
             '" data-productname="' + obj.product_name + 
             '" data-url="' + obj.product_image_url + 
@@ -75,7 +78,7 @@ var rack_builder = {
             '"><i class="fa fa-align-left"></i></a><a href="#" class="remove-fave" data-productid="' + 
             obj.id + '" data-faveid="' + favorite_object.id + '"><i class="fa fa-times"></i></a>' + sold_out + '</div>'
           $('#fave-prods').prepend(fave_item);
-          var fd = $('#fave-draggable');
+          var fd = $('#fave-draggable-content');
           if(fd.length > 0){
             fd.prepend(fave_item);
           }
@@ -150,7 +153,10 @@ var rack_builder = {
           }
           initial_rack.push(new_rack_obj);
           var sku = details.id + '_' + details.merchant_id + '_' + details.product_id + '_' + details.sku;
-          var sold_out = details.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
+          var sold_out = '';
+          if(details.is_deleted == 1 || (details.availability != 'in-stock' && details.availability != 'yes')){
+            solde_out = '<span class="sold-out">sold out</span>';
+          } 
           $('#rack-list').prepend(
             '<div class="item" data-productid="' + details.id + 
             '" data-url="' + details.product_image_url + 
@@ -271,7 +277,9 @@ var rack_builder = {
             '"><img class="collage" src="' + comp.collage + '"/></a>';
           }
           markup.push(
-            '<div class="rack-look"><a href="/look_builder/' + rack_builder.session_id + 
+            '<div class="rack-look"><a href="#" class="clone-look" ' +
+            'data-lookid="' + comp.id + '"><i class="fa fa-clone"></i>' +
+            'copy look</a><a href="/look_builder/' + rack_builder.session_id + 
             '/?look=' + comp.id  + '" class="look-link">edit look</a><h3>' + comp.name + '</h3>' + 
             collage_img + '<span class="layout desc"><em>description: </em>' + 
             comp.description + '</span></div>'
@@ -311,7 +319,10 @@ var rack_builder = {
       var data = initial_rack[i];
       var src = data.product_image_url;
       var sku = data.id + '_' + data.merchant_id + '_' + data.product_id + '_' + data.sku;
-      var sold_out = data.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';
+      var sold_out = '';
+      if(data.is_deleted == 1 || (data.availability != 'in-stock' && data.availability != 'yes')){
+        sold_out = '<span class="sold-out">sold out</span>';
+      }
       rack_items.push(
         '<div class="item" data-productid="' + data.id + 
         '" data-productname="' + data.product_name + '" data-url="' + 
@@ -345,7 +356,10 @@ var rack_builder = {
         var obj = stylist_favorites[i];
         var fave_idx = rack_builder.favorites_product_ids.indexOf(obj.id);
         var favorite_object = rack_builder.favorites[fave_idx];
-        var sold_out = obj.availability != 'in-stock' ? '<span class="sold-out">sold out</span>' : '';        
+        var sold_out = '';
+        if(obj.is_deleted == 1 || (obj.availability != 'in-stock' && obj.availability != 'yes')){
+          sold_out = '<span class="sold-out">sold out</span>';
+        }  
         fave_items.push(
           '<div class="item" data-productid="' + obj.id + 
           '" data-productname="' + obj.product_name + 
@@ -362,7 +376,7 @@ var rack_builder = {
              
       }
       $('#fave-prods').html(fave_items.join(''));
-      var fd = $('#fave-draggable');
+      var fd = $('#fave-draggable-content');
       if(fd.length > 0){
         fd.html(fave_items.join(''));
       }
@@ -431,6 +445,33 @@ var rack_builder = {
       e.preventDefault();
       var link = $(this);
       look_builder.lookDetails(link);
+    });
+    $('#fave-looks').on('click','a.clone-look',function(e){
+      e.preventDefault();
+      var link = $(this);
+      $('#cloning-look').fadeIn();
+      var session = $('body').data('stylesession');
+      $.ajax({
+        error: function(response){
+          console.log(response);
+          $('#cloning-look').hide();
+          alert('There was a problem copying the look...');
+        },
+        success: function(response){
+          if(response != undefined && response.new_look_id != undefined){
+            $('#cloning-look div.stage').html('<span class="cloned">Redirecting to your new look...</span>')
+            window.setTimeout(function(){
+              window.location = '/look_builder/' + session + '/?look=' + response.new_look_id
+            },
+            500);
+          }else{
+            $('#cloning-look').hide();
+            alert('There was a problem copying the look...');
+          }
+        },
+        type: 'PUT',
+        url: '/shopping_tool_api/add_look_to_session/' + link.data('lookid') + '/' + session + '/'
+      });
     });
     $('#looks-list').on('click','a.view-look-details', function(e){
       e.preventDefault();
@@ -650,13 +691,16 @@ var rack_builder = {
       if(color_options.length > 4){
         options_class = 'with-header'
         options_header = '<h6>' + (color_options.length - 1) + ' other color options</h6>';
-      } 
+      }
+      is_merchant_with_soldout_issue = $.inArray(product.merchant_id, [8579678, 6172, 40480]) >= 0;
+      soldout_missing_size = (is_merchant_with_soldout_issue || !product.size) ? '<span class="soldout_missing_size"><em>' + (is_merchant_with_soldout_issue?'Check sold out':'Check Size') + '</em></span>' : '';
       markup.push(
-        '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' +
+        '<div class="stage"><a href="#" class="close-inspect"><i class="fa fa-times"></i></a>' + soldout_missing_size +
         '<h2>' + product.product_name + '</h2><div class="inspect-overflow"><table>' +
         '<tr><td class="img" rowspan="2"><img id="inspected-item-img" src="' + product.product_image_url + '"/>' + 
         fave_link + '' + rack_link + '<a href="' + product.product_url + '" target="_blank" class="link-to-store">' + 
-        '<i class="fa fa-tag"></i>view at store</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
+        '<i class="fa fa-tag"></i>view at store</a><a href="#/" onclick=javascripts:report(' + product.product_id + ',' + product.merchant_id + "," + "'Rack'" +') class="link-to-store report report-' + product.product_id+ '">' + 
+        '<i class="fa fa-flag"></i>report</a></td><td class="details"><h4 class="name">' + product.product_name + '</h4>' + 
         merch + '' + manu + '<p class="item-desc"> '+ 
         product.short_product_description + '</p>' + price_display +
         '<span class="general" id="inspected-item-sku"><em>sku:</em>' + product.sku + '</span>' +
@@ -767,4 +811,112 @@ var rack_builder = {
     $('#rack-toggle').html('<span>' + items + '</span> item' + s + ' in your rack');
     $('#rack-number').html(items + ' item' + s)
   }
+}
+
+/**
+* @description report incorrect items
+*/
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+      }
+  }
+  return "";
+}
+
+/* check if the report comes from and rack or look
+  and cross check with the current url to decide the real source
+*/
+function getPageSource(source){
+  var current_path = window.location.pathname;
+  current_path = current_path.split("/");
+  current_path = current_path[1];
+  if (current_path === 'look_builder'){
+    if (source == 'Rack') {return 'Rack in Look Builder'}
+    else if (source == 'Look') {return 'Look Preview in Look Builder'}
+
+  }
+  else if(current_path === 'explore_looks'){
+    return 'Look Preview in Explore Looks'
+  }
+  else{
+    return 'Rack in Product Search'
+  }
+}
+
+function report(product_id, merchant_id, source){
+  // append the html modal to the end of <body>
+  reportWindow();
+  // show the modal
+  $('#myModal').css('display', 'block');
+  // get the <span> element that closes the modal
+  var span  = $('.close').eq(0);
+  // when the user clicks on <span> (x), close the modal
+  span.on('click', function() {$('#myModal').css('display', 'none');})
+  // save the information as gloabl values
+  send_product_id = product_id;
+  send_merchant_id = merchant_id;
+  send_source = getPageSource(source);
+}
+
+function sendReport(){
+
+  // get reason
+  var reason = $('input[name="reason"]:checked').val();
+
+  // construct data
+  var data = {
+    'product_id': send_product_id,
+    'merchant_id': send_merchant_id,
+    'source': send_source,
+    'reason': reason,
+  }
+
+  $.ajax({
+    contentType : 'application/json',
+    data: JSON.stringify(data),
+    success:function(response){
+        var product_report_button_name = 'report-' + send_product_id;
+        // disable all report button for this product
+        $('.'+product_report_button_name).addClass('report_button_disable');
+        $('.'+product_report_button_name).text('reported');
+        // close modal
+        $('#myModal').css('display', 'none');
+    },
+    type: 'POST',
+    url: '/shopping_tool_api/report_product_inventory_mismatch_from_anna/'
+  });
+}
+
+function reportWindow(){
+  $('body').append(
+    `
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>What are you reporting? </h3>
+        <br>
+        <form>
+          <label><input type="radio" name="reason" value="ANNA says available, but store is TOTALLY sold out "> ANNA says available, but store is TOTALLY sold out </label><br>
+          <br>
+          <label><input type="radio" name="reason" value="ANNA only displays partial sizes"> ANNA only displays partial sizes </label><br>  
+        </form>
+        <br>
+        <button class="modal-button" onclick=javascripts:sendReport()>Send</button>
+      </div>
+
+    </div>
+    `
+  );
 }

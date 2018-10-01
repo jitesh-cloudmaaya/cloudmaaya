@@ -2,8 +2,25 @@ import os
 import re
 import yaml
 from django.db import connection
-from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, SynonymCategoryMap, ExclusionTerm
+from product_api.models import Merchant, Network, CategoryMap, ColorMap, AllumeCategory, SizeMap, ShoeSizeMap, SizeTermMap, SynonymCategoryMap, ExclusionTerm, AllumeRetailerSizeMapping
 from catalogue_service.settings import BASE_DIR
+
+def create_retailer_size_mappings():
+    """
+    Returns a tuple of two dicts: known_text_sizes and known_number_sizes
+    """
+    known_text_sizes = {}
+    known_number_sizes = {}
+
+    retailer_allume_size_is_text = AllumeRetailerSizeMapping.objects.filter(is_text=True).values_list('retailer_size', 'allume_size')
+    retailer_allume_size_is_not_text = AllumeRetailerSizeMapping.objects.filter(is_text=False).values_list('retailer_size', 'allume_size')
+
+    for size_map in retailer_allume_size_is_text:
+        known_text_sizes[size_map[0]] = size_map[1]
+    for size_map in retailer_allume_size_is_not_text:
+        known_number_sizes[size_map[0]] = size_map[1]
+
+    return (known_text_sizes, known_number_sizes)
 
 
 ### Added mappings... move to bottom
@@ -86,7 +103,7 @@ def create_category_mapping():
 
     category_maps = CategoryMap.objects.values_list('external_cat1', 'external_cat2', 'allume_category', 'turned_on', 'id', 'merchant_name')
     for category_map in category_maps:
-        key_tup = (category_map[0], category_map[1])
+        key_tup = (category_map[0].lower(), category_map[1].lower())
         val_tup = (category_map[2], category_map[3], category_map[4], category_map[5])
         category_mapping[key_tup] = val_tup
 
@@ -201,6 +218,8 @@ def add_category_map(external_cat1, external_cat2, merchant_name, exclusion_term
     Returns:
       tup: Returns a tuple of allume category id (int), active (bool), the new categorymap id (int), and merchant_name (str).
     """
+    external_cat1 = external_cat1.lower()
+    external_cat2 = external_cat2.lower()
     if _check_exclusion_terms(external_cat1, external_cat2, exclusion_terms):
         allume_category = AllumeCategory.objects.get(name__iexact='exclude')
         active = False
@@ -333,6 +352,8 @@ def are_categories_active(primary_category, secondary_category, category_mapping
     False otherwise.
     """
     # print category_mapping
+    primary_category = primary_category.lower()
+    secondary_category = secondary_category.lower()
     try:
         identifier = (primary_category, secondary_category)
         if identifier not in category_mapping.keys():

@@ -10,5 +10,6 @@ tail -n 0 -f /srv/logs/*.log &
 
 # Start UWSGI processes
 echo Starting uwsgi.
-uwsgi --ini /srv/catalogue_service/docker_config_files/uwsgi.ini
-#python manage.py runserver 
+NEW_RELIC_CONFIG_FILE=newrelic.ini
+export NEW_RELIC_CONFIG_FILE
+newrelic-admin run-program uwsgi --ini /srv/catalogue_service/docker_config_files/uwsgi.ini

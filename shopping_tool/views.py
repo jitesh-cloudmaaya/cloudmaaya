@@ -16,7 +16,7 @@ from rest_framework import serializers
 from decorators import check_login
 from django.core.exceptions import PermissionDenied
 from .models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, Look, LookLayout, WpUsers, UserProductFavorite
-from product_api.models import Product, MerchantCategory, AllumeCategory
+from product_api.models import Product, MerchantCategory, AllumeCategory, Merchant
 
 from shopping_tool_api.serializers import *
 from rest_framework.renderers import JSONRenderer
@@ -30,6 +30,9 @@ from catalogue_service.settings_local import ENV_LOCAL
 
 from weather_service.models import Weather
 import imgkit
+from django.db.models import Prefetch
+from tasks.tasks import add_client_to_360
+
 
 
 # Create your views here. 
@@ -64,21 +67,24 @@ def index(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session).prefetch_related('product')
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
     weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
     categories = AllumeCategory.objects.filter(active = True).order_by('position')
-    favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related(Prefetch('product', queryset=Product.objects.order_by('created_at'))).order_by('-updated_at')[0:100]
+
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
+    stores = Merchant.objects.values_list('name', flat = True)
+    env = ENV_LOCAL
 
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
                'looks': looks, 'weather_info': weather_info,'styles': styles,
-               'occasions': occasions}
+               'occasions': occasions, 'stores': stores, 'env': env}
                
     return render(request, 'shopping_tool/index.html', context)
 
@@ -95,23 +101,28 @@ def look_builder(request, styling_session_id=None):
         context = {}
         return render(request, 'shopping_tool/no_session_error.html', context)
 
-    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
+    rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session).prefetch_related('product')
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
-    weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
+
+    try:
+        weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
+    except AllumeClient360.DoesNotExist:
+        add_client_to_360.delay(client.id)
+        return render(request, 'shopping_tool/no_client_360_error.html', {})
+
     categories = AllumeCategory.objects.filter(active = True)
-    favorites = UserProductFavorite.objects.filter(stylist = user.id)
+    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related(Prefetch('product', queryset=Product.objects.order_by('created_at'))).order_by('-updated_at')[0:100]
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()
     product_image_proxy = PRODUCT_IMAGE_PROXY
     env = ENV_LOCAL
-
+    published_look = AllumeLooks.objects.filter(allume_styling_session_id = styling_session_id, status = 'published').first()
     context = {'product_image_proxy': product_image_proxy, 'favorites': favorites, 
                'categories': categories, 'user': user, 'styling_session': styling_session, 
                'rack_items': rack_items, 'client': client, 'layouts': layouts,
                'looks': looks, 'weather_info': weather_info, 'styles': styles,
-               'occasions': occasions, 'env': env}
-               
+               'occasions': occasions, 'env': env, 'publishing_text_template': 'revision' if published_look is not None else ('repeat' if styling_session.stylist_assignment.stylist_assignment_type.id == 7 else 'h2t')}
     return render(request, 'shopping_tool/look_builder.html', context)
 
 
@@ -127,6 +138,7 @@ def collage(request, look_id=None):
     serializer = LookSerializer(look)
     json = JSONRenderer().render(serializer.data)
     product_image_proxy = PRODUCT_IMAGE_PROXY
+
     context = { 'look': look, 'look_json': json, 'product_image_proxy': product_image_proxy }
 
     return render(request, 'shopping_tool/collage.html', context)
@@ -160,18 +172,26 @@ def explore(request, styling_session_id=None):
     rack_items = Rack.objects.filter(stylist = user.id).filter(allume_styling_session = styling_session)
     looks = Look.objects.filter(allume_styling_session = styling_session)
     client = styling_session.client
-    weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
-    stylists = WpUsers.objects.stylists()
-    favorites = UserProductFavorite.objects.filter(stylist = user.id)
+
+    try:
+        weather_info = Weather.objects.retrieve_weather_object(city=client.client_360.where_live_city, state=client.client_360.where_live_state)
+    except AllumeClient360.DoesNotExist:
+        print(client.id)
+        add_client_to_360.delay(client.id)
+        return render(request, 'shopping_tool/no_client_360_error.html', {})
+
+    stylists = WpUsers.objects.stylists().order_by('first_name', 'last_name')
+    favorites = UserProductFavorite.objects.filter(stylist = user.id).prefetch_related(Prefetch('product', queryset=Product.objects.order_by('created_at'))).order_by('-updated_at')[0:100]
     styles = StyleType.objects.filter(active=True).all()
     occasions = StyleOccasion.objects.filter(active=True).all()    
     product_image_proxy = PRODUCT_IMAGE_PROXY
+    env = ENV_LOCAL
 
     context = {'favorites': favorites, 'user': user, 'stylists': stylists, 
                'styling_session': styling_session, 'rack_items': rack_items, 
                'client': client, 'layouts': layouts, 'looks': looks,
                'product_image_proxy': product_image_proxy, 'styles': styles,
-               'occasions': occasions, 'weather_info': weather_info}
+               'occasions': occasions, 'weather_info': weather_info, 'env': env}
 
     return render(request, 'shopping_tool/explore.html', context)
 

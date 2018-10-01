@@ -82,6 +82,7 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
     size_term_mapping = mappings.create_size_term_mapping()
     synonym_category_mapping = mappings.create_synonym_category_mapping()
     synonym_other_category_mapping = mappings.create_synonym_other_category_mapping()
+    known_text_sizes, known_number_sizes = mappings.create_retailer_size_mappings()
 
     # for use when adding a mapping
     exclusion_terms = mappings.create_exclusion_term_mapping()
@@ -246,7 +247,7 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                     merchant_color = product['color'].lower()
                     try:
                         allume_color = color_mapping[merchant_color]
-                    except:
+                    except KeyError:
                         allume_color = u'other'
                     record['color'] = allume_color
 
@@ -268,10 +269,11 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
 
                     record['currency'] = product['currency']
 
-                    if product['in_stock'] == '':
-                        availability = 'in-stock'
-                    else:
-                        availability = product['in_stock']
+                    availability = product['in_stock']
+                    if availability == 'no':
+                        availability = u'out-of-stock'
+                    elif availability == '' or availability == 'yes':
+                        availability = u'in-stock'
                     record['availability'] = availability
 
                     record['keywords'] = product['keywords']
@@ -294,7 +296,7 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                             record['current_price'] = sale_price
                         else:
                             record['current_price'] = retail_price
-                    except:
+                    except (TypeError, ValueError):
                         record['current_price'] = retail_price
 
                     # is_deleted logic
@@ -303,33 +305,73 @@ def get_data(local_temp_dir, cleaned_fieldnames, dev=False):
                     else:
                         record['is_deleted'] = u'0'
 
-                    # size splitting stuff
+                    # size parsing and splitting, very likely a prime refactoring candidate
                     parent_attributes = copy(record)
                     sizes = product_feed_helpers.seperate_sizes(parent_attributes['size'])
                     product_id = parent_attributes['product_id']
-                    if len(sizes) > 1: # the size attribute of the record was a comma seperated list
+                    if len(sizes) > 1:
                         for size in sizes:
                             child_record = copy(parent_attributes)
-                            child_record['allume_size'] = product_feed_helpers.determine_allume_size(allume_category, size, size_mapping, shoe_size_mapping, size_term_mapping)
-                            # use the size mapping here also
-
-                            child_record['size'] = size
-                            child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, size)
-                            for key, value in child_record.iteritems():
-                                child_record[key] = value.encode('UTF-8')
-
-                            writer.writerow(child_record)
+                            allume_size_arr = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)
+                            if len(allume_size_arr) > 1:
+                                grandchild_record = copy(child_record)
+                                child_record['size'] = size
+                                for size in allume_size_arr:
+                                    grandchild_record['size'] = size
+                                    grandchild_record['allume_size'] = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)[0]
+                                    grandchild_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, grandchild_record['allume_size'])
+                                    for key, value in grandchild_record.iteritems():
+                                        grandchild_record[key] = product_feed_helpers.unicode_encode(value)
+                                    writer.writerow(grandchild_record)
+                                    writtenCount += 1
+                                child_record['allume_size'] = u''
+                                child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['size'])
+                                child_record['is_deleted'] = u'1'
+                                for key, value in child_record.iteritems():
+                                    child_record[key] = product_feed_helpers.unicode_encode(value)
+                                writer.writerow(child_record)
+                                writtenCount += 1
+                            else:
+                                child_record['size'] = size
+                                child_record['allume_size'] = allume_size_arr[0]
+                                child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['allume_size'])
+                                for key, value in child_record.iteritems():
+                                    child_record[key] = product_feed_helpers.unicode_encode(value)
+                                writer.writerow(child_record)
+                                writtenCount += 1
+                        parent_attributes['allume_size'] = u''
+                        parent_attributes['is_deleted'] = u'1'
+                        for key, value in parent_attributes.iteritems():
+                            parent_attributes[key] = product_feed_helpers.unicode_encode(value)
+                        writer.writerow(parent_attributes)
+                        writtenCount += 1
+                    else:
+                        size = sizes[0]
+                        allume_size_arr = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)
+                        if len(allume_size_arr) > 1:
+                            child_record = copy(parent_attributes)
+                            parent_attributes['size'] = size
+                            for size in allume_size_arr:
+                                child_record['size'] = size
+                                child_record['allume_size'] = product_feed_helpers.parse_single_size(size, parent_attributes['product_name'], parent_attributes['allume_category'], known_text_sizes, known_number_sizes)[0]
+                                child_record['product_id'] = product_feed_helpers.assign_product_id_size(product_id, child_record['allume_size'])
+                                for key, value in child_record.iteritems():
+                                    child_record[key] = product_feed_helpers.unicode_encode(value)
+                                writer.writerow(child_record)
+                                writtenCount += 1
+                            parent_attributes['allume_size'] = u''
+                            parent_attributes['is_deleted'] = u'1'
+                            for key, value in parent_attributes.iteritems():
+                                parent_attributes[key] = product_feed_helpers.unicode_encode(value)
+                            writer.writerow(parent_attributes)
                             writtenCount += 1
-                        # set the parent record to is_deleted
-                        record['is_deleted'] = u'1'
-
-                    # finish unicode sandwich
-                    for key, value in record.iteritems():
-                        record[key] = value.encode('UTF-8')
-
-                    # write the reconstructed line to the cleaned file using the csvwriter
-                    writer.writerow(record)
-                    writtenCount += 1
+                        else:
+                            parent_attributes['size'] = size
+                            parent_attributes['allume_size'] = allume_size_arr[0]
+                            for key, value in parent_attributes.iteritems():
+                                parent_attributes[key] = product_feed_helpers.unicode_encode(value)
+                            writer.writerow(parent_attributes)
+                            writtenCount += 1
                 else:
                     categoriesSkipped += 1
 
@@ -423,177 +465,4 @@ def open_w_timeout_retry(url, tries, timeout, delay, backoff):
             return open_w_timeout_retry(url, tries - 1, timeout * backoff, delay, backoff)
     else:
         raise urllib2.URLError("URL causes significant problems, restart process")
-
-"""
-
-    product_id: 0
-    product_name: 1
-    SKU: 2
-    primary_category: 3
-    secondary_category: 4
-    product_url: 5
-    product_image_url: 6
-    buy_url: 7
-    short_product_description: 8
-    long_product_description: 9
-    discount: 10
-    discount_type: 11
-    sale_price: 12
-    retail_price: 13
-    begin_date: 14
-    end_date: 15
-    brand: 16
-    shipping: 17
-    keywords: 18
-    manufacturer_part_number: 19
-    manufacturer_name: 20
-    shipping_information: 21
-    availability: 22
-    universal_product_code: 23
-    class_ID: 24
-    currency: 25
-    M1: 26
-    pixel: 27
-    attribute_1_misc: 28
-    attribute_2_product_type: 29
-    attribute_3_size: 30
-    attribute_4_material: 31
-    attribute_5_color: 32
-    attribute_6_gender: 33
-    attribute_7_style: 34
-    attribute_8_age: 35
-    attribute_9: 36
-    attribute_10: 37
-    modification: 38
-
-
-"""
-#SAMPLE API RESPONSE
-"""
-{
-"meta" : {
-    "status" : {     
-        "code" : 200,
-        "message" : "OK"
-    },
-    "pagination" : {     
-        "total_results" : 1000,
-        "total_pages" : 2,
-        "next" : {  // Only available if there's a next page
-            "rel" : "next",
-            "href" : "<next_page_link>",
-            "description" : "Next Page"
-        },
-        "previous" : {  // Only available if there's a previous page 
-            "rel" : "previous",
-            "href" : "<previous_page_link>",
-            "description" : "Previous Page"
-        }
-    },
-    "requests" : {     
-        "current" : <current_requests>,
-        "maximum" : <maximum_requests_per_day>
-    },
-},
-"data" : { ... } // Can be an array [] or and object {}
-}
-"""
-
-##### PRODUCT SERVICE DETAILS
-
-"""
-
-The product creative resource allows a publisher to pull product creatives for the advertisers they're working with.
-
-GET
-Request Parameters
-Parameter	Description	Possible Values	Default	Required?
-programIds	A comma-separated list of program ids to filter by.	* 123,456,789	N/A	No
-categories	A comma-separated list of category ids to filter by.
-Use the category resource to retrieve these ids.	* 123,456,789	N/A	No
-keywords	A space-separated list of search terms to filter by.	* keyword1 keyword2 keyword3	N/A	No
-
-
-Response Fields
-Field	Description	Notes
-age_range	Suggested age range	10-14
-artist	Media artist	The Beatles
-aspect_ratio	Screen aspect ratio	16:9
-author	Media author	John Steinbeck
-battery_life	Battery life	3
-binding	Book binding	hardcover
-buy_url	Destination URL	http://site.com/product
-category_network	eBay Enterprise Affiliate Network specific category (sub categories optionally delimited by '>')	apparel > pants
-category_program	Merchant specific category (sub categories optionally delimited by '>')	apparel > pants
-color	Color of item	green
-color_output	Whether output is color or not	yes
-condition	Condition	new
-description_long	Long description	Computing device that makes direct use of quantum merchanical phenomena. The fundamental building block of this computer is the qubit.
-description_short	Short description	Computing device that makes direct use of quantum merchanical phenomena.
-director	Movie director	Steven Spielberg
-discontinued	Whether product is discontinued or not	yes
-display_type	Display type	LCD
-edition	Media edition	collectors
-expiration_date	Expiration date	2009-04-04
-features	Special features	machine washable
-focus_type	Focus type	manual
-format	Format	DVD
-functions	Functions	photo capability
-genre	Genere	Rock and Roll
-heel_height	Heel height	1.5 inches
-height	Height	28 inches
-image_thumb_url	Thumbnail image URL	http://site.com/thumb/image.jpg
-image_url	Standard image URL	http://site.com/image.jpg
-installation	Installation type	free standing
-in_stock	Whether product is in stock or not	yes
-isbn	Book ISBN	0123456789
-keywords	Space separated list of keywords	quantum qubit computing
-length	Length	3 feet
-load_type	Load type	top
-location	Shipping location	Dallas, TX
-made_in	Manufacturing country	USA
-manufacturer	Manufacturer or brand	Sony
-material	Contstruction material	graphite
-megapixels	Megapixels	7.2
-memory_capacity	Memory capacity	8 gigabytes
-memory_card_slot	Memory card slot type	bluetooth
-memory_type	Memory type	flash
-model_number	Model number	442244
-mpn	Manufacturer part number	HMC4415AA
-name	Name or title	cutlery set
-occasion	Recommended usage occasion	Thanksgiving
-operating_system	Operating system	Linux
-optical_drive	Optical drive type	CD-RW
-pages	Number of pages	425
-payment_accepted	Accepted payment methods	cash/check
-payment_notes	Additional payment notes	POD
-platform	Platform	Nintendo Wii
-price	Selling price	15.00
-price_retail	Manufacturer suggested retail price	17.50
-price_sale	Discount price	12.50
-price_shipping	Shipping price	2.50
-processor	Processor type	Intel
-publisher	Publisher	Pinacle Publishing
-quantity_in_stock	Number of items in stock	144
-rating	Rating	G
-recommended_usage	Recommended usage	home
-resolution	Screen resolution	1080p
-screen_size	Screen size	52 inches
-shipping_method	Shipping methods	ground
-shoe_size	Shoe size	12
-shoe_width	Shoe Width	wide
-size	Size	large
-sku	Stock keeping unit	45588977
-staring	Staring actors	Big Bird
-style	Style	formal
-tech_spec_url	Technical Specifications URL	http://site.com/specs/product
-tracks	Total number of tracks	12
-upc	Universal product code	434724479304
-weight	Weight	10 pounds
-width	Width	2 feet
-wireless_interface	Wireless interface	bluetooth
-year	Year of manufacture - YYYY	2001
-zoom	Maxium zoom	3x
-
-
-"""
+ 
