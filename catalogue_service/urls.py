@@ -19,6 +19,7 @@ from rest_framework import routers, serializers, viewsets
 from rest_framework_swagger.views import get_swagger_view
 
 schema_view = get_swagger_view(title='Shopping Tool API')
+admin.site.site_header = 'Allume Admin' # customize admin window title
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

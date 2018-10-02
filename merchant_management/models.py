@@ -14,9 +14,19 @@ class ShippingPrice(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     # added price range to show in admin
     def __unicode__(self):
-        return "%s (%s) " % (self.merchant_id.name, self.amount)
+        return "%s (%s) " % (self.merchant.name, self.amount)
+
+# a proxy of Merchant class for merchant coupon editing
+class Coupon(Merchant): # proxy model to allow register same model twice
+    class Meta:
+        proxy=True
+
+# a proxy of Merchant class for merchant visibility editing
+class MerchantVisibility(Merchant): # proxy model to allow register same model twice
+    class Meta:
+        proxy=True
 
 # a proxy of Merchant class for full MerchantEditing
-class MerchantEditing(Merchant): # proxy model to allow register same model twice
+class MerchantDetail(Merchant): # proxy model to allow register same model twice
     class Meta:
         proxy=True

@@ -215,7 +215,9 @@ ADMIN_REORDER = (
     {'app': 'merchant_management', 'models': 
     (
     'merchant_management.ShippingPrice',
-    'merchant_management.MerchantEditing',
+    'merchant_management.Coupon',
+    'merchant_management.MerchantVisibility',
+    'merchant_management.MerchantDetail',
     )},
     'django_celery_beat',
     {'app': 'product_api', 'models': 
