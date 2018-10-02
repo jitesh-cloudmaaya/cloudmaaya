@@ -82,34 +82,59 @@ class Network(models.Model):
 class Merchant(models.Model):
     external_merchant_id = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=128, blank=True, null=True)
-    network = models.ForeignKey(Network)
+    network = models.ForeignKey(Network, null=True) # new shipping price table - allowed null
     active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     search_rank = models.IntegerField(default=0)
 
+    # coupon
+    coupon_code = models.CharField(max_length=100, null=True, blank=True, default=None)
+    coupon_description = models.CharField(max_length=500, null=True, blank=True, default=None)
+    coupon_start_date = models.DateTimeField(null=True, blank=True, default=None)
+    coupon_end_date = models.DateTimeField(null=True, blank=True, default=None)
+    coupon_update_notes = models.TextField(null=True, blank=True, default=None)
+    show_generic_coupon_message = models.BooleanField(default=False)
+
+    #two tap
+    url_host = models.CharField(max_length=50,null=True, blank=True, default=None)
+    twotap_id = models.CharField(max_length=100, null=True, blank=True, default=None)
+    two_tap_supported = models.BooleanField(default=False)
+    twotap_feed_enable = models.BooleanField(default=False)
+    never_used_feed = models.BooleanField(default=False)
+    final_sale = models.BooleanField(default=False)
+    order_via_twotap = models.BooleanField(default=False)
+    order_via_twotap_use_client_email = models.BooleanField(default=False)
+    twotap_usage_timeout_in_hours = models.IntegerField(null=False, default=1000000)
+
+    # policy
+    return_policy = models.TextField(null=True, blank=True, default=None)
+    shipping_policy = models.TextField(null=True, blank=True, default=None)
+
+    tips = models.CharField(max_length=255, null=True, blank=True, default=None)
+
     def __str__(self):
         return self.name
 
     ## Used to Update the Allume API ##
-    def update_allume_status(self):
-        data = {"affiliate_feed_external_merchant_url_host": "NONE",
-                "affiliate_feed_merchant_id": self.id,
-                "active": self.active,
-                "affiliate_feed_external_merchant_id": self.external_merchant_id,
-                "affiliate_feed_network_id": self.network_id,
-                "affiliate_feed_external_merchant_name": self.name
-                }
+    # def update_allume_status(self):
+    #     data = {"affiliate_feed_external_merchant_url_host": "NONE",
+    #             "affiliate_feed_merchant_id": self.id,
+    #             "active": self.active,
+    #             "affiliate_feed_external_merchant_id": self.external_merchant_id,
+    #             "affiliate_feed_network_id": self.network_id,
+    #             "affiliate_feed_external_merchant_name": self.name
+    #             }
 
-        api_url = "https://styling-service-%s.allume.co/update_retailer_info/" % (ENV_LOCAL)
-        response = requests.post(api_url, json=data, auth=HTTPBasicAuth(ALLUME_API_AUTH_USER, ALLUME_API_AUTH_PASS))
+    #     api_url = "https://styling-service-%s.allume.co/update_retailer_info/" % (ENV_LOCAL)
+    #     response = requests.post(api_url, json=data, auth=HTTPBasicAuth(ALLUME_API_AUTH_USER, ALLUME_API_AUTH_PASS))
 
-        print response.content
+    #     print response.content
 
-        if json.loads(response.content)['status'] == "success":
-            return True
-        else:
-            return False
+    #     if json.loads(response.content)['status'] == "success":
+    #         return True
+    #     else:
+    #         return False
 
     class Meta:
         indexes = [

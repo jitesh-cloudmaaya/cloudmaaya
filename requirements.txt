@@ -36,3 +36,4 @@ django-auditlog==0.4.3
 django-cors-headers==2.4.0
 boto==2.49.0
 boto3==1.9.6
+django-modeladmin-reorder==0.3.1 # reorder admin window for better usability
