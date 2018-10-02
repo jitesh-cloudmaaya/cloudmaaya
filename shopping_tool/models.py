@@ -707,3 +707,16 @@ class Report(models.Model):
     source = models.CharField(max_length=50)
     anna_availability = models.CharField(max_length=20)
     reason = models.CharField(max_length=100)
+
+# ---------------------------------
+#   model for look copy tracing
+# ---------------------------------
+
+class LookCopy(models.Model):
+    from_look = models.ForeignKey(Look, related_name='from_look', db_constraint=False)
+    to_look = models.ForeignKey(Look, related_name='to_look', db_constraint=False)
+    from_stylist_id = models.BigIntegerField()
+    to_stylist_id = models.BigIntegerField()
+    old_look_snapshot = models.TextField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)

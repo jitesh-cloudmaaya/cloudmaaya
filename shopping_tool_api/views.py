@@ -19,7 +19,7 @@ from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
 from product_api.models import Product, Merchant
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, AllumeUserStylistNotes
-from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUsers
+from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUsers, LookCopy
 from serializers import *
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -30,6 +30,7 @@ from tasks.tasks import add_client_to_360
 from django.views.decorators.csrf import csrf_exempt
 import boto3
 from catalogue_service.settings_local import AWS_ACCESS_KEY, AWS_SECRET_KEY, COLLAGE_BUCKET_NAME, COLLAGE_BUCKET_KEY
+import json
 
 # change the stylist of the cloned look
 # add the rack of the current user session
@@ -56,6 +57,10 @@ def add_look_to_session(request, look_id, session_id):
     # out of stock flag
     flag_turned_off_store = False
 
+    # look copy trace
+    snapshot = []
+    from_stylist_id = look.stylist_id
+
     # copy the look to the session
     look.pk = None
     look.allume_styling_session = session
@@ -74,6 +79,7 @@ def add_look_to_session(request, look_id, session_id):
             look_product.pk = None
             look_product.look = look
             look_product.save()
+            snapshot.append(look_product.product.id) # look copy trace
         else:
             flag_turned_off_store = True
 
@@ -81,6 +87,10 @@ def add_look_to_session(request, look_id, session_id):
     if flag_turned_off_store: 
         look.collage = None
         look.save() # django way of cloning an object
+
+    # look copy trace
+    snapshot = json.dumps(snapshot)
+    LookCopy.objects.create(from_look_id=look_id, to_look_id=look.id, from_stylist_id=from_stylist_id, to_stylist_id=user.id, old_look_snapshot=snapshot)
 
     # change this maybe
     return JsonResponse({"status": "success", "new_look_id": look.id, 'turnoff_store_flag': flag_turned_off_store}, safe=False)
@@ -685,7 +695,6 @@ def look(request, pk):
         except Look.DoesNotExist:
             serializer = LookCreateSerializer(data=request.data)
             collage_image_url = ''
-
 
         #Save the Collage Image to S3
         if 'collage_data' in request.data:
