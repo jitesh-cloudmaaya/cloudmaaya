@@ -11,6 +11,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         look_products_count = LookProduct.objects.count()
+        client = boto3.client('s3',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
+
 
         print look_products_count
         limit_start = 0
@@ -29,8 +31,7 @@ class Command(BaseCommand):
                         cropped_image_data = lookproduct.cropped_image_code[lookproduct.cropped_image_code.find(",")+1:]
                         cropped_image_data = cropped_image_data.decode('base64')
 
-                        client = boto3.client('s3',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
-
+                        
                         #Delete Existing Collage
                         try:
                             old_cropped_image_code = lookproduct.cropped_image_code.split("%s/" % (COLLAGE_BUCKET_NAME))[1]
@@ -41,7 +42,7 @@ class Command(BaseCommand):
                             print "Invalid S3 Key Name"
 
                         #Save New Collage to S3
-                        client.put_object(Body=cropped_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=cropped_image_name)
+                        client.put_object(Body=cropped_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=cropped_image_name, ContentType='image/png')
                         client.put_object_acl(Bucket=COLLAGE_BUCKET_NAME, Key=cropped_image_name, ACL='public-read')
                         print "Saved %s" % (cropped_image_url)
                        

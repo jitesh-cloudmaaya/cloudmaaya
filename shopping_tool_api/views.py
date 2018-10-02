@@ -587,7 +587,7 @@ def update_cropped_image_code(request, pk=None):
         print "Invalid S3 Key Name"
 
     #Save New Collage to S3
-    client.put_object(Body=cropped_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=cropped_image_name)
+    client.put_object(Body=cropped_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=cropped_image_name, ContentType='image/png')
     client.put_object_acl(Bucket=COLLAGE_BUCKET_NAME, Key=cropped_image_name, ACL='public-read')
    
 
@@ -715,7 +715,7 @@ def look(request, pk):
                     print "Invalid S3 Key Name"
 
                 #Save New Collage to S3
-                client.put_object(Body=collage_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name)
+                client.put_object(Body=collage_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name, ContentType='image/png')
                 client.put_object_acl(Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name, ACL='public-read')
 
                 #Update Collage path in a really shiity double save!
