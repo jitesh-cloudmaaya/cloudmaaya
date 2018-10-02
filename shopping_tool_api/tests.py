@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from unittest import skip
 import json
 from django.core.urlresolvers import reverse
 
@@ -323,6 +324,29 @@ class ShoppingToolAPITestCase(APITestCase):
         self.assertEqual(Look.objects.count(), 3)
         self.assertEqual(Look.objects.get(id = 2).name, 'Api Test Update Look')
 
+    @skip(reason="requires S3 Connection info")
+    def test_update_look_with_collage_data(self):
+        """
+        Test to verify updating a look ensuring that name and description are saved
+        """
+        url = reverse("shopping_tool_api:look", kwargs={'pk':2})
+
+        look_layout_instance = LookLayout.objects.get(id=1)
+        shopper = WpUsers.objects.create(user_email= "shopper@allume.co", user_phone=1, user_login='test1', is_superuser=1, is_staff=1, is_active=1, system_generated="No")
+        
+        data = {"id": 2, "collage_data": None, "description": "Api Test Update Look Description", "name": "Api Test Update Look", "look_layout": look_layout_instance, "allume_styling_session": 1, "stylist": shopper.id}
+
+        #Verify the Original Look Name is in Place
+        self.assertEqual(Look.objects.get(id = 2).name, 'Fixture Test Look 2')
+
+        response = self.client.put(url, data)
+        response_data = json.loads(response.content)
+
+
+        self.assertEqual(201, response.status_code)
+        self.assertEqual(Look.objects.count(), 3)
+        self.assertEqual(Look.objects.get(id = 2).name, 'Api Test Update Look')
+        self.assertEqual(Look.objects.get(id = 2).description, 'Api Test Update Look Description')
 
     def test_get_look(self):
         """

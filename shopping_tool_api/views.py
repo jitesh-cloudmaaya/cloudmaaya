@@ -560,7 +560,28 @@ def update_cropped_image_code(request, pk=None):
     except LookProduct.DoesNotExist:
         return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
-    lookproduct.cropped_image_code = request.data['cropped_image_code']
+    #Set Cropped Image URL and Name
+    cropped_image_name = lookproduct.generate_cropped_image_s3_path()
+    cropped_image_url = "https://%s.s3.amazonaws.com/%s" % (COLLAGE_BUCKET_NAME, cropped_image_name)
+    cropped_image_data = request.data['cropped_image_code'][request.data['cropped_image_code'].find(",")+1:]
+    cropped_image_data = cropped_image_data.decode('base64')
+
+    client = boto3.client('s3',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
+
+    #Delete Existing Collage
+    try:
+        old_cropped_image_code = lookproduct.cropped_image_code.split("%s/" % (COLLAGE_BUCKET_NAME))[1]
+        print "Deleting %s" % (old_cropped_image_code)
+        client.delete_object(Bucket=COLLAGE_BUCKET_NAME, Key=old_cropped_image_code)
+    except:
+        print "Invalid S3 Key Name"
+
+    #Save New Collage to S3
+    client.put_object(Body=cropped_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=cropped_image_name)
+    client.put_object_acl(Bucket=COLLAGE_BUCKET_NAME, Key=cropped_image_name, ACL='public-read')
+   
+
+    lookproduct.cropped_image_code = cropped_image_url
     lookproduct.save()
 
     return JsonResponse(request.data, safe=False)
