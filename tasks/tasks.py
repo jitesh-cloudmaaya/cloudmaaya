@@ -13,6 +13,8 @@ from elasticsearch_dsl import Search
 from catalogue_service.settings import * # for the ES connection
 from elasticsearch import Elasticsearch, helpers
 
+from .lookcopy_trace.analysis import analyze_data
+
 @task(base=QueueOnce)
 def pepper_jam_get_merchants():
     get_merchants()
@@ -257,3 +259,13 @@ def index_deleted_products_cleanup(days_threshold = 5):
     print 'Removing deleted products from the index took %s seconds' % (time.time() - checkpoint)
 
     print 'The entire process took %s seconds' % (time.time() - start)
+
+
+###########################################
+#   Look copy analytic
+###########################################
+@task(base=QueueOnce)
+def generate_look_copy_report():
+    print('look copy data analyzation started')
+    analyze_data()
+    print('look copy data is analyzed and a report is ready for download')

@@ -106,7 +106,7 @@ var explore_page = {
               window.setTimeout(function(){
                 window.location = '/look_builder/' + explore_page.session_id + '/?look=' + response.new_look_id
               },
-              2000);
+              1800);
             }
             else{
               $('#cloning-look div.stage').html('<span class="cloned">Redirecting to your new look...</span>')
