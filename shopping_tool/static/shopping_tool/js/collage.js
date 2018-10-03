@@ -287,9 +287,14 @@ var collage = {
     //console.log(prod)
     /* if product in collage add to collage other wise add to additional items */
     if(prod.in_collage == true){
+      //console.log(prod)
       var img = new Image();
       if(prod.cropped_image_code != null){
-        img.src = prod.cropped_image_code
+        if(prod.cropped_image_code.substring(0,10) == 'data:image'){
+          img.src = prod.cropped_image_code;
+        } else {
+          img.src = look_proxy + '' + encodeURIComponent(prod.cropped_image_code);
+        }
       }else{
         img.src = look_proxy + '' + encodeURIComponent(prod.product.product_image_url);
       }
@@ -918,8 +923,10 @@ var collage = {
           look: look_id,
           product: prod.product_id,
           cropped_dimensions: JSON.stringify(dims),
-          in_collage: 'True',
-          cropped_image_code: crop_src     
+          in_collage: 'True'
+          /* commenting out passing in cropped image stuff 
+          cropped_image_code: crop_src
+          */     
         }
         /* update the look product */
         $.ajax({
