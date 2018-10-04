@@ -8,8 +8,9 @@ class PersonForm(forms.ModelForm):
         model = WpUsers
         fields = ('__all__')
         widgets = {
-            'stylist': autocomplete.ModelSelect2(url='user-autocomplete'),
-            'director': autocomplete.ModelSelect2(url='user-autocomplete'),
-            'manager': autocomplete.ModelSelect2(url='user-autocomplete'),
-            'asm': autocomplete.ModelSelect2(url='user-autocomplete'),
+            'stylist': autocomplete.ModelSelect2(url='user-autocomplete', forward=('stylist',)),
+            'director': autocomplete.ModelSelect2(url='user-autocomplete', forward=('director',)),
+            'manager': autocomplete.ModelSelect2(url='user-autocomplete', forward=('manager',)),
+            'asm': autocomplete.ModelSelect2(url='user-autocomplete', forward=('asm',)),
+
         }

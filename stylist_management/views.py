@@ -27,11 +27,18 @@ class UserAutocomplete(autocomplete.Select2QuerySetView):
         if not self.request.user.is_authenticated():
             return WpUsers.objects.none()
 
-        # qs = WpUsers.objects.all() # for first_name search only
-        # qs = WpUsers.objects.annotate(fullname=Concat('first_name', Value(' '), 'last_name')) # for search for all wpuser
+        # Get the role it is searching for
+        key = self.forwarded.keys()[0]
+        if key == 'manager': role = 'Manager'
+        elif key == 'director': role = 'Director'
+        elif key == 'asm': role = 'ASM'
+        else:role = None
 
-        # temporaryly search for the persons in the allume_wp_user_styling_roles table        
-        qs = WpUsers.objects.filter(allumewpuserstylingroles__isnull=False).annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+        # Search for relevant user 
+        if role:
+            qs = WpUsers.objects.filter(stylistprofile__role=role).annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
+        else:
+            qs = WpUsers.objects.filter(allumewpuserstylingroles__isnull=False).annotate(fullname=Concat('first_name', Value(' '), 'last_name'))
 
         if self.q:
             qs = qs.filter(fullname__istartswith=self.q)
