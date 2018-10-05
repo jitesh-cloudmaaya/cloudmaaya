@@ -65,11 +65,7 @@ def uat(docker_tag=''):
       'web': ['ec2-52-52-66-39.us-west-1.compute.amazonaws.com'],
       'worker': ['ec2-54-241-208-40.us-west-1.compute.amazonaws.com'],
   }
-
-  if docker_tag == '':
-    env.docker_tag = 'develop'
-  else:
-    env.docker_tag = docker_tag
+  env.docker_tag = 'testing_env'
 
 
 def prod(docker_tag=''):
