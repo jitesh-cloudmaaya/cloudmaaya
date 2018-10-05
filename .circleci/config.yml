@@ -35,7 +35,6 @@ jobs:
           name: Push the tagged image to Docker Hub
           command: docker push allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
 
-
   deploy_qa:
      docker:
       - image: circleci/python:2.7.13
@@ -71,7 +70,6 @@ jobs:
            command: |
                . venv/bin/activate
                fab uat deploy
-
 
   deploy_prod:
      docker:
