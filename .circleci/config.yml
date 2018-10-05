@@ -69,7 +69,7 @@ jobs:
            name: Deploy if tests pass and tag is "uat"
            command: |
                . venv/bin/activate
-               fab uat deploy docker_tag=$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
+               fab uat:docker_tag=$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g') deploy
 
   deploy_prod:
      docker:
