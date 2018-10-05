@@ -60,7 +60,7 @@ def qa(docker_tag=''):
 def uat(docker_tag=''):
   env.user = 'ec2-user'
   env.environment = 'uat'
-  env.docker_tag = 'testing_env'
+  env.docker_tag = 'featuretesting_env'
 
   env.roledefs = {
       'web': ['ec2-52-52-66-39.us-west-1.compute.amazonaws.com'],
