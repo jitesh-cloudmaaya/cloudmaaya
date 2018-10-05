@@ -11,18 +11,20 @@ from product_api.models import Merchant, Product
 from catalogue_service.settings_local import ENV_LOCAL, AWS_ACCESS_KEY, AWS_SECRET_KEY
 import boto3
 import os
-# import datetime
+import datetime
 
 def analyze_data():
 
     # define header
-    header = ['from_look_id', 'to_look_id', 'from_look_name', 'from_look_url', 'to_look_name', 'to_look_url', 'from_stylist_id', 'from_stylist_name', 'from_stylist_email','to_stylist_id', 'to_stylist_name', 'to_stylist_email','addition', 'addition_count', 'subtraction', 'subtraction_count', 'change_count']
-
+    header = ['from_look_id', 'to_look_id', 'from_look_name', 'from_look_url', 'to_look_name', 'to_look_url', 'from_stylist_id', 'from_stylist_name', 'from_stylist_email','to_stylist_id', 'to_stylist_name', 'to_stylist_email','addition', 'addition_count', 'subtraction', 'subtraction_count', 'change_count', 'last_updated']
+    time_stamp = str(datetime.datetime.now())
+    time_stamp_row = ['', '', '', '', '', '', '', '', '','', '', '','', '', '', '', '', time_stamp]
     all_copies = LookCopy.objects.all()
     # open file
     with open('look_copy_report.csv', mode='wb') as report_file:
         report_writer = csv.writer(report_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        report_writer.writerow(header)
+        report_writer.writerow(header) # add header
+        report_writer.writerow(time_stamp_row) # time stamp
 
         # loop
         for copy in all_copies:
@@ -90,14 +92,11 @@ def analyze_data():
                 to_stylist_id, to_stylist_name, to_stylist_email, 
                 addition, addition_count, subtraction, subtraction_count, change_count])
 
-        # time stamp --- S3 should have timestamp
-        # report_writer.writerow(['last_updated', str(datetime.datetime.now())])
-
     # upload csv to S3
     if ENV_LOCAL == 'prod':
-        upload_key = '/prod/looks-copy' # get the upload key to upload to S3
+        upload_key = 'prod/looks-copy/look_copy_report.csv' # get the upload key to upload to S3
     else:
-        upload_key = '/stage/looks-copy'
+        upload_key = 'stage/looks-copy/look_copy_report.csv'
     data = open('look_copy_report.csv', 'rb')
     client = boto3.client('s3',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
     client.put_object(Body=data, Bucket='allume-reports', Key=upload_key)
