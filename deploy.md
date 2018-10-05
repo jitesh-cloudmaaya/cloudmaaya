@@ -9,6 +9,8 @@ CircleCI is responsible for automated deploys, it is currently configured to tes
 
 The Circle CI config file can be found at: `.circleci/config.yml`
 
+CircleCI USES DEPLY SSH KEYS
+
 #### The steps to a full deploy are:
 * Check out Code
 * Build a Docker Image with the Code
