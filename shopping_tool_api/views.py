@@ -19,7 +19,7 @@ from shopping_tool.decorators import check_login
 from django.core.exceptions import PermissionDenied
 from product_api.models import Product, Merchant
 from shopping_tool.models import AllumeClients, Rack, AllumeStylingSessions, AllumeStylistAssignments, AllumeUserStylistNotes
-from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUsers
+from shopping_tool.models import Look, LookLayout, LookProduct, UserProductFavorite, UserLookFavorite, AllumeClient360, WpUsers, LookCopy
 from serializers import *
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -30,6 +30,7 @@ from tasks.tasks import add_client_to_360
 from django.views.decorators.csrf import csrf_exempt
 import boto3
 from catalogue_service.settings_local import AWS_ACCESS_KEY, AWS_SECRET_KEY, COLLAGE_BUCKET_NAME, COLLAGE_BUCKET_KEY
+import json
 
 # change the stylist of the cloned look
 # add the rack of the current user session
@@ -56,6 +57,10 @@ def add_look_to_session(request, look_id, session_id):
     # out of stock flag
     flag_turned_off_store = False
 
+    # look copy trace
+    snapshot = []
+    from_stylist_id = look.stylist_id
+
     # copy the look to the session
     look.pk = None
     look.allume_styling_session = session
@@ -74,6 +79,7 @@ def add_look_to_session(request, look_id, session_id):
             look_product.pk = None
             look_product.look = look
             look_product.save()
+            snapshot.append(look_product.product.id) # look copy trace
         else:
             flag_turned_off_store = True
 
@@ -81,6 +87,10 @@ def add_look_to_session(request, look_id, session_id):
     if flag_turned_off_store: 
         look.collage = None
         look.save() # django way of cloning an object
+
+    # look copy trace
+    snapshot = json.dumps(snapshot)
+    LookCopy.objects.create(from_look_id=look_id, to_look_id=look.id, from_stylist_id=from_stylist_id, to_stylist_id=user.id, old_look_snapshot=snapshot)
 
     # change this maybe
     return JsonResponse({"status": "success", "new_look_id": look.id, 'turnoff_store_flag': flag_turned_off_store}, safe=False)
@@ -560,7 +570,28 @@ def update_cropped_image_code(request, pk=None):
     except LookProduct.DoesNotExist:
         return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
-    lookproduct.cropped_image_code = request.data['cropped_image_code']
+    #Set Cropped Image URL and Name
+    cropped_image_name = lookproduct.generate_cropped_image_s3_path()
+    cropped_image_url = "https://%s.s3.amazonaws.com/%s" % (COLLAGE_BUCKET_NAME, cropped_image_name)
+    cropped_image_data = request.data['cropped_image_code'][request.data['cropped_image_code'].find(",")+1:]
+    cropped_image_data = cropped_image_data.decode('base64')
+
+    client = boto3.client('s3',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
+
+    #Delete Existing Collage
+    try:
+        old_cropped_image_code = lookproduct.cropped_image_code.split("%s/" % (COLLAGE_BUCKET_NAME))[1]
+        print "Deleting %s" % (old_cropped_image_code)
+        client.delete_object(Bucket=COLLAGE_BUCKET_NAME, Key=old_cropped_image_code)
+    except:
+        print "Invalid S3 Key Name"
+
+    #Save New Collage to S3
+    client.put_object(Body=cropped_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=cropped_image_name, ContentType='image/png')
+    client.put_object_acl(Bucket=COLLAGE_BUCKET_NAME, Key=cropped_image_name, ACL='public-read')
+   
+
+    lookproduct.cropped_image_code = cropped_image_url
     lookproduct.save()
 
     return JsonResponse(request.data, safe=False)
@@ -665,7 +696,6 @@ def look(request, pk):
             serializer = LookCreateSerializer(data=request.data)
             collage_image_url = ''
 
-
         #Save the Collage Image to S3
         if 'collage_data' in request.data:
             if request.data['collage_data'] != None:
@@ -685,7 +715,7 @@ def look(request, pk):
                     print "Invalid S3 Key Name"
 
                 #Save New Collage to S3
-                client.put_object(Body=collage_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name)
+                client.put_object(Body=collage_image_data, Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name, ContentType='image/png')
                 client.put_object_acl(Bucket=COLLAGE_BUCKET_NAME, Key=collage_image_name, ACL='public-read')
 
                 #Update Collage path in a really shiity double save!

@@ -620,6 +620,10 @@ class LookProduct(models.Model):
         managed = False
         db_table = 'allume_look_products'
 
+    def generate_cropped_image_s3_path(self):
+        time_string = datetime.datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S')
+        return "%s/cropped_images/product_%s_%s_.png" % (COLLAGE_BUCKET_KEY, self.wp_product_id, time_string)
+
 class UserProductFavorite(models.Model):
     stylist = models.ForeignKey(WpUsers, db_constraint=False, db_column='assigned_stylist_id', null=True, to_field='id', on_delete=models.DO_NOTHING)#models.BigIntegerField()
     product = models.ForeignKey(Product, db_constraint=False)
@@ -703,3 +707,16 @@ class Report(models.Model):
     source = models.CharField(max_length=50)
     anna_availability = models.CharField(max_length=20)
     reason = models.CharField(max_length=100)
+
+# ---------------------------------
+#   model for look copy tracing
+# ---------------------------------
+
+class LookCopy(models.Model):
+    from_look = models.ForeignKey(Look, related_name='from_look', db_constraint=False)
+    to_look = models.ForeignKey(Look, related_name='to_look', db_constraint=False)
+    from_stylist_id = models.BigIntegerField()
+    to_stylist_id = models.BigIntegerField()
+    old_look_snapshot = models.TextField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
