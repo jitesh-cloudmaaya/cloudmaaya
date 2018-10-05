@@ -28,4 +28,7 @@ urlpatterns = [
     # sold out reporting
     url(r'^report_product_inventory_mismatch_from_anna/$', views.report_product_inventory_mismatch_from_anna, name='report_product_inventory_mismatch_from_anna'),
     url(r'^report_product_inventory_mismatch/$', views.report_product_inventory_mismatch, name='report_product_inventory_mismatch'),
+    # download the look_copy report
+    url(r'^look_copy_report/$', views.look_copy_report, name='look_copy_report'),
+
 ]
