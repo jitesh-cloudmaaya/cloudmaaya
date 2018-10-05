@@ -53,7 +53,7 @@ class UserAutocomplete(autocomplete.Select2QuerySetView):
 def create_new_stylist(requests):
     try:
         stylist = StylistProfile.objects.get(stylist_id = requests.user.id)
-        if stylist.role_id in OFF_BOARD_API_PERMISSIONS:
+        if stylist.role_id in ON_BOARD_API_PERMISSIONS:
             serializer = StylistProfileSerializer(data=requests.data)
             if serializer.is_valid():
                 serializer.create(serializer.validated_data)
