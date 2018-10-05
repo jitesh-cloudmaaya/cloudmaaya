@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'dal',
     'dal_select2',
     # -- end autocomplete
+    'admin_views', # add customized link for admin, placed before admin site app.
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
