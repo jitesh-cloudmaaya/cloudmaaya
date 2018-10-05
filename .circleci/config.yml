@@ -53,6 +53,7 @@ jobs:
            command: |
                . venv/bin/activate
                fab qa deploy
+               fab uat deploy
 
   deploy_prod:
      docker:
