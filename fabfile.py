@@ -62,8 +62,8 @@ def uat(docker_tag=''):
   env.environment = 'uat'
 
   env.roledefs = {
-      'web': ['PLEASE COMPLETE'],
-      'worker': ['PLEASE COMPLETE'],
+      'web': ['ec2-52-52-66-39.us-west-1.compute.amazonaws.com'],
+      'worker': ['ec2-54-241-208-40.us-west-1.compute.amazonaws.com'],
   }
 
   if docker_tag == '':
