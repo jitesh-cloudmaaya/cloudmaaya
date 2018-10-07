@@ -29,7 +29,7 @@ from tasks.product_feed_py import mappings
 from tasks.tasks import add_client_to_360
 from django.views.decorators.csrf import csrf_exempt
 import boto3
-from catalogue_service.settings_local import AWS_ACCESS_KEY, AWS_SECRET_KEY, COLLAGE_BUCKET_NAME, COLLAGE_BUCKET_KEY, ENV_LOCAL
+from catalogue_service.settings_local import AWS_ACCESS_KEY, AWS_SECRET_KEY, COLLAGE_BUCKET_NAME, COLLAGE_BUCKET_KEY, ENV_LOCAL, REPORTS_BUCKET_NAME, LOOK_COPY_REPORT_BUCKET_KEY
 import json
 from django.shortcuts import redirect
 
@@ -990,11 +990,8 @@ def look_copy_report(requests):
     if requests.user.is_superuser:
         client = boto3.client('s3',aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
         # upload csv to S3
-        if ENV_LOCAL == 'prod':
-            upload_key = 'prod/looks-copy/look_copy_report.csv' # get the upload key to upload to S3
-        else:
-            upload_key = 'stage/looks-copy/look_copy_report.csv'
-        presign_url = client.generate_presigned_url('get_object', Params = {'Bucket': 'allume-reports', 'Key': upload_key}, ExpiresIn = 100)
+        upload_key = LOOK_COPY_REPORT_BUCKET_KEY + 'look_copy_report.csv'
+        presign_url = client.generate_presigned_url('get_object', Params = {'Bucket': REPORTS_BUCKET_NAME, 'Key': upload_key}, ExpiresIn = 100)
         return redirect(presign_url)
     else:
         return JsonResponse({'status': 'failed, wrong credential', 'data':[]}, status=400)
