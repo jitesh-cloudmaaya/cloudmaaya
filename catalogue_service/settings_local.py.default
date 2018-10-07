@@ -9,15 +9,14 @@ DATABASES = {
  }
 
 # FOR ELASTIC SEARCH
-ES_HOSTS = ['changeme']
-ES_HTTP_AUTH = 'changeme'
+ES_HOSTS = ['http://localhost:9200'] #changeme to use staging version
+ES_HTTP_AUTH = 'elastic:changeme'
 
 # Elastic Search Connection
 from elasticsearch_dsl.connections import connections
 connections.create_connection(hosts=ES_HOSTS, http_auth=ES_HTTP_AUTH)
 
 from elasticsearch import Elasticsearch
-#CLIENT = Elasticsearch(hosts=['https://localhost:9200'], http_auth='elastic:changeme')
 CLIENT = Elasticsearch(hosts=ES_HOSTS, http_auth=ES_HTTP_AUTH)
 
 
