@@ -12,7 +12,7 @@ DATABASES = {
 }
 
 # FOR ELASTIC SEARCH
-ES_HOSTS = ['http://localhost:9200'] #changeme to stage: look in the ANNA web server nginx conf /etc/nginx/.pc_htpasswd and /etc/nginx/sites-available/products-catalogue_stage
+ES_HOSTS = ['http://localhost:9200'] #changeme to stage: look in the ANNA web server /etc/nginx/sites-available/products-catalogue_stage
 ES_HTTP_AUTH = 'changeme' #changeme to stage: look in the ANNA web server nginx conf /etc/nginx/.pc_htpasswd and /etc/nginx/sites-available/products-catalogue_stage
 
 # Elastic Search Connection
@@ -56,7 +56,7 @@ AUTH_REDIRECT_COOKIE = "login-redirect-page-stage"
 AUTH_SESSION_COOKIE_DOMAIN = ".allume.co"
 
 
-IMGKIT_URL = 'http://dev.allume.co:8000'
+IMGKIT_URL = 'http://shopping-tool-web-dev.allume.co'
 
 IMGKIT_OPTIONS = {
     'format': 'jpg',
@@ -69,7 +69,7 @@ IMGKIT_OPTIONS = {
 #     'window-status':'ready'
     }
 
-COLLAGE_IMAGE_ROOT = 'http://dev.allume.co/collage_image'
+COLLAGE_IMAGE_ROOT = 'http://[changeme]/collage_image' #Anna web staging host
 
 PEPPERJAM_API_VERSION = '20120402'
 PEPPERJAM_API_KEY = ''
