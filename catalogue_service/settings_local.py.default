@@ -12,8 +12,8 @@ DATABASES = {
 }
 
 # FOR ELASTIC SEARCH
-ES_HOSTS = ['http://localhost:9200'] #changeme to use staging version
-ES_HTTP_AUTH = 'elastic:changeme'
+ES_HOSTS = ['http://localhost:9200'] #changeme to stage: look in the ANNA web server nginx conf /etc/nginx/.pc_htpasswd and /etc/nginx/sites-available/products-catalogue_stage
+ES_HTTP_AUTH = 'changeme' #changeme to stage: look in the ANNA web server nginx conf /etc/nginx/.pc_htpasswd and /etc/nginx/sites-available/products-catalogue_stage
 
 # Elastic Search Connection
 from elasticsearch_dsl.connections import connections
