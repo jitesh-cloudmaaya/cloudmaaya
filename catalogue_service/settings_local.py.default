@@ -1,41 +1,25 @@
 ## Local Settings File
+import os
 
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'NAME': 'allume_style',
-        'USER': 'root',
-        'PASSWORD': '',
-        'OPTIONS': {
-    		'local_infile': 1,
-		}
-    },
-    'allume_read_only': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'NAME': 'allume_style',
-        'USER': 'root',
-        'PASSWORD': '',
-        'OPTIONS': {
-    		'local_infile': 1,
-		}
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
- }
+}
 
 # FOR ELASTIC SEARCH
-ES_HOSTS = ['changeme']
-ES_HTTP_AUTH = 'changeme'
+ES_HOSTS = ['http://localhost:9200'] #changeme to stage: look in the ANNA web server nginx conf /etc/nginx/.pc_htpasswd and /etc/nginx/sites-available/products-catalogue_stage
+ES_HTTP_AUTH = 'changeme' #changeme to stage: look in the ANNA web server nginx conf /etc/nginx/.pc_htpasswd and /etc/nginx/sites-available/products-catalogue_stage
 
 # Elastic Search Connection
 from elasticsearch_dsl.connections import connections
 connections.create_connection(hosts=ES_HOSTS, http_auth=ES_HTTP_AUTH)
 
 from elasticsearch import Elasticsearch
-#CLIENT = Elasticsearch(hosts=['https://localhost:9200'], http_auth='elastic:changeme')
 CLIENT = Elasticsearch(hosts=ES_HOSTS, http_auth=ES_HTTP_AUTH)
 
 
