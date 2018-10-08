@@ -24,7 +24,7 @@ from rest_framework.renderers import JSONRenderer
 import requests
 from PIL import Image
 from catalogue_service.settings_local import PRODUCT_IMAGE_PROXY
-from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY, DEV_AUTH_EMAIL
+from catalogue_service.settings_local import AUTH_LOGIN_URL, AUTH_EMAIL_KEY, DEV_AUTH_EMAIL, AUTH_SESSION_COOKIE_DOMAIN
 from catalogue_service.settings_local import IMGKIT_URL, IMGKIT_OPTIONS
 from catalogue_service.settings_local import ENV_LOCAL
 
@@ -225,7 +225,7 @@ def image_proxy(request):
 def set_cookie(request):
     if request.get_host() in ['localhost:8000', '127.0.0.1:8000', 'shopping-tool-web-dev.allume.co:8000']:
         response_redirect = HttpResponseRedirect('/')
-        response_redirect.set_cookie(AUTH_EMAIL_KEY, DEV_AUTH_EMAIL)
+        response_redirect.set_cookie(AUTH_EMAIL_KEY, DEV_AUTH_EMAIL, domain=AUTH_SESSION_COOKIE_DOMAIN)
         return response_redirect
     else:
         raise PermissionDenied
