@@ -1,6 +1,7 @@
 #!/bin/bash
 python manage.py migrate                  # Apply database migrations
 python manage.py collectstatic --noinput  # Collect static files
+python manage.py create_product_index     # Create the product index if needed
 
 # Prepare log files and start outputting logs to stdout
 touch /srv/logs/uwsgi.log

@@ -1,4 +1,8 @@
-# Allume Shopping Tool
+# Allume Shopping Tool: Deploy Process
+
+###### [Home](README.md)
+###### [Creating New Environments](NEWENV.md)
+
 
 
 ## Deploying the application
@@ -9,7 +13,8 @@ CircleCI is responsible for automated deploys, it is currently configured to tes
 
 The Circle CI config file can be found at: `.circleci/config.yml`
 
-CircleCI USES DEPLY SSH KEYS
+CircleCI uses Deploy SSH KEYS that were set up on UAT, Stage and Production.  
+UAT and Stage use the same key.
 
 #### The steps to a full deploy are:
 * Check out Code
@@ -17,7 +22,22 @@ CircleCI USES DEPLY SSH KEYS
 * Run the Tests in the image
 * If the test pass
   * push the image to Docker Hub tagged with the branch name
-  * kick off the appropriate deploy process with fabric, passing in config variables 
+  * If the branch is 'Develop'
+    * deploy to stage
+    * kick off the appropriate deploy process with fabric, passing in config variables 
+  * If the branch is 'Master'
+    * deploy to Production
+    * kick off the appropriate deploy process with fabric, passing in config variables 
+  * If the branch is Tagged 'UAT'
+    * deploy to UAT
+    * kick off the appropriate deploy process with fabric, passing in config variables 
+    * this applies to all branches, as a result the latest branch tagged 'UAT' and committed will be deployed
+
+
+#### Tagging a branch as 'UAT'
+* `git tag -a "uat" -m "uat"`
+* `git commit -am "[YOUR COMMIT MESSAGE]"`
+* `git push && git push --tags`
 
 ### Fabric
 Fabric is the automation framework we use to run remote tasks on the server, its documentation can be found here http://www.fabfile.org/:
@@ -30,7 +50,7 @@ e.g. `fab qa deploy docker_tag=featurerotate_collage_products`
 
 Note: the slashes in beween feature and teh feature name from the git branch are automatically removed as docker tagging does not support them
 
-### Deploy Process:
+### Fabric Deploy Process:
 * Set Up Env Variables
 * Set Hosts (Web, Worker)
 * SSH into hosts
@@ -38,6 +58,3 @@ Note: the slashes in beween feature and teh feature name from the git branch are
 * Restart Instances
   * Kill existing instances
   * Start new instances with new image
-
-
-

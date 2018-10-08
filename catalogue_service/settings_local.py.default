@@ -11,13 +11,16 @@ DATABASES = {
     }
 }
 
+ES_HOSTS = ['https://products-catalogue-stage.allume.co']
+ES_AUTH = 'wes:Ycbjd1:Zao#cs2f'
+
 
 # Elastic Search Connection
 from elasticsearch_dsl.connections import connections
-connections.create_connection(hosts=['http://localhost:9200'], timeout=20, http_auth=('elastic:changeme'))
+connections.create_connection(hosts=ES_HOSTS, http_auth=ES_AUTH, timeout=90)
 
 from elasticsearch import Elasticsearch
-CLIENT = Elasticsearch(hosts=['https://localhost:9200'], http_auth='elastic:changme')
+ES_CLIENT = Elasticsearch(hosts=ES_HOSTS, http_auth=ES_AUTH)
 
 DEBUG = True
 
