@@ -83,7 +83,7 @@ def query_to_allume_wp_user_styling_roles(new_role, stylist_id):
         )
 
 # after offboarding stylist, its associated wp_user entry will be deactivated
-def deactivate_user_table(sender, instance, **kwargs):
+def deactivate_user(sender, instance, **kwargs):
     user = instance.stylist
     user.is_active = instance.on_board
     user.save()
@@ -92,8 +92,8 @@ def deactivate_user_table(sender, instance, **kwargs):
 post_save.connect(update_role, sender=StylistProfile)
 post_save.connect(update_role, sender=StylistManagement)
 
-post_save.connect(deactivate_user_table, sender=StylistProfile)
-post_save.connect(deactivate_user_table, sender=StylistManagement)
+post_save.connect(deactivate_user, sender=StylistProfile)
+post_save.connect(deactivate_user, sender=StylistManagement)
 
 # class StylistRoleRelation(models.Model):
 
