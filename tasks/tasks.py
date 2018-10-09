@@ -15,6 +15,9 @@ from elasticsearch import Elasticsearch, helpers
 
 from .lookcopy_trace.analysis import analyze_data
 
+import requests
+import json
+
 @task(base=QueueOnce)
 def pepper_jam_get_merchants():
     get_merchants()
@@ -269,3 +272,68 @@ def generate_look_copy_report():
     print('look copy data analyzation started')
     analyze_data()
     print('look copy data is analyzed and a report is ready for download')
+
+####################################################
+#   Merchant last product update report and warning
+####################################################
+
+# Slack
+SLACK_BASE_URL = 'https://hooks.slack.com/services/'
+SLACK_IDENTIFIER = 'T0F5V1HED/B7N0FRFCN/Z9uiX9MgCQ0cNRcYZwyRmZw6'
+
+# function to send slack message
+def send_slack_notification(channel, message):
+
+    slack_data = {
+        'channel': channel,
+        'text': message,
+        'username': 'concierge',
+        'icon_emoji': ':allume-logo:'
+    }
+
+    response = requests.post(
+        SLACK_BASE_URL + SLACK_IDENTIFIER,
+        data=json.dumps(slack_data),
+        headers={'Content-Type': 'application/json'}
+    )
+
+    if response.status_code == 200:
+        return True
+    else:
+        return False
+
+# task to calculate the most recent product update of each merchant and sends slack message 
+# if no product from this merchant has been updated for a given number of days
+@task(base=QueueOnce)
+def check_merchant_last_update(days_threshold = 3):
+    print('start checking the most recent update of each merchant')
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT name, max(P.updated_at) FROM
+        product_api_merchant AS M
+        INNER JOIN 
+        product_api_product AS P
+        WHERE M.external_merchant_id = P.merchant_id
+        GROUP BY M.external_merchant_id;
+        """
+    ) 
+    
+    # loop
+    current_time = datetime.now()
+    message = ''
+    for item in cursor:
+        last_updated_time = item[1] # the fourth element based on the SQL query
+        diff = current_time - last_updated_time # calculate the diff b/w 
+        if diff.days > days_threshold:
+            message += '\n name: ' + str(item[0]) + '\n last_updated: ' + str(item[1]) + '\n\n'
+
+    # check if any message
+    if message:
+        prefix = '\n WARNING: The following merchants have NOT updated their products for a while \n\n'
+        message = prefix + message
+        send_slack_notification('anna_tasks_failures', message) # send slack message to anna_tasks_failures channel
+
+    else:
+        print('check performed, all merchants have product updated recently')
+        return
