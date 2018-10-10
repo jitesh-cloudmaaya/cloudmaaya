@@ -76,7 +76,7 @@ class MerchantDetailAdmin(admin.ModelAdmin):
     list_display = ('name', 'active', 'search_rank', 'coupon_code', 'show_generic_coupon_message', 'coupon_description', 'order_via_twotap','two_tap_supported', 'twotap_feed_enable', 'never_used_feed', 'final_sale', 'shipping_policy', 'network')
     search_fields = ('name',)
     readonly_fields = ['external_merchant_id', 'name', 'coupon_start_date', 'coupon_end_date',
-    'network', 'created_at', 'updated_at', 'twotap_id', 
+    'network', 'created_at', 'updated_at',  
     ] # not allow editing
     ordering = ('name',)
 
