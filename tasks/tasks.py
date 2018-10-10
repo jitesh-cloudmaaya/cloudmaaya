@@ -3,7 +3,7 @@ from celery import task, shared_task
 from django.db import connection, transaction
 import os
 import time
-from catalogue_service.settings import BASE_DIR
+from catalogue_service.settings import BASE_DIR, SLACK_BASE_URL, SLACK_IDENTIFIER
 from celery_once import QueueOnce
 from product_api.models import Product, AllumeCategory, CategoryMap, Merchant
 from tasks.product_feed import ProductFeed
@@ -276,10 +276,6 @@ def generate_look_copy_report():
 ####################################################
 #   Merchant last product update report and warning
 ####################################################
-
-# Slack
-SLACK_BASE_URL = 'https://hooks.slack.com/services/'
-SLACK_IDENTIFIER = 'T0F5V1HED/B7N0FRFCN/Z9uiX9MgCQ0cNRcYZwyRmZw6'
 
 # function to send slack message
 def send_slack_notification(channel, message):
