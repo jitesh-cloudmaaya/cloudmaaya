@@ -1,6 +1,5 @@
 # Allume Shopping Tool: Setting up a New Environment
 
-###### [Home](README.md)
 ###### [Deploying](DEPLOY.md)
 
 
@@ -13,8 +12,9 @@
 
 ### AWS Steps
 * Create RDS Instance
+    * Create a stage DB snapshot and restore it to this intance
 * Create Elastic Search Instance
-* Create EC2 Instances (Web. Worker)
+* Create EC2 Instances (Web, Worker)
 * Create Redis instance
 
 ### Common Server Steps

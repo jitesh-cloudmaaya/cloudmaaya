@@ -1,6 +1,5 @@
 # Allume Shopping Tool: Deploy Process
 
-###### [Home](README.md)
 ###### [Creating New Environments](NEWENV.md)
 
 
@@ -14,7 +13,7 @@ CircleCI is responsible for automated deploys, it is currently configured to tes
 The Circle CI config file can be found at: `.circleci/config.yml`
 
 CircleCI uses Deploy SSH KEYS that were set up on UAT, Stage and Production.  
-UAT and Stage use the same key.
+UAT and Stage use the same key. The config can be found on CircleCI.
 
 #### The steps to a full deploy are:
 * Check out Code
