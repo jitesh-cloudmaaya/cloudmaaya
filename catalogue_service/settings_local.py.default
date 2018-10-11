@@ -11,16 +11,19 @@ DATABASES = {
     }
 }
 
+# FOR ELASTIC SEARCH
+ES_HOSTS = ['http://localhost:9200'] #changeme to stage: look in the ANNA web server /etc/nginx/sites-available/products-catalogue_stage
+ES_HTTP_AUTH = 'changeme' #changeme to stage: look in the ANNA web server nginx conf /etc/nginx/.pc_htpasswd and /etc/nginx/sites-available/products-catalogue_stage
 
 # Elastic Search Connection
 from elasticsearch_dsl.connections import connections
-connections.create_connection(hosts=['http://localhost:9200'], timeout=20, http_auth=('elastic:changeme'))
+connections.create_connection(hosts=ES_HOSTS, http_auth=ES_HTTP_AUTH)
 
 from elasticsearch import Elasticsearch
-CLIENT = Elasticsearch(hosts=['https://localhost:9200'], http_auth='elastic:changme')
+CLIENT = Elasticsearch(hosts=ES_HOSTS, http_auth=ES_HTTP_AUTH)
+
 
 DEBUG = True
-
 
 PRODUCT_FEED_TEMP = 'pd_temp'
 
@@ -46,14 +49,14 @@ ONCE = {
 
 NOAA_TOKEN = 'YdgPMhahlBcRshMkgsmDaoFlvAFcjwnr'
 
-AUTH_LOGIN_URL = 'https://social-services-stage.allume.co/auth/oauth/login/google-oauth2/'
-AUTH_EMAIL_KEY = 'user_email' #'allume-stylist-email-stage'
-DEV_AUTH_EMAIL = 'wduenow@allume.co'
+AUTH_LOGIN_URL = '' #login is manual
+AUTH_EMAIL_KEY = 'allume-stylist-email-stage'
+DEV_AUTH_EMAIL = 'changeme' #use the email used when logged in on the staging env before the staging DB dump to your local
 AUTH_REDIRECT_COOKIE = "login-redirect-page-stage"
-AUTH_SESSION_COOKIE_DOMAIN = "localhost:8000"
-#AUTH_SESSION_COOKIE_DOMAIN=".allume.co"
+AUTH_SESSION_COOKIE_DOMAIN = ".allume.co"
 
-IMGKIT_URL = 'https://shopping-tool-web-stage.allume.co'
+
+IMGKIT_URL = 'http://shopping-tool-web-dev.allume.co'
 
 IMGKIT_OPTIONS = {
     'format': 'jpg',
@@ -66,19 +69,26 @@ IMGKIT_OPTIONS = {
 #     'window-status':'ready'
     }
 
-CJ_HOST_KEY = 'AAAAB3NzaC1kc3MAAACBALaM0N9YqDxytsVkO+On3Ob7fnAM4H0cfxWAxco6dGeOimO7VhC7t9NK++EADh1ZOtm4zXQx9AFlER30vNgtH/Ev4RV6laq0fQQvRnb4B3g5FcVgD4TWm0GC6pGAoT6VRfl2vK6h8pYaS+P/5tnzavwckGoIwqUu6lXbHsC1ZWdzAAAAFQCUKVTBm/+erra+yXAeR3rOvqTrewAAAIEAsaqasLBjcUPoKM0xX2BiFOsezxOJUBDWSmILmZLgqiHU4SK10kiTRd8D7DUD+26xN1Ml/99KMl2OT3VsBb9zyLrvRL8nCx8OKyNjQUdtd4tac7ZDxdeJZSEC8NVFDtFf8R5AQYIj9s6YafzfFPqMhTMj4sJ2T6/vh9sajDsTS30AAACBAJ7k3TaeUP3xpa96DJ5j0kllCSOmjZjxxafpQdoGLZJynlPP0hteK3hGWLFZEtjV48EOPZaEiMaS3w/DGKupMpAeIazLVr0zqFKXoZDKTuj7RSQp7upCE3CjnEjJGs35O0N5P6bG2fbYV/oJSGFdJTAKMKPo+nV5lTKnSptN0ky3'
+COLLAGE_IMAGE_ROOT = 'http://[changeme]/collage_image' #Anna web staging host
 
 PEPPERJAM_API_VERSION = '20120402'
 PEPPERJAM_API_KEY = ''
 
-COLLAGE_IMAGE_ROOT = 'https://shopping-tool-web-stage.allume.co/collage_image'
+ENV_LOCAL = 'changeme' # 'stage' for raybeam, 'uat' for Cloudmaaya
 
-ENV_LOCAL = 'dev'
-ALLUME_API_AUTH_USER = 'admin'
-ALLUME_API_AUTH_PASS = 'xxxx'
+ALLUME_API_AUTH_USER = 'changeme' #generate it with django command
+ALLUME_API_AUTH_PASS = 'changeme'
 
+ALERT_EMAIL_ADDRESS = ''
+ALERT_EMAIL_PASSWORD = ''
 
 AWS_ACCESS_KEY = ''
 AWS_SECRET_KEY = ''
+
 COLLAGE_BUCKET_NAME = ''
 COLLAGE_BUCKET_KEY = ''
+
+REPORTS_BUCKET_NAME=''
+LOOK_COPY_REPORT_BUCKET_KEY=''
+
+# CJ_HOST_KEY = 'AAAAB3NzaC1kc3MAAACBALaM0N9YqDxytsVkO+On3Ob7fnAM4H0cfxWAxco6dGeOimO7VhC7t9NK++EADh1ZOtm4zXQx9AFlER30vNgtH/Ev4RV6laq0fQQvRnb4B3g5FcVgD4TWm0GC6pGAoT6VRfl2vK6h8pYaS+P/5tnzavwckGoIwqUu6lXbHsC1ZWdzAAAAFQCUKVTBm/+erra+yXAeR3rOvqTrewAAAIEAsaqasLBjcUPoKM0xX2BiFOsezxOJUBDWSmILmZLgqiHU4SK10kiTRd8D7DUD+26xN1Ml/99KMl2OT3VsBb9zyLrvRL8nCx8OKyNjQUdtd4tac7ZDxdeJZSEC8NVFDtFf8R5AQYIj9s6YafzfFPqMhTMj4sJ2T6/vh9sajDsTS30AAACBAJ7k3TaeUP3xpa96DJ5j0kllCSOmjZjxxafpQdoGLZJynlPP0hteK3hGWLFZEtjV48EOPZaEiMaS3w/DGKupMpAeIazLVr0zqFKXoZDKTuj7RSQp7upCE3CjnEjJGs35O0N5P6bG2fbYV/oJSGFdJTAKMKPo+nV5lTKnSptN0ky3'
