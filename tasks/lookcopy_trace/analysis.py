@@ -1,8 +1,7 @@
+# -*- coding: utf-8 -*-
 """
-
 This is the data analytic codes to process the raw data in look copy tracing table
 It suppose to run once a day
-
 """
 import csv
 import json
@@ -87,9 +86,9 @@ def analyze_data():
 
                 # write to file
                 report_writer.writerow([from_look_id, to_look_id, 
-                from_look_name, from_look_url, to_look_name, to_look_url,
-                from_stylist_id, from_stylist_name, from_stylist_email, 
-                to_stylist_id, to_stylist_name, to_stylist_email, 
+                from_look_name.encode('utf-8'), from_look_url, to_look_name.encode('utf-8'), to_look_url,
+                from_stylist_id, from_stylist_name.encode('utf-8'), from_stylist_email, 
+                to_stylist_id, to_stylist_name.encode('utf-8'), to_stylist_email, 
                 addition, addition_count, subtraction, subtraction_count, change_count])
 
     # upload csv to S3
@@ -103,6 +102,3 @@ def analyze_data():
 
     # delete the local file
     os.remove('look_copy_report.csv')
-
-
-

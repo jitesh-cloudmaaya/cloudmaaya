@@ -234,3 +234,9 @@ ADMIN_REORDER = (
     'shopping_tool',
     'auditlog',
 )
+
+# Slack
+# Caution!
+# Need to change slack credentials and put them in a more secure place in the future
+SLACK_BASE_URL = 'https://hooks.slack.com/services/'
+SLACK_IDENTIFIER = 'T0F5V1HED/B7N0FRFCN/Z9uiX9MgCQ0cNRcYZwyRmZw6'

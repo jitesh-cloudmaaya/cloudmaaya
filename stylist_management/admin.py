@@ -30,6 +30,8 @@ class StylistProfileAdmin(admin.ModelAdmin):
     search_fields = ('stylist__last_name', 'stylist__first_name', 'director__first_name', 'director__last_name', 'manager__first_name', 'manager__last_name', 'asm__first_name', 'asm__last_name')
     list_filter = ('on_duty', 'on_board', 'client_tier')
     readonly_fields = ['stylist_id', 'stylist', 'email', 'phone', 'date_created', 'last_updated'] # not allow editing of stylist info
+    ordering = ('stylist__first_name',)
+
     def email(self, obj):
         return obj.stylist.user_email
     def phone(self, obj):
@@ -56,6 +58,8 @@ class StylistManagementAdmin(admin.ModelAdmin):
     search_fields = ('stylist__last_name', 'stylist__first_name', 'director__first_name', 'director__last_name', 'manager__first_name', 'manager__last_name', 'asm__first_name', 'asm__last_name')
     list_filter = ('role',)
     readonly_fields = ['stylist_id', 'stylist', 'email', 'phone', 'date_created', 'last_updated'] # not allow editing of stylist info
+    ordering = ('stylist__first_name',)
+    
     def email(self, obj):
         return obj.stylist.user_email # changed
     def phone(self, obj):
