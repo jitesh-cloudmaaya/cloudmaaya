@@ -60,6 +60,7 @@ class Product(models.Model):
     allume_size = models.CharField(max_length=255, blank=True, null=True)
     allume_category = models.CharField(max_length=128, blank=True, null=True)
     merchant_color = models.CharField(max_length=255, blank=True, null=True)
+    is_final_sale = models.BooleanField(default=0)
 
     class Meta:
         unique_together = (('product_id', 'merchant_id'))
