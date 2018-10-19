@@ -4,6 +4,8 @@
 
 # Allume Shopping Tool
 
+###### [Deploying](DEPLOY.md)
+###### [Creating New Environments](NEWENV.md)
 
 ## Application Details
 This is a Django Project
@@ -59,8 +61,20 @@ Requires pip 10.01
 `python manage.py runserver`
 
 ### The current client homepage is:
-http://127.0.0.1:8000/shopping_tool/
+http://127.0.0.1:8000/[STYLING SESSION ID]
 
-### The API accepts a single query parameter right now and paging, e.g.:
-http://127.0.0.1:8000/product_api/facets?text=jeans&page=2&num_per_page=10
+### AUTH Workaround for local Development
+Auth requires connecting to the Allume Auth service, which will likely not be running locally.  There are two work arounds:
+
+#### Setting Cookies Locally
+The settings_local.py file has a key `DEV_AUTH_EMAIL`
+You can set that to any user_email from the wp_users tables and then my point your browser to /set_cookie on your local web server, from there the Auth cookie will be set and you can then point your browser to a styling session.
+
+#### Hosts File
+Alterntaively you can set the `AUTH_LOGIN_URL` and `AUTH_EMAIL_KEY` keys and use the Allume Auth service, your browser will be redirected to the Auth service, e.g. 'https://social-services-stage.allume.co/auth/oauth/login/google-oauth2/' which will set a cookie on your local browser.  
+
+For your your local dev app server to be able to read the cookies that was set you will need to create an entry in your hosts file, e.g. /etc/hosts for:
+    shopping-tool-web-dev.allume.co  127.0.0.1  
+
+Once you have that in place use will need to accesss the app from https://shopping-tool-web-dev.allume.co
 
