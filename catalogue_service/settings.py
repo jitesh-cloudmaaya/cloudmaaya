@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'stylist_management', # stylist management
     'auditlog', # detail logging
     'merchant_management', # merchant_management
+    'order_management', # order_management for operation team to handle final sale or order issue
     'admin_reorder', # reoder admin window for better usability
     'corsheaders'
 ]
@@ -210,6 +211,7 @@ CORS_ORIGIN_REGEX_WHITELIST = [r'.*\.allume\.co']
 
 # reorder admin windows
 ADMIN_REORDER = (
+    'auth',
     # Keep original label and models
     'stylist_management',
     # # Cross-linked models
@@ -233,6 +235,7 @@ ADMIN_REORDER = (
     )},
     'shopping_tool',
     'auditlog',
+    'order_management',
 )
 
 # Slack

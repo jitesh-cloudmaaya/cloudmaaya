@@ -30,4 +30,6 @@ urlpatterns = [
     url(r'^docs/', schema_view),
     # stylist management
     url(r'^management/', include('stylist_management.urls')),
+    # order management
+    url(r'^order_management/', include('order_management.urls')),
 ]
