@@ -50,5 +50,5 @@ local_temp_dir: pd_temp/cj/
 remote_dir: /outgoing/productcatalog/207812/
 table: product_api_product_temp_cj
 clean_data_method: cj.cj(self._local_temp_dir, self._file_ending, self._fields)
-file_ending: '[Cc]atalog[^a-zA-Z]*.txt$'
+file_ending: '(_US|[Cc]atalog)[^a-zA-Z]*.txt$'
 network: CJ

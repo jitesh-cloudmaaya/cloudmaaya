@@ -38,3 +38,4 @@ boto==2.49.0
 boto3==1.9.6
 django-modeladmin-reorder==0.3.1 # reorder admin window for better usability
 django-admin-views==0.7.0 # add customized link to admin --- https://github.com/frankwiles/django-admin-views
+urllib3==1.22
