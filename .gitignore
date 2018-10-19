@@ -17,3 +17,4 @@ pd_temp
 sql_data/tasks_ranproducts.back.sql
 catalogue_service/ran_yaml
 dump.rdb
+logstash/pipeline/logstash.conf

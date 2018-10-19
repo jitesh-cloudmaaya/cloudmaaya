@@ -49,6 +49,7 @@ def qa(docker_tag=''):
   env.roledefs = {
       'web': ['ec2-13-56-37-140.us-west-1.compute.amazonaws.com'],
       'worker': ['ec2-52-8-79-129.us-west-1.compute.amazonaws.com'],
+      'logstash': ['ec2-52-8-79-129.us-west-1.compute.amazonaws.com']
   }
 
   if docker_tag == '':
@@ -66,8 +67,7 @@ def prod(docker_tag=''):
   env.roledefs = {
       'web': ['ec2-54-177-92-201.us-west-1.compute.amazonaws.com', 'ec2-54-241-147-6.us-west-1.compute.amazonaws.com'],
       'worker': ['ec2-54-176-139-176.us-west-1.compute.amazonaws.com'],
-      #'web': ['127.0.0.1:8022'],
-      #'worker': ['127.0.0.1:8023'],
+      'logstash': ['ec2-54-176-139-176.us-west-1.compute.amazonaws.com']
   }
 
 
@@ -95,6 +95,10 @@ def restart_nginx():
 def restart_web():
     run('docker restart $(docker ps -a -q --filter name=shopping_tool_web)')
 
+@roles('logstash')
+def restart_logstash():
+    run('docker restart $(docker ps -a -q --filter name=logstash)')
+
 @roles('web')
 def restart():
     print('Restarting UWSGI/Web')
@@ -117,6 +121,16 @@ def deploy_nginx():
     run('docker rm $(docker stop $(docker ps -a -q --filter name=nginx))')
     env.warn_only = False
     run("docker run --restart=on-failure -d -v /etc/nginx:/etc/nginx -v /etc/pki/nginx:/etc/pki/nginx -p 80:80 -p 443:443 --link %s_flower:%s_flower --link %s_shopping_tool_web:%s_shopping_tool_web --volumes-from %s_shopping_tool_web --name %s_shopping_tool_nginx raybeam/nginx" % (env.environment, env.environment, env.environment, env.environment, env.environment, env.environment))
+
+@roles('logstash')
+def deploy_logstash():
+    #Restart logstash
+    run("docker pull docker.elastic.co/logstash/logstash:6.4.2")
+    env.warn_only = True#Allows process to proceed if there is no current container
+    run('docker rm $(docker stop $(docker ps -a -q --filter name=logstash))')
+    env.warn_only = False
+    run("docker run --restart=on-failure -d -v $(pwd)/logstash/mysql-connector-java-5.1.43-bin.jar:/usr/share/logstash/mysql-connector-java-5.1.43-bin.jar -v $(pwd)/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf -v $(pwd)/logstash/config/logstash.yml.default:/usr/share/logstash/config/logstash.yml --name %s_logstash docker.elastic.co/logstash/logstash:6.4.2" % (env.environment, env.environment, env.environment, env.environment, env.environment, env.environment))
+
 
 @roles('web')
 def deploy_flower():
@@ -159,11 +173,25 @@ def deploy_celery_container():
     run("docker run --restart=on-failure -d -e NEW_RELIC_PROCESS_HOST_DISPLAY_NAME='%s' -e NEW_RELIC_ENVIRONMENT='%s' -v $(pwd)/catalogue_service/settings_local.py:/srv/catalogue_service/catalogue_service/settings_local.py --name=%s_shopping_tool_celery_beat --entrypoint=\"/docker-entrypoint-celery-beat.sh\" allumestyle/catalogue-service:%s >> ~/shopping_tool_celery_beat.log 2>&1" % (env.host, env.environment, env.environment, env.docker_tag))
     
 
+@roles('logstash')
+def conditional_deploy_logstash():
+
+  logstash_instance_name = ('%s_logstash' % (env.environment))
+  print "Checking Logstash Deploy - %s" % (logstash_instance_name)
+  logstash_remote_status = run("docker ps -a | grep logstash | awk '{print $11}'")
+
+  if logstash_remote_status != logstash_instance_name:
+      print "Deploying Logstash"
+      execute(deploy_logstash)
+  else:
+      print "Skipping Logstash Deploy, Already Present"        
+
 @roles(['web', 'worker'])
 def deploy():
-    execute(deploy_web_container)
-    execute(deploy_celery_container)
-    execute(deploy_nginx)
-    execute(clean_up_docker)
+    #execute(deploy_web_container)
+    #execute(deploy_celery_container)
+    #execute(deploy_nginx)
+    execute(conditional_deploy_logstash)
+    #execute(clean_up_docker)
     #deploy_udfs()
     print('deploy complete!')
