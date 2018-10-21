@@ -51,7 +51,7 @@ jobs:
            name: Deploy if tests pass and branch is "develop"
            command: |
                . venv/bin/activate
-               fab qa deploy
+               fab qa:docker_tag=$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g') deploy
 
   deploy_uat:
      docker:
@@ -99,13 +99,13 @@ workflows:
             - build
           filters:
             branches:
-              only: develop
+              only: feature/iterative_checkout
       - deploy_uat:
           requires:
             - build
           filters:
-            tags:
-              only: uat
+            branches:
+              only: cloudmaaya
       - deploy_prod:
           requires:
             - build

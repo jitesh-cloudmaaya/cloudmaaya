@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from shopping_tool.models import LookProduct
-from catalogue_service.settings_local import PRODUCT_INDEX, ES_CLIENT
+from catalogue_service.settings_local import PRODUCT_INDEX, CLIENT
 from django.db import connection
 
 
@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        es = ES_CLIENT
+        es = CLIENT
 
         if es.indices.exists(PRODUCT_INDEX):
             print("index '%s' exists, skipping..." % (PRODUCT_INDEX))
