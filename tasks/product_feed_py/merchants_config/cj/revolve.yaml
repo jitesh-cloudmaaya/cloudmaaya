@@ -1,4 +1,4 @@
-fields: # default is currently a copy of TJ_Maxx.yaml
+fields: # default is currently a copy of tj_maxx.yaml
     merchant_color: FORMAT
     size: LABEL
     merchant_name: PROGRAMNAME
