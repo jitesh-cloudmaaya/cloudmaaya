@@ -1,5 +1,5 @@
-fields: # default is currently a copy of TJ_Maxx.yaml
-    merchant_color: Author
+fields: # default is currently a copy of tj_maxx.yaml
+    merchant_color: AUTHOR
     size: TITLE
     merchant_name: PROGRAMNAME
     keywords: KEYWORDS
