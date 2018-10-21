@@ -1129,6 +1129,18 @@ var look_builder = {
           return 0;
         })        
         collage.init(result.look_products);
+        if(utils.readURLParams('look') != null){
+            $.ajax({
+                contentType: 'application/x-www-form-urlencoded',
+                crossDomain: true,
+                data: $.param({look_id: id}),
+                type: 'POST',
+                url: 'https://ecommerce-service-' + local_environment + '.allume.co/wp-json/products/updateLookTTProducts/',
+                xhrFields: {
+                  withCredentials: true
+                }
+            });
+        }
       }
     });
   },
