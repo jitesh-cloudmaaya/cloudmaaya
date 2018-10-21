@@ -36,6 +36,10 @@ from tasks.tasks import add_client_to_360
 
 
 # Create your views here. 
+def logout(request):   
+    response_redirect.delete_cookie(AUTH_EMAIL_KEY)
+    response_redirect = HttpResponseRedirect('/')
+    return response_redirect
 
 def category_samples(request):
     cat1 = request.GET['external_cat1']

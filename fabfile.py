@@ -56,6 +56,22 @@ def qa(docker_tag=''):
   else:
     env.docker_tag = docker_tag
 
+
+def uat(docker_tag=''):
+  env.user = 'ec2-user'
+  env.environment = 'uat'
+
+  env.roledefs = {
+      'web': ['ec2-52-52-66-39.us-west-1.compute.amazonaws.com'],
+      'worker': ['ec2-54-241-208-40.us-west-1.compute.amazonaws.com'],
+  }
+
+  if docker_tag == '':
+    env.docker_tag = 'develop'
+  else:
+    env.docker_tag = docker_tag
+
+
 def prod(docker_tag=''):
   env.user = 'ec2-user'
   env.environment = 'prod'
@@ -165,5 +181,4 @@ def deploy():
     execute(deploy_celery_container)
     execute(deploy_nginx)
     execute(clean_up_docker)
-    #deploy_udfs()
     print('deploy complete!')

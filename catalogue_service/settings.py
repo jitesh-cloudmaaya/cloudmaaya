@@ -33,7 +33,8 @@ ALLOWED_HOSTS = ['shopping-tool-web-dev.allume.co',
                  '127.0.0.1',
                  'dev.allume.co',
                  'shopping-tool-web-stage.allume.co', 
-                 'shopping-tool-web-prod.allume.co'
+                 'shopping-tool-web-prod.allume.co',
+                 'shopping-tool-cloudmaaya-web-stage.allume.co'
                  ]
 
 
