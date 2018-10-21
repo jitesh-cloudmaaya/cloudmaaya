@@ -98,7 +98,9 @@ workflows:
           requires:
             - build
           filters:
-            branches:
+#            branches:
+#              only: develop
+            tags:
               only: develop
       - deploy_uat:
           requires:
