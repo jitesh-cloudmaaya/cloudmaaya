@@ -1,0 +1,47 @@
+fields:
+    - product_id
+    - product_name
+    - SKU
+    - primary_category
+    - secondary_category
+    - product_url
+    - product_image_url
+    - buy_url
+    - short_product_description
+    - long_product_description
+    - discount
+    - discount_type
+    - sale_price
+    - retail_price
+    - begin_date
+    - end_date
+    - brand
+    - shipping
+    - keywords
+    - manufacturer_part_number
+    - manufacturer_name
+    - shipping_information
+    - availability
+    - universal_product_code
+    - class_ID
+    - currency
+    - M1
+    - pixel
+    - attribute_1_misc
+    - attribute_2_product_type
+    - attribute_3_size
+    - attribute_4_material
+    - attribute_5_color
+    - attribute_6_gender
+    - attribute_7_style
+    - attribute_8_age
+    - attribute_9
+    - attribute_10
+    - modification
+tiered_assignment_fields:
+   primary_category:
+       - "datum['attribute_2_product_type']"
+       - "datum['primary_category']"
+   secondary_category:
+       - "datum['secondary_category']"
+       - "parse_category_from_product_name(datum['product_name'], kwargs['synonym_category_mapping'], kwargs['exclusion_terms'])"
