@@ -57,6 +57,22 @@ def qa(docker_tag=''):
   else:
     env.docker_tag = docker_tag
 
+
+def uat(docker_tag=''):
+  env.user = 'ec2-user'
+  env.environment = 'uat'
+
+  env.roledefs = {
+      'web': ['ec2-52-52-66-39.us-west-1.compute.amazonaws.com'],
+      'worker': ['ec2-54-241-208-40.us-west-1.compute.amazonaws.com'],
+  }
+
+  if docker_tag == '':
+    env.docker_tag = 'develop'
+  else:
+    env.docker_tag = docker_tag
+
+
 def prod(docker_tag=''):
   env.user = 'ec2-user'
   env.environment = 'prod'
@@ -129,7 +145,7 @@ def deploy_logstash():
     env.warn_only = True#Allows process to proceed if there is no current container
     run('docker rm $(docker stop $(docker ps -a -q --filter name=logstash))')
     env.warn_only = False
-    run("docker run --restart=on-failure -d -v $(pwd)/logstash/mysql-connector-java-5.1.43-bin.jar:/usr/share/logstash/mysql-connector-java-5.1.43-bin.jar -v $(pwd)/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf -v $(pwd)/logstash/config/logstash.yml.default:/usr/share/logstash/config/logstash.yml --name %s_logstash docker.elastic.co/logstash/logstash:6.4.2" % (env.environment, env.environment, env.environment, env.environment, env.environment, env.environment))
+    run("docker run --restart=on-failure -d -v $(pwd)/catalogue_service/mysql-connector-java-5.1.43-bin.jar:/usr/share/logstash/driver/mysql-connector-java-5.1.43-bin.jar -v $(pwd)/catalogue_service/logstash.conf:/usr/share/logstash/conf.d/logstash.conf -v $(pwd)/catalogue_service/logstash.yml:/usr/share/logstash/config/logstash.yml --name %s_logstash docker.elastic.co/logstash/logstash:6.4.2" % (env.environment))
 
 
 @roles('web')
@@ -186,12 +202,12 @@ def conditional_deploy_logstash():
   else:
       print "Skipping Logstash Deploy, Already Present"        
 
-@roles(['web', 'worker'])
+@roles(['web', 'worker', 'logstash'])
 def deploy():
-    #execute(deploy_web_container)
-    #execute(deploy_celery_container)
-    #execute(deploy_nginx)
+   # execute(deploy_web_container)
+   # execute(deploy_celery_container)
+   # execute(deploy_nginx)
     execute(conditional_deploy_logstash)
-    #execute(clean_up_docker)
-    #deploy_udfs()
+    execute(clean_up_docker)
+
     print('deploy complete!')

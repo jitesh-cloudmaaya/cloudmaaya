@@ -2,10 +2,10 @@ input {
   jdbc {
     jdbc_driver_library => "/usr/share/logstash/mysql-connector-java-5.1.43-bin.jar"
     jdbc_driver_class => "com.mysql.jdbc.Driver"
-    jdbc_connection_string => "jdbc:mysql://allume-stage.ceyn4wyfdjqr.us-west-1.rds.amazonaws.com/allume_style?zeroDateTimeBehavior=convertToNull"
-    jdbc_user => "allume"
-    jdbc_password => "fb8fWEj$!]MNju"
-    statement => "SELECT * FROM product_api_product WHERE  updated_at > :sql_last_value ORDER BY id"
+    jdbc_connection_string => "jdbc:mysql://192.168.86.36:3306/catalogue_service?zeroDateTimeBehavior=convertToNull"
+    jdbc_user => "root"
+    jdbc_password => ""
+    statement => "SELECT * FROM product_api_product WHERE updated_at > COALESCE(DATE_SUB(:sql_last_value, INTERVAL 2 HOUR), 0) ORDER BY id"
     jdbc_paging_enabled => "true"
     jdbc_page_size => "50000"
     schedule => "* * * * * "
@@ -17,7 +17,7 @@ output {
   elasticsearch {
     hosts => "https://products-catalogue-stage.allume.co:443"
     user => wes
-    password => "XXXXXX"
+    password => "PASSWORD"
     index => "products"
     document_type => "product"
     document_id => "%{id}"
