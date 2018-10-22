@@ -13,7 +13,7 @@ class Order_Job_Admin(admin.ModelAdmin):
     ordering = ('-date_created',)
 
     def link(self, obj):
-        return '<a href="%s">%s</a>' % (obj.clickable, obj.clickable)
+        return '<a href="%s" target="_blank">%s</a>' % (obj.clickable, obj.clickable)
 
     def has_add_permission(self, request, obj=None): # disable the add button
         return False
