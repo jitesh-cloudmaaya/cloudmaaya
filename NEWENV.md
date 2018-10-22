@@ -22,7 +22,7 @@
 * Create a copy of settings_local.py in the catalogue_service directory and set all config variables
   * Set `DEBUG = True` to help getting started, you can turn it off later
   * Ensure that the `AUTH_EMAIL_KEY` is set correctly to match what the Allume Auth service will be settings as the Auth Key in cookies
-* Logstash
+* Logstash (Should only run on one server, that server should be configgured in the fabfile.py)
    * Create a copy of logstash.yml in the catalogue_service directory from the logstash/config/logstash.yml.default
    * Create a copy of logstash.conf in the catalogue_service directory from the logstash/pipeline/logstash.conf.default
    * Copy the mysql-connector-java-5.1.43-bin.jar (MySQL Driver) into the catalogue_service directory
