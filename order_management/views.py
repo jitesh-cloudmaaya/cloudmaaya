@@ -8,28 +8,36 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from django.db import connection
-
+from django.utils import timezone
 import urllib2
 
 import json
 
+from settings import STYLING_SERVICES_STAGE, STYLING_SERVICES_PROD, ENV_LOCAL
+
+# server the check final sale page
 def final_sale_check(requests, allume_cart_id):
     context = {'allume_cart_id': allume_cart_id}
     return render(requests, 'final_sale_check/index.html', context)
 
+# a proxy for the frontend to access product website
+# To Do
+# need to resovle the relative paths in the front end iframe
 def proxy(request):
     url = request.GET['url']
     url = urllib2.unquote(url)
     response = requests.get(url)
-    response.headers['X-Frame-Options'] = 'ALLOWALL'
+    response.headers['X-Frame-Options'] = 'ALLOWALL' # allow iframe
     response.headers['Access-Control-Allow-Origin'] = '*'
     return HttpResponse(response)
 
+# load the check final sale data to front end
 def get_unchecked_final_sale_data(requests):
     allume_cart_id = requests.GET['allume_cart_id']
     data = load_uncheck_final_sale_data(allume_cart_id)
     return JsonResponse(data)
 
+# after all the items are checked, front end calls this API to submit data
 @csrf_exempt
 def submit_final_sale_check(requests):
     data = json.loads(requests.body)
@@ -80,10 +88,65 @@ def submit_final_sale_check(requests):
 # Message Handling
 ################################
 def api_call_to_message_queue(allume_cart_id, message_content):
-    requests.post()
+
+    # send request to the styling service API
+    if ENV_LOCAL == 'prod':
+        url = STYLING_SERVICES_PROD + 'push_message_api/'
+    elif ENV_LOCAL == 'stage':
+        url = STYLING_SERVICES_STAGE + 'push_message_api/'
+
+    # construct data in json format
+    json_data = {
+        'allume_cart_id': allume_cart_id,
+        'message_content': message_content
+    }
+    r = requests.post(url, json=json_data)
+
+    # return True/False to indicate if the request is successful
+    if r.status_code == 200:
+        return True
+    else:
+        return False
 
 def api_call_to_delete_order_job(allume_cart_id):
-    requests.post()
+
+    # send request to the styling service APIQ
+    if ENV_LOCAL == 'prod':
+        url = STYLING_SERVICES_PROD + 'delete_order_job_api/'
+    elif ENV_LOCAL == 'stage':
+        url = STYLING_SERVICES_STAGE + 'delete_order_job_api/'
+
+    # construct data in json format
+    json_data = {
+        'allume_cart_id': allume_cart_id
+    }
+    r = requests.post(url, json=json_data)
+
+    # return True/False to indicate if the request is successful
+    if r.status_code == 200:
+        return True
+    else:
+        return False
+
+
+def api_call_to_start_order(allume_cart_id):
+    # send request to the styling service APIQ
+    if ENV_LOCAL == 'prod':
+        url = STYLING_SERVICES_PROD + 'start_order/'
+    elif ENV_LOCAL == 'stage':
+        url = STYLING_SERVICES_STAGE + 'start_order/'
+
+    # construct data in json format
+    json_data = {
+        'allume_cart_id': allume_cart_id
+    }
+    r = requests.post(url, json=json_data)
+    
+    # return True/False to indicate if the request is successful
+    if r.status_code == 200:
+        return True
+    else:
+        return False
 
 ###############################################
 # Order Handling (should be API calls as wll)

@@ -244,3 +244,8 @@ ADMIN_REORDER = (
 # Need to change slack credentials and put them in a more secure place in the future
 SLACK_BASE_URL = 'https://hooks.slack.com/services/'
 SLACK_IDENTIFIER = 'T0F5V1HED/B7N0FRFCN/Z9uiX9MgCQ0cNRcYZwyRmZw6'
+
+
+# Stylint Service APIs
+STYLING_SERVICES_STAGE = 'https://styling-service-stage.allume.co/'
+STYLING_SERVICES_PROD = 'https://styling-service-prod.allume.co/'
