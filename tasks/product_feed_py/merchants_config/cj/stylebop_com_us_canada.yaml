@@ -1,6 +1,6 @@
 fields: # default is currently a copy of tj_maxx.yaml
-    merchant_color: FORMAT
-    size: LABEL
+    merchant_color: Author
+    size: TITLE
     merchant_name: PROGRAMNAME
     keywords: KEYWORDS
     currency: CURRENCY
@@ -12,25 +12,25 @@ fields: # default is currently a copy of tj_maxx.yaml
     product_url: BUYURL # maybe?/
     buy_url: BUYURL # ??
 
-    retail_price: RETAILPRICE
+    retail_price: PRICE
     sale_price: SALEPRICE
     long_product_description: DESCRIPTION
     primary_category: ADVERTISERCATEGORY
     shipping_price: STANDARDSHIPPINGCOST
     manufacturer_name: MANUFACTURER
-    manufacturer_part_number: MANUFACTURERID
 
     # fields that don't seem to appear in the data
     secondary_category: N/A
     short_product_description: N/A
+    manufacturer_part_number: MANUFACTURERID
     product_type: N/A
     discount: N/A
     discount_type: N/A
     gender: N/A
     style: N/A
-    material: N/A
+    material: PUBLISHER
     age: N/A
-    brand: N/A
+    brand: MANUFACTURER
 tiered_assignment_fields:
     secondary_category:
         - "datum['N/A']"

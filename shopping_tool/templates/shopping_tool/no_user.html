@@ -1,0 +1,25 @@
+{% load staticfiles %}
+{% load sstatic %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ANNA - Shopping Tool</title>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500,700" rel="stylesheet">
+  {% load static %}
+  <link href="{% sstatic 'shopping_tool/css/styles.css' %}" media="all" rel="stylesheet"/>
+</head>
+<body class="search-page" data-stylesession="{{ styling_session.id }}">
+<div style="font-size:40px;font-weight:100;margin:50px 0;text-align:center">
+
+  Sorry {{ user_email }} does not exist, invalid user.
+</div>
+  <br>
+<div style="font-size:30px;font-weight:100;margin:50px 0;text-align:center">
+  <a href="/logout">logout</a>
+</div>
+
+
+
+</body>
+</html>

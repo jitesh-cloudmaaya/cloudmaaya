@@ -29,6 +29,8 @@ from elasticsearch_dsl.connections import connections
 from product_doc import EProductSearch#, EProduct
 
 import calendar
+from shopping_tool.decorators import check_login
+from django.views.decorators.csrf import csrf_exempt
 
 @api_view(['GET'])
 def sort_options(self):
@@ -181,7 +183,21 @@ def get_product(self, product_id):
 
     context = format_results(results_dict, total_count, page, 100, self, 'products', p_name, facets_dict)
 
-    return Response(context) 
+    return Response(context)
+
+
+@api_view(['PUT'])
+@check_login
+@permission_classes((AllowAny, ))
+@csrf_exempt
+def set_product_final_sale(self, product_id, final_sale):
+
+    product = Product.objects.get(id = product_id)
+    product.is_final_sale = final_sale
+    product.save()
+
+    return Response({'status': 'success'})
+
 
 @api_view(['POST'])
 @permission_classes((AllowAny, ))

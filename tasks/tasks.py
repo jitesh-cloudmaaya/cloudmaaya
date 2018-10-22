@@ -301,13 +301,15 @@ def send_slack_notification(channel, message):
 # task to calculate the most recent product update of each merchant and sends slack message 
 # if no product from this merchant has been updated for a given number of days
 @task(base=QueueOnce)
-def check_merchant_last_update(days_threshold = 3):
+def check_merchant_last_update(days_threshold = 1):
     print('start checking the most recent update of each merchant')
     cursor = connection.cursor()
     cursor.execute(
         """
         SELECT name, max(P.updated_at) FROM
-        product_api_merchant AS M
+	    (SELECT name, external_merchant_id FROM
+        product_api_merchant where active = true) 
+        AS M
         INNER JOIN 
         product_api_product AS P
         WHERE M.external_merchant_id = P.merchant_id

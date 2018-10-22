@@ -11,6 +11,7 @@ DATABASES = {
     }
 }
 
+
 # FOR ELASTIC SEARCH
 ES_HOSTS = ['http://localhost:9200'] #changeme to stage: look in the ANNA web server /etc/nginx/sites-available/products-catalogue_stage
 ES_HTTP_AUTH = 'changeme' #changeme to stage: look in the ANNA web server nginx conf /etc/nginx/.pc_htpasswd and /etc/nginx/sites-available/products-catalogue_stage

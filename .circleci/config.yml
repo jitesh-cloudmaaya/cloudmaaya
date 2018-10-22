@@ -35,7 +35,6 @@ jobs:
           name: Push the tagged image to Docker Hub
           command: docker push allumestyle/catalogue-service:$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g')
 
-
   deploy_qa:
      docker:
       - image: circleci/python:2.7.13
@@ -49,10 +48,28 @@ jobs:
               . venv/bin/activate
               pip install Fabric==1.14.0
        - run:
-           name: Deploy if tests pass and branch is Develop
+           name: Deploy if tests pass and branch is "develop"
            command: |
                . venv/bin/activate
-               fab qa deploy
+               fab qa:docker_tag=$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g') deploy
+
+  deploy_uat:
+     docker:
+      - image: circleci/python:2.7.13
+     working_directory: ~/repo  
+     steps:
+       - checkout
+       - run:
+           name: Install Fabric==1.14.0
+           command: |
+              virtualenv venv
+              . venv/bin/activate
+              pip install Fabric==1.14.0
+       - run:
+           name: Deploy if tests pass and tag is "uat"
+           command: |
+               . venv/bin/activate
+               fab uat:docker_tag=$(git branch | grep \* | cut -d ' ' -f2 | sed 's/\///g') deploy
 
   deploy_prod:
      docker:
@@ -67,7 +84,7 @@ jobs:
               . venv/bin/activate
               pip install Fabric==1.14.0
        - run:
-           name: Deploy if tests pass and branch is Develop
+           name: Deploy if tests pass and branch is "master"
            command: |
                . venv/bin/activate
                fab prod deploy
@@ -82,7 +99,13 @@ workflows:
             - build
           filters:
             branches:
-              only: develop
+              only: feature/iterative_checkout
+      - deploy_uat:
+          requires:
+            - build
+          filters:
+            branches:
+              only: cloudmaaya
       - deploy_prod:
           requires:
             - build
