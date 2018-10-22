@@ -26,16 +26,3 @@
    * Create a copy of logstash.yml in the catalogue_service directory from the logstash/config/logstash.yml.default
    * Create a copy of logstash.conf in the catalogue_service directory from the logstash/pipeline/logstash.conf.default
    * Copy the mysql-connector-java-5.1.43-bin.jar (MySQL Driver) into the catalogue_service directory
-
-
-
-
-### Logstash Server Steps (Could be Web or Worker Server)
-* Install Logstash
-* Update the logstash.conf file to match something close to what is in `logstash/pipeline/logstash.yml`
-
-
-
-
-
-
