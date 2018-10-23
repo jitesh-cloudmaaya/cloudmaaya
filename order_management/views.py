@@ -13,7 +13,7 @@ import urllib2
 
 import json
 
-from catalogue_service.settings import STYLING_SERVICES_STAGE, STYLING_SERVICES_PROD, ENV_LOCAL
+from catalogue_service.settings_local import STYLING_SERVICES
 
 # server the check final sale page
 def final_sale_check(requests, allume_cart_id):
@@ -89,10 +89,7 @@ def submit_final_sale_check(requests):
 def api_call_to_message_queue(allume_cart_id, message_content = None):
 
     # send request to the styling service API
-    if ENV_LOCAL == 'prod':
-        url = STYLING_SERVICES_PROD + 'push_message_api/'
-    elif ENV_LOCAL == 'stage':
-        url = STYLING_SERVICES_STAGE + 'push_message_api/'
+    url = STYLING_SERVICES + '/push_message_api/'
 
     # construct data in json format
     json_data = {
@@ -110,10 +107,7 @@ def api_call_to_message_queue(allume_cart_id, message_content = None):
 def api_call_to_delete_order_job(allume_cart_id):
 
     # send request to the styling service APIQ
-    if ENV_LOCAL == 'prod':
-        url = STYLING_SERVICES_PROD + 'delete_order_job_api/'
-    elif ENV_LOCAL == 'stage':
-        url = STYLING_SERVICES_STAGE + 'delete_order_job_api/'
+    url = STYLING_SERVICES + '/delete_order_job_api/'
 
     # construct data in json format
     json_data = {
@@ -130,10 +124,7 @@ def api_call_to_delete_order_job(allume_cart_id):
 
 def api_call_to_start_order(allume_cart_id):
     # send request to the styling service APIQ
-    if ENV_LOCAL == 'prod':
-        url = STYLING_SERVICES_PROD + 'start_order/'
-    elif ENV_LOCAL == 'stage':
-        url = STYLING_SERVICES_STAGE + 'start_order/'
+    url = STYLING_SERVICES + '/start_order/'
 
     # construct data in json format
     json_data = {
