@@ -277,7 +277,7 @@ def set_final_sale(order_item_id, is_final_sale):
                update product_api_product pp
                join wp_posts p on p.affiliate_feed_product_api_product_id = pp.id
                join wp_woocommerce_order_itemmeta oim on oim.order_item_id = %s and oim.meta_key='_product_id' and oim.meta_value = p.ID
-               set pp.final_sale = 1, pp.updated_at = now()
+               set pp.is_final_sale = 1, pp.updated_at = now()
                 """,
                 [order_item_id,]
             )
