@@ -263,6 +263,20 @@ def index_deleted_products_cleanup(days_threshold = 5):
 
     print 'The entire process took %s seconds' % (time.time() - start)
 
+@task(base=QueueOnce)
+def archive_products():
+    cursor = connection.cursor()
+    etl_file = open(os.path.join(BASE_DIR, 'tasks/products_sql/archive_products.sql'))
+    statement = etl_file.read()
+    statements = statement.split(';')
+    try:
+        with transaction.atomic():
+            for i in range(0, len(statements)):
+                statement = statements[i]
+                if statement.strip(): # avoid 'query was empty' operational error
+                    cursor.execute(statements[i])
+    finally:
+        cursor.close()
 
 ###########################################
 #   Look copy analytic

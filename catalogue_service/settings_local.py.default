@@ -16,6 +16,21 @@ DATABASES = {
 ES_HOSTS = ['http://localhost:9200'] #changeme to stage: look in the ANNA web server /etc/nginx/sites-available/products-catalogue_stage
 ES_HTTP_AUTH = 'changeme' #changeme to stage: look in the ANNA web server nginx conf /etc/nginx/.pc_htpasswd and /etc/nginx/sites-available/products-catalogue_stage
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'HOST': '127.0.0.1',
+#        'PORT': '3306',
+#        'NAME': 'catalogue_service',
+#        'USER': 'root',
+#        'PASSWORD': 'password',
+#        'OPTIONS': {
+#            'local_infile': 1,
+#        }
+#    }
+# }
+
+
 # Elastic Search Connection
 from elasticsearch_dsl.connections import connections
 connections.create_connection(hosts=ES_HOSTS, http_auth=ES_HTTP_AUTH)
