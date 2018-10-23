@@ -13,7 +13,7 @@ import urllib2
 
 import json
 
-from settings import STYLING_SERVICES_STAGE, STYLING_SERVICES_PROD, ENV_LOCAL
+from catalogue_service.settings import STYLING_SERVICES_STAGE, STYLING_SERVICES_PROD, ENV_LOCAL
 
 # server the check final sale page
 def final_sale_check(requests, allume_cart_id):
@@ -68,26 +68,25 @@ def submit_final_sale_check(requests):
 
             # check if any final sale order -> yes> send text or no> start order
             if final_sale_orders:
-                # To Do
                 # message handling
                 # call the text queue API
                 # api_call_to_message_queue
-                pass
+                api_call_to_message_queue(allume_cart_id)
             else:
-                # To Do
                 # start order 
                 # call the start order API
-                pass
+                api_call_to_start_order(allume_cart_id)
 
-            # To Do
+            # TODO
             # api_call_to_delete_order_job(allume_cart_id)
+            api_call_to_delete_order_job(allume_cart_id)
 
     return HttpResponse(status=200)
 
 ################################
 # Message Handling
 ################################
-def api_call_to_message_queue(allume_cart_id, message_content):
+def api_call_to_message_queue(allume_cart_id, message_content = None):
 
     # send request to the styling service API
     if ENV_LOCAL == 'prod':
