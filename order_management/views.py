@@ -213,7 +213,8 @@ def get_unchecked_final_sale_item_ids_by_allume_cart_id(allume_cart_id):
             and post_status!='wc-completed' and post_status!='wc-cancelled' and (twotap_processing_status is null or twotap_processing_status='failed')) as M
             join product_api_merchant
             on M.retailer = product_api_merchant.name
-            where final_sale=true)
+            where final_sale=true
+            group by M.ID)
             as O
             join
             wp_woocommerce_order_items
@@ -221,7 +222,6 @@ def get_unchecked_final_sale_item_ids_by_allume_cart_id(allume_cart_id):
             where order_item_type='line_item') as I
             where
             not exists (select * from wp_woocommerce_order_itemmeta where order_item_id=I.order_item_id and meta_key='_final_sale')
-            ;
             """,
             [allume_cart_id,] #15355
         )
