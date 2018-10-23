@@ -42,8 +42,6 @@ INSERT IGNORE INTO product_api_producthistory (
   allume_category,
   merchant_color,
   raw_product_url 
-  -- allume_size_old,
-  -- size_parsed_successfully 
 )
 SELECT
   hist.product_id,
@@ -89,17 +87,13 @@ SELECT
   hist.allume_category,
   hist.merchant_color,
   hist.raw_product_url 
-  -- hist.allume_size_old,
-  -- hist.size_parsed_successfully 
 FROM product_api_product hist
-where hist.updated_at < COALESCE(DATE_SUB(now(), INTERVAL 3 MONTH), 0) and hist.is_deleted=1 
+where hist.is_deleted=1 
      and hist.product_id not in (select DISTINCT product_id from allume_product_images)
      and hist.product_id not in (select DISTINCT product_id from allume_stylist_add_on_data)
-     -- and hist.product_id not in (select DISTINCT product_id from feed_tt_discrepancies)
      and hist.product_id not in (select DISTINCT product_id from shopping_tool_rack)
      and hist.product_id not in (select DISTINCT product_id from shopping_tool_report)
      and hist.product_id not in (select DISTINCT product_id from shopping_tool_userproductfavorite)
-     and hist.product_id not in (select DISTINCT product_id from tasks_ranproducts)
      and hist.product_id not in (select DISTINCT product_id from wp_woocommerce_downloadable_product_permissions) 
      and hist.product_id not in (select raw_product_id from allume_look_products where raw_product_id >0 and raw_product_id group by raw_product_id)
      and hist.product_id not in (select p.affiliate_feed_product_api_product_id
@@ -109,14 +103,12 @@ where hist.updated_at < COALESCE(DATE_SUB(now(), INTERVAL 3 MONTH), 0) and hist.
                                  GROUP BY p.affiliate_feed_product_api_product_id);
 
 DELETE FROM product_api_product
-     where  updated_at < COALESCE(DATE_SUB(now(), INTERVAL 3 MONTH), 0) and is_deleted=1 
+     where is_deleted=1 
      and product_id not in (select DISTINCT product_id from allume_product_images)
      and product_id not in (select DISTINCT product_id from allume_stylist_add_on_data)
-     -- and product_id not in (select DISTINCT product_id from feed_tt_discrepancies)
      and product_id not in (select DISTINCT product_id from shopping_tool_rack)
      and product_id not in (select DISTINCT product_id from shopping_tool_report)
      and product_id not in (select DISTINCT product_id from shopping_tool_userproductfavorite)
-     and product_id not in (select DISTINCT product_id from tasks_ranproducts)
      and product_id not in (select DISTINCT product_id from wp_woocommerce_downloadable_product_permissions)
      and product_id not in (select raw_product_id from allume_look_products where raw_product_id >0 and raw_product_id group by raw_product_id)
      and product_id not in (select p.affiliate_feed_product_api_product_id
