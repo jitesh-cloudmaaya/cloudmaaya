@@ -204,9 +204,9 @@ def conditional_deploy_logstash():
 
 @roles(['web', 'worker', 'logstash'])
 def deploy():
-   # execute(deploy_web_container)
-   # execute(deploy_celery_container)
-   # execute(deploy_nginx)
+    execute(deploy_web_container)
+    execute(deploy_celery_container)
+    execute(deploy_nginx)
     execute(conditional_deploy_logstash)
     execute(clean_up_docker)
 
