@@ -14,6 +14,7 @@ import urllib2
 import json
 
 from catalogue_service.settings_local import STYLING_SERVICES
+from catalogue_service.settings import TOKEN
 
 # server the check final sale page
 def final_sale_check(requests, allume_cart_id):
@@ -94,6 +95,7 @@ def api_call_to_message_queue(allume_cart_id, message_content = None):
     # construct data in json format
     json_data = {
         'allume_cart_id': allume_cart_id,
+        'token': TOKEN,
         'message_content': message_content
     }
     r = requests.post(url, json=json_data)
@@ -111,7 +113,8 @@ def api_call_to_delete_order_job(allume_cart_id):
 
     # construct data in json format
     json_data = {
-        'allume_cart_id': allume_cart_id
+        'allume_cart_id': allume_cart_id,
+        'token': TOKEN
     }
     r = requests.post(url, json=json_data)
 
@@ -123,12 +126,16 @@ def api_call_to_delete_order_job(allume_cart_id):
 
 
 def api_call_to_start_order(allume_cart_id):
+
+    # get the order_id (token) from cart_id
+    allume_order_id = get_cart_token(allume_cart_id)
+
     # send request to the styling service APIQ
     url = STYLING_SERVICES + '/twotap/start_order/'
 
     # construct data in json format
     json_data = {
-        'allume_cart_id': allume_cart_id
+        'allume_order_id': allume_order_id
     }
     r = requests.post(url, json=json_data)
     
@@ -281,6 +288,18 @@ def set_final_sale(order_item_id, is_final_sale):
                 """,
                 [order_item_id,]
             )
+
+def get_cart_token(allume_cart_id):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            select token from allume_carts
+            where id = %s
+            """,
+            [allume_cart_id,]
+        )
+        allume_order_id = cursor.fetchone()[0]
+        return allume_order_id
 
 
 
