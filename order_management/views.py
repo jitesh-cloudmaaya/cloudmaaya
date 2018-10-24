@@ -89,7 +89,7 @@ def submit_final_sale_check(requests):
 def api_call_to_message_queue(allume_cart_id, message_content = None):
 
     # send request to the styling service API
-    url = STYLING_SERVICES + '/push_message_api/'
+    url = STYLING_SERVICES + '/twotap/push_message_api/'
 
     # construct data in json format
     json_data = {
@@ -107,7 +107,7 @@ def api_call_to_message_queue(allume_cart_id, message_content = None):
 def api_call_to_delete_order_job(allume_cart_id):
 
     # send request to the styling service APIQ
-    url = STYLING_SERVICES + '/delete_order_job_api/'
+    url = STYLING_SERVICES + '/twotap/delete_order_job_api/'
 
     # construct data in json format
     json_data = {
@@ -124,7 +124,7 @@ def api_call_to_delete_order_job(allume_cart_id):
 
 def api_call_to_start_order(allume_cart_id):
     # send request to the styling service APIQ
-    url = STYLING_SERVICES + '/start_order/'
+    url = STYLING_SERVICES + '/twotap/start_order/'
 
     # construct data in json format
     json_data = {
