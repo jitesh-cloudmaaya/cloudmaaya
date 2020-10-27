@@ -28,7 +28,7 @@ ipython==5.5.0
 django-mass-edit==3.1
 pysftp==0.2.9
 paramiko==2.4.0
-cryptography==2.1.4
+cryptography==3.2
 sqlparse==0.2.4
 newrelic==3.2.0.91
 django-autocomplete-light==3.2.10 # must ues this version
