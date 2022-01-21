@@ -24,7 +24,7 @@ django-celery-beat==1.1.0
 celery-once==1.2.0
 imgkit==0.1.8
 django-extensions==1.9.9
-ipython==5.5.0
+ipython==7.16.3
 django-mass-edit==3.1
 pysftp==0.2.9
 paramiko==2.4.0
